@@ -1,0 +1,46 @@
+{
+  "mu_ewma": 81.06988225,
+  "sigma_ewma": 454.4103258,
+  "learning_log": [
+    {
+      "date": "2026-05-04",
+      "actual_return": 460.3,
+      "mu_old": 16.0,
+      "mu_new_raw": 60.43,
+      "mu_new": 48.0,
+      "cap_applied": true,
+      "sigma_old": 495.0,
+      "sigma_new": 487.3619,
+      "error": 444.44,
+      "alpha_used": 0.1,
+      "bias_5d": 444.44
+    },
+    {
+      "date": "2026-05-05",
+      "actual_return": -31.5794,
+      "mu_old": 48.0,
+      "mu_new_raw": 40.0421,
+      "mu_new": 40.0421,
+      "cap_applied": false,
+      "sigma_old": 487.3619,
+      "sigma_new": 462.9065,
+      "error": -48.4538,
+      "alpha_used": 0.1,
+      "bias_5d": 197.9931
+    },
+    {
+      "date": "2026-05-06",
+      "actual_return": 450.3199,
+      "mu_old": 40.0421,
+      "mu_new_raw": 81.0699,
+      "mu_new": 81.0699,
+      "cap_applied": false,
+      "sigma_old": 462.9065,
+      "sigma_new": 454.4103,
+      "error": 206.8644,
+      "alpha_used": 0.1,
+      "bias_5d": 200.9502
+    }
+  ],
+  "days_trained": 3
+}

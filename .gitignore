@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+portfolio_risk_analysis.ipynb
+
+# Scratch / one-off scripts
+_append_michael.py
+fix_may6.py
+fix_charts.py
+check_prices.py
+test_bulk.py
+test_gemini.py
+live_monitor.py
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.log

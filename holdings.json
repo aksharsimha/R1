@@ -1,0 +1,74 @@
+{
+  "holdings": [
+    {
+      "name": "REC Limited",
+      "asset_type": "equity",
+      "identifier": "RECLTD.NS",
+      "amount": 4371.48,
+      "quantity": 12.0
+    },
+    {
+      "name": "Jio Financial Services",
+      "asset_type": "equity",
+      "identifier": "JIOFIN.NS",
+      "amount": 4525.2,
+      "quantity": 18.0
+    },
+    {
+      "name": "Tata Steel",
+      "asset_type": "equity",
+      "identifier": "TATASTEEL.NS",
+      "amount": 3901.6,
+      "quantity": 20.0
+    },
+    {
+      "name": "Eternal (Zomato)",
+      "asset_type": "equity",
+      "identifier": "ETERNAL.NS",
+      "amount": 3859.5,
+      "quantity": 15.0
+    },
+    {
+      "name": "IRCTC",
+      "asset_type": "equity",
+      "identifier": "IRCTC.NS",
+      "amount": 4207.98,
+      "quantity": 7.0
+    },
+    {
+      "name": "Coal India",
+      "asset_type": "equity",
+      "identifier": "COALINDIA.NS",
+      "amount": 3328.0,
+      "quantity": 8.0
+    },
+    {
+      "name": "Nexus Select Trust",
+      "asset_type": "etf",
+      "identifier": "NXST.NS",
+      "amount": 3546.62,
+      "quantity": 22.0
+    },
+    {
+      "name": "Silver BeES",
+      "asset_type": "etf",
+      "identifier": "SILVERBEES.NS",
+      "amount": 3907.8,
+      "quantity": 15.0
+    },
+    {
+      "name": "Motilal Nasdaq 100 ETF",
+      "asset_type": "etf",
+      "identifier": "MON100.NS",
+      "amount": 7407.36,
+      "quantity": 32.0
+    },
+    {
+      "name": "BEL",
+      "asset_type": "equity",
+      "identifier": "BEL.NS",
+      "amount": 440.7,
+      "quantity": 1.0
+    }
+  ]
+}

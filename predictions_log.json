@@ -1,0 +1,81 @@
+[
+  {
+    "target_date": "2026-05-04",
+    "expected_val": 41096.83875123695,
+    "expected_change": 15.858709733045544,
+    "drivers": {
+      "REC Limited": -2.0584722188484568,
+      "Jio Financial Services": -2.625614763994273,
+      "IRCTC": -3.3434121901203118,
+      "Eternal (Zomato)": 1.1930904992062863,
+      "Coal India": 0.9936074100899636,
+      "Tata Steel": 1.6067862517906406,
+      "BEL": 0.3695495185498574,
+      "Silver BeES": 4.992138461999146,
+      "Motilal Nasdaq 100 ETF": 9.684244755766677,
+      "Nexus Select Trust": 1.2800397110540975
+    },
+    "real_val": 41541.28022766113,
+    "variance_reason": "Outperformed by \u20b9444.44. Motilal Nasdaq 100 ETF and overall market strength exceeded our expected 1-day drift."
+  },
+  {
+    "target_date": "2026-05-05",
+    "expected_val": 41605.42385902384,
+    "expected_change": 16.87434425333049,
+    "drivers": {
+      "Jio Financial Services": -2.3792612121764276,
+      "IRCTC": -3.1184115224589477,
+      "REC Limited": -1.588488969474487,
+      "Eternal (Zomato)": 1.3085582178906001,
+      "Tata Steel": 1.6593156022280482,
+      "Coal India": 0.8876819642012057,
+      "Silver BeES": 5.0724389453960725,
+      "BEL": 0.38493188965743746,
+      "Motilal Nasdaq 100 ETF": 9.679057296112124,
+      "Nexus Select Trust": 1.4823884925903927
+    },
+    "real_val": 41556.97007751465,
+    "variance_reason": "Underperformed by \u20b948.45. The portfolio suffered unexpected negative pressure, likely dragged by IRCTC."
+  },
+  {
+    "target_date": "2026-05-06",
+    "expected_val": 41800.42560246038,
+    "expected_change": 243.4555249457335,
+    "drivers": {
+      "IRCTC": -3.0510571671625906,
+      "Jio Financial Services": -2.4387512165282117,
+      "REC Limited": -1.6240531967567653,
+      "Eternal (Zomato)": 1.221602914885608,
+      "Tata Steel": 1.594516548107939,
+      "Silver BeES": 4.97084044404264,
+      "BEL": 0.381020362808137,
+      "Motilal Nasdaq 100 ETF": 9.907391287552155,
+      "Coal India": 0.8016296749186519,
+      "Nexus Select Trust": 1.5573360487740846
+    },
+    "real_val": 42007.29,
+    "variance_reason": "Outperformed by Rs.206.86. Motilal Nasdaq 100 ETF and overall market strength exceeded our expected 1-day drift.",
+    "base_close": 41556.97007751465,
+    "manually_confirmed": true
+  },
+  {
+    "target_date": "2026-05-07",
+    "expected_val": 42342.00200686245,
+    "expected_change": 294.01163515834924,
+    "drivers": {
+      "IRCTC": -3.031311375255127,
+      "Jio Financial Services": -2.3753386158738095,
+      "REC Limited": -1.5895502269900768,
+      "Eternal (Zomato)": 1.4154136040362366,
+      "Tata Steel": 1.738533877956752,
+      "Silver BeES": 5.202190771706159,
+      "BEL": 0.39144810421965875,
+      "Motilal Nasdaq 100 ETF": 10.106605801314107,
+      "Coal India": 0.7702082724850853,
+      "Nexus Select Trust": 1.5660321307053375
+    },
+    "real_val": null,
+    "variance_reason": null,
+    "base_close": 42047.9903717041
+  }
+]

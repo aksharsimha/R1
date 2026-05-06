@@ -1,0 +1,576 @@
+[
+  {
+    "timestamp": "2026-04-26T14:44:51",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 7407.36,
+    "details": "Changed from \u20b90.00 to \u20b97,407.36"
+  },
+  {
+    "timestamp": "2026-04-26T14:45:37",
+    "action": "UPDATE_AMOUNT",
+    "asset": "REC Limited",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:46:24",
+    "action": "UPDATE_AMOUNT",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Changed from \u20b90.00 to \u20b94,371.48"
+  },
+  {
+    "timestamp": "2026-04-26T14:47:30",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Jio Financial Services",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:48:15",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Jio Financial Services",
+    "amount": 4525.2,
+    "details": "Changed from \u20b90.00 to \u20b94,525.20"
+  },
+  {
+    "timestamp": "2026-04-26T14:48:55",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Tata Steel",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:49:08",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Tata Steel",
+    "amount": 3901.6,
+    "details": "Changed from \u20b90.00 to \u20b93,901.60"
+  },
+  {
+    "timestamp": "2026-04-26T14:50:16",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Eternal (Zomato)",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:50:32",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Eternal (Zomato)",
+    "amount": 3859.5,
+    "details": "Changed from \u20b90.00 to \u20b93,859.50"
+  },
+  {
+    "timestamp": "2026-04-26T14:52:37",
+    "action": "UPDATE_AMOUNT",
+    "asset": "IRCTC",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:52:48",
+    "action": "UPDATE_AMOUNT",
+    "asset": "IRCTC",
+    "amount": 4207.98,
+    "details": "Changed from \u20b90.00 to \u20b94,207.98"
+  },
+  {
+    "timestamp": "2026-04-26T14:53:30",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:53:36",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 3328.0,
+    "details": "Changed from \u20b90.00 to \u20b93,328.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:54:39",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Nexus Select Trust",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:54:49",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Nexus Select Trust",
+    "amount": 3546.62,
+    "details": "Changed from \u20b90.00 to \u20b93,546.62"
+  },
+  {
+    "timestamp": "2026-04-26T14:55:29",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Silver BeES",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:55:40",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Changed from \u20b90.00 to \u20b92,765.60"
+  },
+  {
+    "timestamp": "2026-04-26T14:56:03",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Tata Gold ETF",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T14:56:21",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Tata Gold ETF",
+    "amount": 1295.55,
+    "details": "Changed from \u20b90.00 to \u20b91,295.55"
+  },
+  {
+    "timestamp": "2026-04-26T14:57:53",
+    "action": "UPDATE_PERCENTAGE",
+    "asset": "Coal India",
+    "amount": 15377.524285714286,
+    "details": "Changed from \u20b93,328.00 to \u20b915,377.52 (Target: 30.0%)"
+  },
+  {
+    "timestamp": "2026-04-26T15:08:57",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 15377.524285714286,
+    "details": "Changed from \u20b915,377.52 to \u20b915,377.52"
+  },
+  {
+    "timestamp": "2026-04-26T15:09:13",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 15377.524285714286,
+    "details": "Changed from \u20b915,377.52 to \u20b915,377.52"
+  },
+  {
+    "timestamp": "2026-04-26T15:09:29",
+    "action": "UPDATE_PERCENTAGE",
+    "asset": "Coal India",
+    "amount": 0.0,
+    "details": "Changed from \u20b915,377.52 to \u20b90.00 (Target: 0.0%)"
+  },
+  {
+    "timestamp": "2026-04-26T15:12:31",
+    "action": "ADD_ASSET",
+    "asset": "Titan Company Ltd",
+    "amount": 500.0,
+    "details": "Added new asset (Type: equity, ID: TITAN.NS)"
+  },
+  {
+    "timestamp": "2026-04-26T15:13:13",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:13:28",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 1400.0,
+    "details": "Changed from \u20b90.00 to \u20b91,400.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:13:41",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Coal India",
+    "amount": 3328.0,
+    "details": "Changed from \u20b91,400.00 to \u20b93,328.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:14:14",
+    "action": "REMOVE_ASSET",
+    "asset": "Titan Company Ltd",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-04-26T15:16:58",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Nippon Smallcap 250 Index (DG)",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:17:17",
+    "action": "UPDATE_AMOUNT",
+    "asset": "Nippon Smallcap 250 Index (DG)",
+    "amount": 1000.0,
+    "details": "Changed from \u20b90.00 to \u20b91,000.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:17:51",
+    "action": "UPDATE_AMOUNT",
+    "asset": "PhonePe Gold (proxy)",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:18:02",
+    "action": "UPDATE_AMOUNT",
+    "asset": "PhonePe Gold (proxy)",
+    "amount": 140000.0,
+    "details": "Changed from \u20b90.00 to \u20b9140,000.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:18:25",
+    "action": "UPDATE_AMOUNT",
+    "asset": "PhonePe Gold (proxy)",
+    "amount": 14000.0,
+    "details": "Changed from \u20b9140,000.00 to \u20b914,000.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:21:18",
+    "action": "UPDATE_AMOUNT",
+    "asset": "HDFC Flexi Cap (Direct G)",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:21:32",
+    "action": "UPDATE_AMOUNT",
+    "asset": "HDFC Flexi Cap (Direct G)",
+    "amount": 9247.62,
+    "details": "Changed from \u20b90.00 to \u20b99,247.62"
+  },
+  {
+    "timestamp": "2026-04-26T15:22:35",
+    "action": "UPDATE_AMOUNT",
+    "asset": "HDFC Nifty 50 Index (Direct G)",
+    "amount": 0.0,
+    "details": "Changed from \u20b90.00 to \u20b90.00"
+  },
+  {
+    "timestamp": "2026-04-26T15:22:40",
+    "action": "UPDATE_AMOUNT",
+    "asset": "HDFC Nifty 50 Index (Direct G)",
+    "amount": 7999.44,
+    "details": "Changed from \u20b90.00 to \u20b97,999.44"
+  },
+  {
+    "timestamp": "2026-04-26T15:27:32",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 7407.36,
+    "details": "Invested: \u20b97,407.36, Qty: 32.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:29:17",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Invested: \u20b94,371.48, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:29:33",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Invested: \u20b94,371.48, Qty: 12.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:30:27",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Invested: \u20b94,371.48, Qty: 12.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:33:42",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Invested: \u20b94,371.48, Qty: 12.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:34:27",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 7407.36,
+    "details": "Invested: \u20b97,407.36, Qty: 32.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:36:35",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Jio Financial Services",
+    "amount": 4525.2,
+    "details": "Invested: \u20b94,525.20, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:37:05",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Jio Financial Services",
+    "amount": 4525.2,
+    "details": "Invested: \u20b94,525.20, Qty: 18.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:38:04",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Tata Steel",
+    "amount": 3901.6,
+    "details": "Invested: \u20b93,901.60, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:38:10",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Tata Steel",
+    "amount": 3901.6,
+    "details": "Invested: \u20b93,901.60, Qty: 20.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:39:01",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Eternal (Zomato)",
+    "amount": 3859.5,
+    "details": "Invested: \u20b93,859.50, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:39:15",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Eternal (Zomato)",
+    "amount": 3859.5,
+    "details": "Invested: \u20b93,859.50, Qty: 15.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:41:09",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "IRCTC",
+    "amount": 4207.98,
+    "details": "Invested: \u20b94,207.98, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:41:29",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "IRCTC",
+    "amount": 4207.98,
+    "details": "Invested: \u20b94,207.98, Qty: 7.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:41:59",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Coal India",
+    "amount": 3328.0,
+    "details": "Invested: \u20b93,328.00, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:42:03",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Coal India",
+    "amount": 3328.0,
+    "details": "Invested: \u20b93,328.00, Qty: 8.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:43:10",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Nexus Select Trust",
+    "amount": 3546.62,
+    "details": "Invested: \u20b93,546.62, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:43:14",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Nexus Select Trust",
+    "amount": 3546.62,
+    "details": "Invested: \u20b93,546.62, Qty: 22.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:44:01",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:44:06",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 10.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:44:53",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 1294.55,
+    "details": "Invested: \u20b91,294.55, Qty: 85.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:46:07",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "PhonePe Gold (proxy)",
+    "amount": 14000.0,
+    "details": "Invested: \u20b914,000.00, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:46:32",
+    "action": "REMOVE_ASSET",
+    "asset": "PhonePe Gold (proxy)",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-04-26T15:46:43",
+    "action": "REMOVE_ASSET",
+    "asset": "HDFC Flexi Cap (Direct G)",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-04-26T15:47:02",
+    "action": "REMOVE_ASSET",
+    "asset": "HDFC Nifty 50 Index (Direct G)",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-04-26T15:47:09",
+    "action": "REMOVE_ASSET",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-04-26T15:49:14",
+    "action": "REMOVE_ASSET",
+    "asset": "Nippon Smallcap 250 Index (DG)",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-04-26T15:51:01",
+    "action": "ADD_ASSET",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 0.0,
+    "details": "Added new asset (Type: etf, ID: MON100.NS)"
+  },
+  {
+    "timestamp": "2026-04-26T15:51:35",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 0.0,
+    "details": "Invested: \u20b90.00, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:51:57",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 7407.36,
+    "details": "Invested: \u20b97,407.36, Qty: 32.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:54:55",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Tata Gold ETF",
+    "amount": 1295.55,
+    "details": "Invested: \u20b91,295.55, Qty: 0.0"
+  },
+  {
+    "timestamp": "2026-04-26T15:55:00",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Tata Gold ETF",
+    "amount": 1295.55,
+    "details": "Invested: \u20b91,295.55, Qty: 85.0"
+  },
+  {
+    "timestamp": "2026-04-26T16:02:04",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 1294.55,
+    "details": "Invested: \u20b91,294.55, Qty: 10.0"
+  },
+  {
+    "timestamp": "2026-04-26T16:02:41",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 10.0"
+  },
+  {
+    "timestamp": "2026-05-03T16:45:13",
+    "action": "REMOVE_ASSET",
+    "asset": "Tata Gold ETF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-03T16:49:06",
+    "action": "ADD_ASSET",
+    "asset": "BEL",
+    "amount": 440.7,
+    "details": "Added new asset (Type: equity, ID: BEL)"
+  },
+  {
+    "timestamp": "2026-05-03T16:50:43",
+    "action": "REMOVE_ASSET",
+    "asset": "BEL",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-03T16:51:45",
+    "action": "ADD_ASSET",
+    "asset": "BEL",
+    "amount": 440.7,
+    "details": "Added new asset (Type: equity, ID: BEL.NS)"
+  },
+  {
+    "timestamp": "2026-05-03T20:44:25",
+    "action": "REMOVE_ASSET",
+    "asset": "BEL",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-03T20:44:56",
+    "action": "ADD_ASSET",
+    "asset": "BEL",
+    "amount": 440.7,
+    "details": "Added new asset (Type: equity, ID: BEL.NS, Qty: 1.0)"
+  },
+  {
+    "timestamp": "2026-05-03T21:20:25",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 10.0"
+  },
+  {
+    "timestamp": "2026-05-03T21:20:51",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 15.0"
+  },
+  {
+    "timestamp": "2026-05-04T11:47:12",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 15.0"
+  },
+  {
+    "timestamp": "2026-05-04T11:47:20",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 2765.6,
+    "details": "Invested: \u20b92,765.60, Qty: 15.0"
+  },
+  {
+    "timestamp": "2026-05-04T11:47:41",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "Silver BeES",
+    "amount": 3907.8,
+    "details": "Invested: \u20b93,907.80, Qty: 15.0"
+  }
+]
