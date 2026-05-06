@@ -60,19 +60,19 @@
   },
   {
     "target_date": "2026-05-07",
-    "expected_val": 42342.00200686245,
-    "expected_change": 294.01163515834924,
+    "expected_val": 42344.663282011716,
+    "expected_change": 296.6729103076141,
     "drivers": {
       "IRCTC": -3.031311375255127,
       "Jio Financial Services": -2.3753386158738095,
-      "REC Limited": -1.5895502269900768,
+      "REC Limited": -1.5895498435845277,
       "Eternal (Zomato)": 1.4154136040362366,
       "Tata Steel": 1.738533877956752,
       "Silver BeES": 5.202190771706159,
-      "BEL": 0.39144810421965875,
+      "BEL": 0.3914480640615375,
       "Motilal Nasdaq 100 ETF": 10.106605801314107,
       "Coal India": 0.7702082724850853,
-      "Nexus Select Trust": 1.5660321307053375
+      "Nexus Select Trust": 1.5660318104384894
     },
     "real_val": null,
     "variance_reason": null,
