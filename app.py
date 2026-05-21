@@ -783,7 +783,9 @@ with tab2:
                 with st.expander("∑ Show Math"):
                     st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #38bdf8;'>Formula: ρ(X,Y) = Cov(X,Y) / (σₓ · σᵧ)</p>", unsafe_allow_html=True)
                     corr_mat = corr.copy()
-                    np.fill_diagonal(corr_mat.values, -1.0)
+                    _corr_vals = corr_mat.values.copy()
+                    np.fill_diagonal(_corr_vals, -1.0)
+                    corr_mat = pd.DataFrame(_corr_vals, index=corr_mat.index, columns=corr_mat.columns)
                     if not corr_mat.empty and len(corr_mat.columns) > 1:
                         max_idx = corr_mat.values.argmax()
                         r_idx, c_idx = np.unravel_index(max_idx, corr_mat.shape)
