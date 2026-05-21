@@ -572,5 +572,313 @@
     "asset": "Silver BeES",
     "amount": 3907.8,
     "details": "Invested: \u20b93,907.80, Qty: 15.0"
+  },
+  {
+    "timestamp": "2026-05-09T13:31:25",
+    "action": "ADD_ASSET",
+    "asset": "TCS",
+    "amount": 2394.85,
+    "details": "Added new asset (Type: equity, ID: TCS NQT, Qty: 1.0)"
+  },
+  {
+    "timestamp": "2026-05-09T13:41:48",
+    "action": "REMOVE_ASSET",
+    "asset": "REC Limited",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:41:51",
+    "action": "REMOVE_ASSET",
+    "asset": "Jio Financial Services",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:41:53",
+    "action": "REMOVE_ASSET",
+    "asset": "Tata Steel",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:41:56",
+    "action": "REMOVE_ASSET",
+    "asset": "Eternal (Zomato)",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:41:58",
+    "action": "REMOVE_ASSET",
+    "asset": "IRCTC",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:42:01",
+    "action": "REMOVE_ASSET",
+    "asset": "Coal India",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:42:03",
+    "action": "REMOVE_ASSET",
+    "asset": "Nexus Select Trust",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:42:04",
+    "action": "REMOVE_ASSET",
+    "asset": "Silver BeES",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:42:05",
+    "action": "REMOVE_ASSET",
+    "asset": "Motilal Nasdaq 100 ETF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:42:06",
+    "action": "REMOVE_ASSET",
+    "asset": "BEL",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:42:07",
+    "action": "REMOVE_ASSET",
+    "asset": "TCS",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-09T13:43:42",
+    "action": "ADD_ASSET",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Added new asset (Type: equity, ID: AARTIDRUGS, Qty: 203.0)"
+  },
+  {
+    "timestamp": "2026-05-09T13:59:14",
+    "action": "ADD_ASSET",
+    "asset": "Aarti Drugs",
+    "amount": 0.001,
+    "details": "Added new asset (Type: equity, ID: AARTIDRUGS.NS, Qty: 0.0)"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:09",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 203.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:39",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:47",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:49",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:49",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:49",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:50",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:50",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:00:50",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:01:21",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:02:30",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:03:31",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "AARTIDRUGS",
+    "amount": 387.9,
+    "details": "Invested: Rs.387.90, Qty: 1.0"
+  },
+  {
+    "timestamp": "2026-05-09T14:06:30",
+    "action": "ADD_ASSET",
+    "asset": "INFOSYS",
+    "amount": 14850.0,
+    "details": "Added new asset (Type: equity, ID: INFY.NS, Qty: 10.0)"
+  },
+  {
+    "timestamp": "2026-05-09T14:10:52",
+    "action": "ADD_ASSET",
+    "asset": "ITC ",
+    "amount": 11250.5,
+    "details": "Added new asset (Type: equity, ID: ITC.NS, Qty: 25.0)"
+  },
+  {
+    "timestamp": "2026-05-12T14:08:24",
+    "action": "REMOVE_ASSET",
+    "asset": "TCS",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:08:30",
+    "action": "REMOVE_ASSET",
+    "asset": "INFOSYS",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:08:36",
+    "action": "REMOVE_ASSET",
+    "asset": "Aarti Drugs",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:08:43",
+    "action": "REMOVE_ASSET",
+    "asset": "ITC ",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:09:29",
+    "action": "ADD_ASSET",
+    "asset": "MRF",
+    "amount": 275500.0,
+    "details": "Added new asset (Type: equity, ID: MRF.NS, Qty: 1.0)"
+  },
+  {
+    "timestamp": "2026-05-12T14:15:46",
+    "action": "REMOVE_ASSET",
+    "asset": "MRF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:16:19",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Invested: Rs.4,371.48, Qty: 12.0"
+  },
+  {
+    "timestamp": "2026-05-12T14:16:57",
+    "action": "UPDATE_HOLDINGS",
+    "asset": "REC Limited",
+    "amount": 4371.48,
+    "details": "Invested: Rs.4,371.48, Qty: 12.0"
+  },
+  {
+    "timestamp": "2026-05-12T14:17:22",
+    "action": "ADD_ASSET",
+    "asset": "MRF",
+    "amount": 275100.0,
+    "details": "Added new asset (Type: equity, ID: MRF.NS, Qty: 1.0)"
+  },
+  {
+    "timestamp": "2026-05-12T14:17:36",
+    "action": "REMOVE_ASSET",
+    "asset": "MRF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:18:05",
+    "action": "ADD_ASSET",
+    "asset": "MRF",
+    "amount": 275500.0,
+    "details": "Added new asset (Type: equity, ID: MRF.NS, Qty: 0.0)"
+  },
+  {
+    "timestamp": "2026-05-12T14:19:24",
+    "action": "REMOVE_ASSET",
+    "asset": "MRF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:19:55",
+    "action": "ADD_ASSET",
+    "asset": "MRF",
+    "amount": 275500.0,
+    "details": "Added new asset (Type: equity, ID: MRF.NS, Qty: 1.0)"
+  },
+  {
+    "timestamp": "2026-05-12T14:20:35",
+    "action": "REMOVE_ASSET",
+    "asset": "MRF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
+  },
+  {
+    "timestamp": "2026-05-12T14:59:28",
+    "action": "ADD_ASSET",
+    "asset": "MRF",
+    "amount": 275500.0,
+    "details": "Added new asset (Type: equity, ID: MRF.NS, Qty: 1.0)"
+  },
+  {
+    "timestamp": "2026-05-21T09:20:58",
+    "action": "REMOVE_ASSET",
+    "asset": "MRF",
+    "amount": 0.0,
+    "details": "Asset removed from portfolio"
   }
 ]

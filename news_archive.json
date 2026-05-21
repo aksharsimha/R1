@@ -145,6 +145,33 @@
       "sentiment_score": 0.7778,
       "sentiment_label": "🟢 Positive",
       "connection_score": 90
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Tata Steel Ltd (FRA:HWHG) Q4 2026 Earnings Call Highlights: Strong EBITDA Growth and Strategic ...",
+      "summary": "Tata Steel Ltd (FRA:HWHG) reports a robust 35% increase in EBITDA and outlines future growth strategies amidst global challenges.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/tata-steel-ltd-fra-hwhg-010423203.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 90
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Explainer-Why India’s Tata Sons is under pressure to list as trust divisions emerge",
+      "summary": "By Jayshree P Upadhyay and Gopika Gopakumar MUMBAI, May 16 (Reuters) - India's Tata Sons, the umbrella organisation for 31 companies including TCS, Tata Motors and Tata Steel, is facing pressure to go",
+      "url": "https://finance.yahoo.com/news/explainer-why-indias-tata-sons-073258579.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Tata Steel misses quarterly profit view on increased raw materials costs, one-time charges",
+      "summary": "May 15 (Reuters) - Tata Steel, India's second-largest maker of steel by market capitalisation, posted a smaller-than-expected fourth quarter profit on Friday, hurt by increased raw materials costs and",
+      "url": "https://finance.yahoo.com/news/tata-steel-misses-quarterly-profit-130535113.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 90
     }
   ],
   "IRCTC.NS": [
@@ -248,6 +275,15 @@
       "sentiment_score": -0.6667,
       "sentiment_label": "🔴 Negative",
       "connection_score": 25
+    },
+    {
+      "date": "2026-05-12",
+      "title": "India's Swiggy drops as quick-commerce slowdown clouds quarterly results",
+      "summary": "May 11 (Reuters) - Shares of Indian food delivery major Swiggy fell as much as 6.8% on Monday, heading for their worst session in more than a month, as slowing growth in its quick-commerce business",
+      "url": "https://finance.yahoo.com/news/indias-swiggy-drops-quick-commerce-043957079.html",
+      "sentiment_score": -0.3333,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0
     }
   ],
   "NXST.NS": [
@@ -313,6 +349,15 @@
       "summary": "Bharat Electronics Ltd (BOM:500049) reports robust financial performance with significant increases in revenue, profits, and a solid order pipeline.",
       "url": "https://finance.yahoo.com/news/bharat-electronics-ltd-bom-500049-070049690.html",
       "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 25
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Bharat Electronics Ltd (BOM:500049) Q4 2026 Earnings Call Highlights: Strong Revenue Growth and ...",
+      "summary": "Bharat Electronics Ltd (BOM:500049) reports a 16% revenue increase and focuses on new-age technologies amid supply chain challenges.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/bharat-electronics-ltd-bom-500049-190026774.html",
+      "sentiment_score": 0.6667,
       "sentiment_label": "🟢 Positive",
       "connection_score": 25
     }
@@ -497,6 +542,330 @@
       "sentiment_score": 1.0,
       "sentiment_label": "🟢 Positive",
       "connection_score": 0
+    },
+    {
+      "date": "2026-05-06",
+      "title": "The space ETFs prepping for liftoff ahead of SpaceX IPO",
+      "summary": "Space-related funds are seeing a surge of inflows as investors eagerly await the IPO of Elon Musk's SpaceX (SPAX.PVT). In the latest installment of Yahoo Finance's ETF Report, TMX VettaFi head of research Todd Rosenbluth to talk about the ETFs that could draw in the most investors — like the Procure Space ETF (UFO) — as interest in the broader space economy grows. Rosenbluth goes on to weigh in on prediction market ETFs that are set to launch.",
+      "url": "https://finance.yahoo.com/video/space-etfs-prepping-liftoff-ahead-161500971.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-07",
+      "title": "Exchange-Traded Funds Rise as US Equities Climb After Midday",
+      "summary": "Broad Market Indicators Broad-market exchange-traded fund IWM and IVV rose. Actively traded In",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-rise-us-171312651.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-07",
+      "title": "Stocks Rally on Tech Earnings and Hopes of a US-Iran Peace Deal",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) today is up +0.76%, the Dow Jones Industrial Average ($DOWI ) (DIA ) is up +0.94%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) is up +1.19%. June E-mini S&P futures (ESM26 ) are up +0.81%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-rally-tech-earnings-hopes-140932539.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-08",
+      "title": "QQQ vs. IWM: Is Large-Cap Growth or Small-Cap Diversification the Better Choice for Investors?",
+      "summary": "From tech-heavy concentration to broad small-cap diversification, these ETFs offer distinct approaches to growth, risk, and income for investors.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/qqq-vs-iwm-large-cap-032229152.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-08",
+      "title": "Why Invesco NASDAQ 100 ETF’s Lower Fee Quietly Outperforms Invesco QQQ Trust for Buy-and-Hold Investors",
+      "summary": "Invesco QQQ Trust (NASDAQ:QQQ) and Invesco NASDAQ 100 ETF (NASDAQ:QQQM) track the same Nasdaq-100 index, yet they serve different investor wallets. With QQQ closing at $694.94 and QQQM at $286.12 on May 7, 2026, the real question is which wrapper fits how you actually invest. Same Index, Two Different Asset Bases QQQ is the heavyweight. ... Why Invesco NASDAQ 100 ETF’s Lower Fee Quietly Outperforms Invesco QQQ Trust for Buy-and-Hold Investors",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-invesco-nasdaq-100-etf-214803126.html",
+      "sentiment_score": -1.0,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-08",
+      "title": "Exchange-Traded Funds Fall as US Equities Drop Midday on Labor Data, Iran Tumult",
+      "summary": "Broad Market Indicators Broad-market exchange-traded funds IWM and IVV fell. Actively traded I",
+      "url": "https://finance.yahoo.com/markets/articles/exchange-traded-funds-fall-us-171407975.html",
+      "sentiment_score": -0.6667,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-08",
+      "title": "Should You Buy the Invesco QQQ ETF With the Nasdaq at a Record High? Here's What History Says.",
+      "summary": "Time in the market is far more important than timing the market.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/buy-invesco-qqq-etf-nasdaq-160500392.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-05-08",
+      "title": "S&P 500 Gains Unleashed on Chip Stock Strength, Falling Oil and Return to Optimism",
+      "summary": "The S&P 500 (^GSPC) punched to a fresh record Wednesday, with the broader market index now perched above 7,300. With a 7.6% YTD gain in the S&P 500 (^GSPC), bulls are back in control, citing a roughly 15% rally off the March low as AI earnings, easing Iran tensions, and softer crude combine to push ... S&P 500 Gains Unleashed on Chip Stock Strength, Falling Oil and Return to Optimism",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/p-500-gains-unleashed-chip-132227921.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-08",
+      "title": "VLUE, AVUV, VBR: The Small and Large-Cap Value Plays Crushing Growth in May",
+      "summary": "After a long stretch of growth-stock dominance led by mega-cap technology, the 2026 tape tells a different story. Large-cap value, active small-cap value, and passive small-cap value benchmarks are all pulling ahead of the Nasdaq 100 year to date, and three funds offer direct ways to express the rotation: the iShares MSCI USA Value Factor ... VLUE, AVUV, VBR: The Small and Large-Cap Value Plays Crushing Growth in May",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/vlue-avuv-vbr-small-large-131441934.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-08",
+      "title": "Exchange-Traded Funds, Equity Futures Higher Pre-Bell Thursday Amid Corporate Earnings, Economic Data Deluge",
+      "summary": "The broad market exchange-traded fund SPDR S&P 500 ETF Trust (SPY) was up 0.2% and the actively trad",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-equity-futures-125032677.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-08",
+      "title": "Will Equal Asset ETF Mix Beat Hype in Uncertain Markets?",
+      "summary": "Equal-weight portfolios are beating high-risk bets in 2026, as commodities, TIPS and cash cushion volatility while equities deliver steady gains.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/equal-asset-etf-mix-beat-120000176.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-08",
+      "title": "VOO vs. QQQ: Which Index Fund Is the Better Buy Right Now?",
+      "summary": "The Invesco QQQ ETF is heavily invested in the tech sector. The AI sector is still booming, giving it an advantage.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/voo-vs-qqq-index-fund-100000649.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "J.Safra Asset Management Expands Position in iShares MSCI All Country Asia ex Japan ETF, According to Recent SEC Filing",
+      "summary": "The iShares MSCI All Country Asia ex Japan ETF (AAXJ) provides targeted exposure to Asian equities outside Japan, distinguishing it from broad international funds. This distinction is significant, as returns are influenced by the performance of specific Asian markets rather than overall global equity trends.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/j-safra-asset-management-expands-193410275.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Exchange-Traded Funds Rise as US Equities Gain Midday",
+      "summary": "Broad Market Indicators Broad-market exchange-traded funds IWM and IVV rose. Actively traded I",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-rise-us-171137935.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "3 Market Themes Driving Stocks Right Now: AI, Alt Energy and Commodities",
+      "summary": "AI, Alternative Energy and Commodity stocks are all leading this market as a confluence of economic developments drive growth and constrain supply.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/3-market-themes-driving-stocks-143900163.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "May Market View: From Fear to Froth",
+      "summary": "In just one month, the market has pulled a complete 180. Sentiment has shifted from fear to greed, and defensive put buying has shifted to record call volume levels.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/may-market-view-fear-froth-182700978.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Exchange-Traded Funds, Equity Futures Higher Pre-Bell Friday Amid Employment Data",
+      "summary": "The broad market exchange-traded fund SPDR S&P 500 ETF Trust (SPY) was up 0.6% and the actively trad",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-equity-futures-125303923.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Commonwealth Financial Services Adds to First Trust Smith Opportunistic Fixed Income ETF, According to Recent SEC Filing",
+      "summary": "The First Trust Smith Opportunistic Fixed Income ETF (FIXD) is an active bond fund where the manager’s choices carry more weight than benchmark exposure alone. The appeal is whether that discretion can find better income opportunities as rates and credit markets shift.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/commonwealth-financial-services-adds-first-210700168.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Stocks Settle Higher on Strong Earnings",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) on Monday closed up +0.19%, the Dow Jones Industrial Average ($DOWI ) (DIA ) closed up +0.19%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) closed up +0.29%. June E-mini S&P futures (ESM26 ) rose +0.18%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-settle-higher-strong-earnings-204027001.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Exchange-Traded Funds Higher, US Equities Mixed After Midday",
+      "summary": "Broad Market Indicators Broad-market exchange-traded funds IWM and IVV rose. Actively traded I",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-higher-us-171152086.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "5 ETF Winners of Last Week",
+      "summary": "AI euphoria, easing Iran tensions and resilient jobs data powered crypto, memory chip and South Korea ETFs higher last week.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/5-etf-winners-last-week-160000662.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Stocks Supported by Strong Earnings and AI Optimism",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) today is up +0.25%, the Dow Jones Industrial Average ($DOWI ) (DIA ) is up +0.05%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) is up +0.17%. June E-mini S&P futures (ESM26 ) are up +0.29%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-supported-strong-earnings-ai-151528850.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Strong Earnings and AI Optimism Push the S&P 500 and Nasdaq 100 to Record Highs",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) today is up +0.17%, the Dow Jones Industrial Average ($DOWI ) (DIA ) is up +0.10%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) is up +0.06%. June E-mini S&P futures (ESM26 ) are up +0.19%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/strong-earnings-ai-optimism-push-141012463.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Exchange-Traded Funds, Equity Futures Mixed Pre-Bell Monday as Trump Rejects Reported Iran Proposal",
+      "summary": "The broad market exchange-traded fund SPDR S&P 500 ETF Trust (SPY) was down 0.1% and the actively tr",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-equity-futures-130725999.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Zacks Investment Ideas feature highlights Intel, Micron, Advanced Micro Devices, Sandisk and QQQ",
+      "summary": "Intel, Micron, Advanced Micro Devices, Sandisk and QQQ have been highlighted in this Investment Ideas article.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/zacks-investment-ideas-feature-highlights-124700880.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "The Zacks Analyst Blog  QQQ, DIA, DRAM, WGMI, EWY, DIME and BKCH",
+      "summary": "QQQ surged 5.4% as easing Middle East tensions, AI momentum and upbeat earnings fueled a sixth straight winning week for the S&P 500.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/zacks-analyst-blog-qqq-dia-081600680.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Why JPMorgan Equity Premium Income ETF Limits Upside While JPMorgan Nasdaq Equity Premium Income ETF Sacrifices Growth for 11.98% Yields",
+      "summary": "JPMorgan Equity Premium Income ETF (NYSEARCA:JEPI) and JPMorgan Nasdaq Equity Premium Income ETF (NYSEARCA:JEPQ) pull from very different stock universes. JEPI leans on S&P 500 names with a covered call overlay. JEPQ runs the same income playbook on the Nasdaq-100. The latest fact sheets show why that distinction matters in 2026. Defensive Blue Chips Anchor ... Why JPMorgan Equity Premium Income ETF Limits Upside While JPMorgan Nasdaq Equity Premium Income ETF Sacrifices Growth for 11.98% Yields",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-jpmorgan-equity-premium-income-094037129.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Emerging markets could soar this year, says CIO",
+      "summary": "<body><p>STORY: \"If you look at earnings revisions in emerging markets, they're actually up 30%. So there is a lot of growth happening overseas that investors are not necessarily paying close attention to,\" says Isherwood, adding that based on previous trading patterns of the S&P 500 and Nasdaq as represented by the QQQ ETF, emerging markets could surge.</p></body>",
+      "url": "https://finance.yahoo.com/video/emerging-markets-could-soar-says-204141643.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Stocks Finish Sharply Higher on Iran Hopes",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) on Wednesday closed up +1.08%, the Dow Jones Industrial Average ($DOWI ) (DIA ) closed up +1.31%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) closed up +1.66%. June E-mini S&P futures (ESM26 ) rose +0.96%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-finish-sharply-higher-iran-203627107.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-21",
+      "title": "JEPQ’s 9.5% Yield Is Impressive, But the ELN Counterparty Risk Is the Hidden Cost",
+      "summary": "Retirees chasing the JPMorgan Nasdaq Equity Premium Income ETF (NASDAQ:JEPQ) for its near 9.5% distribution yield are buying something more layered than they think. The fund pairs a Nasdaq-100 stock basket with equity-linked notes (ELNs), which are unsecured debt obligations issued by the banks. That distinction matters because the yield does not come purely from ... JEPQ’s 9.5% Yield Is Impressive, But the ELN Counterparty Risk Is the Hidden Cost",
+      "url": "https://finance.yahoo.com/markets/options/articles/jepq-9-5-yield-impressive-185328053.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 25
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Exchange-Traded Funds Move Higher as US Equities Rise After Midday",
+      "summary": "Broad Market Indicators Broad-market exchange-traded funds IWM and IVV advanced. Actively trad",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-move-higher-170810609.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Why the Earnings Report Reaction in Nvidia Stock Matters So Much More This Time",
+      "summary": "The entire financial complex is currently hanging by a thread. Or rather, a microchip.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/why-earnings-report-reaction-nvidia-152046021.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Stocks Rally as Crude Oil and Bond Yields Slump",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) today is up +0.78%, the Dow Jones Industrial Average ($DOWI ) (DIA ) is up +0.75%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) is up +1.24%. June E-mini S&P futures (ESM26 ) are up +0.70%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-rally-crude-oil-bond-151722712.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Stocks Climb on Lower Bond Yields and Chipmaker Strength",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) today is up +0.27%, the Dow Jones Industrial Average ($DOWI ) (DIA ) is up +0.09%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) is up +0.55%. June E-mini S&P futures (ESM26 ) are up +0.26%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-climb-lower-bond-yields-141430888.html",
+      "sentiment_score": -0.6667,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Exchange-Traded Funds, Equity Futures Advance Pre-Bell Wednesday Ahead of Nvidia Earnings Report",
+      "summary": "The broad market exchange-traded fund SPDR S&P 500 ETF Trust (SPY) was up 0.4% and the actively trad",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-equity-futures-131319548.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Zacks Investment Ideas feature highlights: SPHB, QQQ and NVDIA",
+      "summary": "Retail trading activity surged in May as markets pulled back slightly and investors turned focus to NVIDIA earnings.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/zacks-investment-ideas-feature-highlights-130800006.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
     }
   ],
   "COALINDIA.NS": [
@@ -580,6 +949,338 @@
       "sentiment_score": 0.0,
       "sentiment_label": "⚪ Neutral",
       "connection_score": 15
+    },
+    {
+      "date": "2026-05-07",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-08",
+      "title": "India likely to divest stake worth $1.06 billion in state-run Coal India, CNBC-TV18 reports",
+      "summary": "NEW DELHI, May 7 (Reuters) - The Indian government is likely to divest 3%-4% stake worth 100 billion rupees ($1.06 billion) in state-run miner Coal India via the offer-for-sale route, broadcaster CNBC",
+      "url": "https://finance.yahoo.com/news/india-likely-divest-stake-worth-075107885.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 90
+    },
+    {
+      "date": "2026-05-08",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-21",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    }
+  ],
+  "TCS.NS": [
+    {
+      "date": "2026-05-09",
+      "title": "Advanced Micro Devices (AMD) Reports Q1 2026 Revenue of $10.3B Driven by Data Center Growth",
+      "summary": "Advanced Micro Devices Inc. (NASDAQ:AMD) is one of the best high volume stocks to invest in according to hedge funds. On May 5, AMD reported Q1 2026 revenue of $10.3 billion, a 38% increase year-over-year. The Data Center segment officially became the company’s primary growth engine, contributing $5.8 billion (up 57% year-over-year) due to high […]",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/advanced-micro-devices-amd-reports-045634285.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "India's Infosys slumps to lowest level in three years over weak growth",
+      "summary": "April 24 (Reuters) - Shares of Infosys fell as much as 4.2% to their lowest level in three years on Friday after the firm forecast disappointing fiscal 2027 revenue growth, as AI-led spending caution",
+      "url": "https://finance.yahoo.com/news/indias-infosys-slumps-lowest-level-044403994.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Indian IT firms near‑term outlook muted as clients cut spending, AI risks mount",
+      "summary": "Revenue growth for India's top IT firms will stay muted this fiscal year, as gains from artificial intelligence ‌would be blunted with clients cutting spending amid macroeconomic and geopolitical uncertainty, analysts ‌said.  The Nifty IT index, the worst performing sector of 2026, shed roughly $26 billion in market value this ​week after earnings from market leaders Tata Consultancy Services and Infosys disappointed investors amid worries that agentic AI would disrupt the $315 billion sector and cannibalise earnings.  India's top five IT firms are expected to post muted revenue growth of about 3%-4% in the near term, ‌said Sushovan Nayak, analyst at ⁠Anand Rathi.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/indias-infosys-slips-weak-2027-035406840.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 10
+    },
+    {
+      "date": "2026-05-09",
+      "title": "CrowdStrike Gartner Leader Status And QuiltWorks Expansion Deepen AI Security Role",
+      "summary": "CrowdStrike Holdings (NasdaqGS:CRWD) is named a Leader in the 2026 Gartner Magic Quadrant for Cyberthreat Intelligence Technologies. The company expands its Project QuiltWorks coalition, adding global partners including Armadin, Cognizant, HCLTech, Infosys, KPMG, NTT DATA, Tata Consultancy Services, and Wipro. Project QuiltWorks focuses on applying frontier AI to cybersecurity risk management across enterprises. CrowdStrike, known for its Falcon platform and focus on AI-powered...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crowdstrike-gartner-leader-status-quiltworks-011007711.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "India's Infosys forecasts weak revenue growth as AI-driven caution dents IT spending",
+      "summary": "By Sai Ishwarbharath B and Haripriya Suresh BENGALURU, April 23 (Reuters) - Infosys forecast annual revenue growth below market expectations on Thursday, as macroeconomic uncertainty and newer AI",
+      "url": "https://finance.yahoo.com/news/indias-infosys-pegs-fiscal-2027-120300567.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "India's Wipro unveils record buyback after slight quarterly revenue miss",
+      "summary": "BENGALURU, April 16 (Reuters) - India's Wipro announced a record share buyback of up to 150 billion rupees ($1.61 billion) on Thursday after reporting a slight quarterly revenue miss, as clients held",
+      "url": "https://finance.yahoo.com/news/indias-wipro-misses-fourth-quarter-110251847.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "India's TCS falls as rare annual revenue drop dulls quarterly earnings beat, deal wins",
+      "summary": "April 10 (Reuters) - Shares of Tata Consultancy Services fell nearly 3% on Friday after a rare annual revenue drop outweighed strong deal wins and a quarterly earnings beat, suggesting sustained",
+      "url": "https://finance.yahoo.com/news/indias-tcs-shares-fall-rare-035321435.html",
+      "sentiment_score": -0.1111,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Indian shares set to open higher after upbeat TCS earnings",
+      "summary": "April 10 (Reuters) - Indian shares are poised to open higher on Friday, supported by better-than-expected quarterly results from Tata Consultancy Services, even as concerns over the durability of a",
+      "url": "https://finance.yahoo.com/news/indian-shares-set-open-higher-024326376.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-05-12",
+      "title": "India's IT shares near three‑year low as OpenAI move revives AI fears",
+      "summary": "India's IT shares fell to a three-year low on Tuesday as investor jitters around the threat posed by artificial intelligence to flagship IT firms flared ‌up again, after OpenAI announced a new AI venture.  The Nifty IT index fell 3.6% to ‌its lowest since May 2023, with Tata Consultancy Services, Infosys, HCL Technologies and Wipro falling between 2.5% and 4%.  Analysts at HSBC ​said in a Tuesday note that India's top-tier IT firms largely failed to meet street expectations for earnings in March quarter as well as in their outlooks for the new financial year, adding that strong spending globally on AI could be \"crowding out\" demand for traditional IT services.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/indias-index-falls-three-low-054152835.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 10
+    },
+    {
+      "date": "2026-05-12",
+      "title": "India's IT index falls to three-year low on weak earnings outlook, demand worries",
+      "summary": "May 12 (Reuters) - India's Nifty IT index tumbled 3.6% on Tuesday to its lowest level since May 2023, as a weak earnings outlook and fears of slowing demand for traditional IT services rattled",
+      "url": "https://finance.yahoo.com/news/indias-index-falls-three-low-054152871.html",
+      "sentiment_score": -1.0,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 10
+    },
+    {
+      "date": "2026-05-12",
+      "title": "Indian panel alleges 'toxic workplace environment' at TCS back office",
+      "summary": "By Arpan Chaturvedi and Aditya Kalra NEW DELHI, May 11 (Reuters) - India's National Commission for Women said on Monday it had found a \"toxic workplace environment\" at a Tata Consultancy Services back",
+      "url": "https://finance.yahoo.com/news/indian-panel-alleges-toxic-workplace-153401732.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-05-12",
+      "title": "CrowdStrike Expands AI Security Reach Through QuiltWorks And Microsoft Defender",
+      "summary": "CrowdStrike Holdings (NasdaqGS:CRWD) expanded its Project QuiltWorks AI cybersecurity coalition with new global technology and consulting partners. New members include Armadin, Cognizant, HCLTech, Infosys, KPMG, NTT DATA, Tata Consultancy Services, and Wipro. The company also launched Falcon OverWatch for Defender, bringing AI powered threat hunting to Microsoft endpoint customers. CrowdStrike Holdings, trading at about $505.74, has seen very strong multi year share price appreciation,...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crowdstrike-expands-ai-security-reach-200654032.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-12",
+      "title": "CrowdStrike Holdings (CRWD) Expands Cybersecurity Coalition with Additional Partners",
+      "summary": "CrowdStrike Holdings, Inc. (NASDAQ:CRWD) is one of the Best American AI Stocks to Buy Now. On Tuesday, CrowdStrike closed 1.55% higher at $476.53 as the company announced the expansion of its Project QuiltWorks, the cybersecurity coalition for securing frontier AI Risk. In a statement, CrowdStrike announced the addition of more partners to the coalition, particularly […]",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crowdstrike-holdings-crwd-expands-cybersecurity-144940925.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    }
+  ],
+  "AARTIDRUGS.NS": [
+    {
+      "date": "2026-05-09",
+      "title": "Aarti Drugs Ltd (BOM:524348) Q3 2026 Earnings Call Highlights: Strong PAT Growth Amidst ...",
+      "summary": "Aarti Drugs Ltd (BOM:524348) reports a robust 58% YoY PAT increase, driven by export market success, despite facing supply chain disruptions and low utilization levels.",
+      "url": "https://finance.yahoo.com/news/aarti-drugs-ltd-bom-524348-010032543.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Aarti Drugs Ltd (BOM:524348) Q2 2026 Earnings Call Highlights: Strong Revenue Growth Amidst ...",
+      "summary": "Aarti Drugs Ltd (BOM:524348) reports robust revenue growth and margin expansion, despite facing domestic demand softness and operational challenges.",
+      "url": "https://finance.yahoo.com/news/aarti-drugs-ltd-bom-524348-090035941.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 65
+    }
+  ],
+  "INFY.NS": [
+    {
+      "date": "2026-05-09",
+      "title": "India's Coforge adds half a billion USD in market value on upbeat outlook",
+      "summary": "BENGALURU, May 6 (Reuters) - India's Coforge stock added more than $500 million in market capitalisation on Wednesday, closing 9.5% higher at 1,280 rupees, after the mid-tier IT firm forecast robust",
+      "url": "https://finance.yahoo.com/news/indias-coforge-adds-half-billion-110051774.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "CrowdStrike Gartner Leader Status And QuiltWorks Expansion Deepen AI Security Role",
+      "summary": "CrowdStrike Holdings (NasdaqGS:CRWD) is named a Leader in the 2026 Gartner Magic Quadrant for Cyberthreat Intelligence Technologies. The company expands its Project QuiltWorks coalition, adding global partners including Armadin, Cognizant, HCLTech, Infosys, KPMG, NTT DATA, Tata Consultancy Services, and Wipro. Project QuiltWorks focuses on applying frontier AI to cybersecurity risk management across enterprises. CrowdStrike, known for its Falcon platform and focus on AI-powered...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crowdstrike-gartner-leader-status-quiltworks-011007711.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Innodata Before Q1 Earnings: Should You Buy, Sell or Hold the Stock?",
+      "summary": "INOD heads into Q1 results with strong generative AI demand, but project timing and investment pressures could keep earnings uneven.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/innodata-q1-earnings-buy-sell-140900779.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Asian Equities Traded in the US as American Depositary Receipts Rise Slightly Higher in Friday Trading; End Week on Flat Note",
+      "summary": "Asian equities traded in the US as American depositary receipts were tracking slightly higher Friday",
+      "url": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143709091.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Asian Equities Traded in the US as American Depositary Receipts Flat in Wednesday Trading",
+      "summary": "Asian equities traded in the US as American depositary receipts were little changed Wednesday mornin",
+      "url": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143735897.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-05-09",
+      "title": "BMO Capital Cuts PT on Infosys Limited (INFY) on Weaker Close to FY26",
+      "summary": "Infosys Limited (NYSE:INFY) is one of the best cheap stocks to buy under $20. On April 24, BMO Capital cut the price target on Infosys Limited (NYSE:INFY) to $15 from $20 and maintained a Market Perform rating on the shares. The firm told investors in a research note that the company had a weaker close to […]",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/bmo-capital-cuts-pt-infosys-054801115.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-09",
+      "title": "How The Investment Story For Infosys (NSEI:INFY) Is Shifting With AI And New Caution",
+      "summary": "Infosys has seen its fair value estimate trimmed from ₹1,592.15 to ₹1,492.25, a cut of about 6.3% that reflects more cautious assumptions in recent models. This shift lines up with street research that has turned more careful on growth, risk and how artificial intelligence could influence the core business, with several firms lowering price targets and one moving to a Hold stance. Read on to see what is driving the changing narrative and how you can track it as it evolves. Stay updated as the...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/investment-story-infosys-nsei-infy-100456661.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 75
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Infosys (INFY) Reports Q4 EPS Beat",
+      "summary": "Infosys Limited (NYSE:INFY) is one of the 10 Best Slow Growth Stocks to Buy According to Analysts. On April 23, 2026, Infosys Limited (NYSE:INFY) reported Q4 EPS of 23c, above the 21c consensus, and revenue of $5.04B compared to $4.73B last year. Salil Parekh said the company delivered a “resilient performance” in FY26 with 3.1% […]",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/infosys-infy-reports-q4-eps-155801291.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 75
+    },
+    {
+      "date": "2026-05-12",
+      "title": "India's IT shares near three‑year low as OpenAI move revives AI fears",
+      "summary": "India's IT shares fell to a three-year low on Tuesday as investor jitters around the threat posed by artificial intelligence to flagship IT firms flared ‌up again, after OpenAI announced a new AI venture.  The Nifty IT index fell 3.6% to ‌its lowest since May 2023, with Tata Consultancy Services, Infosys, HCL Technologies and Wipro falling between 2.5% and 4%.  Analysts at HSBC ​said in a Tuesday note that India's top-tier IT firms largely failed to meet street expectations for earnings in March quarter as well as in their outlooks for the new financial year, adding that strong spending globally on AI could be \"crowding out\" demand for traditional IT services.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/indias-index-falls-three-low-054152835.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 25
+    },
+    {
+      "date": "2026-05-12",
+      "title": "India's IT index falls to three-year low on weak earnings outlook, demand worries",
+      "summary": "May 12 (Reuters) - India's Nifty IT index tumbled 3.6% on Tuesday to its lowest level since May 2023, as a weak earnings outlook and fears of slowing demand for traditional IT services rattled",
+      "url": "https://finance.yahoo.com/news/indias-index-falls-three-low-054152871.html",
+      "sentiment_score": -1.0,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 10
+    },
+    {
+      "date": "2026-05-12",
+      "title": "How The Infosys (NSEI:INFY) Story Is Shifting As AI Recasts Growth And Valuation Expectations",
+      "summary": "Infosys’ fair value estimate has been trimmed from ₹1,492.25 to ₹1,461.83, while one prominent price target in US$ terms has moved from US$20.82 down to US$14.31. These shifts line up with a broader set of analyst updates, including a downgrade to Hold and a focus on how AI could reshape revenue mix, risk, and demand for managed services across large IT services companies. Read on to see what this evolving narrative could mean for how you track Infosys from here. Analyst Price Targets don't...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/infosys-nsei-infy-story-shifting-060740844.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 75
+    },
+    {
+      "date": "2026-05-12",
+      "title": "CrowdStrike Expands AI Security Reach Through QuiltWorks And Microsoft Defender",
+      "summary": "CrowdStrike Holdings (NasdaqGS:CRWD) expanded its Project QuiltWorks AI cybersecurity coalition with new global technology and consulting partners. New members include Armadin, Cognizant, HCLTech, Infosys, KPMG, NTT DATA, Tata Consultancy Services, and Wipro. The company also launched Falcon OverWatch for Defender, bringing AI powered threat hunting to Microsoft endpoint customers. CrowdStrike Holdings, trading at about $505.74, has seen very strong multi year share price appreciation,...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crowdstrike-expands-ai-security-reach-200654032.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-05-12",
+      "title": "CrowdStrike Holdings (CRWD) Expands Cybersecurity Coalition with Additional Partners",
+      "summary": "CrowdStrike Holdings, Inc. (NASDAQ:CRWD) is one of the Best American AI Stocks to Buy Now. On Tuesday, CrowdStrike closed 1.55% higher at $476.53 as the company announced the expansion of its Project QuiltWorks, the cybersecurity coalition for securing frontier AI Risk. In a statement, CrowdStrike announced the addition of more partners to the coalition, particularly […]",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/crowdstrike-holdings-crwd-expands-cybersecurity-144940925.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    }
+  ],
+  "ITC.NS": [
+    {
+      "date": "2026-05-09",
+      "title": "British American Tobacco plans to offload stake in India's ITC Hotels",
+      "summary": "Dec 4 (Reuters) - British American Tobacco plans to offload its stake worth about $776 million in India's ITC Hotels, the company said on Thursday, as it looks to reduce debt and exit a non-strategic",
+      "url": "https://finance.yahoo.com/news/british-american-tobacco-plans-offload-142827642.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-05-09",
+      "title": "Stocks to watch this week: Broadcom, Lululemon, British American Tobacco, Dr Martens and Rémy Cointreau",
+      "summary": "Earnings preview of key companies reporting in the coming week and what to look out for.",
+      "url": "https://finance.yahoo.com/news/broadcom-lululemon-british-american-tobacco-dr-martens-remy-cointreau-stocks-to-watch-115059934.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
     }
   ]
 }
