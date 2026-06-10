@@ -1,6 +1,6 @@
 {
-  "mu_ewma": 152.47416620872818,
-  "sigma_ewma": 7539.2160212929475,
+  "mu_ewma": -109.99734041197124,
+  "sigma_ewma": 5288.505237385254,
   "learning_log": [
     {
       "date": "2026-05-04",
@@ -105,7 +105,33 @@
       "error": -2807.039,
       "alpha_used": 0.2,
       "bias_5d": 3928.0844
+    },
+    {
+      "date": "2026-05-22",
+      "actual_return": 168.8298,
+      "mu_old": 152.4742,
+      "mu_new_raw": 157.3809,
+      "mu_new": 157.3809,
+      "cap_applied": false,
+      "sigma_old": 7539.216,
+      "sigma_new": 6307.7638,
+      "error": -3508.9481,
+      "alpha_used": 0.3,
+      "bias_5d": 3325.3037
+    },
+    {
+      "date": "2026-06-03",
+      "actual_return": -733.8798,
+      "mu_old": 157.3809,
+      "mu_new_raw": -109.9973,
+      "mu_new": -109.9973,
+      "cap_applied": false,
+      "sigma_old": 6307.7638,
+      "sigma_new": 5288.5052,
+      "error": -3732.7268,
+      "alpha_used": 0.3,
+      "bias_5d": 2641.4661
     }
   ],
-  "days_trained": 8
+  "days_trained": 10
 }

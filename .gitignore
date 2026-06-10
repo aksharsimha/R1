@@ -28,3 +28,6 @@ Thumbs.db
 # Temp files
 *.tmp
 *.log
+
+# User data (passwords, portfolios, chats — never push to GitHub)
+users/

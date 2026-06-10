@@ -66,22 +66,62 @@
   },
   {
     "target_date": "2026-05-22",
-    "expected_val": 45371.4676797683,
+    "expected_val": 45364.297986775135,
     "expected_change": 3677.7779062087284,
     "drivers": {
-      "REC Limited": -2.1625138678870908,
-      "Jio Financial Services": -2.3989299930756216,
-      "IRCTC": -3.6417774601828286,
-      "Eternal (Zomato)": 1.3256482051910807,
-      "Silver BeES": 5.322657560327976,
-      "Tata Steel": 1.304746222544109,
-      "BEL": 0.26083217760806315,
+      "REC Limited": -2.1625148864931156,
+      "Jio Financial Services": -2.40748822724338,
+      "IRCTC": -3.6408241092137423,
+      "Eternal (Zomato)": 1.3155291790956478,
+      "Silver BeES": 5.326404125803058,
+      "Tata Steel": 1.3111427114843588,
+      "BEL": 0.2602359590871559,
       "Motilal Nasdaq 100 ETF": 11.020691534288751,
-      "Coal India": 0.3632150264002105,
+      "Coal India": 0.36615397013238116,
       "Nexus Select Trust": 1.5458085542674056
+    },
+    "real_val": 41855.349868774414,
+    "variance_reason": "Underperformed by Rs.3,508.95. The portfolio suffered unexpected negative pressure, likely dragged by IRCTC.",
+    "base_close": 41686.520080566406
+  },
+  {
+    "target_date": "2026-06-03",
+    "expected_val": 44851.74687515226,
+    "expected_change": 2998.846972808511,
+    "drivers": {
+      "REC Limited": -2.815958421629768,
+      "Jio Financial Services": -2.4053142677312622,
+      "IRCTC": -3.4003259843204994,
+      "Eternal (Zomato)": 1.7787045523044689,
+      "BEL": 0.14104235910002644,
+      "Tata Steel": 1.3697144291564616,
+      "Silver BeES": 5.467731342032997,
+      "Coal India": 0.22311413263757315,
+      "Motilal Nasdaq 100 ETF": 11.960526903551385,
+      "Nexus Select Trust": 1.4425255230276124
+    },
+    "real_val": 41119.020111083984,
+    "variance_reason": "Underperformed by Rs.3,732.73. The portfolio suffered unexpected negative pressure, likely dragged by IRCTC.",
+    "base_close": 41852.89990234375
+  },
+  {
+    "target_date": "2026-06-11",
+    "expected_val": 42975.63826896559,
+    "expected_change": 1811.457971114025,
+    "drivers": {
+      "Jio Financial Services": -2.330449936967439,
+      "REC Limited": -1.6087335224141777,
+      "IRCTC": -3.025379332585268,
+      "Eternal (Zomato)": 1.4574168358672772,
+      "Silver BeES": 4.25866744302775,
+      "Tata Steel": 0.8568180077579144,
+      "BEL": 0.21906373119016825,
+      "Motilal Nasdaq 100 ETF": 10.97489825507199,
+      "Coal India": 0.5093930564425814,
+      "Nexus Select Trust": 1.4088306652807125
     },
     "real_val": null,
     "variance_reason": null,
-    "base_close": 41693.68977355957
+    "base_close": 41164.18029785156
   }
 ]

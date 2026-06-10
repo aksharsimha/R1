@@ -22,6 +22,11 @@ from datetime import datetime
 _HERE = os.path.dirname(os.path.abspath(__file__))
 ADAPTIVE_STATE_FILE = os.path.join(_HERE, "adaptive_state.json")
 
+def set_data_dir(user_dir: str) -> None:
+    """Redirect adaptive state storage to a user-specific directory."""
+    global ADAPTIVE_STATE_FILE
+    ADAPTIVE_STATE_FILE = os.path.join(user_dir, "adaptive_state.json")
+
 # ──────────────────────────────────────────────────────────────────────────────
 # State persistence helpers
 # ──────────────────────────────────────────────────────────────────────────────

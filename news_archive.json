@@ -71,6 +71,15 @@
       "sentiment_score": 0.0,
       "sentiment_label": "⚪ Neutral",
       "connection_score": 0
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Jio BlackRock prepares ETF debut by August after building $2 billion India fund base",
+      "summary": "By Vivek Kumar M June 9 (Reuters) - Jio BlackRock Asset Management plans to launch its first exchange-traded funds in India by August, seeking to replicate BlackRock's global success in passive",
+      "url": "https://finance.yahoo.com/news/jio-blackrock-prepares-etf-debut-160155431.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 25
     }
   ],
   "TATASTEEL.NS": [
@@ -201,6 +210,15 @@
       "sentiment_score": 0.0,
       "sentiment_label": "⚪ Neutral",
       "connection_score": 25
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Indian Railway Catering And Tourism Corp Ltd (BOM:542830) Q4 2026 Earnings Call Highlights: ...",
+      "summary": "Despite achieving its highest ever revenue, Indian Railway Catering And Tourism Corp Ltd faces margin pressures and strategic hurdles in Q4 FY26.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/indian-railway-catering-tourism-corp-170030147.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 25
     }
   ],
   "ETERNAL.NS": [
@@ -284,6 +302,15 @@
       "sentiment_score": -0.3333,
       "sentiment_label": "🔴 Negative",
       "connection_score": 0
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Indian quick commerce firm Zepto to raise up to $837 million in IPO",
+      "summary": "By Kanjyik Ghosh and Haripriya Suresh June 8 (Reuters) - Indian quick commerce company Zepto is looking to raise up to $837 million in its initial public offering, updated draft papers showed on",
+      "url": "https://finance.yahoo.com/news/indian-quick-commerce-firm-zepto-204629885.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 25
     }
   ],
   "NXST.NS": [
@@ -358,6 +385,15 @@
       "summary": "Bharat Electronics Ltd (BOM:500049) reports a 16% revenue increase and focuses on new-age technologies amid supply chain challenges.",
       "url": "https://finance.yahoo.com/markets/stocks/articles/bharat-electronics-ltd-bom-500049-190026774.html",
       "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 25
+    },
+    {
+      "date": "2026-06-02",
+      "title": "India's Cyient misses quarterly profit view on one-time charge, higher costs",
+      "summary": "April 23 (Reuters) - India's Cyient reported fourth-quarter profit below estimates on Thursday, hurt by a one-time charge and higher expenses, and approved a share buyback worth 7.2 billion rupees,",
+      "url": "https://finance.yahoo.com/news/indias-cyient-misses-quarterly-profit-130923488.html",
+      "sentiment_score": 0.5556,
       "sentiment_label": "🟢 Positive",
       "connection_score": 25
     }
@@ -866,6 +902,159 @@
       "sentiment_score": 0.0,
       "sentiment_label": "⚪ Neutral",
       "connection_score": 0
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Dow, S&P 500, Nasdaq Futures Slip After Record Rally As US-Iran War Confusion Eclipses AI Gains: TSLA, BB, META, HPE, NVDA Stocks In Focus",
+      "summary": "U.S. President Donald Trump said on Monday in a post on Truth Social that “Talks are continuing, at a rapid pace, with the Islamic Republic of Iran,” although media reports indicate that Iran has hit the brakes on negotiations.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/dow-p-500-nasdaq-futures-012623854.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Why a Wealth Manager Made a $3 Million Bet on a 6.4% Yielding Senior Loan ETF",
+      "summary": "The First Trust Senior Loan Fund targets high current income through a diversified portfolio of floating-rate senior bank loans.",
+      "url": "https://finance.yahoo.com/markets/options/articles/why-wealth-manager-made-3-232734459.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-02",
+      "title": "S&P 500 And Nasdaq Rise To Record Highs, Powered By NVDA Gains Amid New PC Chip, While Trump’s Positive Commentary On US-Iran Supports Dow — NVDA, ARM, MGM, ZM, AMC In Focus",
+      "summary": "President Donald Trump wrote in a post on Truth Social that talks with Iran “are continuing, at a rapid pace.”",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/p-500-nasdaq-rise-record-210636941.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Weekly Inflows Total $66B",
+      "summary": "<p>Here are the flows for the week ending Friday, May 29. </p>",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/weekly-inflows-total-66b-210014975.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Profitless Tech Surges 57% As Wall Street Signals Caution",
+      "summary": "Money-losing tech stocks outpaced major indexes as strategists warn about rising yields and speculation.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/profitless-tech-surges-57-wall-182134413.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Exchange-Traded Funds, US Equities Mixed After Midday",
+      "summary": "Broad Market Indicators Broad-market exchange-traded fund IWM declined, while IVV edged higher",
+      "url": "https://finance.yahoo.com/markets/articles/exchange-traded-funds-us-equities-170743073.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Pre-Markets Turn South on News from Middle East",
+      "summary": "Oil prices are moving up this morning, as the cease-fire between the U.S. and Iran seems tenuous, at best.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/pre-markets-turn-south-news-144200945.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Stocks Pressured as Oil Prices Jump on Report that Iran Has Halted Ceasefire Negotiations",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) is down -0.08%, the Dow Jones Industrial Average ($DOWI ) (DIA ) is down -0.28%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) is up +0.36%. June E-mini S&P futures (ESM26 ) are down -0.05%, and June E-mini Nasdaq futures (NQM26...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/stocks-pressured-oil-prices-jump-140409666.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-06-10",
+      "title": "S&P 500, Dow, Nasdaq Futures Decline As US Launches Fresh ‘Self-Defense Strikes’ On Iran: SMCI, TLRY, DKNG, CBRL In Focus",
+      "summary": "The U.S. launched fresh strikes on Iran late Tuesday in retaliation for the downing of an American combat helicopter near the Strait of Hormuz.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/p-500-dow-nasdaq-futures-021456878.html",
+      "sentiment_score": -0.6667,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 60
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Rob Arnott: Will SpaceX Create The Biggest Bubble Ever?",
+      "summary": "<p>The SpaceX IPO is almost here and will bring significant change with it for retail and institutional investors alike. Research Affiliate’s Rob Arnott offers his thoughts on the impact of SpaceX on passive portfolios, the bubble it will likely create, and ways advisors and investors can navigate the opportunities and pitfalls. </p>",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/rob-arnott-spacex-create-biggest-233743987.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-10",
+      "title": "S&P 500, Nasdaq End Lower As Investors Take Breather From AI And Chips — AAPL, ASTS, APLD, RIVN, ZVRA In Focus",
+      "summary": "President Donald Trump claims a deal with Iran is just “two or three days” away.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/p-500-nasdaq-end-lower-220754739.html",
+      "sentiment_score": -0.6667,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Broader Market Settles Lower as Chip Stocks Sink",
+      "summary": "The S&P 500 Index ($SPX ) (SPY ) on Tuesday closed down -0.26%, the Dow Jones Industrial Average ($DOWI ) (DIA ) closed up +0.17%, and the Nasdaq 100 Index ($IUXX ) (QQQ ) closed down -1.12%. June E-mini S&P futures (ESM26 ) fell -0.36%, and June E-mini Nasdaq futures...",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/broader-market-settles-lower-chip-203436277.html",
+      "sentiment_score": -0.6667,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Exchange-Traded Funds Fall as US Equities Slump After Midday",
+      "summary": "Broad Market Indicators Broad-market exchange-traded funds IWM and IVV were lower. Actively tr",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/exchange-traded-funds-fall-us-170809411.html",
+      "sentiment_score": -1.0,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-10",
+      "title": "AMD Sinks 9%, Intel Slides 8% as Chip Stocks Pull the NASDAQ 100 Down",
+      "summary": "Chip stocks are leading a sharp midday pullback Tuesday, with Advanced Micro Devices (NASDAQ:AMD) down 9% and Intel (NASDAQ:INTC) sliding 8%. AMD shares are trading near $446, while Intel stock is hovering around $101.50. The selling is broad-based. The Invesco QQQ Trust (NASDAQ:QQQ), which tracks the NASDAQ 100, is off 3% on the day as ... AMD Sinks 9%, Intel Slides 8% as Chip Stocks Pull the NASDAQ 100 Down",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/amd-sinks-9-intel-slides-162824609.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-06-10",
+      "title": "SpaceX Could Join the Nasdaq-100 Very Soon. Should You Buy the Invesco QQQ Trust Today?",
+      "summary": "The Nasdaq recently changed its rules, which will allow SpaceX to join the Nasdaq-100 after just 15 trading days.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/spacex-could-join-nasdaq-100-142000641.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Plenty of Data Ahead of CPI, SPCX",
+      "summary": "Investors look toward tomorrow's Inflation Rate and the SpaceX IPO Friday, but we have lots of economic data out this morning: Small Business Index, Trade Balance and Existing Home Sales.",
+      "url": "https://finance.yahoo.com/economy/policy/articles/plenty-data-ahead-cpi-spcx-141900695.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0
+    },
+    {
+      "date": "2026-06-10",
+      "title": "Market Minute 6-09-26- OpenAI Joins Heated IPO Race",
+      "summary": "After a mixed day on Wall Street Monday, stocks are looking to advance today. Crude oil is pulling back, while gold, silver, and Treasuries are mostly flat. The dollar is lower.",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/market-minute-6-09-26-141500489.html",
+      "sentiment_score": -0.3333,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0
     }
   ],
   "COALINDIA.NS": [
@@ -997,6 +1186,42 @@
     },
     {
       "date": "2026-05-21",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-06-02",
+      "title": "India to sell up to 2% stake in Coal India via offer for sale",
+      "summary": "May 26 (Reuters) - The Indian government will sell a stake of up to 2% in Coal India via an offer for sale (OFS), an exchange filing by the company showed on Tuesday.",
+      "url": "https://finance.yahoo.com/news/india-sell-2-stake-coal-150609729.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 90
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Coal India asks units to ramp up supplies as heatwave fuels record power demand",
+      "summary": "By Sethuraman N R NEW DELHI May 26 (Reuters) - State-run Coal India has asked its subsidiaries to ramp up coal supplies to power plants to avoid shortages as the country's power demand hits a record",
+      "url": "https://finance.yahoo.com/news/coal-india-asks-units-ramp-111009680.html",
+      "sentiment_score": 1.0,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 90
+    },
+    {
+      "date": "2026-06-02",
+      "title": "Basic Materials Roundup: Market Talk",
+      "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
+      "url": "",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15
+    },
+    {
+      "date": "2026-06-10",
       "title": "Basic Materials Roundup: Market Talk",
       "summary": "Find insight on palm oil, Coal India, 29Metals and more in the latest Market Talks covering Basic Materials.",
       "url": "",

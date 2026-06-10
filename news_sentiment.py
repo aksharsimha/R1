@@ -25,6 +25,11 @@ import yfinance as yf
 _HERE = os.path.dirname(os.path.abspath(__file__))
 NEWS_ARCHIVE_FILE = os.path.join(_HERE, "news_archive.json")
 
+def set_data_dir(user_dir: str) -> None:
+    """Redirect news archive storage to a user-specific directory."""
+    global NEWS_ARCHIVE_FILE
+    NEWS_ARCHIVE_FILE = os.path.join(user_dir, "news_archive.json")
+
 POSITIVE_WORDS = {
     "surge", "surges", "gain", "gains", "profit", "profits", "growth", "jump", "jumps",
     "record", "bull", "bullish", "upgrade", "upgrades", "outperform", "beat", "beats",

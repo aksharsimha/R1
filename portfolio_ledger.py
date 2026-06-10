@@ -11,6 +11,13 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 HOLDINGS_FILE     = os.path.join(_HERE, "holdings.json")
 TRANSACTIONS_FILE = os.path.join(_HERE, "transactions_log.json")
 
+def set_data_dir(user_dir: str) -> None:
+    """Redirect all ledger storage to a user-specific directory."""
+    global HOLDINGS_FILE, TRANSACTIONS_FILE, PREDICTIONS_FILE
+    HOLDINGS_FILE     = os.path.join(user_dir, "holdings.json")
+    TRANSACTIONS_FILE = os.path.join(user_dir, "transactions_log.json")
+    PREDICTIONS_FILE  = os.path.join(user_dir, "predictions_log.json")
+
 
 def _safe_write_json(filepath: str, data) -> bool:
     """
