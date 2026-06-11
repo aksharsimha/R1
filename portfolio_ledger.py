@@ -11,12 +11,37 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 HOLDINGS_FILE     = os.path.join(_HERE, "holdings.json")
 TRANSACTIONS_FILE = os.path.join(_HERE, "transactions_log.json")
 
-def set_data_dir(user_dir: str) -> None:
+_SYNC_USERNAME = None  # Set by set_data_dir for Firebase sync
+
+def _sync_holdings():
+    if _SYNC_USERNAME:
+        try:
+            from firebase_sync import sync_holdings
+            sync_holdings(_SYNC_USERNAME, HOLDINGS_FILE)
+        except Exception: pass
+
+def _sync_transactions():
+    if _SYNC_USERNAME:
+        try:
+            from firebase_sync import sync_transactions
+            sync_transactions(_SYNC_USERNAME, TRANSACTIONS_FILE)
+        except Exception: pass
+
+def _sync_predictions():
+    if _SYNC_USERNAME:
+        try:
+            from firebase_sync import sync_predictions
+            sync_predictions(_SYNC_USERNAME, PREDICTIONS_FILE)
+        except Exception: pass
+
+def set_data_dir(user_dir: str, username: str = None) -> None:
     """Redirect all ledger storage to a user-specific directory."""
-    global HOLDINGS_FILE, TRANSACTIONS_FILE, PREDICTIONS_FILE
+    global HOLDINGS_FILE, TRANSACTIONS_FILE, PREDICTIONS_FILE, _SYNC_USERNAME
     HOLDINGS_FILE     = os.path.join(user_dir, "holdings.json")
     TRANSACTIONS_FILE = os.path.join(user_dir, "transactions_log.json")
     PREDICTIONS_FILE  = os.path.join(user_dir, "predictions_log.json")
+    if username:
+        _SYNC_USERNAME = username
 
 
 def _safe_write_json(filepath: str, data) -> bool:
@@ -61,6 +86,7 @@ def log_transaction(action: str, asset_name: str, amount: float, details: str):
     })
     with open(TRANSACTIONS_FILE, "w") as f:
         json.dump(txs, f, indent=2)
+    _sync_transactions()
 
 def get_total_value(holdings):
     return sum(h.amount for h in holdings)
@@ -79,6 +105,7 @@ def update_asset_holdings(asset_name: str, new_invested: float, new_quantity: fl
 
     if found:
         save_holdings(holdings, HOLDINGS_FILE)
+        _sync_holdings()
         log_transaction("UPDATE_HOLDINGS", asset_name, new_invested, f"Invested: Rs.{new_invested:,.2f}, Qty: {new_quantity}")
         return True
     return False
@@ -113,6 +140,7 @@ def update_asset_percentage(asset_name: str, target_percentage: float):
 
     asset.amount = new_amount
     save_holdings(holdings, HOLDINGS_FILE)
+    _sync_holdings()
     log_transaction("UPDATE_PERCENTAGE", asset_name, new_amount, f"Changed from Rs.{old_amount:,.2f} to Rs.{new_amount:,.2f} (Target: {target_percentage*100:.1f}%)")
     return True
 
@@ -125,6 +153,7 @@ def add_asset(name: str, asset_type: str, identifier: str, amount: float, quanti
     new_asset = Asset(name=name, asset_type=asset_type, identifier=identifier, amount=amount, quantity=quantity)
     holdings.append(new_asset)
     save_holdings(holdings, HOLDINGS_FILE)
+    _sync_holdings()
     log_transaction("ADD_ASSET", name, amount, f"Added new asset (Type: {asset_type}, ID: {identifier}, Qty: {quantity})")
     return True
 
@@ -135,6 +164,7 @@ def remove_asset(asset_name: str):
 
     if len(holdings) < old_len:
         save_holdings(holdings, HOLDINGS_FILE)
+        _sync_holdings()
         log_transaction("REMOVE_ASSET", asset_name, 0.0, "Asset removed from portfolio")
         return True
     return False
@@ -181,6 +211,7 @@ def save_daily_prediction(
             "base_close": base_close,   # V0 that generated this prediction
         })
     _safe_write_json(PREDICTIONS_FILE, preds)
+    _sync_predictions()
 
 
 def confirm_manual_close(target_date: str, actual_close: float) -> bool:

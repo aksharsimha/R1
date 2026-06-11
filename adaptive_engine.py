@@ -22,10 +22,21 @@ from datetime import datetime
 _HERE = os.path.dirname(os.path.abspath(__file__))
 ADAPTIVE_STATE_FILE = os.path.join(_HERE, "adaptive_state.json")
 
-def set_data_dir(user_dir: str) -> None:
+def set_data_dir(user_dir: str, username: str = None) -> None:
     """Redirect adaptive state storage to a user-specific directory."""
-    global ADAPTIVE_STATE_FILE
+    global ADAPTIVE_STATE_FILE, _SYNC_USERNAME
     ADAPTIVE_STATE_FILE = os.path.join(user_dir, "adaptive_state.json")
+    if username:
+        _SYNC_USERNAME = username
+
+_SYNC_USERNAME = None
+
+def _sync_ewma():
+    if _SYNC_USERNAME:
+        try:
+            from firebase_sync import sync_ewma_state
+            sync_ewma_state(_SYNC_USERNAME, ADAPTIVE_STATE_FILE)
+        except Exception: pass
 
 # ──────────────────────────────────────────────────────────────────────────────
 # State persistence helpers
@@ -74,6 +85,7 @@ def _save_state(state: dict) -> None:
     with open(tmp, "w") as f:
         json.dump(state, f, indent=2)
     os.replace(tmp, ADAPTIVE_STATE_FILE)
+    _sync_ewma()
 
 
 def _default_state() -> dict:

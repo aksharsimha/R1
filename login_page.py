@@ -11,7 +11,7 @@ import streamlit as st
 def render_login_page():
     from auth import (
         login_user, register_user, check_remember_me,
-        save_remember_me,
+        save_remember_me, reset_password,
     )
 
     # ── Check Remember Me ────────────────────────────────────────────────────
@@ -25,6 +25,8 @@ def render_login_page():
 
     if "auth_mode" not in st.session_state:
         st.session_state.auth_mode = "login"
+    if "show_reset" not in st.session_state:
+        st.session_state.show_reset = False
 
     # ══════════════════════════════════════════════════════════════════════════
     # NUCLEAR CSS — Override every Streamlit default
@@ -384,7 +386,9 @@ def render_login_page():
 
     # ── RIGHT: Auth Form ─────────────────────────────────────────────────────
     with right:
-        if st.session_state.auth_mode == "login":
+        if st.session_state.show_reset:
+            _render_reset(reset_password)
+        elif st.session_state.auth_mode == "login":
             _render_login(login_user, save_remember_me)
         else:
             _render_signup(register_user, login_user, save_remember_me)
@@ -411,9 +415,9 @@ def _render_login(login_user, save_remember_me):
     """, unsafe_allow_html=True)
 
     with st.form("login_form", clear_on_submit=False, border=False):
-        # Username
-        st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:0 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Username</p>', unsafe_allow_html=True)
-        username = st.text_input("u", placeholder="Enter your username", key="lu", label_visibility="collapsed")
+        # Email
+        st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:0 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Email</p>', unsafe_allow_html=True)
+        email = st.text_input("e", placeholder="Enter your email", key="le", label_visibility="collapsed")
 
         # Password
         st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:16px 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Password</p>', unsafe_allow_html=True)
@@ -426,7 +430,7 @@ def _render_login(login_user, save_remember_me):
         submitted = st.form_submit_button("Sign In", use_container_width=True)
 
         if submitted:
-            success, message, user_info = login_user(username, password)
+            success, message, user_info = login_user(email, password)
             if success:
                 st.session_state.authenticated = True
                 st.session_state.user_info = user_info
@@ -435,6 +439,13 @@ def _render_login(login_user, save_remember_me):
                 st.rerun()
             else:
                 st.error(message)
+
+    # Forgot password
+    st.markdown('<div style="text-align:center;margin-top:8px;">', unsafe_allow_html=True)
+    if st.button("Forgot password?", key="forgot_pw", use_container_width=False):
+        st.session_state.show_reset = True
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Divider
     st.markdown("""
@@ -454,7 +465,7 @@ def _render_login(login_user, save_remember_me):
     st.markdown("""
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3rem;opacity:0.35;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span style="font-size:0.7rem;color:#334155;">Secured with bcrypt encryption</span>
+        <span style="font-size:0.7rem;color:#334155;">Secured with Firebase Authentication</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -476,7 +487,10 @@ def _render_signup(register_user, login_user, save_remember_me):
     """, unsafe_allow_html=True)
 
     with st.form("signup_form", clear_on_submit=False, border=False):
-        st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:0 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Display Name</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:0 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Email</p>', unsafe_allow_html=True)
+        email = st.text_input("e", placeholder="your@email.com", key="se", label_visibility="collapsed")
+
+        st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:16px 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Display Name</p>', unsafe_allow_html=True)
         display_name = st.text_input("d", placeholder="How should we call you?", key="sd", label_visibility="collapsed")
 
         st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:16px 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Username</p>', unsafe_allow_html=True)
@@ -495,9 +509,9 @@ def _render_signup(register_user, login_user, save_remember_me):
             if password != confirm:
                 st.error("Passwords do not match.")
             else:
-                success, message = register_user(username, display_name, password)
+                success, message = register_user(email, username, display_name, password)
                 if success:
-                    ok, _, user_info = login_user(username, password)
+                    ok, _, user_info = login_user(email, password)
                     if ok:
                         st.session_state.authenticated = True
                         st.session_state.user_info = user_info
@@ -523,6 +537,42 @@ def _render_signup(register_user, login_user, save_remember_me):
     st.markdown("""
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3rem;opacity:0.35;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span style="font-size:0.7rem;color:#334155;">Secured with bcrypt encryption</span>
+        <span style="font-size:0.7rem;color:#334155;">Secured with Firebase Authentication</span>
     </div>
     """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PASSWORD RESET
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _render_reset(reset_password):
+    st.markdown("""
+    <div style="margin-bottom:2rem;">
+        <h2 style="font-size:1.7rem;font-weight:700;color:#f1f5f9;margin:0 0 6px 0;letter-spacing:-0.5px;">
+            Reset password
+        </h2>
+        <p style="font-size:0.88rem;color:#475569;margin:0;font-weight:400;">
+            We'll send a reset link to your email
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.form("reset_form", clear_on_submit=False, border=False):
+        st.markdown('<p style="font-size:0.8rem;font-weight:600;color:#64748b;margin:0 0 6px 0;letter-spacing:0.5px;text-transform:uppercase;">Email</p>', unsafe_allow_html=True)
+        email = st.text_input("e", placeholder="Enter your email", key="re", label_visibility="collapsed")
+
+        submitted = st.form_submit_button("Send Reset Link", use_container_width=True)
+
+        if submitted and email:
+            ok, msg = reset_password(email)
+            if ok:
+                st.success(msg)
+            else:
+                st.error(msg)
+
+    st.markdown('<div style="margin-top:16px;">', unsafe_allow_html=True)
+    if st.button("← Back to sign in", key="back_to_login", use_container_width=True):
+        st.session_state.show_reset = False
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)

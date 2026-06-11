@@ -20,6 +20,8 @@ live_monitor.py
 
 # Streamlit secrets
 .streamlit/secrets.toml
+.streamlit/firebase_key.json
+.streamlit/firebase_web_api_key.txt
 
 # OS
 .DS_Store

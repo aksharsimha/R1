@@ -16,14 +16,20 @@ from streamlit_autorefresh import st_autorefresh
 
 # --- Auth imports ---
 from login_page import render_login_page
-from auth import clear_remember_me, get_user_data_dir
+from auth import clear_remember_me
 import chat_system
 import portfolio_ledger
 import adaptive_engine
 import news_sentiment
+import firebase_db
 
 # --- Page Config ---
 st.set_page_config(page_title="Portfolio Risk Monitor", page_icon="📈", layout="wide")
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Firebase Initialization — must come BEFORE auth
+# ══════════════════════════════════════════════════════════════════════════════
+firebase_db.init_firebase()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Authentication Gate — must come BEFORE any dashboard code
@@ -36,12 +42,29 @@ if not st.session_state.authenticated:
 
 # ── User is authenticated — set up their data directory ──────────────────────
 _user_info = st.session_state.user_info
-_user_data_dir = _user_info["data_dir"]
+_username = _user_info["username"]
 
-# Redirect all modules to the user's isolated data directory
-portfolio_ledger.set_data_dir(_user_data_dir)
-adaptive_engine.set_data_dir(_user_data_dir)
+# For backward compatibility, create a local data dir and redirect modules
+# (portfolio_ledger and adaptive_engine still use file-based storage locally
+# but data is also synced to Firebase for persistence)
+import os
+import firebase_sync
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_user_data_dir = os.path.join(_HERE, "users", _username)
+os.makedirs(_user_data_dir, exist_ok=True)
+
+# Hydrate local files from Firestore (pull cloud data → local on each session start)
+if "firebase_hydrated" not in st.session_state:
+    firebase_sync.hydrate(_username, _user_data_dir)
+    st.session_state.firebase_hydrated = True
+
+portfolio_ledger.set_data_dir(_user_data_dir, username=_username)
+adaptive_engine.set_data_dir(_user_data_dir, username=_username)
 news_sentiment.set_data_dir(_user_data_dir)
+
+# Store username and data dir in session for sync functions
+st.session_state._quest_username = _username
+st.session_state._quest_data_dir = _user_data_dir
 
 # Re-import HOLDINGS_FILE after redirection so it points to user's directory
 from portfolio_ledger import HOLDINGS_FILE

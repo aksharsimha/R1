@@ -1,129 +1,57 @@
 """
-QUEST Authentication Module
-============================
-Handles user registration, login, session management, and per-user data
-directory creation. Passwords are hashed with bcrypt. Each user gets an
-isolated data directory under users/<username>/.
+QUEST Authentication Module — Firebase Edition
+================================================
+Uses Firebase Auth for user registration/login and Firestore for profiles.
+Passwords are managed by Firebase (bcrypt removed).
 
 Features:
-  - Register / Login with bcrypt-hashed passwords
-  - Per-user data directory (holdings, predictions, transactions, EWMA, news)
-  - "Remember Me" via a local token file
-  - Auto-migration of legacy root-level data to the first registered user
+  - Register / Login with Firebase Auth (email + password)
+  - Per-user data stored in Firestore (no local JSON files)
+  - "Remember Me" via Streamlit session state
+  - Password reset via Firebase email
 """
 
-import json
 import os
-import shutil
-import secrets
 from datetime import datetime
 
-import bcrypt
-
 # ──────────────────────────────────────────────────────────────────────────────
-# Paths
+# Paths (kept for backward compatibility with local Remember Me)
 # ──────────────────────────────────────────────────────────────────────────────
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 USERS_DIR = os.path.join(_HERE, "users")
-USERS_DB_FILE = os.path.join(USERS_DIR, "users.json")
-REMEMBER_ME_FILE = os.path.join(USERS_DIR, ".remember_me")
 
-# Data files that each user gets their own copy of
-USER_DATA_FILES = [
-    "holdings.json",
-    "transactions_log.json",
-    "predictions_log.json",
-    "adaptive_state.json",
-    "news_archive.json",
-]
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Database helpers
-# ──────────────────────────────────────────────────────────────────────────────
-
-def _ensure_users_dir():
-    """Create users/ directory if it doesn't exist."""
-    os.makedirs(USERS_DIR, exist_ok=True)
-
-
-def _load_db() -> dict:
-    """Load the users database from disk."""
-    _ensure_users_dir()
-    if not os.path.exists(USERS_DB_FILE):
-        return {"users": {}}
-    try:
-        with open(USERS_DB_FILE, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, IOError):
-        return {"users": {}}
-
-
-def _save_db(db: dict) -> None:
-    """Atomically save the users database."""
-    _ensure_users_dir()
-    tmp = USERS_DB_FILE + ".tmp"
-    with open(tmp, "w") as f:
-        json.dump(db, f, indent=2)
-    os.replace(tmp, USERS_DB_FILE)
-
-
-# ──────────────────────────────────────────────────────────────────────────────
-# User data directory
-# ──────────────────────────────────────────────────────────────────────────────
 
 def get_user_data_dir(username: str) -> str:
-    """Return the absolute path to a user's data directory."""
-    return os.path.join(USERS_DIR, username)
-
-
-def _create_user_data_dir(username: str) -> str:
-    """Create a user's data directory with default files if needed."""
-    user_dir = get_user_data_dir(username)
+    """
+    Return a placeholder path for backward compatibility.
+    With Firebase, data lives in Firestore — not on disk.
+    This is only used for legacy code paths.
+    """
+    user_dir = os.path.join(USERS_DIR, username)
     os.makedirs(user_dir, exist_ok=True)
-
-    # Create a default holdings.json if none exists
-    holdings_path = os.path.join(user_dir, "holdings.json")
-    if not os.path.exists(holdings_path):
-        with open(holdings_path, "w") as f:
-            json.dump({"holdings": []}, f, indent=2)
-
     return user_dir
 
 
-def migrate_legacy_data(username: str) -> bool:
-    """
-    Migrate legacy root-level data files to a user's directory.
-    This is for the first user (akshar) who has existing data in the project root.
-    Only copies files that exist in root AND don't already exist in user dir.
-    Returns True if any files were migrated.
-    """
-    user_dir = get_user_data_dir(username)
-    os.makedirs(user_dir, exist_ok=True)
-    migrated = False
-
-    for filename in USER_DATA_FILES:
-        src = os.path.join(_HERE, filename)
-        dst = os.path.join(user_dir, filename)
-        if os.path.exists(src) and not os.path.exists(dst):
-            shutil.copy2(src, dst)
-            migrated = True
-
-    return migrated
-
-
 # ──────────────────────────────────────────────────────────────────────────────
-# Registration
+# Registration (Firebase Auth + Firestore)
 # ──────────────────────────────────────────────────────────────────────────────
 
-def register_user(username: str, display_name: str, password: str) -> tuple[bool, str]:
+def register_user(email: str, username: str, display_name: str, password: str) -> tuple[bool, str]:
     """
-    Register a new user.
-
+    Register a new user via Firebase.
     Returns (success: bool, message: str).
     """
+    from firebase_db import create_user
+
     # Validation
     username = username.strip().lower()
+    email = email.strip().lower()
+
+    if not email:
+        return False, "Email cannot be empty."
+    if "@" not in email or "." not in email:
+        return False, "Please enter a valid email."
     if not username:
         return False, "Username cannot be empty."
     if len(username) < 3:
@@ -137,142 +65,67 @@ def register_user(username: str, display_name: str, password: str) -> tuple[bool
     if len(password) < 6:
         return False, "Password must be at least 6 characters."
 
-    db = _load_db()
-
-    if username in db["users"]:
-        return False, "Username already taken."
-
-    # Hash password with bcrypt
-    salt = bcrypt.gensalt(rounds=12)
-    password_hash = bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
-
-    db["users"][username] = {
-        "display_name": display_name.strip(),
-        "password_hash": password_hash,
-        "created_at": datetime.now().isoformat(),
-        "last_login": datetime.now().isoformat(),
-    }
-
-    _save_db(db)
-
-    # Create user data directory
-    _create_user_data_dir(username)
-
-    return True, "Account created successfully!"
+    ok, msg, _ = create_user(email, password, display_name.strip(), username)
+    return ok, msg
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Login
+# Login (Firebase Auth REST API)
 # ──────────────────────────────────────────────────────────────────────────────
 
-def login_user(username: str, password: str) -> tuple[bool, str, dict | None]:
+def login_user(email: str, password: str) -> tuple[bool, str, dict | None]:
     """
-    Authenticate a user.
-
+    Authenticate via Firebase Auth.
     Returns (success: bool, message: str, user_info: dict | None).
-    user_info contains: username, display_name, data_dir
     """
-    username = username.strip().lower()
-    if not username or not password:
-        return False, "Please enter both username and password.", None
+    from firebase_db import verify_login
 
-    db = _load_db()
+    email = email.strip().lower()
+    if not email or not password:
+        return False, "Please enter both email and password.", None
 
-    if username not in db["users"]:
-        return False, "Invalid username or password.", None
-
-    user = db["users"][username]
-    stored_hash = user["password_hash"].encode("utf-8")
-
-    if not bcrypt.checkpw(password.encode("utf-8"), stored_hash):
-        return False, "Invalid username or password.", None
-
-    # Update last login
-    db["users"][username]["last_login"] = datetime.now().isoformat()
-    _save_db(db)
-
-    # Ensure data directory exists
-    user_dir = _create_user_data_dir(username)
-
-    return True, f"Welcome back, {user['display_name']}!", {
-        "username": username,
-        "display_name": user["display_name"],
-        "data_dir": user_dir,
-    }
+    return verify_login(email, password)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Remember Me
+# Password Reset
 # ──────────────────────────────────────────────────────────────────────────────
+
+def reset_password(email: str) -> tuple[bool, str]:
+    """Send password reset email via Firebase."""
+    from firebase_db import send_password_reset
+    return send_password_reset(email.strip().lower())
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Remember Me — SESSION-ONLY (no server-side files)
+# ──────────────────────────────────────────────────────────────────────────────
+# Old bug: file-based remember-me on Streamlit Cloud was shared across ALL
+# visitors, causing one user's login to auto-log in the next visitor.
+# Fix: Remember Me now only works within the same Streamlit session.
 
 def save_remember_me(username: str) -> None:
-    """Save a remember-me token for auto-login."""
-    _ensure_users_dir()
-    token = secrets.token_hex(32)
-
-    db = _load_db()
-    if username in db["users"]:
-        db["users"][username]["remember_token"] = token
-        _save_db(db)
-
-    with open(REMEMBER_ME_FILE, "w") as f:
-        json.dump({"username": username, "token": token}, f)
+    """Remember Me is now handled by Streamlit session_state only."""
+    # No file written — session_state already keeps the user logged in
+    # for the duration of their browser session
+    pass
 
 
 def check_remember_me() -> dict | None:
-    """
-    Check if a valid remember-me token exists.
-    Returns user_info dict if valid, None otherwise.
-    """
-    if not os.path.exists(REMEMBER_ME_FILE):
-        return None
-
-    try:
-        with open(REMEMBER_ME_FILE, "r") as f:
-            data = json.load(f)
-    except (json.JSONDecodeError, IOError):
-        clear_remember_me()
-        return None
-
-    username = data.get("username", "")
-    token = data.get("token", "")
-
-    if not username or not token:
-        clear_remember_me()
-        return None
-
-    db = _load_db()
-    user = db["users"].get(username)
-    if not user:
-        clear_remember_me()
-        return None
-
-    if user.get("remember_token") != token:
-        clear_remember_me()
-        return None
-
-    # Valid token — auto-login
-    user_dir = _create_user_data_dir(username)
-    return {
-        "username": username,
-        "display_name": user["display_name"],
-        "data_dir": user_dir,
-    }
+    """No file-based remember me — always return None."""
+    # Login is handled by session_state.authenticated + session_state.user_info
+    return None
 
 
 def clear_remember_me() -> None:
-    """Remove the remember-me token file."""
-    if os.path.exists(REMEMBER_ME_FILE):
+    """Nothing to clear — no files involved."""
+    # Clean up any leftover .remember_me files from the old system
+    remember_file = os.path.join(USERS_DIR, ".remember_me")
+    if os.path.exists(remember_file):
         try:
-            os.remove(REMEMBER_ME_FILE)
+            os.remove(remember_file)
         except OSError:
             pass
-
-    # Also clear token from DB
-    db = _load_db()
-    for user in db["users"].values():
-        user.pop("remember_token", None)
-    _save_db(db)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -280,19 +133,18 @@ def clear_remember_me() -> None:
 # ──────────────────────────────────────────────────────────────────────────────
 
 def get_user_display_name(username: str) -> str:
-    """Get a user's display name."""
-    db = _load_db()
-    user = db["users"].get(username, {})
-    return user.get("display_name", username)
+    """Get a user's display name from Firebase."""
+    from firebase_db import get_user_display_name as fb_get_name
+    return fb_get_name(username)
 
 
 def user_exists(username: str) -> bool:
-    """Check if a username is already registered."""
-    db = _load_db()
-    return username.strip().lower() in db["users"]
+    """Check if a username is registered."""
+    from firebase_db import user_exists as fb_exists
+    return fb_exists(username)
 
 
 def get_all_users() -> list[str]:
-    """Return a list of all registered usernames."""
-    db = _load_db()
-    return list(db["users"].keys())
+    """Return all registered usernames."""
+    from firebase_db import get_all_users as fb_all
+    return fb_all()
