@@ -3086,19 +3086,30 @@ if _active("tab_michael"):
              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                            "(KHTML, like Gecko) Chrome/131.0 Safari/537.36"}
 
-        def _post(messages):
-            payload = _j.dumps({"model": "llama-3.3-70b-versatile", "messages": messages,
-                                "tools": _TOOLS, "tool_choice": "auto",
-                                "temperature": 0.6, "max_tokens": 1024}).encode()
+        def _post(messages, use_tools=True):
+            body = {"model": "llama-3.3-70b-versatile", "messages": messages,
+                    "temperature": 0.6, "max_tokens": 1024}
+            if use_tools:
+                body["tools"] = _TOOLS
+                body["tool_choice"] = "auto"
             req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions",
-                                         data=payload, headers=H, method="POST")
+                                         data=_j.dumps(body).encode(), headers=H, method="POST")
             with urllib.request.urlopen(req, timeout=40) as r:
                 return _j.loads(r.read().decode())
 
         try:
             m = {}
             for _round in range(4):  # allow a couple of tool round-trips
-                res = _post(msgs)
+                try:
+                    res = _post(msgs, use_tools=True)
+                except urllib.error.HTTPError as _te:
+                    _tb = _te.read().decode("utf-8", errors="ignore")
+                    # Llama sometimes botches the tool-call format → answer without tools
+                    if _te.code == 400 and "tool_use_failed" in _tb:
+                        print("[MICHAEL/groq] tool_use_failed — retrying without tools", file=sys.stderr)
+                        res = _post(msgs, use_tools=False)
+                    else:
+                        raise
                 m = res["choices"][0]["message"]
                 tcs = m.get("tool_calls")
                 if not tcs:
@@ -3158,15 +3169,13 @@ if _active("tab_michael"):
         raw = _m_ask(q, _m_context())
         ts = datetime.now().strftime("%H:%M")
         if raw == "__BAD_KEY__":
-            txt = ("MICHAEL is unavailable — the API key is invalid or the Generative Language API "
-                   "is not enabled for this key. Go to https://aistudio.google.com, create a new key, "
-                   "and paste it above.")
+            txt = ("MICHAEL is unavailable — the API key is invalid or not authorised. "
+                   "Check the key in the app's secrets (Groq: console.groq.com).")
         elif raw.startswith("__RATE_LIMIT__"):
             detail = raw[len("__RATE_LIMIT__"):].strip()
-            txt = (f"All Gemini models returned an error. Most likely cause: the Generative Language "
-                   f"API is not enabled for your key, or you have no quota.\n\n"
-                   f"Go to https://aistudio.google.com and create a fresh API key, then paste it above.\n\n"
-                   f"Raw error from Google: {detail}")
+            txt = ("MICHAEL hit a snag talking to the AI service (rate limit or a transient error). "
+                   "Give it a moment and try again.\n\n"
+                   f"Details: {detail}")
         elif raw.startswith("__ERROR__"):
             txt = f"MICHAEL error: {raw[9:].strip()}"
         else:
