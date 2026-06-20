@@ -362,7 +362,7 @@ if section == "Overview":
             f"<div class='mono' style='font-size:.76rem;color:{_c};'>{_ar} {abs(data['chg']):.2f}%</div></div>"
         )
     _idx_html = _idx_card('NIFTY 50', _idx.get('NIFTY 50')) + _idx_card('SENSEX', _idx.get('SENSEX'))
-    _idx_col = (f"<div style='flex:1;min-width:160px;display:flex;flex-direction:column;gap:10px;'>{_idx_html}</div>"
+    _idx_col = (f"<div class='idxc' style='flex:1;min-width:160px;display:flex;flex-direction:column;gap:10px;'>{_idx_html}</div>"
                 if _idx_html else "")
 
     import streamlit.components.v1 as components
@@ -375,9 +375,14 @@ if section == "Overview":
     .pill{{display:inline-flex;align-items:center;font-size:.72rem;padding:3px 10px;border-radius:999px;}}
     @keyframes fin{{from{{opacity:0;transform:translateY(8px);}}to{{opacity:1;transform:translateY(0);}}}}
     .fin{{animation:fin .5s cubic-bezier(.22,.61,.36,1) both;}}
+    @media(max-width:560px){{
+      #qv{{font-size:1.9rem!important;}}
+      .idxc{{flex-direction:row!important;width:100%;min-width:0!important;gap:8px!important;}}
+      .idxc>div{{flex:1;min-width:0;}}
+    }}
     </style></head><body>
     <div class="fin" style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
-      <div style="flex:2;min-width:240px;">
+      <div style="flex:2;min-width:160px;">
         <div style="font-size:.78rem;color:{_hp['text_3']};">Portfolio value</div>
         <div id="qv" class="cu mono" data-start="{_prev_val}" data-target="{_cur_val}" data-dec="2" data-prefix="₹" style="font-size:2.4rem;font-weight:500;color:{_hp['text']};letter-spacing:-1.2px;line-height:1.1;">₹{_cur_val:,.2f}</div>
         <div class="mono" style="font-size:1rem;font-weight:500;margin-top:2px;color:{_pnl_color};">{_pnl_sign}{total_pnl_perc:.2f}% · {_pnl_sign}₹{total_pnl:,.2f}</div>
@@ -403,7 +408,7 @@ if section == "Overview":
       }});
     }})();
     </script></body></html>'''
-    components.html(_hero_comp, height=185)
+    components.html(_hero_comp, height=200)
 
     st.markdown(f'''
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:4px 0 22px;">
