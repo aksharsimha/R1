@@ -5,7 +5,46 @@ Every single Streamlit default is overridden. This should look like
 a custom-built web app, not a Streamlit page.
 """
 
+import random
 import streamlit as st
+
+# ── Rotating copy ─────────────────────────────────────────────────────────────
+_HEADLINES = [
+    ("Welcome back", "Sign in to your portfolio dashboard"),
+    ("Your money, measured.", "Sign in to see today's numbers"),
+    ("Clarity over noise.", "Your portfolio, sign in to continue"),
+    ("Know your risk first.", "Sign in to your portfolio dashboard"),
+    ("Markets move. Stay ready.", "Sign in to pick up where you left off"),
+]
+
+_QUOTES = [
+    ("Risk comes from not knowing what you're doing.", "Warren Buffett"),
+    ("The investor's chief problem — and worst enemy — is likely to be himself.", "Benjamin Graham"),
+    ("In the short run the market is a voting machine; in the long run, a weighing machine.", "Benjamin Graham"),
+    ("Wide diversification is only required when investors do not understand what they are doing.", "Warren Buffett"),
+    ("The four most dangerous words in investing are: 'this time it's different.'", "John Templeton"),
+    ("Be fearful when others are greedy, and greedy when others are fearful.", "Warren Buffett"),
+]
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _fetch_indices():
+    """Best-effort live NIFTY 50 / SENSEX quotes. Returns [] on any failure."""
+    out = []
+    try:
+        import yfinance as yf
+        for label, tk in (("NIFTY 50", "^NSEI"), ("SENSEX", "^BSESN")):
+            try:
+                fi = yf.Ticker(tk).fast_info
+                last = float(fi.last_price)
+                prev = float(fi.previous_close)
+                chg = (last - prev) / prev * 100 if prev else 0.0
+                out.append((label, last, chg))
+            except Exception:
+                continue
+    except Exception:
+        return []
+    return out
 
 
 def render_login_page():
@@ -34,6 +73,15 @@ def render_login_page():
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        @keyframes qfade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .qfade { animation: qfade .6s cubic-bezier(.22,.61,.36,1) both; }
+        .qfade-1 { animation: qfade .6s cubic-bezier(.22,.61,.36,1) .08s both; }
+        .qfade-2 { animation: qfade .6s cubic-bezier(.22,.61,.36,1) .16s both; }
+        .qfade-3 { animation: qfade .6s cubic-bezier(.22,.61,.36,1) .24s both; }
+        @media (prefers-reduced-motion: reduce) {
+            .qfade, .qfade-1, .qfade-2, .qfade-3 { animation: none !important; }
+        }
 
         /* ▓▓▓▓▓ TOTAL STREAMLIT RESET ▓▓▓▓▓ */
         html, body {
@@ -264,125 +312,73 @@ def render_login_page():
 
     # ── LEFT: Brand Panel ────────────────────────────────────────────────────
     with left:
-        st.markdown("""
+        st.html("""
         <div style="
-            position: relative;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4rem 3rem;
+            padding: 3rem 2.5rem;
+            position: relative;
             overflow: hidden;
+            font-family: 'Inter', -apple-system, sans-serif;
         ">
-            <!-- Gradient orbs -->
-            <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.12),transparent 70%);top:-100px;left:-150px;filter:blur(60px);animation:drift1 25s ease-in-out infinite;"></div>
-            <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.1),transparent 70%);bottom:-80px;right:-100px;filter:blur(60px);animation:drift2 20s ease-in-out infinite;"></div>
-            <div style="position:absolute;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,0.06),transparent 70%);top:40%;left:50%;filter:blur(50px);animation:drift3 22s ease-in-out infinite;"></div>
+            <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.15),transparent 70%);top:-80px;left:-100px;filter:blur(80px);"></div>
+            <div style="position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 70%);bottom:-60px;right:-80px;filter:blur(80px);"></div>
 
-            <style>
-                @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-30px)} }
-                @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,40px)} }
-                @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,20px)} }
-                @keyframes line-draw { from{stroke-dashoffset:1500} to{stroke-dashoffset:0} }
-                @keyframes area-fade { from{opacity:0} to{opacity:1} }
-                @keyframes dot-pulse { 0%,100%{r:4;opacity:1} 50%{r:7;opacity:0.5} }
-                @keyframes slide-up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-            </style>
-
-            <!-- Stock chart line -->
-            <svg viewBox="0 0 600 200" preserveAspectRatio="none" style="position:absolute;bottom:80px;left:5%;width:90%;height:160px;opacity:0.5;">
-                <defs>
-                    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#6366f1" stop-opacity="0.6"/>
-                        <stop offset="50%" stop-color="#a78bfa" stop-opacity="0.9"/>
-                        <stop offset="100%" stop-color="#818cf8" stop-opacity="0.6"/>
-                    </linearGradient>
-                    <linearGradient id="lg2" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#6366f1" stop-opacity="0.08"/>
-                        <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M0,150 Q50,145 80,130 T160,100 T240,110 T320,60 T400,80 T480,35 T560,45 L600,30 L600,200 L0,200Z" fill="url(#lg2)" style="animation:area-fade 1s ease-out 2.5s both"/>
-                <path d="M0,150 Q50,145 80,130 T160,100 T240,110 T320,60 T400,80 T480,35 T560,45 L600,30" fill="none" stroke="url(#lg1)" stroke-width="2" stroke-linecap="round" style="stroke-dasharray:1500;animation:line-draw 2.5s ease-out 0.3s both"/>
-                <circle cx="600" cy="30" r="4" fill="#a78bfa" style="animation:dot-pulse 2s ease-in-out 3s infinite"/>
-            </svg>
-
-            <!-- Brand Content -->
-            <div style="position:relative;z-index:2;max-width:460px;animation:slide-up 0.7s ease-out both">
-                <div style="font-size:4.5rem;margin-bottom:0.5rem;line-height:1;">⚡</div>
+            <div style="position:relative;z-index:2;max-width:440px;">
+                <div style="font-size:3.5rem;margin-bottom:0.3rem;line-height:1;">⚡</div>
                 <h1 style="
-                    font-size:4rem;
+                    font-size:3.5rem;
                     font-weight:900;
-                    letter-spacing:-3px;
-                    margin:0 0 0.8rem 0;
-                    line-height:0.95;
+                    letter-spacing:-2px;
+                    margin:0 0 0.6rem 0;
+                    line-height:1;
                     background:linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
                     -webkit-background-clip:text;
                     -webkit-text-fill-color:transparent;
+                    font-family: 'Inter', sans-serif;
                 ">QUEST</h1>
                 <p style="
-                    font-size:0.8rem;
+                    font-size:0.75rem;
                     color:#475569;
-                    letter-spacing:4px;
+                    letter-spacing:3px;
                     text-transform:uppercase;
-                    margin:0 0 3.5rem 0;
+                    margin:0 0 3rem 0;
                     font-weight:500;
-                    line-height:1.5;
+                    line-height:1.6;
                 ">Quantitative Unified<br>Equity Surveillance Tracker</p>
 
-                <!-- Feature Cards -->
-                <div style="display:flex;flex-direction:column;gap:14px;">
-                    <div style="
-                        display:flex;align-items:center;gap:14px;
-                        padding:16px 18px;
-                        background:rgba(255,255,255,0.02);
-                        border:1px solid rgba(255,255,255,0.05);
-                        border-radius:14px;
-                        transition:all 0.3s ease;
-                        animation:slide-up 0.5s ease-out 0.15s both;
-                    " onmouseover="this.style.background='rgba(99,102,241,0.05)';this.style.borderColor='rgba(99,102,241,0.12)';this.style.transform='translateX(6px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='rgba(255,255,255,0.05)';this.style.transform='translateX(0)'">
-                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">📊</div>
+                <div class="qfade-1" style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;">
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">📊</div>
                         <div>
-                            <div style="font-size:0.9rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;">Real-Time Analytics</div>
-                            <div style="font-size:0.78rem;color:#475569;line-height:1.4;">Live P&L, composite risk scoring & market data</div>
+                            <div style="font-size:0.85rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;">Real-Time Analytics</div>
+                            <div style="font-size:0.75rem;color:#475569;line-height:1.4;">Live P&amp;L, composite risk scoring &amp; market data</div>
                         </div>
                     </div>
-
-                    <div style="
-                        display:flex;align-items:center;gap:14px;
-                        padding:16px 18px;
-                        background:rgba(255,255,255,0.02);
-                        border:1px solid rgba(255,255,255,0.05);
-                        border-radius:14px;
-                        transition:all 0.3s ease;
-                        animation:slide-up 0.5s ease-out 0.3s both;
-                    " onmouseover="this.style.background='rgba(139,92,246,0.05)';this.style.borderColor='rgba(139,92,246,0.12)';this.style.transform='translateX(6px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='rgba(255,255,255,0.05)';this.style.transform='translateX(0)'">
-                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🧠</div>
+                    <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;">
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🧠</div>
                         <div>
-                            <div style="font-size:0.9rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;">Self-Learning Forecasts</div>
-                            <div style="font-size:0.78rem;color:#475569;line-height:1.4;">EWMA predictions that improve with every trade</div>
+                            <div style="font-size:0.85rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;">Self-Learning Forecasts</div>
+                            <div style="font-size:0.75rem;color:#475569;line-height:1.4;">EWMA predictions that improve with every trade</div>
                         </div>
                     </div>
-
-                    <div style="
-                        display:flex;align-items:center;gap:14px;
-                        padding:16px 18px;
-                        background:rgba(255,255,255,0.02);
-                        border:1px solid rgba(255,255,255,0.05);
-                        border-radius:14px;
-                        transition:all 0.3s ease;
-                        animation:slide-up 0.5s ease-out 0.45s both;
-                    " onmouseover="this.style.background='rgba(34,211,238,0.05)';this.style.borderColor='rgba(34,211,238,0.12)';this.style.transform='translateX(6px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='rgba(255,255,255,0.05)';this.style.transform='translateX(0)'">
-                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(34,211,238,0.1);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🔐</div>
+                    <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:12px;">
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(34,211,238,0.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🔐</div>
                         <div>
-                            <div style="font-size:0.9rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;">Isolated & Secure</div>
-                            <div style="font-size:0.78rem;color:#475569;line-height:1.4;">Each user gets their own encrypted portfolio space</div>
+                            <div style="font-size:0.85rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;">Isolated &amp; Secure</div>
+                            <div style="font-size:0.75rem;color:#475569;line-height:1.4;">Each user gets their own encrypted portfolio space</div>
                         </div>
                     </div>
                 </div>
+
+                <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.04);">
+                    <div style="font-size:0.7rem;color:#334155;letter-spacing:1px;text-transform:uppercase;font-weight:500;">Built for Indian markets · NSE &amp; BSE</div>
+                </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # ── RIGHT: Auth Form ─────────────────────────────────────────────────────
     with right:
@@ -402,14 +398,34 @@ def render_login_page():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _render_login(login_user, save_remember_me):
-    # Header
-    st.markdown("""
-    <div style="margin-bottom:2rem;">
+    # Live index ticker (best-effort; hidden if unavailable)
+    _idx = _fetch_indices()
+    if _idx:
+        _chips = ""
+        for _lbl, _val, _chg in _idx:
+            _c = "#34d399" if _chg >= 0 else "#f87171"
+            _arrow = "▲" if _chg >= 0 else "▼"
+            _chips += (
+                f"<span style='margin-right:18px;'>"
+                f"<span style='color:#64748b;font-size:0.72rem;letter-spacing:1px;'>{_lbl}</span> "
+                f"<span style='color:#e2e8f0;font-family:monospace;'>{_val:,.2f}</span> "
+                f"<span style='color:{_c};font-family:monospace;font-size:0.8rem;'>{_arrow} {abs(_chg):.2f}%</span></span>"
+            )
+        st.markdown(
+            f"<div class='qfade' style='margin-bottom:1.2rem;padding:8px 12px;border:1px solid rgba(255,255,255,0.06);"
+            f"border-radius:10px;background:rgba(255,255,255,0.02);font-size:0.85rem;white-space:nowrap;overflow:hidden;'>{_chips}</div>",
+            unsafe_allow_html=True,
+        )
+
+    # Header (rotating copy)
+    _hl, _sub = random.choice(_HEADLINES)
+    st.markdown(f"""
+    <div class="qfade" style="margin-bottom:2rem;">
         <h2 style="font-size:1.7rem;font-weight:700;color:#f1f5f9;margin:0 0 6px 0;letter-spacing:-0.5px;">
-            Welcome back
+            {_hl}
         </h2>
         <p style="font-size:0.88rem;color:#475569;margin:0;font-weight:400;">
-            Sign in to your portfolio dashboard
+            {_sub}
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -460,6 +476,26 @@ def _render_login(login_user, save_remember_me):
     if st.button("Create a free account", key="to_signup", use_container_width=True):
         st.session_state.auth_mode = "signup"
         st.rerun()
+
+    # Try a live demo — explore a sample portfolio, no signup
+    if st.button("🛰️  Try a live demo", key="try_demo", use_container_width=True):
+        st.session_state.authenticated = True
+        st.session_state.user_info = {
+            "username": "demo_guest",
+            "display_name": "Demo User",
+            "email": "demo@quest.local",
+        }
+        st.rerun()
+
+    # Rotating finance quote
+    _q, _who = random.choice(_QUOTES)
+    st.markdown(
+        f"<div class='qfade' style='margin-top:1.6rem;padding:14px 16px;border-left:2px solid rgba(99,102,241,0.4);"
+        f"background:rgba(255,255,255,0.02);border-radius:0 8px 8px 0;'>"
+        f"<div style='font-size:0.85rem;color:#94a3b8;font-style:italic;line-height:1.5;'>“{_q}”</div>"
+        f"<div style='font-size:0.72rem;color:#475569;margin-top:6px;'>— {_who}</div></div>",
+        unsafe_allow_html=True,
+    )
 
     # Footer
     st.markdown("""

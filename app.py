@@ -55,7 +55,10 @@ os.makedirs(_user_data_dir, exist_ok=True)
 
 # Hydrate local files from Firestore (pull cloud data → local on each session start)
 if "firebase_hydrated" not in st.session_state:
-    firebase_sync.hydrate(_username, _user_data_dir)
+    try:
+        firebase_sync.hydrate(_username, _user_data_dir)
+    except Exception:
+        pass  # offline, or a guest/demo user with no cloud data — keep going
     st.session_state.firebase_hydrated = True
 
 portfolio_ledger.set_data_dir(_user_data_dir, username=_username)
@@ -86,242 +89,23 @@ pio.templates.default = "custom_neon"
 if "show_risk_breakdown" not in st.session_state:
     st.session_state.show_risk_breakdown = False
 
-# Custom CSS for aesthetics (Ultra Premium Dark Mode)
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-    
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
-    }
-    
-    /* Background & Aurora Animation */
-    .stApp {
-        background-color: transparent !important;
-        color: #e2e8f0;
-    }
-    html, body {
-        background-color: #050510 !important;
-    }
-    
-    .stApp::before {
-        content: '';
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        z-index: -1;
-        background-image: 
-            radial-gradient(600px circle at 0% 0%, rgba(76,29,149,0.15), transparent 60%),
-            radial-gradient(600px circle at 100% 0%, rgba(6,78,59,0.12), transparent 60%),
-            radial-gradient(600px circle at 50% 100%, rgba(30,58,138,0.1), transparent 60%);
-        background-repeat: no-repeat;
-        animation: aurora-move 20s ease-in-out infinite;
-    }
-    
-    @keyframes aurora-move {
-        0%, 100% { background-position: 0px 0px, 0px 0px, 0px 0px; }
-        50% { background-position: 80px 80px, -80px 80px, 0px -80px; }
-    }
-    
-    /* Hide specific streamlit header elements but keep toggle */
-    #MainMenu {visibility: hidden;}
-    .stDeployButton {display: none;}
-    header { background: transparent !important; }
-    
-    /* Sidebar Styling */
-    section[data-testid="stSidebar"] {
-        background-color: rgba(0, 0, 0, 0.3) !important;
-        backdrop-filter: blur(25px);
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    
-    /* Sidebar Separators */
-    section[data-testid="stSidebar"] hr {
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        margin: 12px 0;
-    }
-    
-    /* Inputs */
-    .stTextInput input, .stNumberInput input, .stSelectbox > div[data-baseweb="select"] {
-        background: rgba(255,255,255,0.06) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 8px !important;
-        color: #e2e8f0 !important;
-    }
-    
-    /* Glassmorphism Cards (All stAlert, stMetric, dashboard-header, stDataFrame) */
-    .dashboard-header, div[data-testid="stMetric"], div[data-testid="stDataFrame"], .stAlert {
-        background: rgba(255, 255, 255, 0.04) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 16px !important;
-        transition: all 0.25s ease;
-    }
-    
-    /* Metric Card Hover & Glow */
-    div[data-testid="stMetric"]:hover, div[data-testid="stDataFrame"]:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 24px rgba(99, 179, 237, 0.12);
-        border-color: rgba(255, 255, 255, 0.15) !important;
-    }
-    
-    /* Hero Metric Top Borders using nth-of-type targeting */
-    div[data-testid="stHorizontalBlock"]:nth-of-type(1) div[data-testid="column"]:nth-child(1) div[data-testid="stMetric"] { border-top: 3px solid #00ff87 !important; }
-    div[data-testid="stHorizontalBlock"]:nth-of-type(1) div[data-testid="column"]:nth-child(2) div[data-testid="stMetric"] { border-top: 3px solid #7dd3fc !important; }
-    div[data-testid="stHorizontalBlock"]:nth-of-type(1) div[data-testid="column"]:nth-child(3) div[data-testid="stMetric"] { 
-        border-top: 3px solid #ff4d6d !important;
-        cursor: pointer;
-    }
-    div[data-testid="stHorizontalBlock"]:nth-of-type(1) div[data-testid="column"]:nth-child(3) div[data-testid="stMetric"]:hover {
-        box-shadow: 0 0 32px rgba(255, 77, 109, 0.2) !important;
-    }
-    div[data-testid="stHorizontalBlock"]:nth-of-type(2) div[data-testid="column"]:nth-child(1) div[data-testid="stMetric"] { border-top: 3px solid rgba(255,255,255,0.3) !important; }
-    div[data-testid="stHorizontalBlock"]:nth-of-type(2) div[data-testid="column"]:nth-child(2) div[data-testid="stMetric"] { border-top: 3px solid rgba(255,255,255,0.3) !important; }
-    
-    /* Typography & Monospace for Numbers */
-    .dashboard-header {
-        padding: 2.5rem 2rem;
-        margin-bottom: 2rem;
-        position: relative;
-        overflow: hidden;
-    }
-    .dashboard-header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0;
-        background: linear-gradient(90deg, #e2e8f0, #94a3b8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    .dashboard-header p {
-        color: #94a3b8;
-        font-size: 1.1rem;
-        margin-top: 0.5rem;
-    }
-    
-    div[data-testid="stMetricValue"], div[data-testid="stDataFrame"] table {
-        font-family: 'JetBrains Mono', Courier, monospace !important;
-    }
-    
-    div[data-testid="stMetricValue"] {
-        font-size: 2.2rem !important;
-        font-weight: 700 !important;
-        color: #7dd3fc !important;
-    }
-    
-    div[data-testid="stMetricLabel"] {
-        font-size: 0.95rem !important;
-        color: #94a3b8 !important;
-        font-weight: 500 !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Positive / Negative P&L Colors */
-    div[data-testid="stMetricDelta"] svg {
-        display: none; /* Hide the default streamlit arrow to use purely colors */
-    }
-    div[data-testid="stMetricDelta"] > div {
-        font-family: 'JetBrains Mono', Courier, monospace !important;
-        font-weight: 600;
-    }
-    div[data-testid="stMetricDelta"][class*="positive"] > div {
-        color: #00ff87 !important;
-    }
-    div[data-testid="stMetricDelta"][class*="negative"] > div {
-        color: #ff4d6d !important;
-    }
-    
-    /* Pill Style Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
-        background-color: transparent;
-        padding-bottom: 5px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        height: 40px;
-        background-color: transparent;
-        border-radius: 999px;
-        color: #94a3b8;
-        font-weight: 500;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 6px 16px;
-        transition: all 0.25s ease;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        box-shadow: 0 0 12px rgba(99, 179, 237, 0.15);
-    }
-    .stTabs [data-baseweb="tab-highlight"] {
-        display: none !important;
-    }
-    
-    /* Buttons */
-    .stButton button, .stFormSubmitButton button {
-        background: linear-gradient(135deg, #3b82f6, #6366f1) !important;
-        border: none !important;
-        border-radius: 8px !important;
-        color: white !important;
-        font-weight: 500 !important;
-        padding: 0.6rem 1.2rem !important;
-        transition: all 0.3s ease !important;
-    }
-    .stButton button:hover, .stFormSubmitButton button:hover {
-        background: rgba(99, 179, 237, 0.15) !important;
-        border-color: rgba(99, 179, 237, 0.4) !important;
-        box-shadow: 0 0 15px rgba(99, 179, 237, 0.2) !important;
-    }
-    
-    /* Plotly Chart Containers */
-    div[data-testid="stPlotlyChart"] {
-        background: transparent !important;
-    }
-    div[data-testid="stPlotlyChart"] > div {
-        background: rgba(255,255,255,0.03) !important;
-        border: 1px solid rgba(255,255,255,0.06) !important;
-        border-radius: 12px !important;
-        padding: 16px !important;
-    }
-    
-    /* All DATA TABLES (stDataFrame uses glide-data-grid, but we style HTML fallback and headers) */
-    div[data-testid="stDataFrame"] {
-        border-radius: 12px !important;
-        overflow: hidden !important;
-    }
-    div[data-testid="stDataFrame"] table tbody tr { background: transparent !important; }
-    div[data-testid="stDataFrame"] table tbody tr:nth-of-type(odd) { background: rgba(255,255,255,0.02) !important; }
-    div[data-testid="stDataFrame"] table tbody tr:nth-of-type(even) { background: transparent !important; }
-    div[data-testid="stDataFrame"] table tbody tr:hover { background: rgba(255,255,255,0.05) !important; }
-    div[data-testid="stDataFrame"] table thead tr th {
-        background: rgba(255,255,255,0.05) !important;
-        color: #94a3b8 !important;
-        font-size: 12px !important;
-        letter-spacing: 0.05em !important;
-        text-transform: uppercase !important;
-    }
-    div[data-testid="stDataFrame"] table th, div[data-testid="stDataFrame"] table td {
-        border: 1px solid rgba(255,255,255,0.06) !important;
-    }
-</style>
-""", unsafe_allow_html=True)
+# ── Theme & design system (see ui_theme.py) ──
+import ui_theme
+ui_theme.init_theme()
+st.markdown(ui_theme.css(), unsafe_allow_html=True)
 
-# Auto-refresh every 60 seconds
-st_autorefresh(interval=60 * 1000, key="data_refresh")
+# Auto-refresh every 30 seconds for near real-time updates
+st_autorefresh(interval=30 * 1000, key="data_refresh")
 
 # --- Sidebar: User Info & Logout ---
+_hour = datetime.now().hour
+_greeting = "Good morning" if _hour < 12 else "Good afternoon" if _hour < 17 else "Good evening"
+
 st.sidebar.markdown(f"""
-<div style="
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1rem;
-">
-    <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Signed in as</div>
-    <div style="font-size: 1.1rem; color: #e2e8f0; font-weight: 600;">👤 {_user_info['display_name']}</div>
-    <div style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">@{_user_info['username']}</div>
+<div class="quest-profile-card">
+    <div class="quest-profile-label">Signed in as</div>
+    <div class="quest-profile-name">👤 {_user_info['display_name']}</div>
+    <div class="quest-profile-user">@{_user_info['username']}</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -331,12 +115,20 @@ if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="logout_btn"
         del st.session_state[key]
     st.rerun()
 
+ui_theme.theme_toggle()
+
+st.sidebar.markdown("---")
+section = st.sidebar.radio(
+    "Navigate",
+    ["Overview", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"],
+    key="nav_section",
+    label_visibility="collapsed",
+)
 st.sidebar.markdown("---")
 
 # --- Sidebar: Interactive Controls ---
 # NOTE: holdings.json is NEVER seeded here — it must exist on disk.
 # If it is genuinely absent, load_holdings() below will raise a clear error.
-st.sidebar.title("🛠️ Portfolio Manager")
 
 # Load current assets for dropdowns
 try:
@@ -346,61 +138,14 @@ except Exception:
     current_assets = []
     asset_names = []
 
-action = st.sidebar.radio("Action", ["Update Amount", "Update Target %", "Add Asset", "Remove Asset"])
-
-if action == "Update Amount":
-    with st.sidebar.form("update_amount_form"):
-        selected_asset = st.selectbox("Select Asset", asset_names)
-        current_amt = next((a.amount for a in current_assets if a.name == selected_asset), 0.0) if current_assets else 0.0
-        new_invested = st.number_input("Invested Amount (₹)", min_value=0.0, value=float(current_amt), step=100.0)
-        current_qty = next((a.quantity for a in current_assets if a.name == selected_asset), 0.0) if current_assets else 0.0
-        new_quantity = st.number_input("Quantity (Units)", min_value=0.0, value=float(current_qty), step=1.0)
-        if st.form_submit_button("Update"):
-            if update_asset_holdings(selected_asset, new_invested, new_quantity):
-                st.sidebar.success(f"Updated {selected_asset}")
-                time.sleep(1)
-                st.rerun()
-
-elif action == "Update Target %":
-    with st.sidebar.form("update_perc_form"):
-        st.write("Calculate required ₹ amount to match a target % of the portfolio.")
-        selected_asset = st.selectbox("Select Asset", asset_names)
-        target_perc = st.slider("Target Portfolio %", min_value=0.0, max_value=99.0, value=10.0, step=1.0)
-        if st.form_submit_button("Update"):
-            if update_asset_percentage(selected_asset, target_perc / 100.0):
-                st.sidebar.success(f"Updated {selected_asset} to target {target_perc}%")
-                time.sleep(1)
-                st.rerun()
-
-elif action == "Add Asset":
-    with st.sidebar.form("add_asset_form"):
-        new_name = st.text_input("Asset Name")
-        new_type = st.selectbox("Asset Type", [AssetType.EQUITY, AssetType.ETF, AssetType.MUTUAL_FUND, AssetType.DIGITAL_GOLD])
-        new_id = st.text_input("Identifier (Ticker/Code)", help="e.g. RELIANCE.NS, 119551")
-        new_amount = st.number_input("Initial Amount (₹)", min_value=0.0, value=0.0, step=100.0)
-        new_quantity = st.number_input("Quantity (Units)", min_value=0.0, value=0.0, step=1.0)
-        if st.form_submit_button("Add Asset"):
-            if new_name and add_asset(new_name, new_type, new_id, new_amount, new_quantity):
-                st.sidebar.success(f"Added {new_name}")
-                time.sleep(1)
-                st.rerun()
-            else:
-                st.sidebar.error("Could not add asset (already exists or invalid name).")
-
-elif action == "Remove Asset":
-    with st.sidebar.form("remove_asset_form"):
-        selected_asset = st.selectbox("Select Asset to Remove", asset_names)
-        if st.form_submit_button("Remove Asset"):
-            if remove_asset(selected_asset):
-                st.sidebar.success(f"Removed {selected_asset}")
-                time.sleep(1)
-                st.rerun()
-
 # --- Main Dashboard ---
-st.markdown("""
+st.markdown(f"""
 <div class="dashboard-header">
     <h1>⚡ QUEST</h1>
     <p>Quantitative Unified Equity Surveillance Tracker</p>
+    <div style="margin-top:1rem;font-size:1.1rem;color:var(--q-text-3);font-weight:500;text-transform:none;letter-spacing:0;">
+        {_greeting}, <span style="color:var(--q-text);font-weight:500;">{_user_info['display_name']}</span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -546,303 +291,664 @@ if not df.empty and total_invested > 0:
     else:
         summary['portfolio_risk_bucket'] = "LOW"
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Current Market Value", f"₹ {summary['total_value']:,.2f}", f"{total_pnl_perc:+.2f}% (₹{total_pnl:+,.2f})", delta_color="normal")
-    st.caption("Live via yfinance — may lag 15–30 min after market close")
-col2.metric("Total Invested", f"₹ {total_invested:,.2f}")
+import datetime as _dt
+_today = _dt.date.today()
+if section == "Overview":
+    # ── Hero / Overview header (themed) ──────────────────────────────────────
+    _pnl_pos = total_pnl >= 0
+    _pnl_cls = 'q-pos' if _pnl_pos else 'q-neg'
+    _pnl_sign = '+' if _pnl_pos else ''
+    _score = summary['portfolio_risk_score']
+    _risk_bucket = summary['portfolio_risk_bucket']
+    _risk_tone = 'pos' if _score <= 40 else 'warn' if _score <= 70 else 'neg'
 
-with col3:
-    st.metric("Risk Score", f"{summary['portfolio_risk_score']:.1f}", summary['portfolio_risk_bucket'], delta_color="inverse")
-    _risk_clicked = st.button(" ", key="risk_trigger_btn")
+    _mkt_status = summary.get('market_status', 'Unknown')
+    _mkt_open = summary.get('market_open', False)
+    _dominant_src = summary.get('dominant_source', 'historical')
+    _mkt_tone = 'pos' if _mkt_open else 'neg'
+
+    _src_map = {
+        'nse_live':   ('Live · NSE real-time', 'pos'),
+        'yfinance':   ('yfinance · ~15min delay', 'warn'),
+        'cached':     ('Last-known price (cached)', 'accent'),
+        'historical': ('Historical close', 'accent'),
+    }
+    _src_label, _src_tone = _src_map.get(_dominant_src, ('Historical close', 'accent'))
+
+    # ── Animated hero: portfolio value + NIFTY/SENSEX benchmarks (count-up) ──
+    _hp = ui_theme.palette()
+    def _pill_cols(tone):
+        return {
+            'pos': (_hp['pos_weak'], _hp['pos']),
+            'neg': (_hp['neg_weak'], _hp['neg']),
+            'warn': (_hp['warn_weak'], _hp['warn']),
+            'accent': (_hp['accent_weak'], _hp['accent']),
+        }.get(tone, (_hp['accent_weak'], _hp['accent']))
+    _mkt_bg, _mkt_fg = _pill_cols(_mkt_tone)
+    _src_bg, _src_fg = _pill_cols(_src_tone)
+    _pnl_color = _hp['pos'] if _pnl_pos else _hp['neg']
+    _prev_val = float(st.session_state.get('_hero_prev_val', 0.0))
+    _cur_val = float(summary['total_value'])
+    st.session_state['_hero_prev_val'] = _cur_val
+
+    @st.cache_data(ttl=300, show_spinner=False)
+    def _fetch_index_quotes():
+        out = {}
+        try:
+            import yfinance as yf
+            for _k, _tk in (('NIFTY 50', '^NSEI'), ('SENSEX', '^BSESN')):
+                try:
+                    _fi = yf.Ticker(_tk).fast_info
+                    _last = float(_fi.last_price)
+                    _prev = float(_fi.previous_close)
+                    out[_k] = {'last': _last, 'chg': ((_last - _prev) / _prev * 100) if _prev else 0.0}
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return out
+    _idx = _fetch_index_quotes()
+
+    def _idx_card(label, data):
+        if not data:
+            return ''
+        _c = _hp['pos'] if data['chg'] >= 0 else _hp['neg']
+        _ar = '▲' if data['chg'] >= 0 else '▼'
+        return (
+            f"<div style='background:{_hp['surface_2']};border-radius:12px;padding:11px 14px;'>"
+            f"<div style='font-size:.68rem;color:{_hp['text_3']};text-transform:uppercase;letter-spacing:.6px;'>{label}</div>"
+            f"<div class='cu mono' data-start='0' data-target='{data['last']}' data-dec='2' "
+            f"style='font-size:1.2rem;font-weight:500;color:{_hp['text']};margin-top:2px;'>{data['last']:,.2f}</div>"
+            f"<div class='mono' style='font-size:.76rem;color:{_c};'>{_ar} {abs(data['chg']):.2f}%</div></div>"
+        )
+    _idx_html = _idx_card('NIFTY 50', _idx.get('NIFTY 50')) + _idx_card('SENSEX', _idx.get('SENSEX'))
+    _idx_col = (f"<div style='flex:1;min-width:160px;display:flex;flex-direction:column;gap:10px;'>{_idx_html}</div>"
+                if _idx_html else "")
+
+    import streamlit.components.v1 as components
+    _hero_comp = f'''<!doctype html><html><head><meta charset="utf-8">
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+    *{{margin:0;box-sizing:border-box;}} html,body{{background:transparent;}}
+    body{{font-family:Inter,sans-serif;}}
+    .mono{{font-family:"JetBrains Mono",monospace;}}
+    .pill{{display:inline-flex;align-items:center;font-size:.72rem;padding:3px 10px;border-radius:999px;}}
+    @keyframes fin{{from{{opacity:0;transform:translateY(8px);}}to{{opacity:1;transform:translateY(0);}}}}
+    .fin{{animation:fin .5s cubic-bezier(.22,.61,.36,1) both;}}
+    </style></head><body>
+    <div class="fin" style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+      <div style="flex:2;min-width:240px;">
+        <div style="font-size:.78rem;color:{_hp['text_3']};">Portfolio value</div>
+        <div id="qv" class="cu mono" data-start="{_prev_val}" data-target="{_cur_val}" data-dec="2" data-prefix="₹" style="font-size:2.4rem;font-weight:500;color:{_hp['text']};letter-spacing:-1.2px;line-height:1.1;">₹{_cur_val:,.2f}</div>
+        <div class="mono" style="font-size:1rem;font-weight:500;margin-top:2px;color:{_pnl_color};">{_pnl_sign}{total_pnl_perc:.2f}% · {_pnl_sign}₹{total_pnl:,.2f}</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <span class="pill" style="background:{_mkt_bg};color:{_mkt_fg};">{_mkt_status}</span>
+          <span class="pill" style="background:{_src_bg};color:{_src_fg};">{_src_label}</span>
+        </div>
+      </div>
+      {_idx_col}
+    </div>
+    <script>
+    (function(){{
+      var rm=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      function fmt(n,dec,prefix){{return (prefix||'')+Number(n).toLocaleString('en-IN',{{minimumFractionDigits:dec,maximumFractionDigits:dec}});}}
+      document.querySelectorAll('.cu').forEach(function(el){{
+        var start=parseFloat(el.getAttribute('data-start'))||0;
+        var target=parseFloat(el.getAttribute('data-target'))||0;
+        var dec=parseInt(el.getAttribute('data-dec')||'2');
+        var prefix=el.getAttribute('data-prefix')||'';
+        if(rm||Math.abs(target-start)<0.01){{el.textContent=fmt(target,dec,prefix);return;}}
+        var t0=null,d=1100;
+        requestAnimationFrame(function s(ts){{if(!t0)t0=ts;var p=Math.min((ts-t0)/d,1);var e=1-Math.pow(1-p,3);el.textContent=fmt(start+(target-start)*e,dec,prefix);if(p<1)requestAnimationFrame(s);}});
+      }});
+    }})();
+    </script></body></html>'''
+    components.html(_hero_comp, height=185)
+
+    st.markdown(f'''
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:4px 0 22px;">
+      <div class="q-metric q-enter" style="animation-delay:.05s;"><div class="lbl">Invested</div><div class="val">₹{total_invested:,.2f}</div></div>
+      <div class="q-metric q-enter" style="animation-delay:.10s;"><div class="lbl">Assets</div><div class="val">{summary['n_assets']}</div></div>
+      <div class="q-metric q-enter" style="animation-delay:.15s;"><div class="lbl">Risk score</div><div class="val" style="color:var(--q-{_risk_tone});">{_score:.1f} · {_risk_bucket.title()}</div></div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    # ── Market Holiday Calendar (Google-Calendar style) ──────────────────────
+    import calendar as _calmod
+    import datetime as _dt
+    import nse_live as _nse
+
+    @st.cache_data(ttl=604800, show_spinner=False)  # refresh weekly
+    def _load_market_holidays():
+        try:
+            _nse.refresh_holiday_calendar()
+        except Exception:
+            pass
+        return _nse.get_holiday_calendar()
+
+    _holidays_map = _load_market_holidays()
+    _today = _dt.date.today()
+    _pal = ui_theme.palette()
+
+    if 'cal_offset' not in st.session_state:
+        st.session_state.cal_offset = 0
+
+    # Resolve the displayed month from today + offset
+    _base_idx = _today.year * 12 + (_today.month - 1) + st.session_state.cal_offset
+    _disp_year, _disp_month = divmod(_base_idx, 12)
+    _disp_month += 1
+
+    _cprev, _ctitle, _cnext = st.columns([1, 4, 1])
+    with _cprev:
+        if st.button('‹', key='cal_prev', use_container_width=True):
+            st.session_state.cal_offset -= 1
+            st.rerun()
+    with _cnext:
+        if st.button('›', key='cal_next', use_container_width=True):
+            st.session_state.cal_offset += 1
+            st.rerun()
+    with _ctitle:
+        _hdr = _dt.date(_disp_year, _disp_month, 1).strftime('%B %Y')
+        st.markdown(
+            f"<div style='text-align:center;font-size:1.05rem;font-weight:500;"
+            f"color:{_pal['text']};font-family:\"JetBrains Mono\",monospace;padding-top:6px;'>"
+            f"{_hdr}</div>", unsafe_allow_html=True)
+
+    # Build the month grid (weeks of datetime.date, Monday-first)
+    _weeks = _calmod.Calendar(firstweekday=0).monthdatescalendar(_disp_year, _disp_month)
+    _dow = "".join(
+        f"<div style='text-align:center;font-size:0.68rem;color:{_pal['text_3']};"
+        f"font-weight:500;text-transform:uppercase;letter-spacing:1px;padding:4px 0;'>{d}</div>"
+        for d in ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    )
+    _cells = ""
+    for _wk in _weeks:
+        for _day in _wk:
+            _ds = _day.strftime('%Y-%m-%d')
+            _in_month = (_day.month == _disp_month)
+            _is_today = (_day == _today)
+            _is_weekend = (_day.weekday() >= 5)
+            _hol_desc = _holidays_map.get(_ds)
+            # base styling (theme-aware)
+            _bg = "transparent"
+            _color = _pal['text'] if _in_month else _pal['border_2']
+            _border = "1px solid transparent"
+            _extra = ""
+            _title = ""
+            if not _in_month:
+                _color = _pal['border_2']
+            elif _hol_desc:
+                _bg = _pal['neg_weak']
+                _color = _pal['neg']
+                _border = f"1px solid {_pal['neg']}"
+                _title = _hol_desc
+            elif _is_weekend:
+                _color = _pal['text_3']
+            if _is_today:
+                _border = f"2px solid {_pal['accent']}"
+                _extra = "font-weight:500;"
+            _dot = (f"<span style='display:block;width:5px;height:5px;border-radius:50%;"
+                    f"background:{_pal['neg']};margin:2px auto 0;'></span>") if (_in_month and _hol_desc) else ""
+            _cells += (
+                f"<div title='{_title}' style='height:36px;display:flex;flex-direction:column;"
+                f"align-items:center;justify-content:center;border-radius:7px;background:{_bg};"
+                f"border:{_border};color:{_color};font-size:0.76rem;"
+                f"font-family:\"JetBrains Mono\",monospace;{_extra}'>{_day.day}{_dot}</div>"
+            )
+
+    # Next upcoming holiday note
+    _upcoming = sorted(d for d in _holidays_map if d >= _today.strftime('%Y-%m-%d'))
+    if _upcoming:
+        _nh = _upcoming[0]
+        _nh_date = _dt.datetime.strptime(_nh, '%Y-%m-%d').date()
+        _days_to = (_nh_date - _today).days
+        _when = "today" if _days_to == 0 else ("tomorrow" if _days_to == 1 else f"in {_days_to} days")
+        _next_note = (f"<span style='color:{_pal['neg']};'>●</span> Next holiday: "
+                      f"<b style='color:{_pal['text']};'>{_holidays_map[_nh]}</b> "
+                      f"<span style='color:{_pal['text_3']};'>· {_nh_date.strftime('%d %b')} ({_when})</span>")
+    else:
+        _next_note = f"<span style='color:{_pal['text_3']};'>No upcoming holidays on record.</span>"
+
+    st.markdown(f"""
+    <div class="q-card q-enter" style="margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">{_dow}</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:6px;">{_cells}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+           gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid {_pal['border']};
+           font-size:0.72rem;">
+        <div style="display:flex;gap:14px;color:{_pal['text_3']};">
+          <span><span style="color:{_pal['accent']};">▢</span> Today</span>
+          <span><span style="color:{_pal['neg']};">●</span> Holiday</span>
+          <span><span style="color:{_pal['text_3']};">▪</span> Weekend</span>
+        </div>
+        <div>{_next_note}</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    _risk_clicked = st.button('View Risk Breakdown ↗', key='risk_trigger_btn')
     if _risk_clicked:
         st.session_state.show_risk_breakdown = True
         st.rerun()
 
-st.markdown("""
-<style>
-/* ── Risk card: make col3 a positioning context ── */
-div[data-testid="column"]:nth-of-type(3) {
-    position: relative;
-}
-/* ── HIDE the button container entirely — display:none removes all visual trace ── */
-div[data-testid="column"]:nth-of-type(3) div[data-testid="stButtonContainer"],
-div[data-testid="column"]:nth-of-type(3) div.stButton,
-div[data-testid="column"]:nth-of-type(3) > div:last-child > div[data-testid="stButtonContainer"] {
-    display: none !important;
-}
-/* ── Transparent full-coverage clickable overlay via ::before ── */
-div[data-testid="column"]:nth-of-type(3)::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    cursor: pointer;
-}
-/* ── But we still need the actual Streamlit button to receive the click ──
-   Re-show it at full size inside ::before's hit area, fully transparent ── */
-div[data-testid="column"]:nth-of-type(3) div[data-testid="stButtonContainer"] {
-    display: block !important;
-    position: absolute !important;
-    inset: 0 !important;
-    z-index: 11 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-div[data-testid="column"]:nth-of-type(3) div[data-testid="stButtonContainer"] button {
-    width: 100% !important;
-    height: 100% !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: transparent !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    padding: 0 !important;
-    cursor: pointer !important;
-}
-div[data-testid="column"]:nth-of-type(3) div[data-testid="stButtonContainer"] button:focus,
-div[data-testid="column"]:nth-of-type(3) div[data-testid="stButtonContainer"] button:hover,
-div[data-testid="column"]:nth-of-type(3) div[data-testid="stButtonContainer"] button:active {
-    outline: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    border: none !important;
-}
-/* ── Metric card hover glow ── */
-div[data-testid="column"]:nth-of-type(3) div[data-testid="metric-container"] {
-    border-radius: 12px;
-    transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
-    animation: risk-pulse 2.5s infinite;
-}
-div[data-testid="column"]:nth-of-type(3):hover div[data-testid="metric-container"] {
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px 4px rgba(255,77,109,0.32);
-    background: rgba(255,77,109,0.05);
-}
-/* ── Subtle "↗ View Breakdown" hint ── */
-div[data-testid="column"]:nth-of-type(3)::after {
-    content: "\2197 View Breakdown";
-    position: absolute;
-    bottom: -14px;
-    right: 4px;
-    font-size: 0.71rem;
-    color: #ff4d6d;
-    font-weight: 600;
-    pointer-events: none;
-    opacity: 0.8;
-}
-@keyframes risk-pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(255,77,109,0.32); }
-    70%  { box-shadow: 0 0 0 9px rgba(255,77,109,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,77,109,0); }
-}
-</style>
-""", unsafe_allow_html=True)
+    st.markdown("---")
 
-
-col4, col5 = st.columns(2)
-col4.metric("Assets Analyzed", summary['n_assets'])
-col5.metric("Last Updated", datetime.now().strftime("%H:%M:%S"))
-
-st.markdown("---")
-
-if st.session_state.show_risk_breakdown:
-    c_back, _ = st.columns([1, 4])
-    if c_back.button("← Back to Dashboard"):
-        st.session_state.show_risk_breakdown = False
-        st.rerun()
+    if st.session_state.show_risk_breakdown:
+        c_back, _ = st.columns([1, 4])
+        if c_back.button("← Back to Dashboard"):
+            st.session_state.show_risk_breakdown = False
+            st.rerun()
         
-    st.subheader("Composite Risk Score Breakdown")
-    if not df.empty and total_invested > 0:
-        # Gauge Chart for Score
-        fig_gauge = go.Figure(go.Indicator(
-            mode = "gauge+number",
-            value = comp_score,
-            title = {'text': "Overall Risk Score"},
-            gauge = {
-                'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "rgba(255,255,255,0.5)"},
-                'bar': {'color': "rgba(255,255,255,0.8)", 'thickness': 0.2},
-                'bgcolor': "rgba(0,0,0,0)",
-                'borderwidth': 2,
-                'bordercolor': "rgba(255,255,255,0.1)",
-                'steps': [
-                    {'range': [0, 40], 'color': "rgba(0, 255, 135, 0.2)"},
-                    {'range': [40, 70], 'color': "rgba(255, 166, 0, 0.2)"},
-                    {'range': [70, 100], 'color': "rgba(255, 77, 109, 0.2)"}],
-                'threshold': {
-                    'line': {'color': "#fff", 'width': 4},
-                    'thickness': 0.75,
-                    'value': comp_score}
-            }
-        ))
-        fig_gauge.update_layout(height=300, margin=dict(l=10, r=10, t=40, b=10), font=dict(family="Inter", color="#fff"), plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_gauge, use_container_width=True)
+        st.subheader("Composite Risk Score Breakdown")
+        if not df.empty and total_invested > 0:
+            # Gauge Chart for Score
+            fig_gauge = go.Figure(go.Indicator(
+                mode = "gauge+number",
+                value = comp_score,
+                title = {'text': "Overall Risk Score"},
+                gauge = {
+                    'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': _pal['text_3']},
+                    'bar': {'color': _pal['accent'], 'thickness': 0.22},
+                    'bgcolor': "rgba(0,0,0,0)",
+                    'borderwidth': 1,
+                    'bordercolor': _pal['border'],
+                    'steps': [
+                        {'range': [0, 40], 'color': _pal['pos_weak']},
+                        {'range': [40, 70], 'color': _pal['warn_weak']},
+                        {'range': [70, 100], 'color': _pal['neg_weak']}],
+                    'threshold': {
+                        'line': {'color': _pal['text'], 'width': 3},
+                        'thickness': 0.75,
+                        'value': comp_score}
+                }
+            ))
+            fig_gauge.update_layout(height=300, margin=dict(l=10, r=10, t=40, b=10), font=dict(family="Inter", color=_pal['text_2']), plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+            ui_theme.style_fig(fig_gauge)
+            st.plotly_chart(fig_gauge, use_container_width=True)
         
-        # Verdict
-        bucket_color = "#00ff87" if comp_score <= 40 else "#ffa600" if comp_score <= 70 else "#ff4d6d"
-        st.markdown(f"<h4 style='text-align: center; color: {bucket_color}; font-family: \"Inter\", sans-serif;'>Your portfolio carries {summary['portfolio_risk_bucket']} risk. The primary drivers are your highest-scoring components below.</h4>", unsafe_allow_html=True)
-        st.markdown("---")
+            # Verdict
+            bucket_color = _pal['pos'] if comp_score <= 40 else _pal['warn'] if comp_score <= 70 else _pal['neg']
+            st.markdown(f"<h4 style='text-align: center; color: {bucket_color}; font-family: \"Inter\", sans-serif;'>Your portfolio carries {summary['portfolio_risk_bucket']} risk. The primary drivers are your highest-scoring components below.</h4>", unsafe_allow_html=True)
+            st.markdown("---")
         
-        def render_component(title, weight, score, text, formula):
-            c_color = "#00ff87" if score <= 40 else "#ffa600" if score <= 70 else "#ff4d6d"
-            contrib = score * (weight/100)
-            return f"""
-            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.2rem; height: 100%; margin-bottom: 1rem;">
-                <h4 style="margin-top: 0; margin-bottom: 0.2rem; color: #fff;">{title}</h4>
-                <p style="color: #94a3b8; font-size: 0.8rem; margin-top: 0;">Weight: {weight}% | Contributes {contrib:.1f} pts</p>
-                
-                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                    <div style="flex-grow: 1; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; margin-right: 15px;">
-                        <div style="width: {score}%; background: {c_color}; height: 100%;"></div>
+            def render_component(title, weight, score, text, formula):
+                c_color = _pal['pos'] if score <= 40 else _pal['warn'] if score <= 70 else _pal['neg']
+                contrib = score * (weight/100)
+                return f"""
+                <div style="background: var(--q-surface); border: 1px solid var(--q-border); border-radius: 12px; padding: 1.2rem; height: 100%; margin-bottom: 1rem; font-family: 'Inter', sans-serif;">
+                    <h4 style="margin-top: 0; margin-bottom: 0.2rem; color: var(--q-text);">{title}</h4>
+                    <p style="color: var(--q-text-3); font-size: 0.8rem; margin-top: 0;">Weight: {weight}% | Contributes {contrib:.1f} pts</p>
+                    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                        <div style="flex-grow: 1; background: var(--q-surface-2); height: 8px; border-radius: 4px; overflow: hidden; margin-right: 15px;">
+                            <div class="q-bar" style="width: {score}%; background: {c_color}; height: 100%;"></div>
+                        </div>
+                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 500; color: {c_color}; font-size: 1.2rem;">{score:.1f}</span>
                     </div>
-                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: {c_color}; font-size: 1.2rem;">{score:.1f}</span>
+                    <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">{text}</p>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 0.5rem; margin-top: 1rem;">
+                        <code style="color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">{formula}</code>
+                    </div>
                 </div>
-                
-                <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">{text}</p>
-                <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 0.5rem; margin-top: 1rem;">
-                    <code style="color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">{formula}</code>
-                </div>
-            </div>
-            """
+                """
             
-        r1, r2, r3 = st.columns(3)
-        with r1:
-            st.markdown(render_component(
-                "Concentration Risk", 22, score_conc,
-                f"Your top asset ({top_asset['Name']}) holds {top_pct:.1f}% of your portfolio. If perfectly equal across {len(df)} assets, each would be {100/len(df):.1f}%.",
-                "HHI = Σ(wᵢ²) × 10000"
-            ), unsafe_allow_html=True)
+            r1, r2, r3 = st.columns(3)
+            with r1:
+                st.html(render_component(
+                    "Concentration Risk", 22, score_conc,
+                    f"Your top asset ({top_asset['Name']}) holds {top_pct:.1f}% of your portfolio. If perfectly equal across {len(df)} assets, each would be {100/len(df):.1f}%.",
+                    "HHI = \u03a3(w\u1d62\u00b2) \u00d7 10000"
+                ))
 
-        with r2:
-            st.markdown(render_component(
-                "Volatility Risk", 22, score_vol,
-                f"Your portfolio's daily standard deviation is ₹{vol_rupees:,.2f} ({vol_daily_pct:.2f}%). On a bad day, expect to move this much.",
-                "σₚ = √(wᵀΣw)"
-            ), unsafe_allow_html=True)
+            with r2:
+                st.html(render_component(
+                    "Volatility Risk", 22, score_vol,
+                    f"Your portfolio's daily standard deviation is \u20b9{vol_rupees:,.2f} ({vol_daily_pct:.2f}%). On a bad day, expect to move this much.",
+                    "\u03c3\u209a = \u221a(w\u1d40\u03a3w)"
+                ))
 
-        with r3:
-            st.markdown(render_component(
-                "Drawdown Risk", 17, score_dd,
-                f"Your losing positions ({len(losers)} assets) collectively represent ₹{unrealised_loss:,.2f} of unrealised loss.",
-                "Loss Contrib = Σ(wᵢ × |P&Lᵢ|) for P&L < 0"
-            ), unsafe_allow_html=True)
+            with r3:
+                st.html(render_component(
+                    "Drawdown Risk", 17, score_dd,
+                    f"Your losing positions ({len(losers)} assets) collectively represent \u20b9{unrealised_loss:,.2f} of unrealised loss.",
+                    "Loss Contrib = \u03a3(w\u1d62 \u00d7 |P&amp;L\u1d62|) for P&amp;L &lt; 0"
+                ))
 
-        r4, r5, r6 = st.columns(3)
-        with r4:
-            st.markdown(render_component(
-                "Correlation Risk", 12, score_corr,
-                f"Your average inter-asset correlation is {mean_corr:.2f}. A perfectly diversified portfolio would be close to 0.",
-                "Mean Corr = (2 / n(n-1)) × Σ ρᵢⱼ"
-            ), unsafe_allow_html=True)
+            r4, r5, r6 = st.columns(3)
+            with r4:
+                st.html(render_component(
+                    "Correlation Risk", 12, score_corr,
+                    f"Your average inter-asset correlation is {mean_corr:.2f}. A perfectly diversified portfolio would be close to 0.",
+                    "Mean Corr = (2 / n(n-1)) \u00d7 \u03a3 \u03c1\u1d62\u2c7c"
+                ))
 
-        with r5:
-            st.markdown(render_component(
-                "Momentum Risk", 12, score_mom,
-                f"{mom_count} out of {len(df)} assets are in a negative 1-month trend, representing {mom_weight*100:.1f}% of your portfolio by value.",
-                "Score = % Weight of Assets w/ 1M Ret < 0"
-            ), unsafe_allow_html=True)
+            with r5:
+                st.html(render_component(
+                    "Momentum Risk", 12, score_mom,
+                    f"{mom_count} out of {len(df)} assets are in a negative 1-month trend, representing {mom_weight*100:.1f}% of your portfolio by value.",
+                    "Score = % Weight of Assets w/ 1M Ret &lt; 0"
+                ))
 
-        with r6:
-            _sent_label = "Bullish" if portfolio_sentiment_score > 0.15 else "Bearish" if portfolio_sentiment_score < -0.15 else "Neutral"
-            st.markdown(render_component(
-                "News Sentiment Risk", 15, score_sent,
-                f"Based on today’s financial news about your holdings. "
-                f"{_sentiment_neg_count} of your {len(current_assets)} stocks have negative news coverage right now. "
-                f"Overall portfolio sentiment is {_sent_label} ({portfolio_sentiment_score:+.2f}).",
-                "score = 50 − (sentiment_score × 40)"
-            ), unsafe_allow_html=True)
+            with r6:
+                _sent_label = "Bullish" if portfolio_sentiment_score > 0.15 else "Bearish" if portfolio_sentiment_score < -0.15 else "Neutral"
+                st.html(render_component(
+                    "News Sentiment Risk", 15, score_sent,
+                    f"Based on today's financial news about your holdings. "
+                    f"{_sentiment_neg_count} of your {len(current_assets)} stocks have negative news coverage right now. "
+                    f"Overall portfolio sentiment is {_sent_label} ({portfolio_sentiment_score:+.2f}).",
+                    "score = 50 \u2212 (sentiment_score \u00d7 40)"
+                ))
 
-        st.markdown("---")
-        st.markdown("### 🛠️ How to lower your score")
-        st.markdown("Based on the mathematical breakdown, taking these actions will most efficiently reduce your composite risk:")
+            st.markdown("---")
+            st.markdown("### 🛠️ How to lower your score")
+            st.markdown("Based on the mathematical breakdown, taking these actions will most efficiently reduce your composite risk:")
 
-        scores_dict = {
-            "Concentration": score_conc,
-            "Volatility":    score_vol,
-            "Drawdown":      score_dd,
-            "Correlation":   score_corr,
-            "Momentum":      score_mom,
-            "Sentiment":     score_sent,
-        }
-        sorted_scores = sorted(scores_dict.items(), key=lambda x: x[1], reverse=True)
+            scores_dict = {
+                "Concentration": score_conc,
+                "Volatility":    score_vol,
+                "Drawdown":      score_dd,
+                "Correlation":   score_corr,
+                "Momentum":      score_mom,
+                "Sentiment":     score_sent,
+            }
+            sorted_scores = sorted(scores_dict.items(), key=lambda x: x[1], reverse=True)
 
-        for k, v in sorted_scores[:3]:
-            if k == "Concentration":
-                st.info(f"**Reduce Concentration:** Trim **{top_asset['Name']}** from {top_pct:.1f}% to under {100/len(df) * 1.5:.1f}%. This alone would heavily reduce your Concentration sub-score.")
-            elif k == "Volatility":
-                st.info(f"**Lower Volatility:** Shift capital from high-beta equities into lower volatility assets like Digital Gold or Bonds.")
-            elif k == "Drawdown":
-                st.info(f"**Cut Losers:** Sell off your largest unrealised losing position to instantly clear the Drawdown risk penalty.")
-            elif k == "Correlation":
-                st.info(f"**Improve Diversification:** Sell highly correlated assets in identical sectors and add uncorrelated assets (like commodities).")
-            elif k == "Momentum":
-                st.info(f"**Trim Downward Trends:** {mom_count} of your assets are actively dropping in the 1-month window. Don't average down until momentum flips positive.")
-            elif k == "Sentiment":
-                st.info(f"**Monitor News Flow:** {_sentiment_neg_count} of your holdings currently have negative news sentiment. Watch for earnings misses, downgrades, or sector-level headwinds.")
-                
-    st.stop() # Halt execution so the main dashboard doesn't render below the breakdown view
+            for k, v in sorted_scores[:3]:
+                if k == "Concentration":
+                    st.info(f"**Reduce Concentration:** Trim **{top_asset['Name']}** from {top_pct:.1f}% to under {100/len(df) * 1.5:.1f}%. This alone would heavily reduce your Concentration sub-score.")
+                elif k == "Volatility":
+                    st.info(f"**Lower Volatility:** Shift capital from high-beta equities into lower volatility assets like Digital Gold or Bonds.")
+                elif k == "Drawdown":
+                    st.info(f"**Cut Losers:** Sell off your largest unrealised losing position to instantly clear the Drawdown risk penalty.")
+                elif k == "Correlation":
+                    st.info(f"**Improve Diversification:** Sell highly correlated assets in identical sectors and add uncorrelated assets (like commodities).")
+                elif k == "Momentum":
+                    st.info(f"**Trim Downward Trends:** {mom_count} of your assets are actively dropping in the 1-month window. Don't average down until momentum flips positive.")
+                elif k == "Sentiment":
+                    st.info(f"**Monitor News Flow:** {_sentiment_neg_count} of your holdings currently have negative news sentiment. Watch for earnings misses, downgrades, or sector-level headwinds.")
+
+            # ── Compare & Analyze ────────────────────────────────────────────
+            st.markdown("---")
+            st.markdown("### 🔬 Compare & Analyze")
+            import yfinance as _yf
+            import urllib.request as _ur, urllib.parse as _up, json as _json
+
+            def _cmp_lookup(name):
+                try:
+                    u = "https://query2.finance.yahoo.com/v1/finance/search?q=" + _up.quote(name.strip())
+                    rq = _ur.Request(u, headers={"User-Agent": "Mozilla/5.0"})
+                    with _ur.urlopen(rq, timeout=4) as r:
+                        d = _json.load(r)
+                    qs = d.get("quotes", [])
+                    for suf in (".NS", ".BO"):
+                        for q in qs:
+                            if str(q.get("symbol", "")).endswith(suf):
+                                return q["symbol"]
+                    return qs[0].get("symbol") if qs else None
+                except Exception:
+                    return None
+
+            @st.cache_data(ttl=900, show_spinner=False)
+            def _cmp_series(ticker, period="6mo"):
+                try:
+                    h = _yf.Ticker(ticker).history(period=period)["Close"].dropna()
+                    return h if len(h) > 5 else None
+                except Exception:
+                    return None
+
+            def _cmp_rsi(s, n=14):
+                d = s.diff()
+                up = d.clip(lower=0).rolling(n).mean()
+                dn = (-d.clip(upper=0)).rolling(n).mean()
+                rs = up / dn.replace(0, float('nan'))
+                return float((100 - 100 / (1 + rs)).iloc[-1])
+
+            _ct1, _ct2 = st.tabs(["📈 Portfolio vs Market", "🔍 Compare stocks"])
+
+            with _ct1:
+                try:
+                    _pw = float((df["Weight %"] * df["1Y Ret %"]).sum() / 100.0)
+                except Exception:
+                    _pw = float('nan')
+
+                @st.cache_data(ttl=900, show_spinner=False)
+                def _idx_ret(tk):
+                    s = _cmp_series(tk, "1y")
+                    if s is None or len(s) < 2:
+                        return None
+                    return float((s.iloc[-1] / s.iloc[0] - 1) * 100)
+                _nret, _sret = _idx_ret("^NSEI"), _idx_ret("^BSESN")
+                _bx = ["Your portfolio", "NIFTY 50", "SENSEX"]
+                _by = [_pw, _nret if _nret is not None else 0.0, _sret if _sret is not None else 0.0]
+                _figc = px.bar(x=_bx, y=_by, text=[f"{v:.1f}%" for v in _by],
+                               labels={"x": "", "y": "1-year return %"})
+                _figc.update_traces(marker_color=[_pal['accent'], _pal['text_3'], _pal['text_3']])
+                _figc.update_layout(height=300, margin=dict(t=10, b=0, l=0, r=0))
+                ui_theme.style_fig(_figc)
+                st.plotly_chart(_figc, use_container_width=True)
+                if _nret is not None and not pd.isna(_pw):
+                    _delta = _pw - _nret
+                    if _delta >= 0:
+                        st.success(f"You're **beating NIFTY by {_delta:.1f}%** over the last year.")
+                    else:
+                        st.warning(f"You're **trailing NIFTY by {abs(_delta):.1f}%** over the last year.")
+
+            with _ct2:
+                _names = st.text_input("Enter 2+ companies (comma-separated)",
+                                       placeholder="e.g. Reliance, TCS, Infosys", key="cmp_names")
+                if st.button("Compare", key="cmp_go") and _names.strip():
+                    _resolved = []
+                    for _n in [x.strip() for x in _names.split(",") if x.strip()]:
+                        _sym = _cmp_lookup(_n)
+                        if _sym:
+                            _resolved.append((_n, _sym))
+                    if not _resolved:
+                        st.warning("Couldn't resolve any tickers from those names.")
+                    else:
+                        _norm = pd.DataFrame()
+                        _rows = []
+                        for _n, _sym in _resolved:
+                            _s = _cmp_series(_sym, "6mo")
+                            if _s is None:
+                                continue
+                            _norm[_sym] = _s / _s.iloc[0] * 100
+                            _ret = (_s.iloc[-1] / _s.iloc[0] - 1) * 100
+                            _vol = _s.pct_change().std() * (252 ** 0.5) * 100
+                            try:
+                                _r = _cmp_rsi(_s)
+                            except Exception:
+                                _r = float('nan')
+                            _ma = _s.rolling(min(200, len(_s))).mean().iloc[-1]
+                            _above = _s.iloc[-1] > _ma
+                            if not pd.isna(_r) and _r < 35 and _above:
+                                _sig = "🟢 Accumulate"
+                            elif not pd.isna(_r) and _r > 70:
+                                _sig = "🔴 Overbought"
+                            elif not _above:
+                                _sig = "🟠 Below 200-DMA"
+                            else:
+                                _sig = "⚪ Neutral"
+                            _rows.append({"Stock": _n, "Ticker": _sym, "6M %": round(_ret, 1),
+                                          "Vol %": round(_vol, 1), "RSI": round(_r, 0) if not pd.isna(_r) else None,
+                                          "Signal": _sig})
+                        if not _norm.empty:
+                            _fign = px.line(_norm, labels={"value": "Growth (rebased to 100)", "index": "", "variable": "Stock"})
+                            _fign.update_layout(height=340, margin=dict(t=10, b=0, l=0, r=0))
+                            ui_theme.style_fig(_fign)
+                            st.plotly_chart(_fign, use_container_width=True)
+                            st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
+                            st.caption("Signals are heuristic (RSI + 200-DMA) — research, not financial advice.")
+
+        st.stop() # Halt execution so the main dashboard doesn't render below the breakdown view
 
 # Split view for Data and Insights
-tab1, tab2, tab_math, tab3, tab4, tab5, tab6, tab_chat, tab_michael = st.tabs(["📊 Portfolio Data", "📈 Performance & Visuals", "🔢 Math Engine", "💡 AI Recommendations", "📜 Transaction Ledger", "🔮 Future Projections", "📰 News & Sentiment", "💬 Chat", "⚡ MICHAEL"])
+# ── Section routing (sidebar nav replaces 9 tabs) ──────────────────────────
+_SEC_OF = {
+    "tab1": "Overview",
+    "tab2": "Analytics", "tab_math": "Analytics",
+    "tab5": "Projections",
+    "tab3": "Insights",
+    "tab6": "News",
+    "tab4": "Activity",
+    "tab_chat": "Chat",
+    "tab_michael": "MICHAEL",
+}
 
-with tab1:
-    st.subheader("Asset Breakdown & Quick Edit")
-    st.markdown("You can **double-click the Invested (₹)** or **Quantity** cells below to update your portfolio. Press **Enter** to save.")
-    
+def _active(name):
+    """True if the tab's section is the one currently selected. Inactive
+    sections are skipped entirely — no flash, and only one section's code
+    runs per rerun (much faster)."""
+    return section == _SEC_OF[name]
+
+if _active("tab1"):
+    st.markdown(
+        f"<div style='font-size:1.15rem;font-weight:500;color:var(--q-text);margin-bottom:10px;'>"
+        f"Holdings <span style='color:var(--q-text-3);'>· {len(df)}</span></div>",
+        unsafe_allow_html=True,
+    )
+
     if not df.empty:
-        display_df = df.copy()
-        
-        # Display as an interactive dataframe
-        edited_df = st.data_editor(
-            display_df,
-            use_container_width=True,
-            column_config={
-                "Invested (₹)": st.column_config.NumberColumn("Invested (₹)", min_value=0.0, format="₹ %.2f", step=0.01),
-                "Quantity": st.column_config.NumberColumn("Quantity", min_value=0.0, format="%.4f", step=0.0001),
-                "Current Value (₹)": st.column_config.NumberColumn("Current Value", format="₹ %.2f"),
-                "P&L (₹)": st.column_config.NumberColumn("P&L", format="₹ %.2f"),
-                "P&L %": st.column_config.NumberColumn("P&L %", format="%.2f%%"),
-                "Weight %": st.column_config.ProgressColumn("Weight %", format="%.1f %%", min_value=0, max_value=100),
-                "1M Ret %": st.column_config.NumberColumn("1M Return", format="%.1f%%"),
-                "6M Ret %": st.column_config.NumberColumn("6M Return", format="%.1f%%"),
-                "1Y Ret %": st.column_config.NumberColumn("1Y Return", format="%.1f%%"),
-                "Risk Score": st.column_config.NumberColumn("Risk Score", format="%.1f"),
-                "Risk Bucket": st.column_config.TextColumn("Risk")
-            },
-            disabled=["Risk Rank", "Name", "Type", "Last Price", "Current Value (₹)", "P&L (₹)", "P&L %", "Volatility %", "Beta", "Max DD %", "Sharpe", "1d VaR %", "1M Ret %", "6M Ret %", "1Y Ret %", "Total Return %", "Ann Return %", "Profit Factor", "Win Rate %", "RSI", "52w Pos", "Dist 200DMA %", "Risk Score", "Risk Bucket", "Weight %"],
-            hide_index=True,
-            key="portfolio_editor"
-        )
-        
-        # Check if amounts were edited
-        changes_made = False
-        for idx, row in edited_df.iterrows():
-            original_inv = df.loc[idx, "Invested (₹)"]
-            original_qty = df.loc[idx, "Quantity"]
-            new_inv = row["Invested (₹)"]
-            new_qty = row["Quantity"]
-            if original_inv != new_inv or original_qty != new_qty:
-                update_asset_holdings(row["Name"], float(new_inv), float(new_qty))
-                changes_made = True
-                
-        if changes_made:
-            st.success("Changes saved successfully!")
-            time.sleep(0.5)
-            st.rerun()
+        def _risk_tone(b):
+            b = str(b).upper()
+            return 'pos' if b == 'LOW' else 'warn' if b == 'MODERATE' else 'neg'
+
+        _cards = ""
+        for _, r in df.iterrows():
+            _pos = r['P&L (₹)'] >= 0
+            _cls = 'q-pos' if _pos else 'q-neg'
+            _sgn = '+' if _pos else '−'
+            _tone = _risk_tone(r['Risk Bucket'])
+            _wt = min(float(r['Weight %']), 100.0)
+            _barcol = 'var(--q-pos)' if _pos else 'var(--q-text-3)'
+            _cards += (
+                "<div class='q-card q-enter' style='padding:13px 16px;margin-bottom:8px;'>"
+                "<div style='display:flex;justify-content:space-between;align-items:center;'>"
+                "<div style='display:flex;align-items:center;gap:10px;'>"
+                f"<span style='font-weight:500;color:var(--q-text);'>{r['Name']}</span>"
+                f"<span class='q-pill' style='background:var(--q-surface-2);color:var(--q-text-2);'>{str(r['Type']).upper()}</span></div>"
+                "<div style='text-align:right;font-family:\"JetBrains Mono\",monospace;'>"
+                f"<div style='font-weight:500;color:var(--q-text);'>₹{r['Current Value (₹)']:,.2f}</div>"
+                f"<div class='{_cls}' style='font-size:.8rem;'>{_sgn}{abs(r['P&L %']):.2f}% · {_sgn}₹{abs(r['P&L (₹)']):,.2f}</div></div></div>"
+                "<div style='display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:.72rem;color:var(--q-text-3);'>"
+                f"<span style='font-family:\"JetBrains Mono\",monospace;'>{r['Quantity']:g} units · invested ₹{r['Invested (₹)']:,.2f}</span>"
+                f"{ui_theme.pill(str(r['Risk Bucket']).title() + ' risk', _tone)}</div>"
+                "<div style='height:5px;background:var(--q-surface-2);border-radius:3px;margin-top:9px;overflow:hidden;'>"
+                f"<div class='q-bar' style='width:{_wt:.1f}%;height:100%;background:{_barcol};'></div></div></div>"
+            )
+        st.markdown(_cards, unsafe_allow_html=True)
+
+        # ── Inline management (replaces the sidebar Portfolio Manager) ──
+        def _lookup_ticker(name):
+            """Resolve a company name → exchange ticker via Yahoo search (prefers NSE)."""
+            if not name or not name.strip():
+                return None
+            try:
+                import urllib.request, urllib.parse, json as _json
+                url = "https://query2.finance.yahoo.com/v1/finance/search?q=" + urllib.parse.quote(name.strip())
+                req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=4) as r:
+                    data = _json.load(r)
+                quotes = data.get("quotes", [])
+                # Prefer NSE (.NS), then BSE (.BO), else first equity match
+                for suffix in (".NS", ".BO"):
+                    for q in quotes:
+                        if str(q.get("symbol", "")).endswith(suffix):
+                            return q["symbol"]
+                return quotes[0].get("symbol") if quotes else None
+            except Exception:
+                return None
+
+        with st.expander("＋  Add a stock"):
+            _na = st.text_input("Company / fund name", key="ov_add_name",
+                                placeholder="e.g. Reliance Industries")
+            _cfind, _cnote = st.columns([1, 2])
+            with _cfind:
+                if st.button("🔎 Find ticker", key="ov_find_ticker", use_container_width=True):
+                    _sym = _lookup_ticker(st.session_state.get("ov_add_name", ""))
+                    if _sym:
+                        st.session_state["ov_add_id"] = _sym
+                        st.session_state["_ov_lookup_msg"] = ("ok", _sym)
+                    else:
+                        st.session_state["_ov_lookup_msg"] = ("err", "")
+            _msg = st.session_state.get("_ov_lookup_msg")
+            if _msg and _msg[0] == "ok":
+                _cnote.success(f"Found **{_msg[1]}** — verify below, then add.")
+            elif _msg and _msg[0] == "err":
+                _cnote.warning("No match found — enter the ticker manually.")
+
+            _ty = st.selectbox("Type", [AssetType.EQUITY, AssetType.ETF, AssetType.MUTUAL_FUND, AssetType.DIGITAL_GOLD], key="ov_add_type")
+            _id = st.text_input("Identifier (ticker / scheme code)", key="ov_add_id",
+                                help="Auto-filled from the name — verify it's correct before adding.")
+            _am = st.number_input("Invested amount (₹)", min_value=0.0, value=0.0, step=100.0, key="ov_add_amt")
+            _qt = st.number_input("Quantity (units)", min_value=0.0, value=0.0, step=1.0, key="ov_add_qty")
+            if st.button("Add stock", key="ov_add_submit"):
+                if _na and add_asset(_na, _ty, _id, _am, _qt):
+                    st.session_state.pop("_ov_lookup_msg", None)
+                    st.success(f"Added {_na}")
+                    time.sleep(0.6)
+                    st.rerun()
+                else:
+                    st.error("Could not add (already exists or invalid).")
+
+        with st.expander("✎  Edit amounts & quantities"):
+            edited_df = st.data_editor(
+                df.copy(),
+                use_container_width=True,
+                column_config={
+                    "Invested (₹)": st.column_config.NumberColumn("Invested (₹)", min_value=0.0, format="₹ %.2f", step=0.01),
+                    "Quantity": st.column_config.NumberColumn("Quantity", min_value=0.0, format="%.4f", step=0.0001),
+                    "Current Value (₹)": st.column_config.NumberColumn("Current Value", format="₹ %.2f"),
+                    "P&L (₹)": st.column_config.NumberColumn("P&L", format="₹ %.2f"),
+                    "P&L %": st.column_config.NumberColumn("P&L %", format="%.2f%%"),
+                    "Weight %": st.column_config.ProgressColumn("Weight %", format="%.1f %%", min_value=0, max_value=100),
+                    "Risk Score": st.column_config.NumberColumn("Risk Score", format="%.1f"),
+                    "Risk Bucket": st.column_config.TextColumn("Risk"),
+                },
+                disabled=["Risk Rank", "Name", "Type", "Last Price", "Current Value (₹)", "P&L (₹)", "P&L %", "Volatility %", "Beta", "Max DD %", "Sharpe", "1d VaR %", "1M Ret %", "6M Ret %", "1Y Ret %", "Total Return %", "Ann Return %", "Profit Factor", "Win Rate %", "RSI", "52w Pos", "Dist 200DMA %", "Risk Score", "Risk Bucket", "Weight %"],
+                hide_index=True,
+                key="portfolio_editor",
+            )
+            changes_made = False
+            for idx, row in edited_df.iterrows():
+                if df.loc[idx, "Invested (₹)"] != row["Invested (₹)"] or df.loc[idx, "Quantity"] != row["Quantity"]:
+                    update_asset_holdings(row["Name"], float(row["Invested (₹)"]), float(row["Quantity"]))
+                    changes_made = True
+            if changes_made:
+                st.success("Saved!")
+                time.sleep(0.5)
+                st.rerun()
+
+        with st.expander("🗑  Remove a stock"):
+            with st.form("ov_remove_form"):
+                _rm = st.selectbox("Select stock to remove", list(df["Name"]))
+                if st.form_submit_button("Remove"):
+                    if remove_asset(_rm):
+                        st.success(f"Removed {_rm}")
+                        time.sleep(0.6)
+                        st.rerun()
 
     else:
-        st.info("No assets in portfolio. Add some from the sidebar!")
+        st.info("No assets in portfolio yet. Use **＋ Add a stock** to get started.")
 
-with tab2:
+if _active("tab2"):
     st.subheader("Visual Analytics")
     if not df.empty and df["Current Value (₹)"].sum() > 0:
         c1, c2 = st.columns(2)
         
         with c1:
             st.markdown("**Portfolio Allocation (By Current Value)**")
-            fig = px.pie(df[df["Current Value (₹)"] > 0], values='Current Value (₹)', names='Name', hole=0.4)
-            fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
+            fig = px.pie(df[df["Current Value (₹)"] > 0], values='Current Value (₹)', names='Name', hole=0.62)
+            # Clean look: percentages inside slices, hide labels for tiny ones
+            fig.update_traces(
+                textposition='inside', textinfo='percent', insidetextorientation='radial',
+                texttemplate='%{percent:.0%}', sort=True,
+                marker=dict(line=dict(color=ui_theme.palette()['bg'], width=2)),
+            )
+            fig.update_layout(
+                margin=dict(t=0, b=0, l=0, r=0), uniformtext_minsize=10,
+                uniformtext_mode='hide',
+                legend=dict(orientation='v', y=0.5, font=dict(size=11)),
+            )
+            ui_theme.style_fig(fig)
             st.plotly_chart(fig, use_container_width=True)
             
         with c2:
@@ -853,6 +959,7 @@ with tab2:
                 fig2.update_xaxes(tickangle=45, tickfont=dict(size=12))
                 fig2.update_yaxes(tickfont=dict(size=12))
                 fig2.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=max(400, len(corr.columns) * 48), autosize=True)
+                ui_theme.style_fig(fig2)
                 st.plotly_chart(fig2, use_container_width=True)
                 
                 with st.expander("∑ Show Math"):
@@ -896,6 +1003,7 @@ with tab2:
                 fig_pca.update_layout(margin=dict(t=30, b=0, l=0, r=0))
                 fig_pca.update_xaxes(showgrid=False)
                 fig_pca.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
+                ui_theme.style_fig(fig_pca)
                 st.plotly_chart(fig_pca, use_container_width=True)
                 
                 with st.expander("∑ Show Math"):
@@ -944,7 +1052,7 @@ with tab2:
                     st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Example ({first_asset['Name']}):<br>Inputs: P₀ = ₹{p0:.2f}, Pₜ = ₹{pt:.2f}</p>", unsafe_allow_html=True)
                     st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Output: Return % = {ret_all:.2f}%</p>", unsafe_allow_html=True)
 
-with tab_math:
+if _active("tab_math"):
     st.subheader("Academic Visibility — Under the Hood")
     st.markdown("This section exposes the raw linear algebra operations running on your portfolio.")
     
@@ -1084,6 +1192,7 @@ with tab_math:
             xaxis=dict(showgrid=False),
             yaxis=dict(showgrid=False)
         )
+        ui_theme.style_fig(fig_beta)
         st.plotly_chart(fig_beta, use_container_width=True)
         
         for _, row in beta_df.iterrows():
@@ -1092,7 +1201,7 @@ with tab_math:
     else:
         st.info("Not enough historical data to run the Math Engine.")
 
-with tab3:
+if _active("tab3"):
     st.subheader("Actionable Recommendations")
     
     if not df.empty:
@@ -1219,7 +1328,7 @@ with tab3:
                 elif pnl_rupees > 0:
                     st.success(f"**{name} is generating wealth** — up **₹{pnl_rupees:,.2f}** ({pnl_perc:+.2f}% gain). It is strongly contributing to your portfolio's growth.")
 
-with tab4:
+if _active("tab4"):
     st.subheader("Transaction History")
     txs = get_transactions()
     if txs:
@@ -1269,13 +1378,14 @@ with tab4:
                         # Add a beautiful gradient fill
                         fig.update_traces(line_color='#00ff87', fill='tozeroy', fillcolor='rgba(0, 255, 135, 0.1)')
                         
+                        ui_theme.style_fig(fig)
                         st.plotly_chart(fig, use_container_width=True)
                     else:
                         st.warning("No historical data found for this asset.")
                 except Exception as e:
                     st.error(f"Could not fetch history: {e}")
 
-with tab5:
+if _active("tab5"):
     st.subheader("Future Portfolio Projections")
     
     if not df.empty and summary['total_value'] > 0:
@@ -1495,11 +1605,11 @@ with tab5:
                 _sent_clr = "#00ff87" if _sent_adj > 0 else "#ff4d6d" if _sent_adj < 0 else "#94a3b8"
                 st.markdown(
                     f"""
-                    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+                    <div style="background:var(--q-surface-2); border:1px solid rgba(255,255,255,0.07);
                                 border-radius:10px; padding:12px 18px; margin-bottom:1rem;
                                 font-family:'JetBrains Mono',monospace; font-size:0.85rem;">
                         <span style="color:#94a3b8;">Base (EWMA):</span>
-                        <span style="color:#e2e8f0; margin:0 6px;">₹{_ewma_base:,.2f}</span>
+                        <span style="color:var(--q-text); margin:0 6px;">₹{_ewma_base:,.2f}</span>
                         <span style="color:#64748b;">|</span>
                         <span style="color:#94a3b8; margin:0 6px;">Sentiment adj:</span>
                         <span style="color:{_sent_clr}; margin-right:6px;">{_sent_adj:+.2f}</span>
@@ -1522,7 +1632,7 @@ with tab5:
         st.markdown(
             f"""
             <div style="display:inline-flex; align-items:center; gap:10px;
-                        background:rgba(255,255,255,0.04); border:1px solid {_conf_clr}44;
+                        background:var(--q-surface-2); border:1px solid {_conf_clr}44;
                         border-left:4px solid {_conf_clr}; border-radius:10px;
                         padding:10px 18px; margin-bottom:1rem;">
                 <span style="font-size:1.3rem;">{_conf_icon}</span>
@@ -1756,6 +1866,7 @@ with tab5:
         fig_proj.update_xaxes(showgrid=False)
         fig_proj.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
         
+        ui_theme.style_fig(fig_proj)
         st.plotly_chart(fig_proj, use_container_width=True)
         
         with st.expander("∑ Show Math"):
@@ -1782,39 +1893,37 @@ with tab5:
     else:
         st.info("Add some assets to see future projections.")
 
-with tab6:
+if _active("tab6"):
     import datetime as _dt
 
     # ── Inject CSS ─────────────────────────────────────────────────────
     st.markdown("""
     <style>
     .news-card {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.07);
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
         border-radius: 14px;
         padding: 1.2rem 1.4rem;
         margin-bottom: 1.2rem;
-        backdrop-filter: blur(6px);
     }
     .art-card {
-        background: rgba(255,255,255,0.025);
+        background: var(--q-surface-2);
         border-radius: 10px;
         padding: 12px 14px;
         margin-bottom: 10px;
         transition: background 0.2s;
     }
-    .art-card:hover { background: rgba(255,255,255,0.05); }
+    .art-card:hover { background: var(--q-accent-weak); }
     .art-link {
-        color: #e2e8f0;
+        color: var(--q-text);
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 0.95rem;
         line-height: 1.4;
-        transition: color 0.2s, text-shadow 0.2s;
+        transition: color 0.2s;
     }
     .art-link:hover {
-        color: #7dd3fc;
-        text-shadow: 0 0 8px rgba(125,211,252,0.6);
+        color: var(--q-accent);
     }
     .badge {
         display: inline-block;
@@ -1823,23 +1932,21 @@ with tab6:
         padding: 2px 8px;
         border-radius: 4px;
         margin-right: 6px;
-        background: rgba(0,0,0,0.4);
+        background: var(--q-surface-2);
+        color: var(--q-text-2);
     }
     .summary-bar {
-        background: rgba(125,211,252,0.06);
-        border: 1px solid rgba(125,211,252,0.15);
+        background: var(--q-accent-weak);
+        border: 1px solid var(--q-border);
         border-radius: 12px;
         padding: 0.9rem 1.4rem;
         margin-bottom: 1.6rem;
         font-size: 0.9rem;
-        color: #cbd5e1;
+        color: var(--q-text-2);
         font-family: 'Inter', sans-serif;
     }
     .skeleton {
-        background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%,
-                    rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
-        background-size: 400% 100%;
-        animation: shimmer 1.4s infinite;
+        background: var(--q-surface-2);
         border-radius: 10px;
         height: 100px;
         margin-bottom: 12px;
@@ -1864,10 +1971,11 @@ with tab6:
 
     def _render_article(art, idx):
         """Render a single article card as HTML."""
+        _np = ui_theme.palette()
         sent_label = art.get('sentiment_label', '⚪ Neutral')
         art_color = (
-            '#00ff87' if 'Positive' in sent_label
-            else '#ff4d6d' if 'Negative' in sent_label
+            _np['pos'] if 'Positive' in sent_label
+            else _np['neg'] if 'Negative' in sent_label
             else 'transparent'
         )
         border = f'border-left: 3px solid {art_color};' if art_color != 'transparent' else ''
@@ -1875,13 +1983,13 @@ with tab6:
         conn_score = art.get('connection_score', 0)
         conn_badge = art.get('connection_badge', '⚪ Low')
         if conn_score >= 75:
-            conn_color = '#ff4d6d'
+            conn_color = _np['neg']
         elif conn_score >= 40:
-            conn_color = '#ffa600'
+            conn_color = _np['warn']
         else:
-            conn_color = '#64748b'
+            conn_color = _np['text_3']
 
-        sent_color = '#00ff87' if 'Positive' in sent_label else '#ff4d6d' if 'Negative' in sent_label else '#94a3b8'
+        sent_color = _np['pos'] if 'Positive' in sent_label else _np['neg'] if 'Negative' in sent_label else _np['text_3']
         score_val = art.get('score', 0.0)
 
         pub_dt = _parse_pub_date(art.get('date'))
@@ -1896,30 +2004,31 @@ with tab6:
         return f"""
         <div class="art-card" style="{border}">
             <a class="art-link" href="{link}" target="_blank">{title}</a>
-            <p style="font-size:0.78rem; color:#64748b; margin:4px 0 8px;">
+            <p style="font-size:0.78rem; color:var(--q-text-3); margin:4px 0 8px;">
                 {provider} &bull; {date_str}
             </p>
             <span class="badge" style="color:{conn_color};">Relevance: {conn_badge} ({conn_score})</span>
             <span class="badge" style="color:{sent_color};">Sentiment: {score_val:+.2f}</span>
-            <p style="font-size:0.82rem; color:#94a3b8; margin-top:8px; line-height:1.5;">{summary_snippet}</p>
+            <p style="font-size:0.82rem; color:var(--q-text-2); margin-top:8px; line-height:1.5;">{summary_snippet}</p>
         </div>
         """
 
     def _render_stock_card(asset_name, status, score, articles_html_list, article_count, stale_count):
         """Render the outer stock card header."""
+        _sp = ui_theme.palette()
         s_icon  = '🟢' if status == 'Bullish' else '🔴' if status == 'Bearish' else '⚪'
-        s_color = '#00ff87' if status == 'Bullish' else '#ff4d6d' if status == 'Bearish' else '#94a3b8'
+        s_color = _sp['pos'] if status == 'Bullish' else _sp['neg'] if status == 'Bearish' else _sp['text_3']
         stale_note = f' &middot; {stale_count} stale hidden' if stale_count else ''
         return f"""
         <div class="news-card">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem;">
-                <h4 style="margin:0; color:#fff; font-family:'Inter',sans-serif;">{asset_name}</h4>
+                <h4 style="margin:0; color:var(--q-text); font-family:'Inter',sans-serif;">{asset_name}</h4>
                 <span style="color:{s_color}; font-weight:700; font-size:0.9rem;">
                     {s_icon} {status} &nbsp;
                     <span style="font-family:'JetBrains Mono',monospace;">{score:+.2f}</span>
                 </span>
             </div>
-            <p style="margin:0 0 0.8rem; font-size:0.78rem; color:#64748b;">
+            <p style="margin:0 0 0.8rem; font-size:0.78rem; color:var(--q-text-3);">
                 {article_count} article(s) today{stale_note}
             </p>
         """
@@ -1929,9 +2038,10 @@ with tab6:
 
         # ── Summary bar ────────────────────────────────────────────
         # Use the cached sentiment computed at app startup
+        _nsp = ui_theme.palette()
         _ps = portfolio_sentiment_score
         _ps_label = 'Bullish' if _ps > 0.15 else 'Bearish' if _ps < -0.15 else 'Neutral'
-        _ps_color = '#00ff87' if _ps > 0.15 else '#ff4d6d' if _ps < -0.15 else '#94a3b8'
+        _ps_color = _nsp['pos'] if _ps > 0.15 else _nsp['neg'] if _ps < -0.15 else _nsp['text_3']
 
         # Retrieve per-stock statuses from session cache if available
         _cached_statuses = st.session_state.get('_news_statuses', {})
@@ -1941,25 +2051,25 @@ with tab6:
 
         # Sentinel adj from session_state (set when prediction was computed)
         _sent_adj_disp = st.session_state.get('_sent_adj_display', None)
+        _adj_color = (_nsp['pos'] if _sent_adj_disp and _sent_adj_disp > 0
+                      else _nsp['neg'] if _sent_adj_disp and _sent_adj_disp < 0
+                      else _nsp['text_3'])
         _adj_part = (
-            f" &nbsp;|&nbsp; Sentiment adjustment to tomorrow's prediction: "
-            f"<span style='color:{'#00ff87' if _sent_adj_disp and _sent_adj_disp > 0 else '#ff4d6d' if _sent_adj_disp and _sent_adj_disp < 0 else '#94a3b8'};'"
-            f">{f'{_sent_adj_disp:+.2f}' if _sent_adj_disp is not None else 'N/A'}</span>"
-        ) if True else ''
+            f" &nbsp;|&nbsp; Prediction adjustment: "
+            f"<span style='color:{_adj_color};'>{f'{_sent_adj_disp:+.2f}' if _sent_adj_disp is not None else 'N/A'}</span>"
+        )
 
         st.markdown(
-            f"""<div class="summary-bar">
-                <strong style='color:#7dd3fc;'>Today's Sentiment:</strong>
-                &nbsp;
-                <span style='color:#00ff87;'>🟢 {_n_bull} Bullish</span>
-                &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-                <span style='color:#ff4d6d;'>🔴 {_n_bear} Bearish</span>
-                &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-                <span style='color:#94a3b8;'>⚪ {_n_neut} Neutral</span>
-                &nbsp;&nbsp; across your {len(current_assets)} holdings
-                &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-                Overall: <span style='color:{_ps_color}; font-weight:700; font-family:"JetBrains Mono",monospace;'>{_ps:+.2f} ({_ps_label})</span>
-                {_adj_part}
+            f"""<div class="summary-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
+                <span style='color:var(--q-text-2);font-weight:500;'>Today's sentiment</span>
+                <span style='color:{_nsp['pos']};'>● {_n_bull} bullish</span>
+                <span style='color:{_nsp['neg']};'>● {_n_bear} bearish</span>
+                <span style='color:var(--q-text-3);'>● {_n_neut} neutral</span>
+                <span style='color:var(--q-text-3);'>across {len(current_assets)} holdings</span>
+                <span style='margin-left:auto;color:var(--q-text-3);'>Overall
+                  <span style='color:{_ps_color}; font-weight:500; font-family:"JetBrains Mono",monospace;'>{_ps:+.2f} ({_ps_label})</span>
+                  {_adj_part}
+                </span>
             </div>""",
             unsafe_allow_html=True
         )
@@ -2034,8 +2144,8 @@ with tab6:
             except Exception:
                 _ph.empty()
                 st.markdown(
-                    f'<div class="news-card"><h4 style="color:#94a3b8;">{asset_name}</h4>'
-                    f'<p style="color:#64748b;">News unavailable — No news available</p></div>',
+                    f'<div class="news-card"><h4 style="color:var(--q-text);">{asset_name}</h4>'
+                    f'<p style="color:var(--q-text-3);">News unavailable — No news available</p></div>',
                     unsafe_allow_html=True
                 )
 
@@ -2131,7 +2241,7 @@ with tab6:
 # =============================================================================
 # 💬 CHAT TAB
 # =============================================================================
-with tab_chat:
+if _active("tab_chat"):
     _chat_user = _user_info["username"]
     _chat_display = _user_info["display_name"]
 
@@ -2151,19 +2261,20 @@ with tab_chat:
             word-wrap: break-word;
         }
         .chat-bubble.sent {
-            background: linear-gradient(135deg, #6366f1, #7c3aed);
-            color: #fff;
+            background: var(--q-accent-weak);
+            color: var(--q-text);
+            border: 1px solid var(--q-accent);
             border-bottom-right-radius: 4px;
         }
         .chat-bubble.received {
-            background: rgba(255,255,255,0.06);
-            color: #e2e8f0;
-            border: 1px solid rgba(255,255,255,0.08);
+            background: var(--q-surface-2);
+            color: var(--q-text);
+            border: 1px solid var(--q-border);
             border-bottom-left-radius: 4px;
         }
         .chat-bubble.system-msg {
-            background: rgba(255,255,255,0.03);
-            color: #64748b;
+            background: var(--q-surface-2);
+            color: var(--q-text-3);
             font-size: 0.78rem;
             font-style: italic;
             padding: 6px 12px;
@@ -2171,30 +2282,30 @@ with tab_chat:
         }
         .chat-sender {
             font-size: 0.72rem;
-            color: #818cf8;
-            font-weight: 600;
+            color: var(--q-accent);
+            font-weight: 500;
             margin-bottom: 3px;
         }
         .chat-time {
             font-size: 0.68rem;
-            color: #475569;
+            color: var(--q-text-3);
             margin-top: 4px;
         }
         .portfolio-card {
-            background: rgba(99,102,241,0.08);
-            border: 1px solid rgba(99,102,241,0.15);
+            background: var(--q-accent-weak);
+            border: 1px solid var(--q-border);
             border-radius: 12px;
             padding: 12px 14px;
             margin-top: 6px;
         }
-        .portfolio-card h4 { margin: 0 0 8px 0; color: #a78bfa; font-size: 0.85rem; }
-        .portfolio-card .val { font-family: 'JetBrains Mono', monospace; color: #e2e8f0; font-weight: 600; }
-        .portfolio-card .label { color: #64748b; font-size: 0.78rem; }
+        .portfolio-card h4 { margin: 0 0 8px 0; color: var(--q-accent); font-size: 0.85rem; font-weight: 500; }
+        .portfolio-card .val { font-family: 'JetBrains Mono', monospace; color: var(--q-text); font-weight: 500; }
+        .portfolio-card .label { color: var(--q-text-3); font-size: 0.78rem; }
         .unread-badge {
-            background: #6366f1;
-            color: #fff;
+            background: var(--q-accent-weak);
+            color: var(--q-accent);
             font-size: 0.7rem;
-            font-weight: 700;
+            font-weight: 500;
             padding: 2px 7px;
             border-radius: 10px;
             margin-left: 8px;
@@ -2332,7 +2443,7 @@ with tab_chat:
                 with hdr3:
                     if st.button("📊", key="share_portfolio", help="Share portfolio"):
                         snapshot = chat_system.build_portfolio_snapshot(df, summary, _chat_user)
-                        pnl_s = f"+₹{snapshot['total_pnl']:,.0f}" if snapshot['total_pnl'] >= 0 else f"-₹{abs(snapshot['total_pnl']):,.0f}"
+                        pnl_s = f"+₹{snapshot['total_pnl']:,.2f}" if snapshot['total_pnl'] >= 0 else f"-₹{abs(snapshot['total_pnl']):,.2f}"
                         text = f"📊 Portfolio Snapshot from {_chat_display}"
                         chat_system.send_message(
                             active_id, _chat_user, text,
@@ -2373,7 +2484,7 @@ with tab_chat:
                                 <div class="portfolio-card">
                                     <h4>📊 {pd_data.get('username', 'User')}'s Portfolio</h4>
                                     <div class="label">Value</div>
-                                    <div class="val">₹{pd_data.get('total_value', 0):,.0f}</div>
+                                    <div class="val">₹{pd_data.get('total_value', 0):,.2f}</div>
                                     <div class="label" style="margin-top:6px;">P&L</div>
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('pnl_pct', 0):+.1f}%</div>
                                     <div class="label" style="margin-top:6px;">Risk</div>
@@ -2392,7 +2503,7 @@ with tab_chat:
                                 <div class="portfolio-card">
                                     <h4>📊 {pd_data.get('username', 'User')}'s Portfolio</h4>
                                     <div class="label">Value</div>
-                                    <div class="val">₹{pd_data.get('total_value', 0):,.0f}</div>
+                                    <div class="val">₹{pd_data.get('total_value', 0):,.2f}</div>
                                     <div class="label" style="margin-top:6px;">P&L</div>
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('pnl_pct', 0):+.1f}%</div>
                                     <div class="label" style="margin-top:6px;">Risk</div>
@@ -2421,7 +2532,7 @@ with tab_chat:
 # =============================================================================
 # ⚡ MICHAEL TAB (AI Chat Assistant)
 # =============================================================================
-with tab_michael:
+if _active("tab_michael"):
 
     # ── Styles ────────────────────────────────────────────────────────────────
     st.markdown("""
@@ -2435,27 +2546,26 @@ with tab_michael:
         margin-bottom:1.4rem;
     }
     .m-header h2 {
-        margin:0 0 .3rem 0;font-size:1.6rem;font-weight:700;
-        background:linear-gradient(90deg,#818cf8,#c084fc);
-        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        margin:0 0 .3rem 0;font-size:1.6rem;font-weight:500;
+        color:var(--q-text);
         font-family:Inter,sans-serif;
     }
-    .m-header p{margin:0;color:#94a3b8;font-size:.9rem}
+    .m-header p{margin:0;color:var(--q-text-3);font-size:.9rem}
     .cu{display:flex;justify-content:flex-end;margin:.7rem 0}
-    .cu-b{background:rgba(99,102,241,.18);border:1px solid rgba(99,102,241,.3);
+    .cu-b{background:var(--q-accent-weak);border:1px solid var(--q-accent);
           border-radius:18px 18px 4px 18px;padding:.75rem 1.1rem;
-          max-width:72%;color:#e2e8f0;font-size:.95rem;line-height:1.5}
+          max-width:72%;color:var(--q-text);font-size:.95rem;line-height:1.5}
     .cm{display:flex;justify-content:flex-start;margin:.7rem 0}
     .cm-w{max-width:78%}
-    .cm-lbl{font-size:.72rem;font-family:"JetBrains Mono",monospace;color:#818cf8;
-            font-weight:700;letter-spacing:1.5px;margin-bottom:4px;padding-left:4px}
-    .cm-b{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    .cm-lbl{font-size:.72rem;font-family:"JetBrains Mono",monospace;color:var(--q-accent);
+            font-weight:500;letter-spacing:1.5px;margin-bottom:4px;padding-left:4px}
+    .cm-b{background:var(--q-surface-2);border:1px solid var(--q-border);
           border-radius:4px 18px 18px 18px;padding:.85rem 1.1rem;
-          color:#cbd5e1;font-size:.95rem;line-height:1.6;white-space:pre-wrap}
-    .cm-ts{font-size:.68rem;color:#475569;margin-top:4px;padding-left:4px;
+          color:var(--q-text-2);font-size:.95rem;line-height:1.6;white-space:pre-wrap}
+    .cm-ts{font-size:.68rem;color:var(--q-text-3);margin-top:4px;padding-left:4px;
            font-family:"JetBrains Mono",monospace}
     .ti{display:flex;align-items:center;gap:5px;padding:.6rem 1rem}
-    .td{width:7px;height:7px;border-radius:50%;background:#818cf8;
+    .td{width:7px;height:7px;border-radius:50%;background:var(--q-accent);
         animation:tb 1.2s infinite ease-in-out}
     .td:nth-child(2){animation-delay:.2s}
     .td:nth-child(3){animation-delay:.4s}

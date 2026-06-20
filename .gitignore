@@ -31,5 +31,14 @@ Thumbs.db
 *.tmp
 *.log
 
+# Backups / archives
+*.zip
+
+# Runtime price cache (last-known-good prices)
+price_cache.json
+
+# Auto-fetched NSE holiday calendar cache
+nse_holidays.json
+
 # User data (passwords, portfolios, chats — never push to GitHub)
 users/

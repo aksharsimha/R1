@@ -19,6 +19,7 @@ import json
 import os
 import time
 import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
@@ -27,6 +28,12 @@ import numpy as np
 import pandas as pd
 import requests
 import yfinance as yf
+
+try:
+    from nse_live import get_live_price, is_market_open, get_market_status
+    _HAS_NSE_LIVE = True
+except ImportError:
+    _HAS_NSE_LIVE = False
 
 try:
     import streamlit as st
@@ -135,6 +142,96 @@ def fetch_history(asset: Asset, period: str = "2y") -> pd.DataFrame:
     if asset.asset_type == AssetType.DIGITAL_GOLD:
         return fetch_listed_history(GOLD_PROXY, period)
     return fetch_listed_history(asset.identifier, period)
+
+
+def get_current_price(asset: Asset, hist_close: float = None,
+                      prefetched: Optional[Dict[str, tuple]] = None) -> tuple:
+    """Get the best available live price for an asset.
+
+    If prefetched prices are provided (from batch fetch), uses those
+    instead of making individual HTTP calls.
+
+    Args:
+        asset: The Asset to get the price for.
+        hist_close: Last historical close price (fallback).
+        prefetched: Optional dict of {ticker: (price, source)} from batch fetch.
+
+    Returns:
+        Tuple of (price: float, source: str).
+        Source is one of: 'nse_live', 'yfinance', 'historical', 'mfapi'.
+    """
+    # Mutual funds don't trade on NSE — use historical NAV
+    if asset.asset_type == AssetType.MUTUAL_FUND:
+        return (hist_close or 0.0), "mfapi"
+
+    # For listed equities/ETFs/gold, try live sources
+    ticker = asset.identifier
+    if asset.asset_type == AssetType.DIGITAL_GOLD:
+        ticker = GOLD_PROXY
+
+    # Use pre-fetched price if available (fast path — no HTTP call)
+    if prefetched and ticker in prefetched:
+        price, source = prefetched[ticker]
+        if price is not None:
+            return price, source
+
+    # Fallback: individual fetch (only if not pre-fetched)
+    if _HAS_NSE_LIVE:
+        price, source = get_live_price(ticker, allow_yf_fallback=True)
+        if price is not None:
+            return price, source
+
+    # Final fallback: last historical close
+    return (hist_close or 0.0), "historical"
+
+
+def batch_fetch_live_prices(assets: List[Asset]) -> Dict[str, tuple]:
+    """Batch-fetch live prices for all listed assets upfront.
+
+    This is called ONCE before the analysis loop to avoid sequential
+    HTTP calls inside analyze_asset().
+
+    Returns:
+        Dict of {ticker: (price, source)} for each asset.
+    """
+    results: Dict[str, tuple] = {}
+    if not _HAS_NSE_LIVE:
+        return results
+
+    tickers = []
+    for a in assets:
+        if a.asset_type == AssetType.MUTUAL_FUND:
+            continue  # MFs don't use NSE
+        ticker = a.identifier
+        if a.asset_type == AssetType.DIGITAL_GOLD:
+            ticker = GOLD_PROXY
+        if ticker not in tickers:
+            tickers.append(ticker)
+
+    if not tickers:
+        return results
+
+    def _fetch(ticker: str):
+        try:
+            price, source = get_live_price(ticker, allow_yf_fallback=True)
+            if price is not None:
+                return ticker, (price, source)
+        except Exception:
+            pass  # Will fall back to historical in get_current_price
+        return ticker, None
+
+    # Fetch concurrently. The NSE session serializes at the network layer
+    # via its own lock, but DNS/parse/yfinance-fallback overhead overlaps,
+    # cutting total wait from ~N×gap to roughly the slowest single call.
+    max_workers = min(8, len(tickers))
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        futures = [pool.submit(_fetch, t) for t in tickers]
+        for fut in as_completed(futures):
+            ticker, value = fut.result()
+            if value is not None:
+                results[ticker] = value
+
+    return results
 
 
 # =====================================================================
@@ -354,12 +451,14 @@ class StockReport:
     risk_score: float
     risk_bucket: str
     components: Dict[str, float] = field(default_factory=dict)
+    price_source: str = "historical"  # 'nse_live', 'yfinance', 'historical', 'mfapi'
     timestamp: str = ""
 
 
 def analyze_asset(asset: Asset,
                   period: str = "2y",
-                  market_df: Optional[pd.DataFrame] = None) -> StockReport:
+                  market_df: Optional[pd.DataFrame] = None,
+                  prefetched_prices: Optional[Dict[str, tuple]] = None) -> StockReport:
     """Run full analysis on one asset."""
     df = fetch_history(asset, period=period)
     prices = df["Close"]
@@ -410,7 +509,11 @@ def analyze_asset(asset: Asset,
     }
     risk_score = sum(components[k] * WEIGHTS[k] for k in WEIGHTS)
 
-    curr_val = asset.quantity * float(prices.iloc[-1])
+    # Use real-time NSE price for current valuation (falls back gracefully)
+    hist_close = float(prices.iloc[-1])
+    live_price, price_source = get_current_price(asset, hist_close=hist_close,
+                                                  prefetched=prefetched_prices)
+    curr_val = asset.quantity * live_price
     pnl_abs = curr_val - asset.amount
     pnl_perc = (pnl_abs / asset.amount * 100) if asset.amount > 0 else 0.0
 
@@ -418,7 +521,7 @@ def analyze_asset(asset: Asset,
         name=asset.name, identifier=asset.identifier,
         asset_type=asset.asset_type, 
         invested_amount=asset.amount, quantity=asset.quantity,
-        last_price=float(prices.iloc[-1]),
+        last_price=live_price, price_source=price_source,
         current_value=curr_val, pnl_abs=pnl_abs, pnl_perc=pnl_perc,
         volatility=vol, beta=beta_val, max_dd=dd, sharpe=sr,
         var_95=var, cvar_95=cvar,
@@ -437,7 +540,8 @@ def analyze_asset(asset: Asset,
 # Portfolio analysis
 # =====================================================================
 def analyze_portfolio(assets: List[Asset], period: str = "2y",
-                      verbose: bool = True
+                      verbose: bool = True,
+                      prefetched_prices: Optional[Dict[str, tuple]] = None
                       ) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Run analysis on every asset and aggregate to portfolio level.
 
@@ -453,6 +557,19 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
         print(f"  ⚠️  Benchmark fetch failed ({e}). Beta will be NaN.")
         market_df = None
 
+    # Batch-fetch all NSE live prices UPFRONT (one pass, ~5s total)
+    # This avoids sequential HTTP calls inside the per-asset loop.
+    # If prefetched_prices are provided (from app.py session_state cache),
+    # use those instead of fetching again.
+    if prefetched_prices is not None:
+        prefetched = prefetched_prices
+    else:
+        if verbose:
+            print("  Fetching live prices from NSE...")
+        prefetched = batch_fetch_live_prices(assets)
+        if verbose:
+            print(f"  Got {len(prefetched)} live prices.")
+
     reports = []
     price_history: Dict[str, pd.Series] = {}
 
@@ -460,7 +577,8 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
         try:
             if verbose:
                 print(f"  Analyzing {a.name}...")
-            r = analyze_asset(a, period=period, market_df=market_df)
+            r = analyze_asset(a, period=period, market_df=market_df,
+                              prefetched_prices=prefetched)
             reports.append(r)
             df_h = fetch_history(a, period=period)
             price_history[a.name] = df_h["Close"]
@@ -475,6 +593,7 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
             "Current Value (₹)": r.current_value,
             "P&L (₹)": r.pnl_abs, "P&L %": r.pnl_perc,
             "Last Price": r.last_price,
+            "Price Source": r.price_source,
             "Volatility %": r.volatility * 100,
             "Beta": r.beta,
             "Max DD %": r.max_dd * 100,
@@ -557,6 +676,20 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
         weighted_total_return = float("nan")
         weighted_ann_return = float("nan")
 
+    # Determine dominant price source for the UI
+    source_counts = {}
+    for r in reports:
+        source_counts[r.price_source] = source_counts.get(r.price_source, 0) + 1
+    dominant_source = max(source_counts, key=source_counts.get) if source_counts else "historical"
+
+    # Market status
+    if _HAS_NSE_LIVE:
+        _mkt_status = get_market_status()
+        _mkt_open = is_market_open()
+    else:
+        _mkt_status = "Unknown"
+        _mkt_open = False
+
     summary = {
         "total_value":              total_value,
         "n_assets":                 len(reports),
@@ -572,6 +705,10 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
         "pca_eigenvalues":          eigenvalues,
         "pca_explained_var":        explained_var,
         "pca_eigenvectors":         eigenvectors,
+        "price_sources":            source_counts,
+        "dominant_source":          dominant_source,
+        "market_status":            _mkt_status,
+        "market_open":              _mkt_open,
         "as_of":                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
     return df, summary
