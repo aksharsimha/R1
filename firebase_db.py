@@ -187,9 +187,13 @@ def verify_login(email: str, password: str) -> tuple[bool, str, dict | None]:
 
 def _get_web_api_key() -> str | None:
     """Get Firebase Web API key from Streamlit secrets or env."""
-    # First check streamlit secrets
+    # First check streamlit secrets (only return if actually present —
+    # st.secrets.get() returns None when absent, which must NOT short-circuit
+    # the env/file fallbacks below).
     try:
-        return st.secrets.get("firebase_web_api_key", None)
+        _v = st.secrets.get("firebase_web_api_key", None)
+        if _v:
+            return _v
     except Exception:
         pass
 
