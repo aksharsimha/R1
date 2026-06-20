@@ -231,27 +231,6 @@ def css(theme: str = None) -> str:
         .q-enter, .q-skeleton, .q-bar, .q-live, .block-container {{ animation: none !important; }}
         .q-row:hover, .q-card:hover {{ transform: none; }}
     }}
-
-    /* ── Mobile (≤640px) — phone-friendly overrides ── */
-    @media (max-width: 640px) {{
-        .block-container {{ padding: 0.8rem 0.7rem 4rem !important; max-width: 100% !important; }}
-        h1 {{ font-size: 1.5rem !important; }}
-        h2 {{ font-size: 1.2rem !important; }}
-        h3 {{ font-size: 1.02rem !important; }}
-        .dashboard-header h1 {{ font-size: 1.6rem !important; }}
-        .dashboard-header p {{ font-size: .8rem; }}
-        /* Let Streamlit column rows wrap instead of crushing into slivers */
-        [data-testid="stHorizontalBlock"] {{ flex-wrap: wrap !important; gap: 8px !important; }}
-        [data-testid="stHorizontalBlock"] > [data-testid="column"] {{
-            min-width: calc(50% - 8px) !important; flex: 1 1 calc(50% - 8px) !important; }}
-        .q-card {{ padding: 13px 13px; }}
-        .q-metric {{ padding: 10px 12px; }}
-        .q-metric .val {{ font-size: 1rem; }}
-        /* Wide things scroll horizontally instead of overflowing the screen */
-        [data-testid="stDataFrame"] {{ overflow-x: auto; }}
-        .stTabs [data-baseweb="tab-list"] {{ overflow-x: auto; flex-wrap: nowrap; }}
-        .stTabs [data-baseweb="tab"] {{ white-space: nowrap; }}
-    }}
 </style>
 """
 
