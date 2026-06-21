@@ -1525,511 +1525,138 @@ if _active("tab4"):
 
 if _active("tab5"):
     st.subheader("Future Portfolio Projections")
-    
+
+    # ── v2 risk/range forecast (the honest box) ──────────────────────────────
     if not df.empty and summary['total_value'] > 0:
-        import numpy as np
-        
-        import datetime as dt
-        tomorrow_date = (dt.datetime.now() + dt.timedelta(days=1)).strftime("%d %b %Y")
-        
-        # 1-Day Forecast (Tomorrow)
-        st.markdown(f"### 🌤️ Forecast for {tomorrow_date} (1-Day Outlook)")
-        st.markdown("Predicting tomorrow's exact value is impossible due to market noise, but we can mathematically calculate the expected probability range based on your portfolio's historical volatility.")
-        
-        vol = summary.get('portfolio_volatility', float('nan'))
-        if pd.isna(vol):
-            vol = 0.15
+        import prediction_engine as _pe
+        import datetime as _vdt
+        import nse_live as _vnse
+        _vpal = ui_theme.palette()
 
-        current_val = summary['total_value']
+        _nd = _vdt.date.today() + _vdt.timedelta(days=1)
+        for _ in range(10):
+            if _nd.weekday() < 5 and not _vnse.is_nse_holiday(_nd):
+                break
+            _nd += _vdt.timedelta(days=1)
 
-        # ── Use EWMA σₚ directly from adaptive_state (Rs. terms, 1-day) ──
-        # This is the model-trained daily volatility, not the yfinance % vol
-        try:
-            from adaptive_engine import _load_state as _ae_load
-            _ae_st = _ae_load()
-            sigma_p = _ae_st.get('sigma_ewma', None)
-            mu_p    = _ae_st.get('mu_ewma', None)
-            days_tr = _ae_st.get('days_trained', 0)
-        except Exception:
-            sigma_p = None
-            mu_p    = None
-            days_tr = 0
+        _vtot = float(df["Current Value (₹)"].sum())
+        _vtks, _vwts = [], []
+        for _a in current_assets:
+            _r = df[df["Name"] == _a.name]
+            if _r.empty or not _a.identifier:
+                continue
+            _vtks.append(_a.identifier)
+            _vwts.append(float(_r["Current Value (₹)"].iloc[0]) / _vtot if _vtot > 0 else 0.0)
 
-        # Fall back to percent-vol if EWMA not yet trained
-        if sigma_p and days_tr >= 1:
-            one_day_move_rupees = sigma_p          # 1.0 × σₚ  (68% range)
-            var_95_move         = 1.645 * sigma_p  # 1.645 × σₚ  (95% VaR)
-            sigma_source        = f"σₚ = ₹{sigma_p:,.2f} (EWMA-trained, {days_tr} days)"
-        else:
-            one_day_vol         = vol / np.sqrt(252)
-            one_day_move_rupees = current_val * one_day_vol
-            var_95_move         = 1.645 * one_day_move_rupees
-            sigma_source        = f"σₚ = ₹{one_day_move_rupees:,.2f} (historical vol, EWMA not yet trained)"
+        @st.cache_data(ttl=3600, show_spinner="Training the forecast model on 5 years of data…")
+        def _v2_forecast(tks, wts, pv, sent):
+            return _pe.live_forecast(list(tks), list(wts), pv, sent)
 
-        # Base for the range: use latest graded real_val if available
-        _preds_all  = get_predictions()
-        _graded     = [p for p in _preds_all if p.get('real_val') is not None]
-        if _graded:
-            _graded.sort(key=lambda x: x['target_date'])
-            base_pred = _graded[-1]['real_val']
-            base_label = f"V₀ = ₹{base_pred:,.2f} (confirmed close {_graded[-1]['target_date']})"
-        else:
-            base_pred  = current_val
-            base_label = f"V₀ = ₹{base_pred:,.2f} (live yfinance — no graded close yet)"
+        _fc = _v2_forecast(tuple(_vtks), tuple(_vwts),
+                           round(float(summary['total_value']), 2),
+                           round(float(portfolio_sentiment_score), 3))
 
-        # Prediction from EWMA if available, else use base_pred
-        if mu_p and days_tr >= 1:
-            _bias_5d = _ae_st.get('learning_log', [{}])[-1].get('bias_5d', 0) if _ae_st.get('learning_log') else 0
-            range_centre = base_pred + mu_p + _bias_5d
-            centre_label = f"centre = V₀ + μₚ + bias₅d = {base_pred:,.2f} + {mu_p:+.2f} + {_bias_5d:+.2f} = {range_centre:,.2f}"
-        else:
-            range_centre = base_pred
-            centre_label = f"centre = V₀ = {base_pred:,.2f} (no EWMA μₚ yet)"
-
-        c1, c2 = st.columns(2)
-        with c1:
-            st.info(
-                f"**Expected Range (68% Probability)**\n\n"
-                f"There is a ~68% chance your portfolio will close on **{tomorrow_date}** between:\n\n"
-                f"**₹{range_centre - one_day_move_rupees:,.2f}** and **₹{range_centre + one_day_move_rupees:,.2f}**"
-            )
-
-        with c2:
-            st.warning(
-                f"**Maximum Expected Loss (95% VaR)**\n\n"
-                f"We are 95% confident your portfolio will NOT drop below:\n\n"
-                f"**₹{range_centre - var_95_move:,.2f}**\n\n"
-                f"(A maximum loss of ₹{var_95_move:,.2f} on {tomorrow_date})."
-            )
-
-        with st.expander("∑ Show Math"):
-            c1_math, c2_math = st.columns(2)
-            with c1_math:
-                st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #38bdf8;'>Formula (68% Range): Range = (V₀ + μₚ + bias) ± 1.0 × σₚ</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>{base_label}<br>{sigma_source}<br>{centre_label}</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Output: [₹{range_centre - one_day_move_rupees:,.2f}, ₹{range_centre + one_day_move_rupees:,.2f}]</p>", unsafe_allow_html=True)
-            with c2_math:
-                st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #ff4d6d;'>Formula (95% VaR): Floor = centre − 1.645 × σₚ</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>{sigma_source}<br>z = 1.645 (95% of normal distribution falls above this point)</p>", unsafe_allow_html=True)
-                st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Output: Floor = ₹{range_centre - var_95_move:,.2f}</p>", unsafe_allow_html=True)
-                
-        st.markdown("---")
-        
-        # Individual Stock Forecast
-        st.markdown(f"### 🎯 Individual Stock Forecast (Direction for {tomorrow_date})")
-        st.markdown("Predicted direction and mathematical expected move based on short-term expected returns and daily volatility.")
-        
-        if not df.empty:
-            forecast_data = []
-            
-            # Fetch the exact 'mu' (annualized return) used in the long-term table to guarantee 100% mathematical alignment
-            mu_portfolio = summary.get('weighted_ann_return', float('nan'))
-            if pd.isna(mu_portfolio):
-                mu_portfolio = 0.12
-            else:
-                mu_portfolio = mu_portfolio / 100.0
-                
-            # EXACT mathematical alignment with long-term compounding projection
-            # Tomorrow is 1 day (1/365 of a year)
-            portfolio_expected_tomorrow = current_val * ((1 + mu_portfolio) ** (1/365))
-            total_expected_portfolio_change = portfolio_expected_tomorrow - current_val
-            
-            drivers_dict = {}
-            
-            for _, row in df.iterrows():
-                name = row["Name"]
-                last_price = row.get("Last Price", 0)
-                holding_val = row.get("Current Value (₹)", 0)
-                vol_ann = row.get("Volatility %", 0) / 100.0 if "Volatility %" in row else 0
-                ret_ann = row.get("Ann Return %", 0) / 100.0 if "Ann Return %" in row else 0
-                
-                if last_price > 0:
-                    day_vol = vol_ann / np.sqrt(252)
-                    
-                    # Align individual day return to the exact same compounding formula (1+r)^(1/365) - 1
-                    day_ret_compound = ((1 + ret_ann) ** (1/365)) - 1
-                    
-                    expected_price_change = last_price * day_ret_compound
-                    portfolio_impact = holding_val * day_ret_compound
-                    
-                    drivers_dict[name] = portfolio_impact
-                    range_rupee = last_price * day_vol
-                    
-                    if expected_price_change > (last_price * 0.0001):
-                        direction = "⬆️ UP"
-                    elif expected_price_change < -(last_price * 0.0001):
-                        direction = "⬇️ DOWN"
-                    else:
-                        direction = "➡️ FLAT"
-                        
-                    forecast_data.append({
-                        "Asset": name,
-                        "Last Price": f"₹{last_price:,.2f}",
-                        "Expected Direction": direction,
-                        "Expected Price Move": f"₹{expected_price_change:+.2f}",
-                        "Volatility Range (±)": f"₹{range_rupee:.2f}"
-                    })
-                    
-            # Safe defaults — overwritten below if forecast_data is non-empty
-            days_trained = get_days_trained()
-            calibrating = days_trained < 3
-            confidence = "calibrating"
-
-            if forecast_data:
-                st.dataframe(pd.DataFrame(forecast_data), use_container_width=True, hide_index=True)
-                
-                with st.expander("∑ Show Math"):
-                    st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #38bdf8;'>Formula: E[ΔP] = P₀ · r_daily  |  r_daily = (1 + r_annual)^(1/252) - 1</p>", unsafe_allow_html=True)
-                    example = forecast_data[0]
-                    name = example["Asset"]
-                    row_ex = df[df["Name"] == name].iloc[0]
-                    r_ann = row_ex.get("Ann Return %", 0) / 100.0
-                    r_day = ((1 + r_ann)**(1/365)) - 1
-                    p0 = row_ex.get("Last Price", 0)
-                    e_dp = p0 * r_day
-                    st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Example ({name}):<br>Inputs: r_annual = {r_ann*100:.2f}%, P₀ = ₹{p0:,.2f}<br>r_daily = {r_day*100:.4f}%</p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Output: E[ΔP] = ₹{e_dp:+.4f}</p>", unsafe_allow_html=True)
-                    
-                # ── Adaptive forecast (replaces static P = V₀ + μₚ) ───────────────
-                import datetime as dt
-                from adaptive_engine import adaptive_forecast, get_learning_log, get_days_trained
-
-                _mu_ann_raw = summary.get('weighted_ann_return', float('nan'))
-                if pd.isna(_mu_ann_raw): _mu_ann_raw = 12.0
-                _mu_ann_ratio = _mu_ann_raw / 100.0
-
-                _vol_ann_raw = summary.get('portfolio_volatility', float('nan'))
-                if pd.isna(_vol_ann_raw): _vol_ann_raw = 0.15
-
-                # Historical daily ₹ mu and sigma (seeds for cold-start)
-                _hist_mu_daily = current_val * (((1 + _mu_ann_ratio) ** (1/365)) - 1)
-                _hist_sigma_daily = current_val * (_vol_ann_raw / (252 ** 0.5))
-
-                forecast = adaptive_forecast(
-                    last_confirmed_close=current_val,
-                    historical_mu=_hist_mu_daily,
-                    historical_sigma=_hist_sigma_daily,
-                )
-
-                portfolio_expected_tomorrow = forecast["predicted_val"]
-                total_expected_portfolio_change = portfolio_expected_tomorrow - current_val
-                mu_used_display = forecast["mu_used"]
-                sigma_used_display = forecast["sigma_used"]
-                bias_display = forecast["bias"]
-                alpha_display = forecast["alpha"]
-                days_trained = forecast["days_trained"]
-                calibrating = forecast["calibrating"]
-                confidence = forecast["confidence"]
-
-                # ── Sentiment adjustment on top of EWMA forecast ──────────────
-                _vol_for_sent = forecast["sigma_used"]  # adaptive σₚ in ₹
-                _raw_sent_adj = portfolio_sentiment_score * _vol_for_sent * 0.15
-                # Cap to ±₹200
-                _sent_adj = max(-200.0, min(200.0, _raw_sent_adj))
-                _ewma_base = portfolio_expected_tomorrow
-                portfolio_expected_tomorrow = _ewma_base + _sent_adj
-                total_expected_portfolio_change = portfolio_expected_tomorrow - current_val
-
-                tomorrow_str = (dt.datetime.now() + dt.timedelta(days=1)).strftime("%Y-%m-%d")
-                save_daily_prediction(
-                    tomorrow_str,
-                    portfolio_expected_tomorrow,
-                    total_expected_portfolio_change,
-                    drivers_dict,
-                    base_close=current_val,
-                )
-
-                # ── Sentiment adjustment display line ─────────────────────────
-                _sent_clr = "#00ff87" if _sent_adj > 0 else "#ff4d6d" if _sent_adj < 0 else "#94a3b8"
-                st.markdown(
-                    f"""
-                    <div style="background:var(--q-surface-2); border:1px solid rgba(255,255,255,0.07);
-                                border-radius:10px; padding:12px 18px; margin-bottom:1rem;
-                                font-family:'JetBrains Mono',monospace; font-size:0.85rem;">
-                        <span style="color:#94a3b8;">Base (EWMA):</span>
-                        <span style="color:var(--q-text); margin:0 6px;">₹{_ewma_base:,.2f}</span>
-                        <span style="color:#64748b;">|</span>
-                        <span style="color:#94a3b8; margin:0 6px;">Sentiment adj:</span>
-                        <span style="color:{_sent_clr}; margin-right:6px;">{_sent_adj:+.2f}</span>
-                        <span style="color:#64748b;">|</span>
-                        <span style="color:#7dd3fc; margin-left:6px; font-weight:700;">Final: ₹{portfolio_expected_tomorrow:,.2f}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-                
-        # ── Confidence Indicator + Calibration Notice ───────────────────────────
-        _conf_colors = {
-            "high":        ("#00ff87", "🟢", "High Confidence",   "Last 3 errors all under ₹300 — model is well-calibrated."),
-            "medium":      ("#ffa600", "🟡", "Medium Confidence",  "Errors between ₹300-₹600 — model is learning."),
-            "low":         ("#ff4d6d", "🔴", "Low Confidence",     "Recent errors above ₹600 or inconsistent direction — treat forecast with caution."),
-            "calibrating": ("#7dd3fc", "🔵", "Calibrating",        f"Model has seen {days_trained} graded day(s). Accuracy improves from day 4 onwards."),
-        }
-        _conf_clr, _conf_icon, _conf_label, _conf_desc = _conf_colors.get(confidence, _conf_colors["calibrating"])
-
-        st.markdown(
-            f"""
-            <div style="display:inline-flex; align-items:center; gap:10px;
-                        background:var(--q-surface-2); border:1px solid {_conf_clr}44;
-                        border-left:4px solid {_conf_clr}; border-radius:10px;
-                        padding:10px 18px; margin-bottom:1rem;">
-                <span style="font-size:1.3rem;">{_conf_icon}</span>
-                <div>
-                    <span style="color:{_conf_clr}; font-weight:700; font-family:'JetBrains Mono',monospace;">{_conf_label}</span>
-                    <span style="color:#94a3b8; font-size:0.85rem; margin-left:10px;">{_conf_desc}</span>
+        if _fc and not _fc.get("error"):
+            _up = _fc['center_ret_pct'] >= 0
+            _arrow = '▲' if _up else '▼'
+            _tone = 'pos' if _up else 'neg'
+            _acc = _fc['recent_dir_acc_pct'] if _fc['recent_dir_acc_pct'] is not None else '—'
+            _sent_lbl = ('positive' if _fc['sentiment'] > 0.15
+                         else 'negative' if _fc['sentiment'] < -0.15 else 'neutral')
+            st.markdown(f"""
+            <div class="q-card q-enter" style="margin-bottom:14px;">
+              <div style="font-size:.8rem;color:var(--q-text-3);margin-bottom:10px;">Tomorrow's outlook · next trading day: <b style="color:var(--q-text);">{_nd.strftime('%a %d %b')}</b></div>
+              <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+                <span class="q-mono" style="font-size:1.9rem;font-weight:500;color:var(--q-text);letter-spacing:-.5px;">₹{_fc['center']:,.2f}</span>
+                <span class="q-mono" style="color:var(--q-{_tone});font-weight:500;font-size:1rem;">{_arrow} {abs(_fc['center_ret_pct']):.2f}%</span>
+                <span class="q-pill" style="background:var(--q-warn-weak);color:var(--q-warn);">LOW confidence · {_acc}% directional</span>
+              </div>
+              <div style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;">
+                <div class="q-metric"><div class="lbl">Likely range · 68% (1σ)</div><div class="val">₹{_fc['range1_low']:,.2f} – ₹{_fc['range1_high']:,.2f}</div></div>
+                <div class="q-metric"><div class="lbl">Wider range · 95% (2σ)</div><div class="val">₹{_fc['range2_low']:,.2f} – ₹{_fc['range2_high']:,.2f}</div></div>
+              </div>
+              <div style="margin-top:12px;font-size:.88rem;color:var(--q-text-2);line-height:1.9;">
+                <div>📊 <b style="color:var(--q-text);">{_fc['p_big_move_pct']}%</b> chance of a move bigger than ±2%</div>
+                <div>🛡️ <b>95% VaR:</b> you're unlikely to lose more than <b style="color:var(--q-text);">₹{_fc['var95']:,.2f}</b> tomorrow</div>
+              </div>
+              <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--q-border);">
+                <div style="font-size:.76rem;color:var(--q-text-3);margin-bottom:7px;">What's driving it</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <span class="q-pill" style="background:var(--q-surface-2);color:var(--q-text-2);">Volatility · {_fc['vol_regime']} ({_fc['dvol_port_pct']}%/day)</span>
+                  <span class="q-pill" style="background:var(--q-surface-2);color:var(--q-text-2);">News · {_sent_lbl}</span>
+                  <span class="q-pill" style="background:var(--q-surface-2);color:var(--q-text-2);">Momentum · {_fc['pos_momentum']}/{_fc['n_stocks']} trending up</span>
                 </div>
+              </div>
+              <div style="margin-top:12px;font-size:.72rem;color:var(--q-text-3);line-height:1.6;">
+                ⓘ Model scorecard: {_acc}% directional — barely above chance. <b style="color:var(--q-text-2);">Trust the range, not the arrow.</b> Range error beats the old EWMA model. Re-trained on fresh data each day.
+              </div>
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+            """, unsafe_allow_html=True)
 
-        if calibrating:
-            st.caption("⚠️ Model is still calibrating — accuracy will improve as more data is collected.")
+            with st.expander("📋 Per-stock outlook"):
+                _vrows = [{
+                    "Stock": s['ticker'].replace('.NS', '').replace('.BO', ''),
+                    "Est. move": f"{s['est_move_pct']:+.2f}%",
+                    "Tomorrow range": f"₹{s['low']:.1f} – ₹{s['high']:.1f}",
+                    "Daily vol": f"{s['dvol_pct']:.1f}%",
+                    "Risk": ("🔴 " if s['flag'] == 'high vol' else "🟠 " if s['flag'] == 'elevated' else "🟢 ") + s['flag'],
+                } for s in _fc['per_stock']]
+                st.dataframe(pd.DataFrame(_vrows), use_container_width=True, hide_index=True)
 
-        # ── Show Prediction Tracker ──────────────────────────────────────────────
-        st.markdown("### 📝 Daily Prediction Tracker")
-        st.markdown("Historical accuracy of our 1-Day adaptive forecasts against actual market closes.")
-        pred_logs = get_predictions()
-        if pred_logs:
-            import datetime as dt
-            _now = dt.datetime.now()
-            _after_close = _now.hour > 15 or (_now.hour == 15 and _now.minute >= 30)
-            _today_str = _now.strftime("%Y-%m-%d")
+            st.markdown("---")
+            # ── Prediction tracker (v2): log each forecast, grade it next trading day ──
+            import json as _tj2, os as _to2, datetime as _td2
+            _tlog_file = _to2.path.join(st.session_state.get("_quest_data_dir", "."), "v2_forecast_log.json")
+            try:
+                with open(_tlog_file, encoding="utf-8") as _tf:
+                    _tlog = _tj2.load(_tf)
+            except Exception:
+                _tlog = []
+            _today_str = _td2.date.today().strftime("%Y-%m-%d")
+            _target_str = _nd.strftime("%Y-%m-%d")
+            _cur_val = round(float(summary['total_value']), 2)
 
-            tracker_data = []
-            pending_entries = []   # ungraded entries eligible for manual override
-            for p in reversed(pred_logs):  # Show newest first
-                t_date = dt.datetime.strptime(p["target_date"], "%Y-%m-%d")
-                is_weekend = t_date.weekday() >= 5
+            _changed = False
+            for _e in _tlog:
+                if _e.get("actual") is None and _e.get("target_date") == _today_str:
+                    _e["actual"] = _cur_val
+                    _e["error"] = round(_cur_val - _e["predicted"], 2)
+                    if _e.get("base") is not None:
+                        _e["hit"] = ((_cur_val - _e["base"]) >= 0) == ((_e["predicted"] - _e["base"]) >= 0)
+                    _changed = True
+            if not any(_e.get("target_date") == _target_str for _e in _tlog):
+                _tlog.append({"made_on": _today_str, "target_date": _target_str,
+                              "base": _cur_val, "predicted": round(float(_fc['center']), 2),
+                              "actual": None, "error": None, "hit": None})
+                _changed = True
+            if _changed:
+                try:
+                    with open(_tlog_file, "w", encoding="utf-8") as _tf:
+                        _tj2.dump(_tlog[-90:], _tf, indent=2)
+                except Exception:
+                    pass
 
-                if p.get("real_val"):
-                    verified = " ✅" if p.get("manually_confirmed") else ""
-                    actual = f"₹{p['real_val']:,.2f}{verified}"
-                    err_val = p['real_val'] - p['expected_val']
-                    reason = p.get("variance_reason", "")
-                elif is_weekend:
-                    actual = "MKT CLOSED"
-                    err_val = None
-                    reason = "Weekend"
-                else:
-                    actual = "Waiting..."
-                    err_val = None
-                    reason = "⏳ Pending close"
-                    # Eligible for manual override if past close time
-                    if _after_close:
-                        pending_entries.append(p)
-
-                row_entry = {
-                    "Target Date": p["target_date"],
-                    "Expected Value": f"₹{p['expected_val']:,.2f}",
-                    "Actual Value": actual,
-                    "Error (₹)": f"{err_val:+,.2f}" if err_val is not None else "-",
-                    "Variance Reason": reason,
-                }
-                tracker_data.append(row_entry)
-            st.dataframe(pd.DataFrame(tracker_data), use_container_width=True, hide_index=True)
-
-            # ── Manual close override (shown only after 3:30 PM for ungraded entries) ──
-            if pending_entries:
-                st.markdown("""
-                <div style='background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);
-                border-left:4px solid #fbbf24;border-radius:10px;padding:0.9rem 1.2rem;margin-top:0.8rem'>
-                <span style='color:#fbbf24;font-weight:700;font-size:0.85rem;letter-spacing:1px'>
-                ⏰ MARKET CLOSED — MANUAL CLOSE OVERRIDE</span><br>
-                <span style='color:#94a3b8;font-size:0.82rem'>
-                yfinance data for Indian markets can lag 15–30 minutes after close.
-                Enter the actual NSE portfolio close below to grade immediately.
-                Leave empty to let yfinance auto-grade on the next app load.
-                </span>
-                </div>
-                """, unsafe_allow_html=True)
-
-                for p_entry in pending_entries:
-                    _entry_date = p_entry["target_date"]
-                    st.markdown(f"**Override for {_entry_date}** &nbsp; (expected: ₹{p_entry['expected_val']:,.2f})")
-                    _oc1, _oc2 = st.columns([3, 1])
-                    with _oc1:
-                        _manual_val = st.number_input(
-                            f"Actual close price for {_entry_date} (₹)",
-                            min_value=0.0,
-                            value=0.0,
-                            step=1.0,
-                            format="%.2f",
-                            key=f"manual_close_{_entry_date}",
-                            label_visibility="collapsed",
-                            placeholder="Enter actual NSE portfolio close price...",
-                        )
-                    with _oc2:
-                        if st.button("Confirm ✓", key=f"confirm_close_{_entry_date}",
-                                     use_container_width=True, type="primary"):
-                            if _manual_val and _manual_val > 0:
-                                ok = confirm_manual_close(_entry_date, _manual_val)
-                                if ok:
-                                    # Immediately fire EWMA catchup with the now-graded entry
-                                    ewma_catchup(
-                                        historical_mu=_hist_mu_daily,
-                                        historical_sigma=_hist_sigma_daily,
-                                    )
-                                    st.success(f"✅ Close confirmed for {_entry_date}: ₹{_manual_val:,.2f}. EWMA updated.")
-                                    st.rerun()
-                                else:
-                                    st.error("Could not find that prediction entry. It may already be graded.")
-                            else:
-                                st.warning("Enter a value greater than 0 to confirm.")
-        else:
-            st.info("No predictions logged yet. Check back tomorrow!")
-
-        # ── Learning Log ─────────────────────────────────────────────────────────
-        learning_log = get_learning_log()
-        if learning_log:
-            with st.expander(f"🧠 Learning Log — {len(learning_log)} graded day(s) of adaptive memory"):
-                st.markdown(
-                    "This table shows how the adaptive EWMA model updates its expected return (μₚ) "
-                    "and volatility (σₚ) after each day's actual close is confirmed. "
-                    "The model's memory compounds: each new entry shifts the model's expectation toward recent reality."
-                )
-                log_display = []
-                for entry in reversed(learning_log):  # newest first
-                    log_display.append({
-                        "Date":          entry["date"],
-                        "Actual Return (₹)": f"{entry['actual_return']:+,.2f}",
-                        "Prev μₚ (₹)":   f"₹{entry['mu_old']:,.2f}",
-                        "Updated μₚ (₹)": f"₹{entry['mu_new']:,.2f}",
-                        "Updated σₚ (₹)": f"₹{entry['sigma_new']:,.2f}",
-                        "Error (₹)":     f"{entry['error']:+,.2f}",
-                        "Bias 5d (₹)":   f"{entry['bias_5d']:+,.2f}",
-                        "α used":        entry["alpha_used"],
-                    })
-                st.dataframe(pd.DataFrame(log_display), use_container_width=True, hide_index=True)
-
-                with st.expander("∑ Show EWMA Math"):
-                    st.markdown(
-                        "<p style='font-family:\"JetBrains Mono\",monospace; color:#38bdf8;'>"
-                        "μₚ_new = α × actual_return_t + (1-α) × μₚ_old<br>"
-                        "σₚ_new = √(α × (actual_return_t − μₚ_new)² + (1-α) × σₚ_old²)<br>"
-                        "P_tomorrow = last_close + μₚ_new + bias_5d</p>",
-                        unsafe_allow_html=True
-                    )
-                    if log_display:
-                        last = learning_log[-1]
-                        st.markdown(
-                            f"<p style='font-family:\"JetBrains Mono\",monospace;'>"
-                            f"Last update ({last['date']}):<br>"
-                            f"α = {last['alpha_used']} | actual_return = {last['actual_return']:+,.2f}<br>"
-                            f"μₚ: {last['mu_old']:+,.4f} → {last['mu_new']:+,.4f}<br>"
-                            f"σₚ: {last['sigma_old']:,.4f} → {last['sigma_new']:,.4f}<br>"
-                            f"Error corrected: {last['error']:+,.2f} | Bias applied: {last['bias_5d']:+,.2f}</p>",
-                            unsafe_allow_html=True
-                        )
-        else:
-            st.info("📚 No learning history yet — the model will start adapting after its first graded prediction day.")
-            
-        st.markdown("---")
-        
-        # Long Term
-        st.markdown("### 📈 Long-Term Wealth Projection")
-        st.markdown("Predictive values based on your portfolio's historical **Annualized Return** and **Volatility**.")
-        mu = summary.get('weighted_ann_return', float('nan'))
-
-        if pd.isna(mu):
-            st.warning("Not enough historical data to generate reliable projections. Using 12% default expected return.")
-            mu = 0.12
-        else:
-            mu = mu / 100.0
-
-        # ── V₀: use most recent graded real_val from predictions_log, not live price ──
-        _preds_lt   = get_predictions()
-        _graded_lt  = [p for p in _preds_lt if p.get('real_val') is not None]
-        if _graded_lt:
-            _graded_lt.sort(key=lambda x: x['target_date'])
-            v0          = _graded_lt[-1]['real_val']
-            _v0_src     = f"confirmed close {_graded_lt[-1]['target_date']}"
-            _v0_manual  = _graded_lt[-1].get('manually_confirmed', False)
-        else:
-            v0          = current_val
-            _v0_src     = "live yfinance (no graded close yet)"
-            _v0_manual  = False
-
-        _v0_badge = " ✅" if _v0_manual else ""
-        st.caption(f"V₀ = ₹{v0:,.2f} ({_v0_src}){_v0_badge}")
-
-        import datetime as dt
-        today = dt.datetime.now()
-
-        horizons = [
-            ("1 Month",  today + pd.DateOffset(months=1),  1/12),
-            ("3 Months", today + pd.DateOffset(months=3),  3/12),
-            ("6 Months", today + pd.DateOffset(months=6),  6/12),
-            ("1 Year",   today + pd.DateOffset(years=1),   1.0),
-            ("3 Years",  today + pd.DateOffset(years=3),   3.0),
-            ("5 Years",  today + pd.DateOffset(years=5),   5.0),
-        ]
-
-        proj_data = []
-        for label, exact_date, t in horizons:
-            expected = v0 * ((1 + mu) ** t)
-            bull     = v0 * ((1 + mu + vol) ** t)
-            bear     = v0 * ((1 + mu - vol) ** t)
-            if bear < 0: bear = 0
-            date_str = exact_date.strftime("%d %b %Y")
-            proj_data.append({
-                "Target Date":      f"{date_str} ({label})",
-                "Bear Case (Poor)": bear,
-                "Expected Value":   expected,
-                "Bull Case (Great)": bull,
-            })
-
-        proj_df = pd.DataFrame(proj_data)
-
-        t_vals = np.linspace(0, 5, 60)
-        line_data = pd.DataFrame({
-            "Months":     t_vals * 12,
-            "Bear Case":  np.maximum(0, v0 * ((1 + mu - vol) ** t_vals)),
-            "Expected":   v0 * ((1 + mu) ** t_vals),
-            "Bull Case":  v0 * ((1 + mu + vol) ** t_vals),
-        })
-        
-        fig_proj = go.Figure()
-        fig_proj.add_trace(go.Scatter(x=line_data["Months"], y=line_data["Bull Case"], fill=None, mode='lines', line_color='rgba(0, 255, 135, 0.8)', name='Bull Case'))
-        fig_proj.add_trace(go.Scatter(x=line_data["Months"], y=line_data["Expected"], fill='tonexty', mode='lines', line_color='rgba(99, 179, 237, 0.8)', name='Expected'))
-        fig_proj.add_trace(go.Scatter(x=line_data["Months"], y=line_data["Bear Case"], fill='tonexty', mode='lines', line_color='rgba(255, 77, 109, 0.5)', name='Bear Case'))
-        fig_proj.update_layout(
-            xaxis_title="Months from Now", 
-            yaxis_title="Projected Portfolio Value (₹)", 
-            margin=dict(t=20, b=20, l=0, r=0),
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter", color="#94a3b8")
-        )
-        fig_proj.update_xaxes(showgrid=False)
-        fig_proj.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
-        
-        ui_theme.style_fig(fig_proj)
-        st.plotly_chart(fig_proj, use_container_width=True)
-        
-        with st.expander("∑ Show Math"):
-            st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #38bdf8;'>Formula: V(t) = V₀ · (1 + r)^t</p>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Inputs: V₀ = ₹{v0:,.2f} ({_v0_src}){_v0_badge}<br>μₚ = {mu*100:.2f}%, σₚ = {vol*100:.2f}%</p>", unsafe_allow_html=True)
-            exp_1y  = v0 * ((1 + mu) ** 1)
-            exp_5y  = v0 * ((1 + mu) ** 5)
-            bear_1y = v0 * ((1 + mu - vol) ** 1)
-            bear_5y = v0 * ((1 + mu - vol) ** 5)
-            bull_1y = v0 * ((1 + mu + vol) ** 1)
-            bull_5y = v0 * ((1 + mu + vol) ** 5)
-            st.markdown(f"<p style='font-family: \"JetBrains Mono\", monospace;'>Outputs (Expected | Bear | Bull):<br>t = 1 Year: ₹{exp_1y:,.2f} | ₹{max(0, bear_1y):,.2f} | ₹{bull_1y:,.2f}<br>t = 5 Years: ₹{exp_5y:,.2f} | ₹{max(0, bear_5y):,.2f} | ₹{bull_5y:,.2f}</p>", unsafe_allow_html=True)
-        # Display Table
-        st.dataframe(
-            proj_df,
-            use_container_width=True,
-            column_config={
-                "Bear Case (Poor)": st.column_config.NumberColumn(format="₹ %.2f"),
-                "Expected Value": st.column_config.NumberColumn(format="₹ %.2f"),
-                "Bull Case (Great)": st.column_config.NumberColumn(format="₹ %.2f")
-            },
-            hide_index=True
-        )
-    else:
-        st.info("Add some assets to see future projections.")
+            st.markdown("##### Prediction tracker")
+            st.caption("Each forecast graded against what actually happened. Builds forward from today — honest, no backfilled guesses.")
+            _graded = [e for e in _tlog if e.get("actual") is not None]
+            if _graded:
+                _hits = sum(1 for e in _graded if e.get("hit"))
+                _dacc = _hits / len(_graded) * 100
+                _mae = sum(abs(e["error"]) for e in _graded) / len(_graded)
+                st.markdown(f"**Track record:** {len(_graded)} graded day(s) · directional accuracy **{_dacc:.0f}%** · avg error **₹{_mae:,.2f}**")
+                _trows = [{"Target date": e["target_date"],
+                           "Predicted": f"₹{e['predicted']:,.2f}",
+                           "Actual": f"₹{e['actual']:,.2f}",
+                           "Error": f"{e['error']:+,.2f}",
+                           "Direction": ("hit ✅" if e.get("hit") else "miss ❌" if e.get("hit") is not None else "-")}
+                          for e in sorted(_graded, key=lambda x: x["target_date"], reverse=True)[:15]]
+                st.dataframe(pd.DataFrame(_trows), use_container_width=True, hide_index=True)
+            else:
+                _pending = [e for e in _tlog if e.get("actual") is None]
+                if _pending:
+                    _p = _pending[-1]
+                    st.info(f"First forecast logged: ₹{_p['predicted']:,.2f} for {_p['target_date']}. "
+                            f"It gets graded when you open QUEST on that trading day — the track record grows from here.")
 
 if _active("tab6"):
     import datetime as _dt
