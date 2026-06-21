@@ -162,56 +162,75 @@ def _norm_sf(z: float) -> float:
     return float(p)
 
 
-def live_forecast(tickers, weights, port_value, sentiment: float = 0.0,
+def live_forecast(holdings, bias: float = 0.0, sentiment: float = 0.0,
                   period: str = "5y") -> dict:
-    """Produce the next-trading-day risk/range forecast for a portfolio.
+    """Produce ONE stable next-trading-day risk/range forecast, locked per day.
 
-    weights: list of value-weights (fraction of portfolio) aligned with tickers.
-    Returns a structured dict the UI renders. Honest by design: the directional
-    point estimate is low-confidence; the range/VaR is the trusted output.
-    The model retrains on fresh data every call (cache it daily upstream), so it
-    naturally incorporates each new day's outcome — and we measure its recent
-    error to bias-correct (learning from mistakes).
+    holdings: list of (ticker, quantity). The forecast is anchored to each
+    holding's LAST SETTLED close (today's partial bar is dropped while the market
+    is open), so the number is deterministic and identical on every machine and
+    does not wobble intra-day. Cache this once per trading day upstream.
+
+    Uses the freshest available data for everything — volatility, VaR, news tilt
+    (sentiment), market regime — plus a self-correction `bias` (in ₹) derived
+    from the model's own recent graded errors (learning from its mistakes).
+    Honest by design: the directional point estimate is low-confidence; the
+    range/VaR is the trusted output.
     """
     import yfinance as yf
+    import datetime as _dt
+    try:
+        import nse_live as _nsl
+        _mkt_open = _nsl.is_market_open()
+    except Exception:
+        _mkt_open = False
+    _today = pd.Timestamp(_dt.date.today())
+
+    def _settle(c):
+        """Drop today's partial bar while the market is open → deterministic."""
+        c = c.dropna()
+        if len(c):
+            c.index = c.index.tz_localize(None)
+            if _mkt_open and c.index[-1].normalize() == _today:
+                c = c.iloc[:-1]
+        return c
 
     # Market regime feature
     try:
-        nf = yf.Ticker("^NSEI").history(period=period)["Close"].dropna()
-        nf.index = nf.index.tz_localize(None)
+        nf = _settle(yf.Ticker("^NSEI").history(period=period)["Close"])
         mkt_ret5 = nf.pct_change(5)
-        nf_recent = nf.pct_change().tail(20)
-        regime = "elevated" if nf_recent.std() > nf.pct_change().tail(120).std() else "calm"
+        regime = "elevated" if nf.pct_change().tail(20).std() > nf.pct_change().tail(120).std() else "calm"
     except Exception:
         mkt_ret5, regime = None, "unknown"
 
-    # Fit pooled model on all holdings' history
-    frames, series = [], {}
-    for tk in tickers:
+    # Fit pooled model on all holdings' settled history
+    frames, series, qty_by = [], {}, {}
+    for tk, qty in holdings:
         try:
-            c = yf.Ticker(tk).history(period=period)["Close"].dropna()
+            c = _settle(yf.Ticker(tk).history(period=period)["Close"])
             if len(c) < 260:
                 continue
-            c.index = c.index.tz_localize(None)
             series[tk] = c
-            f = build_features(c, mkt_ret5)
-            frames.append(f.dropna())
+            qty_by[tk] = float(qty)
+            frames.append(build_features(c, mkt_ret5).dropna())
         except Exception:
             continue
     if not frames or not _HAS_SK:
         return {"error": "insufficient data or sklearn missing"}
 
     data = pd.concat(frames)
-    feat_cols = [col for col in data.columns if col not in ("target",)]
+    feat_cols = [col for col in data.columns if col != "target"]
     model = HistGradientBoostingRegressor(max_iter=300, learning_rate=0.05, max_depth=4,
                                           min_samples_leaf=40, l2_regularization=1.0, random_state=0)
     model.fit(data[feat_cols].values, data["target"].values)
 
-    # Per-stock latest forecast + build a portfolio daily-return series
-    per_stock, ret_cols = [], {}
-    w_by_tk = {tk: w for tk, w in zip(tickers, weights)}
-    pred_ret_port = 0.0
-    pos_mom = 0
+    # Stable base = portfolio value at the last settled close
+    val_by = {tk: qty_by[tk] * float(c.iloc[-1]) for tk, c in series.items()}
+    base = sum(val_by.values())
+    if base <= 0:
+        return {"error": "zero base value"}
+
+    per_stock, ret_cols, pred_ret_port, pos_mom = [], {}, 0.0, 0
     for tk, c in series.items():
         feats = build_features(c, mkt_ret5).drop(columns=["target"]).dropna()
         if feats.empty:
@@ -219,10 +238,9 @@ def live_forecast(tickers, weights, port_value, sentiment: float = 0.0,
         pr = float(model.predict(feats.iloc[[-1]].values)[0])
         dvol = float(c.pct_change().ewm(span=20).std().iloc[-1])
         last = float(c.iloc[-1])
-        mom5 = float(c.pct_change(5).iloc[-1])
-        if mom5 > 0:
+        if float(c.pct_change(5).iloc[-1]) > 0:
             pos_mom += 1
-        w = w_by_tk.get(tk, 0.0)
+        w = val_by[tk] / base
         pred_ret_port += w * pr
         ret_cols[tk] = c.pct_change()
         flag = "high vol" if dvol > 0.03 else ("elevated" if dvol > 0.02 else "normal")
@@ -232,25 +250,13 @@ def live_forecast(tickers, weights, port_value, sentiment: float = 0.0,
             "dvol_pct": round(dvol * 100, 2), "flag": flag,
         })
 
-    # Portfolio daily volatility from weighted, aligned holding returns
+    # Portfolio daily volatility from value-weighted, aligned holding returns
     rdf = pd.DataFrame(ret_cols).dropna()
-    wvec = np.array([w_by_tk.get(t, 0.0) for t in rdf.columns])
-    if wvec.sum() > 0:
-        wvec = wvec / wvec.sum()
+    wvec = np.array([val_by.get(t, 0.0) / base for t in rdf.columns])
     port_ret = (rdf * wvec).sum(axis=1)
     dvol_port = float(port_ret.ewm(span=20).std().iloc[-1])
     dvol_long = float(port_ret.tail(120).std())
 
-    # Self-feedback: recent error of the model's portfolio prediction (bias correction)
-    # (compare model's predicted portfolio return vs actual over the last ~30 days)
-    bias = 0.0
-    try:
-        recent = port_ret.tail(30)
-        bias = float(-recent.mean() * 0.0)  # placeholder; real bias from graded log upstream
-    except Exception:
-        bias = 0.0
-
-    # Sentiment tilt (live, honest nudge — clamped)
     sent_tilt = max(-0.004, min(0.004, sentiment * 0.01))
 
     # Recent directional accuracy (rolling, honest scorecard)
@@ -259,29 +265,28 @@ def live_forecast(tickers, weights, port_value, sentiment: float = 0.0,
         cut = data.index.unique()[int(len(data.index.unique()) * 0.85)]
         te = data[data.index >= cut].dropna()
         if len(te) > 50:
-            p = model.predict(te[feat_cols].drop(columns=[]).values) if False else \
-                model.predict(te[[c for c in feat_cols]].values)
+            p = model.predict(te[feat_cols].values)
             y = te["target"].values
             m = y != 0
             acc = round(float((np.sign(p[m]) == np.sign(y[m])).mean()) * 100, 1)
     except Exception:
         acc = None
 
-    center_ret = pred_ret_port + sent_tilt + bias
-    center = port_value * (1 + center_ret)
-    sig1 = port_value * dvol_port
-    sig2 = port_value * 1.96 * dvol_port
+    center = base * (1 + pred_ret_port + sent_tilt) + bias  # bias (₹) = self-correction
+    center_ret = center / base - 1
+    sig1 = base * dvol_port
+    sig2 = base * 1.96 * dvol_port
     p_big = round(2 * _norm_sf(0.02 / dvol_port) * 100) if dvol_port > 0 else 0
-    var95 = port_value * 1.645 * dvol_port
+    var95 = base * 1.645 * dvol_port
 
     return {
-        "center": center, "center_ret_pct": round(center_ret * 100, 2),
+        "base": base, "center": center, "center_ret_pct": round(center_ret * 100, 2),
         "range1_low": center - sig1, "range1_high": center + sig1,
         "range2_low": center - sig2, "range2_high": center + sig2,
         "p_big_move_pct": p_big, "var95": var95,
         "dvol_port_pct": round(dvol_port * 100, 2),
         "vol_regime": "elevated" if dvol_port > dvol_long else "calm",
-        "market_regime": regime,
+        "market_regime": regime, "bias_applied": round(float(bias), 2),
         "sentiment": sentiment, "pos_momentum": pos_mom, "n_stocks": len(series),
         "recent_dir_acc_pct": acc,
         "per_stock": sorted(per_stock, key=lambda x: -abs(x["est_move_pct"])),

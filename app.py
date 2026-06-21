@@ -1539,21 +1539,47 @@ if _active("tab5"):
                 break
             _nd += _vdt.timedelta(days=1)
 
-        _vtot = float(df["Current Value (₹)"].sum())
-        _vtks, _vwts = [], []
+        # Holdings as (ticker, quantity) — forecast anchors to the settled close
+        from risk_analyzer import GOLD_PROXY as _GOLD, AssetType as _AT
+        _holdings = []
         for _a in current_assets:
-            _r = df[df["Name"] == _a.name]
-            if _r.empty or not _a.identifier:
-                continue
-            _vtks.append(_a.identifier)
-            _vwts.append(float(_r["Current Value (₹)"].iloc[0]) / _vtot if _vtot > 0 else 0.0)
+            _tk = _GOLD if _a.asset_type == _AT.DIGITAL_GOLD else _a.identifier
+            if _tk and _a.asset_type != _AT.MUTUAL_FUND:
+                _holdings.append((_tk, float(_a.quantity)))
 
-        @st.cache_data(ttl=3600, show_spinner="Training the forecast model on 5 years of data…")
-        def _v2_forecast(tks, wts, pv, sent):
-            return _pe.live_forecast(list(tks), list(wts), pv, sent)
+        # ── Self-correction: grade matured forecasts, derive a bias (₹) from recent errors ──
+        import json as _tj2, os as _to2
+        _tlog_file = _to2.path.join(st.session_state.get("_quest_data_dir", "."), "v2_forecast_log.json")
+        try:
+            with open(_tlog_file, encoding="utf-8") as _tf:
+                _tlog = _tj2.load(_tf)
+        except Exception:
+            _tlog = []
+        _today_str = _vdt.date.today().strftime("%Y-%m-%d")
+        _target_str = _nd.strftime("%Y-%m-%d")
+        _cur_val = round(float(summary['total_value']), 2)
+        for _e in _tlog:
+            if _e.get("actual") is None and _e.get("target_date") == _today_str:
+                _e["actual"] = _cur_val
+                _e["error"] = round(_cur_val - _e["predicted"], 2)
+                if _e.get("base") is not None:
+                    _e["hit"] = ((_cur_val - _e["base"]) >= 0) == ((_e["predicted"] - _e["base"]) >= 0)
+        _graded = [e for e in _tlog if e.get("actual") is not None and e.get("error") is not None]
+        # bias = mean recent error (actual − predicted), clamped to ±0.5% of value
+        _bias = 0.0
+        if _graded:
+            _recent_err = [e["error"] for e in sorted(_graded, key=lambda x: x["target_date"])[-10:]]
+            _bias = sum(_recent_err) / len(_recent_err)
+            _cap = 0.005 * _cur_val
+            _bias = max(-_cap, min(_cap, _bias))
 
-        _fc = _v2_forecast(tuple(_vtks), tuple(_vwts),
-                           round(float(summary['total_value']), 2),
+        # Forecast LOCKED per trading day (keyed by date) → one stable number everywhere
+        @st.cache_data(ttl=86400, show_spinner="Training the forecast model on 5 years of data…")
+        def _v2_forecast(holdings, day, bias, sent):
+            return _pe.live_forecast(list(holdings), bias=bias, sentiment=sent)
+
+        _fc = _v2_forecast(tuple(_holdings), _today_str,
+                           round(float(_bias), 2),
                            round(float(portfolio_sentiment_score), 3))
 
         if _fc and not _fc.get("error"):
