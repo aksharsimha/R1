@@ -291,15 +291,30 @@ if not df.empty and total_invested > 0:
     else:
         summary['portfolio_risk_bucket'] = "LOW"
 
+# Safe defaults so a brand-new / empty portfolio never crashes the dashboard
+summary.setdefault('portfolio_risk_score', 0.0)
+summary.setdefault('portfolio_risk_bucket', 'LOW')
+summary.setdefault('total_value', 0.0)
+summary.setdefault('n_assets', 0)
+
 import datetime as _dt
 _today = _dt.date.today()
 if section == "Overview":
+    if df.empty:
+        st.markdown(
+            "<div class='q-card q-enter' style='margin-bottom:16px;border-left:3px solid var(--q-accent);border-radius:0 12px 12px 0;'>"
+            "<div style='font-size:1.1rem;font-weight:500;color:var(--q-text);margin-bottom:4px;'>👋 Welcome to QUEST!</div>"
+            "<div style='font-size:.9rem;color:var(--q-text-2);line-height:1.6;'>Your portfolio is empty. "
+            "Scroll down to <b>＋ Add a stock</b> (type a company name and we'll find the ticker for you) — "
+            "then your live value, risk score, news, and forecast all come to life.</div></div>",
+            unsafe_allow_html=True)
+
     # ── Hero / Overview header (themed) ──────────────────────────────────────
     _pnl_pos = total_pnl >= 0
     _pnl_cls = 'q-pos' if _pnl_pos else 'q-neg'
     _pnl_sign = '+' if _pnl_pos else ''
-    _score = summary['portfolio_risk_score']
-    _risk_bucket = summary['portfolio_risk_bucket']
+    _score = summary.get('portfolio_risk_score', 0.0)
+    _risk_bucket = summary.get('portfolio_risk_bucket', 'LOW')
     _risk_tone = 'pos' if _score <= 40 else 'warn' if _score <= 70 else 'neg'
 
     _mkt_status = summary.get('market_status', 'Unknown')
