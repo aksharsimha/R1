@@ -37,7 +37,9 @@ except ImportError:
 
 try:
     import streamlit as st
-    _cache = st.cache_data(ttl=180, show_spinner=False)
+    # 15 min: re-downloading 2y × N holdings every 3 min caused periodic
+    # 20-40s freezes. The sidebar "Refresh data" button busts this manually.
+    _cache = st.cache_data(ttl=900, show_spinner=False)
 except ImportError:
     _cache = lambda f: f
 

@@ -117,6 +117,12 @@ if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="logout_btn"
 
 ui_theme.theme_toggle()
 
+if st.sidebar.button("↻  Refresh data", use_container_width=True, key="refresh_data_btn",
+                     help="Re-fetch prices, history and news right now"):
+    st.cache_data.clear()
+    st.session_state.pop('_sentiment_ts', None)  # force sentiment recompute
+    st.rerun()
+
 st.sidebar.markdown("---")
 section = st.sidebar.radio(
     "Navigate",
@@ -200,22 +206,32 @@ if (
         _sent_score_accum = 0.0
         _sent_weight_accum = 0.0
         _sent_negative_count = 0
-        for _sa in current_assets:
-            if not _sa.identifier:
-                continue
+
+        # Fetch all assets' sentiment CONCURRENTLY — serial fetching added
+        # 15-25s to the first page load.
+        from concurrent.futures import ThreadPoolExecutor as _SentPool
+        def _fetch_sent(_sa):
             try:
-                _sd = get_asset_sentiment(_sa.identifier, stock_name=_sa.name, limit=4)
-                _sv = _sd.get('score', 0.0) or 0.0
-                # weight by portfolio share
-                _asset_row = df[df['Name'] == _sa.name] if not df.empty else None
-                _asset_val = float(_asset_row['Current Value (₹)'].iloc[0]) if (_asset_row is not None and not _asset_row.empty) else 0.0
-                _w = _asset_val / _total_val_sent
-                _sent_score_accum += _sv * _w
-                _sent_weight_accum += _w
-                if _sv < -0.15:
-                    _sent_negative_count += 1
+                return _sa, get_asset_sentiment(_sa.identifier, stock_name=_sa.name, limit=4)
             except Exception:
-                pass
+                return _sa, None
+        _sent_assets = [a for a in current_assets if a.identifier]
+        _sent_results = []
+        if _sent_assets:
+            with _SentPool(max_workers=min(8, len(_sent_assets))) as _sp:
+                _sent_results = list(_sp.map(_fetch_sent, _sent_assets))
+        for _sa, _sd in _sent_results:
+            if not _sd:
+                continue
+            _sv = _sd.get('score', 0.0) or 0.0
+            # weight by portfolio share
+            _asset_row = df[df['Name'] == _sa.name] if not df.empty else None
+            _asset_val = float(_asset_row['Current Value (₹)'].iloc[0]) if (_asset_row is not None and not _asset_row.empty) else 0.0
+            _w = _asset_val / _total_val_sent
+            _sent_score_accum += _sv * _w
+            _sent_weight_accum += _w
+            if _sv < -0.15:
+                _sent_negative_count += 1
         st.session_state['_sentiment_score'] = _sent_score_accum / _sent_weight_accum if _sent_weight_accum > 0 else 0.0
         st.session_state['_sentiment_neg_count'] = _sent_negative_count
         st.session_state['_sentiment_ts'] = _now_ts
@@ -1027,13 +1043,23 @@ if _active("tab1"):
         _am = st.number_input("Invested amount (₹)", min_value=0.0, value=0.0, step=100.0, key="ov_add_amt")
         _qt = st.number_input("Quantity (units)", min_value=0.0, value=0.0, step=1.0, key="ov_add_qty")
         if st.button("Add stock", key="ov_add_submit"):
-            if _na and add_asset(_na, _ty, _id, _am, _qt):
-                st.session_state.pop("_ov_lookup_msg", None)
-                st.success(f"Added {_na}")
-                time.sleep(0.6)
-                st.rerun()
+            if not _na.strip():
+                st.error("Give the stock a name first.")
+            elif not _id.strip():
+                st.error("Identifier missing — use 🔎 Find ticker or type it manually.")
+            elif any(a.name == _na.strip() for a in current_assets):
+                st.error(f"“{_na.strip()}” is already in your portfolio — use ✎ Edit to change it.")
             else:
-                st.error("Could not add (already exists or invalid).")
+                with st.spinner(f"Adding {_na.strip()}…"):
+                    _added = add_asset(_na.strip(), _ty, _id.strip(), _am, _qt)
+                if _added:
+                    st.session_state.pop("_ov_lookup_msg", None)
+                    st.cache_data.clear()  # so the new stock shows up immediately
+                    st.success(f"Added {_na.strip()} — updating your dashboard…")
+                    time.sleep(0.6)
+                    st.rerun()
+                else:
+                    st.error("Could not add the asset — check the identifier and try again.")
 
     if not df.empty:
         with st.expander("✎  Edit amounts & quantities"):
@@ -1058,6 +1084,7 @@ if _active("tab1"):
                     update_asset_holdings(row["Name"], float(row["Invested (₹)"]), float(row["Quantity"]))
                     changes_made = True
             if changes_made:
+                st.cache_data.clear()
                 st.success("Saved!")
                 time.sleep(0.5)
                 st.rerun()
@@ -1067,6 +1094,7 @@ if _active("tab1"):
                 _rm = st.selectbox("Select stock to remove", list(df["Name"]))
                 if st.form_submit_button("Remove"):
                     if remove_asset(_rm):
+                        st.cache_data.clear()
                         st.success(f"Removed {_rm}")
                         time.sleep(0.6)
                         st.rerun()
