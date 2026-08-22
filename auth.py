@@ -11,8 +11,15 @@ Features:
   - Password reset via Firebase email
 """
 
+import base64
+import hashlib
+import hmac
 import os
+import secrets
 from datetime import datetime
+
+import streamlit as st
+from streamlit_cookies_controller import CookieController
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Paths (kept for backward compatibility with local Remember Me)
@@ -98,27 +105,76 @@ def reset_password(email: str) -> tuple[bool, str]:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Remember Me — SESSION-ONLY (no server-side files)
+# Remember Me — signed browser cookie
 # ──────────────────────────────────────────────────────────────────────────────
-# Old bug: file-based remember-me on Streamlit Cloud was shared across ALL
-# visitors, causing one user's login to auto-log in the next visitor.
-# Fix: Remember Me now only works within the same Streamlit session.
+_REMEMBER_COOKIE = "quest_remember"
+_REMEMBER_DAYS = 30
+
+
+def _remember_secret() -> bytes:
+    """Load the server-only secret used to sign remember-me cookies."""
+    secret = os.environ.get("QUEST_REMEMBER_SECRET")
+    if not secret:
+        secret_path = os.path.join(_HERE, ".streamlit", "remember_secret.txt")
+        try:
+            with open(secret_path, encoding="utf-8") as handle:
+                secret = handle.read().strip()
+        except OSError:
+            secret = secrets.token_urlsafe(32)
+            try:
+                os.makedirs(os.path.dirname(secret_path), exist_ok=True)
+                with open(secret_path, "x", encoding="utf-8") as handle:
+                    handle.write(secret)
+            except FileExistsError:
+                with open(secret_path, encoding="utf-8") as handle:
+                    secret = handle.read().strip()
+    return secret.encode("utf-8")
+
+
+def _cookies() -> CookieController:
+    return CookieController(key="quest_auth_cookies")
 
 def save_remember_me(username: str) -> None:
-    """Remember Me is now handled by Streamlit session_state only."""
-    # No file written — session_state already keeps the user logged in
-    # for the duration of their browser session
-    pass
+    """Persist a signed username cookie for 30 days."""
+    username = username.strip().lower()
+    payload = base64.urlsafe_b64encode(username.encode()).decode().rstrip("=")
+    signature = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
+    _cookies().set(
+        _REMEMBER_COOKIE,
+        f"{payload}.{signature}",
+        max_age=_REMEMBER_DAYS * 24 * 60 * 60,
+        same_site="lax",
+    )
 
 
 def check_remember_me() -> dict | None:
-    """No file-based remember me — always return None."""
-    # Login is handled by session_state.authenticated + session_state.user_info
-    return None
+    """Restore a user from a valid signed browser cookie."""
+    # Native request cookies are available on every fresh Streamlit session;
+    # use the component cache only as a fallback for older Streamlit versions.
+    token = st.context.cookies.get(_REMEMBER_COOKIE)
+    if not token:
+        token = _cookies().get(_REMEMBER_COOKIE)
+    if not token or "." not in str(token):
+        return None
+    payload, signature = str(token).split(".", 1)
+    expected = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        return None
+    try:
+        username = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)).decode()
+        if not username:
+            return None
+        return {"username": username, "display_name": get_user_display_name(username)}
+    except Exception:
+        return None
 
 
 def clear_remember_me() -> None:
-    """Nothing to clear — no files involved."""
+    """Remove the browser cookie and any legacy local marker."""
+    try:
+        _cookies().remove(_REMEMBER_COOKIE)
+    except Exception:
+        pass
     # Clean up any leftover .remember_me files from the old system
     remember_file = os.path.join(USERS_DIR, ".remember_me")
     if os.path.exists(remember_file):

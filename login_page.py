@@ -450,6 +450,7 @@ def _render_login(login_user, save_remember_me):
             if success:
                 st.session_state.authenticated = True
                 st.session_state.user_info = user_info
+                st.session_state.remember_me = remember
                 if remember:
                     save_remember_me(user_info["username"])
                 st.rerun()
@@ -551,6 +552,7 @@ def _render_signup(register_user, login_user, save_remember_me):
                     if ok:
                         st.session_state.authenticated = True
                         st.session_state.user_info = user_info
+                        st.session_state.remember_me = remember
                         if remember:
                             save_remember_me(user_info["username"])
                         st.rerun()

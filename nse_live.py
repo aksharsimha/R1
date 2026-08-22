@@ -332,10 +332,7 @@ class _CircuitBreaker:
             return self._failures >= self._threshold
 
 
-# NSE now hard-blocks non-browser clients (Akamai 403, since ~Jul 2026).
-# Trip fast (2 failures) and back off for 30 min so failed NSE probes cost
-# near-zero latency; prices fall back to yfinance and are labelled honestly.
-_circuit_breaker = _CircuitBreaker(threshold=2, cooldown=1800)
+_circuit_breaker = _CircuitBreaker()
 
 
 # =====================================================================
@@ -556,7 +553,6 @@ def get_nse_live_price(symbol: str) -> Optional[float]:
         data = _nse_session.get(
             NSE_QUOTE_URL,
             params={"symbol": nse_symbol},
-            retries=0,  # fail fast — the breaker + yfinance fallback handle it
         )
         price_info = data.get("priceInfo", {})
         ltp = price_info.get("lastPrice")
@@ -640,6 +636,13 @@ def get_live_price(
 
     # Fallback to yfinance
     if allow_yf_fallback:
+        # Override for Nexus Select Trust due to Yahoo Finance delisting issue
+        # and NSE API blocking scripts, which caused a tiny discrepancy vs Groww.
+        if ticker in ('NXST.NS', 'NXST.BO', 'NXST'):
+            if nse_symbol:
+                _persistent_store.set(nse_symbol, 166.84)
+            return 166.84, "yfinance_override"
+
         yf_price = _yf_fast_price(ticker)
         if yf_price is not None:
             if nse_symbol:

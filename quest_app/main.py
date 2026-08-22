@@ -1,0 +1,357 @@
+import streamlit as st
+import pandas as pd
+import os
+import sys
+import time
+from datetime import datetime
+import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
+from risk_analyzer import analyze_portfolio, generate_recommendations, load_holdings, save_holdings, DEFAULT_PORTFOLIO, Asset, AssetType
+from portfolio_ledger import get_transactions, update_asset_holdings, update_asset_percentage, add_asset, remove_asset, HOLDINGS_FILE
+from portfolio_ledger import save_daily_prediction, evaluate_past_predictions, get_predictions, ewma_catchup, confirm_manual_close
+from news_sentiment import get_asset_sentiment, get_archived_articles
+from adaptive_engine import adaptive_forecast, get_learning_log, get_days_trained
+
+# --- Auth imports ---
+from login_page import render_login_page
+from auth import clear_remember_me, save_remember_me
+import chat_system
+import portfolio_ledger
+import adaptive_engine
+import news_sentiment
+import firebase_db
+
+# --- Page Config ---
+st.set_page_config(page_title="Portfolio Risk Monitor", page_icon="📈", layout="wide")
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Firebase Initialization — must come BEFORE auth
+# ══════════════════════════════════════════════════════════════════════════════
+firebase_db.init_firebase()
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Authentication Gate — must come BEFORE any dashboard code
+# ══════════════════════════════════════════════════════════════════════════════
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    render_login_page()  # This calls st.stop() internally
+
+# ── User is authenticated — set up their data directory ──────────────────────
+_user_info = st.session_state.user_info
+_username = _user_info["username"]
+
+# Persist the cookie during the authenticated dashboard run as well as at
+# login, ensuring the browser receives it before a later page refresh.
+if st.session_state.get("remember_me", True):
+    save_remember_me(_username)
+
+# For backward compatibility, create a local data dir and redirect modules
+# (portfolio_ledger and adaptive_engine still use file-based storage locally
+# but data is also synced to Firebase for persistence)
+import os
+import firebase_sync
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_user_data_dir = os.path.join(_HERE, "users", _username)
+os.makedirs(_user_data_dir, exist_ok=True)
+
+# Hydrate local files from Firestore (pull cloud data → local on each session start)
+if "firebase_hydrated" not in st.session_state:
+    try:
+        firebase_sync.hydrate(_username, _user_data_dir)
+    except Exception:
+        pass  # offline, or a guest/demo user with no cloud data — keep going
+    st.session_state.firebase_hydrated = True
+
+portfolio_ledger.set_data_dir(_user_data_dir, username=_username)
+adaptive_engine.set_data_dir(_user_data_dir, username=_username)
+news_sentiment.set_data_dir(_user_data_dir)
+
+# Store username and data dir in session for sync functions
+st.session_state._quest_username = _username
+st.session_state._quest_data_dir = _user_data_dir
+
+# Re-import HOLDINGS_FILE after redirection so it points to user's directory
+from portfolio_ledger import HOLDINGS_FILE
+
+import plotly.io as pio
+import plotly.graph_objects as go
+pio.templates["custom_neon"] = go.layout.Template(
+    layout=go.Layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter", color="#94a3b8"),
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.06)", zeroline=False),
+        colorway=['#38bdf8', '#a78bfa', '#34d399', '#fb923c', '#f472b6', '#facc15', '#60a5fa', '#4ade80', '#f87171', '#e879f9']
+    )
+)
+pio.templates.default = "custom_neon"
+
+if "show_risk_breakdown" not in st.session_state:
+    st.session_state.show_risk_breakdown = False
+
+# ── Theme & design system (see ui_theme.py) ──
+import ui_theme
+ui_theme.init_theme()
+st.markdown(ui_theme.css(), unsafe_allow_html=True)
+
+# --- Sidebar: User Info & Logout ---
+_hour = datetime.now().hour
+_greeting = "Good morning" if _hour < 12 else "Good afternoon" if _hour < 17 else "Good evening"
+
+st.sidebar.markdown(f"""
+<div class="quest-profile-card">
+    <div class="quest-profile-label">Signed in as</div>
+    <div class="quest-profile-name">👤 {_user_info['display_name']}</div>
+    <div class="quest-profile-user">@{_user_info['username']}</div>
+</div>
+""", unsafe_allow_html=True)
+
+if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="logout_btn"):
+    clear_remember_me()
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
+    st.rerun()
+
+ui_theme.theme_toggle()
+
+st.sidebar.markdown("---")
+section = st.sidebar.radio(
+    "Navigate",
+    ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"],
+    key="nav_section",
+    label_visibility="collapsed",
+)
+st.sidebar.markdown("---")
+
+# --- Sidebar: Interactive Controls ---
+# NOTE: holdings.json is NEVER seeded here — it must exist on disk.
+# If it is genuinely absent, load_holdings() below will raise a clear error.
+
+# Load current assets for dropdowns
+try:
+    current_assets = load_holdings(HOLDINGS_FILE)
+    asset_names = [a.name for a in current_assets]
+except Exception:
+    current_assets = []
+    asset_names = []
+
+# --- Main Dashboard ---
+st.markdown(f"""
+<div class="dashboard-header">
+    <h1>⚡ QUEST</h1>
+    <p>Quantitative Unified Equity Surveillance Tracker</p>
+    <div style="margin-top:1rem;font-size:1.1rem;color:var(--q-text-3);font-weight:500;text-transform:none;letter-spacing:0;">
+        {_greeting}, <span style="color:var(--q-text);font-weight:500;">{_user_info['display_name']}</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Analyze Data
+with st.spinner("Analyzing portfolio data..."):
+    try:
+        df, summary = analyze_portfolio(current_assets, period="2y", verbose=False)
+        
+        # ── Step 1: Compute EWMA seeds from historical market data ─────────
+        if not df.empty:
+            has_mf = any(a.asset_type == AssetType.MUTUAL_FUND for a in current_assets)
+            _vol_ann_seed = summary.get('portfolio_volatility', 0.15)
+            if pd.isna(_vol_ann_seed): _vol_ann_seed = 0.15
+            _mu_ann_seed = summary.get('weighted_ann_return', 12.0)
+            if pd.isna(_mu_ann_seed): _mu_ann_seed = 12.0
+            _mu_ann_seed = _mu_ann_seed / 100.0
+            _current_val_seed = summary.get('total_value', 0.0)
+            _hist_mu_daily = _current_val_seed * (((1 + _mu_ann_seed) ** (1/365)) - 1)
+            _hist_sigma_daily = _current_val_seed * (_vol_ann_seed / (252 ** 0.5))
+
+            # ── Step 2: EWMA catch-up — FIRST thing on every app load ────────
+            # Scans ALL graded entries in predictions_log.json that are not yet
+            # in adaptive_state.json's learning_log, and applies EWMA updates
+            # immediately, regardless of when those entries were graded.
+            ewma_catchup(
+                historical_mu=_hist_mu_daily,
+                historical_sigma=_hist_sigma_daily,
+            )
+
+            # ── Step 3: Grade any new predictions + cascade ───────────────────
+            evaluate_past_predictions(
+                _current_val_seed,
+                has_mf,
+                historical_mu=_hist_mu_daily,
+                historical_sigma=_hist_sigma_daily,
+            )
+
+    except Exception as e:
+        st.error(f"Error fetching market data: {e}")
+        st.stop()
+
+# ── Portfolio Sentiment Score (cached 5 min so news isn’t re-fetched every 60s refresh) ──
+# Compute once and store in session_state with a timestamp.
+_SENT_TTL = 300  # seconds
+_now_ts = __import__('time').time()
+if (
+    "_sentiment_score" not in st.session_state
+    or (_now_ts - st.session_state.get("_sentiment_ts", 0)) > _SENT_TTL
+):
+    try:
+        _total_val_sent = summary.get('total_value', 1.0) or 1.0
+        _sent_score_accum = 0.0
+        _sent_weight_accum = 0.0
+        _sent_negative_count = 0
+        for _sa in current_assets:
+            if not _sa.identifier:
+                continue
+            try:
+                _sd = get_asset_sentiment(_sa.identifier, stock_name=_sa.name, limit=4)
+                _sv = _sd.get('score', 0.0) or 0.0
+                # weight by portfolio share
+                _asset_row = df[df['Name'] == _sa.name] if not df.empty else None
+                _asset_val = float(_asset_row['Current Value (₹)'].iloc[0]) if (_asset_row is not None and not _asset_row.empty) else 0.0
+                _w = _asset_val / _total_val_sent
+                _sent_score_accum += _sv * _w
+                _sent_weight_accum += _w
+                if _sv < -0.15:
+                    _sent_negative_count += 1
+            except Exception:
+                pass
+        st.session_state['_sentiment_score'] = _sent_score_accum / _sent_weight_accum if _sent_weight_accum > 0 else 0.0
+        st.session_state['_sentiment_neg_count'] = _sent_negative_count
+        st.session_state['_sentiment_ts'] = _now_ts
+    except Exception:
+        st.session_state.setdefault('_sentiment_score', 0.0)
+        st.session_state.setdefault('_sentiment_neg_count', 0)
+        st.session_state['_sentiment_ts'] = _now_ts
+
+portfolio_sentiment_score = st.session_state.get('_sentiment_score', 0.0)
+_sentiment_neg_count = st.session_state.get('_sentiment_neg_count', 0)
+
+# Top Metrics
+total_invested = df["Invested (₹)"].sum() if not df.empty else 0.0
+total_pnl = df["P&L (₹)"].sum() if not df.empty else 0.0
+total_pnl_perc = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
+
+comp_score = 0.0
+if not df.empty and total_invested > 0:
+    total_val = summary['total_value']
+    
+    # 1. Concentration Risk
+    top_asset = df.loc[df["Current Value (₹)"].idxmax()]
+    top_pct = (top_asset["Current Value (₹)"] / total_val) * 100
+    hhi = (df["Current Value (₹)"] / total_val).pow(2).sum() * 10000
+    score_conc = min(100, hhi / 100)
+    
+    # 2. Volatility Risk
+    vol_ann = summary.get('portfolio_volatility', 0)
+    if pd.isna(vol_ann): vol_ann = 0
+    vol_daily_pct = (vol_ann / np.sqrt(252)) * 100
+    vol_rupees = total_val * (vol_daily_pct / 100)
+    score_vol = max(0, min(100, 40 * vol_daily_pct - 20))
+    
+    # 3. Drawdown Risk
+    losers = df[df["P&L (₹)"].astype(float) < 0]
+    unrealised_loss = abs(losers["P&L (₹)"].astype(float).sum())
+    loss_pct = unrealised_loss / total_val if total_val > 0 else 0
+    score_dd = min(100, loss_pct * 1000)
+    
+    # 4. Correlation Risk
+    corr_mat = summary.get("correlation_matrix", pd.DataFrame())
+    if not corr_mat.empty and len(corr_mat.columns) > 1:
+        vals = corr_mat.values.copy()
+        np.fill_diagonal(vals, np.nan)
+        mean_corr = np.nanmean(vals)
+    else:
+        mean_corr = 0
+    score_corr = max(0, min(100, mean_corr * 100)) # If mean_corr > 0, it adds risk
+    
+    # 5. Momentum Risk
+    neg_mom = df[df["1M Ret %"].astype(float) < 0]
+    mom_count = len(neg_mom)
+    mom_weight = neg_mom["Current Value (₹)"].astype(float).sum() / total_val if not neg_mom.empty else 0
+    score_mom = mom_weight * 100
+
+    # 6. Sentiment Risk (uses portfolio_sentiment_score computed above)
+    # +1.0 (all bullish) → risk = 10 | 0 (neutral) → 50 | -1.0 (all bearish) → 90
+    score_sent = max(0, min(100, 50 - (portfolio_sentiment_score * 40)))
+
+    # Rebalanced weights: Conc 22, Vol 22, DD 17, Corr 12, Mom 12, Sent 15
+    comp_score = (
+        (score_conc * 0.22)
+        + (score_vol  * 0.22)
+        + (score_dd   * 0.17)
+        + (score_corr * 0.12)
+        + (score_mom  * 0.12)
+        + (score_sent * 0.15)
+    )
+    summary['portfolio_risk_score'] = comp_score
+    if comp_score > 70:
+        summary['portfolio_risk_bucket'] = "HIGH"
+    elif comp_score > 40:
+        summary['portfolio_risk_bucket'] = "MODERATE"
+    else:
+        summary['portfolio_risk_bucket'] = "LOW"
+
+# Safe defaults so a brand-new / empty portfolio never crashes the dashboard
+summary.setdefault('portfolio_risk_score', 0.0)
+summary.setdefault('portfolio_risk_bucket', 'LOW')
+summary.setdefault('total_value', 0.0)
+summary.setdefault('n_assets', 0)
+
+import datetime as _dt
+_today = _dt.date.today()
+
+# ── Section routing ──────────────────────────
+_SEC_OF = {
+    "tab1": "Overview",
+    "tab2": "Analytics", "tab_math": "Analytics",
+    "tab5": "Projections",
+    "tab3": "Insights",
+    "tab6": "News",
+    "tab4": "Activity",
+    "tab_chat": "Chat",
+    "tab_michael": "MICHAEL",
+}
+
+def _active(name):
+    return section == _SEC_OF[name]
+
+# Import tabs dynamically to avoid circular imports and keep startup fast
+if _active("tab1"):
+    import quest_app.tabs.overview_hero as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+    if st.session_state.show_risk_breakdown:
+        import quest_app.tabs.risk_breakdown as rb
+        rb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+    else:
+        import quest_app.tabs.overview_holdings as tb_h
+        tb_h.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+
+elif _active("tab2"):
+    import quest_app.tabs.analytics_compare as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab_math"):
+    import quest_app.tabs.analytics_metrics as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab3"):
+    import quest_app.tabs.insights as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab4"):
+    import quest_app.tabs.activity as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab5"):
+    import quest_app.tabs.projections as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab6"):
+    import quest_app.tabs.news as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab_chat"):
+    import quest_app.tabs.chat as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif _active("tab_michael"):
+    import quest_app.tabs.michael as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif section == "Planner":
+    import quest_app.tabs.planner as tb
+    tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
