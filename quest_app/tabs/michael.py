@@ -1,13 +1,15 @@
+import sys
 import streamlit as st
 import pandas as pd
 import numpy as np
 import datetime as _dt
+from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
 import time
 import ui_theme
 from risk_analyzer import AssetType
-from portfolio_ledger import add_asset, remove_asset, update_asset_holdings
+from portfolio_ledger import add_asset, remove_asset, update_asset_holdings, get_predictions
 import nse_live as _nse
 
 
@@ -436,7 +438,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                            "(KHTML, like Gecko) Chrome/131.0 Safari/537.36"}
 
         def _post(messages, use_tools=True):
-            body = {"model": "llama-3.3-70b-versatile", "messages": messages,
+            body = {"model": "openai/gpt-oss-120b", "messages": messages,
                     "temperature": 0.6, "max_tokens": 1024}
             if use_tools:
                 body["tools"] = _TOOLS
@@ -448,13 +450,20 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
         try:
             m = {}
-            for _round in range(4):  # allow a couple of tool round-trips
+            for _round in range(12):  # allow more tool round-trips for multiple stocks
+                import time as _time
                 try:
                     res = _post(msgs, use_tools=True)
                 except urllib.error.HTTPError as _te:
                     _tb = _te.read().decode("utf-8", errors="ignore")
-                    # Llama sometimes botches the tool-call format → answer without tools
-                    if _te.code == 400 and "tool_use_failed" in _tb:
+                    if _te.code == 429:
+                        import re
+                        m_wait = re.search(r"try again in ([\d\.]+)s", _tb)
+                        wait_t = float(m_wait.group(1)) + 1.0 if m_wait else 8.0
+                        print(f"[MICHAEL/groq] Rate limited (429), sleeping {wait_t}s and retrying...", file=sys.stderr)
+                        _time.sleep(wait_t)
+                        res = _post(msgs, use_tools=True) # Retry once
+                    elif _te.code == 400 and "tool_use_failed" in _tb:
                         print("[MICHAEL/groq] tool_use_failed — retrying without tools", file=sys.stderr)
                         res = _post(msgs, use_tools=False)
                     else:
