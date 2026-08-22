@@ -50,8 +50,13 @@ def _fetch_indices():
 def render_login_page():
     from auth import (
         login_user, register_user, check_remember_me,
-        save_remember_me, reset_password,
+        save_remember_me, reset_password, clear_remember_me
     )
+
+    if st.session_state.get("do_logout"):
+        clear_remember_me()
+        st.session_state.auth_checked_remember = True
+        st.session_state.do_logout = False
 
     # ── Check Remember Me ────────────────────────────────────────────────────
     if "auth_checked_remember" not in st.session_state:

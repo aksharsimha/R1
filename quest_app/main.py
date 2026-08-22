@@ -111,9 +111,9 @@ st.sidebar.markdown(f"""
 """, unsafe_allow_html=True)
 
 if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="logout_btn"):
-    clear_remember_me()
     for key in list(st.session_state.keys()):
         del st.session_state[key]
+    st.session_state.do_logout = True
     st.rerun()
 
 ui_theme.theme_toggle()

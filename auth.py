@@ -132,7 +132,9 @@ def _remember_secret() -> bytes:
 
 
 def _cookies() -> CookieController:
-    return CookieController(key="quest_auth_cookies")
+    if "cookie_controller" not in st.session_state:
+        st.session_state.cookie_controller = CookieController(key="quest_auth_cookies")
+    return st.session_state.cookie_controller
 
 def save_remember_me(username: str) -> None:
     """Persist a signed username cookie for 30 days."""
