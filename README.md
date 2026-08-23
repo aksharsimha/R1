@@ -27,6 +27,8 @@ Built with Streamlit · Firebase · yfinance · Groq (Llama 3.3) · Plotly.
 - **Multi-Account Switching:** Added signed multi-account remember-me cookies with legacy migration, forged-entry rejection, account forgetting support, password-free switching between remembered accounts, and a `+ Add account` login flow.
 - **Remembered Account Persistence:** Active-account refreshes now upsert one signed cookie entry without wiping the other remembered accounts, so switching still works after reopening the browser.
 - **Sidebar Layout:** Removed Streamlit column gutters and fixed sidebar containers to fluid sizing so the profile card, account selector, icon row, and navigation cards stay flush when the sidebar is resized.
+- **Add Account View:** Added a dedicated authenticated Add Account page with Back navigation that leaves the active session untouched until a successful sign-in.
+- **Sidebar Icon Alignment:** Replaced the two-column settings/notification row with a single full-width flex row so both buttons align with the sidebar edges at every width.
 
 QUEST is organised into a sidebar of sections:
 

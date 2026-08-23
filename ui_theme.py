@@ -164,8 +164,13 @@ def css(theme: str = None) -> str:
         border-radius: 2px; background: currentColor; transition: height .15s var(--q-ease); }}
     #quest-hamburger:hover {{ background: var(--q-accent-weak); }}
     section[data-testid="stSidebar"] .stButton > button {{ min-height: 40px; }}
-    section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] .stButton > button {{
-        min-width: 0; padding-left: 8px; padding-right: 8px; font-size: 1.05rem; }}
+    .quest-sidebar-icon-row {{ width: 100%; display: flex; align-items: center;
+        justify-content: space-between; margin: 0; padding: 0; box-sizing: border-box; }}
+    .quest-sidebar-icon {{ width: 38px; height: 38px; display: grid; place-items: center;
+        color: var(--q-text-2); background: var(--q-surface-2); border: 1px solid var(--q-border-2);
+        border-radius: var(--q-radius-sm); text-decoration: none; font-size: 1.05rem;
+        box-sizing: border-box; transition: background .15s var(--q-ease), color .15s var(--q-ease); }}
+    .quest-sidebar-icon:hover {{ background: var(--q-accent-weak); color: var(--q-accent); }}
 
     /* Nav radio becomes a spaced stack of card-like controls. */
     section[data-testid="stSidebar"] [role="radiogroup"] {{ gap: 8px; }}

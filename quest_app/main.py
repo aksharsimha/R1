@@ -127,13 +127,12 @@ _avatar = _user_info.get("avatar")
 _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
                   f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
 
-_top_settings, _top_notifications = st.sidebar.columns(2)
-if _top_settings.button("⚙", key="profile_settings_icon", help="Open settings"):
-    st.query_params["page"] = "Settings"
-    st.rerun()
-if _top_notifications.button("🔔", key="profile_notifications_icon", help="Open chat notifications"):
-    st.query_params["page"] = "Chat"
-    st.rerun()
+st.sidebar.markdown("""
+<div class="quest-sidebar-icon-row">
+    <a class="quest-sidebar-icon" href="?page=Settings" aria-label="Open settings" title="Open settings">⚙</a>
+    <a class="quest-sidebar-icon" href="?page=Chat" aria-label="Open chat notifications" title="Open chat notifications">🔔</a>
+</div>
+""", unsafe_allow_html=True)
 
 st.sidebar.markdown(f"""
 <div class="quest-profile-card">
