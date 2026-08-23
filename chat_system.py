@@ -15,24 +15,8 @@ Friends, DMs, group chats, portfolio sharing — all stored in Firestore.
 """
 
 
-def _send_email_notification(sender_name: str, receiver_username: str, msg_text: str):
+def _send_email_notification(sender_email: str, sender_password: str, sender_name: str, receiver_email: str, msg_text: str):
     try:
-        if "SMTP_EMAIL" not in st.secrets or "SMTP_PASSWORD" not in st.secrets:
-            return
-            
-        from firebase_db import get_db
-        db = get_db()
-        if not db: return
-        
-        user_doc = db.collection("users").document(receiver_username).get()
-        if not user_doc.exists: return
-        
-        receiver_email = user_doc.to_dict().get("email")
-        if not receiver_email: return
-        
-        sender_email = st.secrets["SMTP_EMAIL"]
-        sender_password = st.secrets["SMTP_PASSWORD"].replace(" ", "")
-        
         # Build the email
         msg = MIMEMultipart()
         msg['From'] = f"QUEST Notifications <{sender_email}>"
@@ -53,10 +37,29 @@ def _send_email_notification(sender_name: str, receiver_username: str, msg_text:
         print(f"Failed to send email notification: {e}")
 
 def _trigger_email_bg(sender_name: str, receiver_username: str, msg_text: str):
-    # Fire and forget in a background thread so it doesn't lag the UI
-    t = threading.Thread(target=_send_email_notification, args=(sender_name, receiver_username, msg_text))
-    t.daemon = True
-    t.start()
+    try:
+        if "SMTP_EMAIL" not in st.secrets or "SMTP_PASSWORD" not in st.secrets:
+            return
+            
+        from firebase_db import get_db
+        db = get_db()
+        if not db: return
+        
+        user_doc = db.collection("users").document(receiver_username).get()
+        if not user_doc.exists: return
+        
+        receiver_email = user_doc.to_dict().get("email")
+        if not receiver_email: return
+        
+        sender_email = st.secrets["SMTP_EMAIL"]
+        sender_password = st.secrets["SMTP_PASSWORD"].replace(" ", "")
+        
+        # Fire and forget in a background thread so it doesn't lag the UI
+        t = threading.Thread(target=_send_email_notification, args=(sender_email, sender_password, sender_name, receiver_email, msg_text))
+        t.daemon = True
+        t.start()
+    except Exception as e:
+        print(f"Failed to trigger bg email: {e}")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
