@@ -22,3 +22,21 @@ Redesign the QUEST dashboard sidebar and account settings experience, then add s
 ## Validation
 - Python compilation and VS Code diagnostics passed for all edited modules.
 - The running Streamlit app responded successfully on `http://localhost:8501`.
+
+---
+
+# Session: August 23, 2026 — Sidebar Bug Fixes
+**Author:** Arnav
+
+## Goal
+Fix two persistent sidebar bugs: (1) nav items not stretching to the full sidebar width, and (2) the settings gear and notification bell reopening the app in a new tab and dropping the user back on the login page.
+
+## Changes Made
+- **Sidebar nav width (`ui_theme.py`):** Traced the full Streamlit DOM chain — `stSidebarContent → stVerticalBlock → stMarkdownContainer → stRadio → [role="radiogroup"] → label` — and applied `width: 100% !important; box-sizing: border-box !important` at every node in the chain. Added `stMarkdownContainer`, `stRadio`, `stWidgetLabel`, and `stElementContainer` to the blanket sidebar width selector. Also added `display: flex; flex-direction: column` to the radiogroup container so labels fill it edge-to-edge, matching the profile card and account switcher above them at every sidebar width.
+- **Icon button row CSS (`ui_theme.py`):** Added `.quest-icon-btn-row` and its child selectors to style the real `st.button()` wrappers as icon tiles with identical hover behaviour to the old anchors, while stripping Streamlit's default column padding so they share the same left/right edges as all other sidebar elements.
+- **Settings and bell navigation (`quest_app/main.py`):** Removed the raw `<a href="?page=Settings">` and `<a href="?page=Chat">` HTML anchors that were causing full browser navigation (session loss → login redirect). Replaced with two real `st.button()` calls inside `st.sidebar.columns(2)`. Each button sets `st.query_params["page"]` and calls `st.rerun()` to navigate within the same session — no page reload, no login redirect.
+
+## Validation
+- `grep` confirmed zero remaining `href="?page=` anchors in `main.py`.
+- `st.button` keys `sidebar_settings_btn` and `sidebar_chat_btn` confirmed present at lines 136 and 141.
+- Streamlit app restarted cleanly on `http://localhost:8501` with no import or runtime errors.

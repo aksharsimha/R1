@@ -139,10 +139,19 @@ def css(theme: str = None) -> str:
     /* ── Sidebar ── */
     section[data-testid="stSidebar"] {{ background: var(--q-surface) !important;
         border-right: 1px solid var(--q-border); }}
+    /* Force every Streamlit wrapper inside the sidebar to fill the full width.
+       This is the chain: stSidebarContent → stVerticalBlock → stMarkdownContainer
+       → stRadio → radiogroup → label. Every node must be 100% wide with no
+       internal padding that would create an asymmetric right gap. */
     section[data-testid="stSidebar"] > div,
     section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
-    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
-        width: 100% !important; max-width: none !important; box-sizing: border-box;
+    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"],
+    section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"],
+    section[data-testid="stSidebar"] [data-testid="stRadio"],
+    section[data-testid="stSidebar"] [data-testid="stWidgetLabel"],
+    section[data-testid="stSidebar"] [data-testid="stElementContainer"] {{
+        width: 100% !important; max-width: 100% !important;
+        box-sizing: border-box !important;
     }}
     section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {{
         width: 100% !important; max-width: none !important; gap: 0 !important;
@@ -164,6 +173,32 @@ def css(theme: str = None) -> str:
         border-radius: 2px; background: currentColor; transition: height .15s var(--q-ease); }}
     #quest-hamburger:hover {{ background: var(--q-accent-weak); }}
     section[data-testid="stSidebar"] .stButton > button {{ min-height: 40px; }}
+
+    /* ── Sidebar icon buttons (settings / bell) — real st.button() wrappers ── */
+    /* The two icon buttons sit inside a horizontal block; strip all extra padding/margin
+       so they share the same left/right edge as every other sidebar element. */
+    .quest-icon-btn-row {{ width: 100%; display: flex; align-items: center;
+        justify-content: space-between; gap: 8px; box-sizing: border-box; margin-bottom: 4px; }}
+    .quest-icon-btn-row [data-testid="stElementContainer"],
+    .quest-icon-btn-row [data-testid="stColumn"],
+    .quest-icon-btn-row .stButton {{
+        width: 100% !important; max-width: 100% !important; box-sizing: border-box !important;
+        padding: 0 !important; margin: 0 !important; flex: 1 !important;
+    }}
+    /* Style the actual <button> element inside each icon wrapper */
+    .quest-icon-btn-row .stButton > button {{
+        width: 100% !important; height: 38px; min-height: 38px;
+        padding: 0 !important; margin: 0 !important;
+        background: var(--q-surface-2) !important;
+        color: var(--q-text-2) !important;
+        border: 1px solid var(--q-border-2) !important;
+        border-radius: var(--q-radius-sm) !important;
+        font-size: 1.05rem !important; display: flex; align-items: center;
+        justify-content: center; box-sizing: border-box;
+        transition: background .15s var(--q-ease), color .15s var(--q-ease); }}
+    .quest-icon-btn-row .stButton > button:hover {{
+        background: var(--q-accent-weak) !important; color: var(--q-accent) !important; }}
+    /* Keep the old .quest-sidebar-icon class for any legacy HTML that still uses it */
     .quest-sidebar-icon-row {{ width: 100%; display: flex; align-items: center;
         justify-content: space-between; margin: 0; padding: 0; box-sizing: border-box; }}
     .quest-sidebar-icon {{ width: 38px; height: 38px; display: grid; place-items: center;
@@ -172,10 +207,17 @@ def css(theme: str = None) -> str:
         box-sizing: border-box; transition: background .15s var(--q-ease), color .15s var(--q-ease); }}
     .quest-sidebar-icon:hover {{ background: var(--q-accent-weak); color: var(--q-accent); }}
 
-    /* Nav radio becomes a spaced stack of card-like controls. */
-    section[data-testid="stSidebar"] [role="radiogroup"] {{ gap: 8px; }}
+    /* ── Nav radio: full-width card-style items ──
+       The fix for the right-edge gap: both [role="radiogroup"] itself AND its
+       parent stRadio wrapper must be explicitly 100% wide with box-sizing:border-box.
+       Then each <label> child is also 100% wide — and all three together reach
+       exactly the same right edge as the profile card and selectbox above them. */
+    section[data-testid="stSidebar"] [role="radiogroup"] {{
+        gap: 8px; width: 100% !important; box-sizing: border-box !important;
+        display: flex; flex-direction: column; }}
     section[data-testid="stSidebar"] [role="radiogroup"] > label {{
-        width: 100%; padding: 11px 12px; border: 1px solid var(--q-border);
+        width: 100% !important; box-sizing: border-box !important;
+        padding: 11px 12px; border: 1px solid var(--q-border);
         border-radius: var(--q-radius-sm); cursor: pointer;
         background: var(--q-surface-2);
         color: var(--q-text-2); transition: background .15s var(--q-ease),

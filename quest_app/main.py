@@ -127,12 +127,22 @@ _avatar = _user_info.get("avatar")
 _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
                   f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
 
-st.sidebar.markdown("""
-<div class="quest-sidebar-icon-row">
-    <a class="quest-sidebar-icon" href="?page=Settings" aria-label="Open settings" title="Open settings">⚙</a>
-    <a class="quest-sidebar-icon" href="?page=Chat" aria-label="Open chat notifications" title="Open chat notifications">🔔</a>
-</div>
-""", unsafe_allow_html=True)
+# BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
+# Raw anchors cause a full page navigation → session is lost → user lands on login.
+# st.button() triggers a server-side rerun so the session is preserved.
+st.sidebar.markdown('<div class="quest-icon-btn-row">', unsafe_allow_html=True)
+_icon_col1, _icon_col2 = st.sidebar.columns(2, gap="small")
+with _icon_col1:
+    if st.button("⚙", key="sidebar_settings_btn", help="Open settings",
+                 use_container_width=True):
+        st.query_params["page"] = "Settings"
+        st.rerun()
+with _icon_col2:
+    if st.button("🔔", key="sidebar_chat_btn", help="Open chat / notifications",
+                 use_container_width=True):
+        st.query_params["page"] = "Chat"
+        st.rerun()
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 st.sidebar.markdown(f"""
 <div class="quest-profile-card">
