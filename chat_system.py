@@ -1,12 +1,62 @@
 import pytz
+import json
+import uuid
+from datetime import datetime
+import threading
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import streamlit as st
+
 """
 QUEST Chat System — Firebase Edition
 ======================================
 Friends, DMs, group chats, portfolio sharing — all stored in Firestore.
 """
 
-import uuid
-from datetime import datetime
+
+def _send_email_notification(sender_name: str, receiver_username: str, msg_text: str):
+    try:
+        if "SMTP_EMAIL" not in st.secrets or "SMTP_PASSWORD" not in st.secrets:
+            return
+            
+        from firebase_db import get_db
+        db = get_db()
+        if not db: return
+        
+        user_doc = db.collection("users").document(receiver_username).get()
+        if not user_doc.exists: return
+        
+        receiver_email = user_doc.to_dict().get("email")
+        if not receiver_email: return
+        
+        sender_email = st.secrets["SMTP_EMAIL"]
+        sender_password = st.secrets["SMTP_PASSWORD"].replace(" ", "")
+        
+        # Build the email
+        msg = MIMEMultipart()
+        msg['From'] = f"QUEST Notifications <{sender_email}>"
+        msg['To'] = receiver_email
+        msg['Subject'] = f"New message from {sender_name}"
+        
+        # Keep it simple and clean
+        body = f"You have a new message from {sender_name} on QUEST:\n\n\"{msg_text}\"\n\nLog in to reply!"
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Send it
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+        server.quit()
+    except Exception as e:
+        print(f"Failed to send email notification: {e}")
+
+def _trigger_email_bg(sender_name: str, receiver_username: str, msg_text: str):
+    # Fire and forget in a background thread so it doesn't lag the UI
+    t = threading.Thread(target=_send_email_notification, args=(sender_name, receiver_username, msg_text))
+    t.daemon = True
+    t.start()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -299,8 +349,22 @@ def send_message(chat_id: str, from_user: str, text: str,
         msg["portfolio_data"] = portfolio_data
 
     chat["messages"].append(msg)
-    _save_chat(chat_id, chat)
-    return True, "Sent!"
+    
+    from firebase_db import save_chat
+    success = save_chat(chat_id, chat)
+    
+    if success:
+        # Get the sender's display name for the email
+        from firebase_db import get_user_display_name
+        sender_display = get_user_display_name(from_user) or from_user
+        
+        # Fire off an email notification to everyone else in the chat
+        for participant in chat["participants"]:
+            if participant != from_user:
+                # Fire and forget
+                _trigger_email_bg(sender_display, participant, msg["text"])
+                
+    return success, "Message sent."
 
 
 def get_messages(chat_id: str, limit: int = 100) -> list[dict]:
