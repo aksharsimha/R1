@@ -11,7 +11,7 @@ Resolving UI surface bugs, fixing timezone logic, and implementing robust stock 
 - **Mobile Rendering (`login_page.py` & `ui_theme.py`):** Injected responsive CSS media queries for phone-friendly login and dashboard flex stacking.
 - **Table Column Hiding Bug (`insights.py` & `overview_holdings.py`):** Bypassed Streamlit's native cache bugs by downgrading Insights to `st.table` and dynamically binding the data editor's key to the user's multiselect columns.
 - **Stock Search Dropdown (`overview_holdings.py`):** Replaced manual ticker typing with a dynamic auto-complete `selectbox` powered by Yahoo Finance API (automatically hiding corrupted `.BO` data in favor of `.NS`).
-- **Background Chat Notifications (`chat_system.py`):** Engineered a multi-threaded SMTP email engine that silently emails users whenever they receive a direct message, utilizing Firebase to resolve emails without freezing the chat UI.
+- **Background Chat Notifications (`chat_system.py`):** Engineered a multi-threaded SMTP email engine that silently emails users whenever they receive a direct message, utilizing Firebase to resolve emails without freezing the chat UI. (Fixed a critical `MissingScriptRunContext` bug by extracting `st.secrets` dependencies out of the background thread).
 
 ---
 
