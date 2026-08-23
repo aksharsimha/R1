@@ -20,6 +20,12 @@ Built with Streamlit · Firebase · yfinance · Groq (Llama 3.3) · Plotly.
 - **Table Column Hiding Bug:** Bypassed Streamlit's native cache bugs by downgrading Insights to `st.table` and dynamically binding the data editor's key to the user's multiselect columns.
 - **Stock Search Dropdown:** Replaced manual ticker typing with a dynamic auto-complete `selectbox` powered by Yahoo Finance API (automatically hiding corrupted `.BO` data in favor of `.NS`).
 
+*By Arnav*
+- **Dashboard Sidebar:** Added the profile block, account switcher, functional Settings and Chat notification buttons, vertical hamburger collapse control, and restored the full dashboard navigation.
+- **Settings:** Added a dedicated Settings sidebar with Dashboard, Profile, Theme, Password & Security, and Sign out sections. Profile supports avatar, display name, and summary editing; Theme supports light and dark modes.
+- **Account Security:** Added Firebase-backed password changes, email changes with verification delivery, phone number updates, avatar persistence, and username migration with password checks and cooldown protection.
+- **Multi-Account Switching:** Added signed multi-account remember-me cookies with legacy migration, forged-entry rejection, account forgetting support, password-free switching between remembered accounts, and a `+ Add account` login flow.
+
 QUEST is organised into a sidebar of sections:
 
 | Section | What's inside |
@@ -33,6 +39,7 @@ QUEST is organised into a sidebar of sections:
 | **Activity** | Transaction ledger. |
 | **Chat** | Person-to-person & group messaging. |
 | **MICHAEL** | AI portfolio assistant — see below. |
+| **Settings** | Profile, theme, password/security, and sign-out controls. |
 
 ### Risk analyzer (in the Overview → "View Risk Breakdown")
 A composite **0–100 risk score** from weighted components (volatility, drawdown,
@@ -84,6 +91,8 @@ momentum, news sentiment), shown as a gauge + driver cards, with plain-English
 | `news_sentiment.py` | News fetch (Yahoo) + sentiment scoring. |
 | `firebase_db.py` / `firebase_sync.py` | Auth + Firestore sync. |
 | `login_page.py` | Login / signup UI. |
+| `quest_app/main.py` | Authenticated dashboard routing and sidebar. |
+| `quest_app/settings.py` | Account Settings page and settings navigation. |
 | `chat_system.py` | User-to-user / group chat. |
 | `pdf_generator.py` | PDF report export. |
 | `tests/test_nse_live.py` | Unit tests for the price/holiday/cache layer. |
