@@ -139,6 +139,17 @@ def css(theme: str = None) -> str:
     /* ── Sidebar ── */
     section[data-testid="stSidebar"] {{ background: var(--q-surface) !important;
         border-right: 1px solid var(--q-border); }}
+    section[data-testid="stSidebar"] > div,
+    section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
+    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{
+        width: 100% !important; max-width: none !important; box-sizing: border-box;
+    }}
+    section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {{
+        width: 100% !important; max-width: none !important; gap: 0 !important;
+    }}
+    section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] > div {{
+        padding-left: 0 !important; padding-right: 0 !important; min-width: 0 !important;
+    }}
     button[data-testid="stSidebarCollapseButton"],
     button[kind="header"] {{
         visibility: hidden !important; width: 0 !important; min-width: 0 !important;

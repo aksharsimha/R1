@@ -16,7 +16,7 @@ from adaptive_engine import adaptive_forecast, get_learning_log, get_days_traine
 
 # --- Auth imports ---
 from login_page import render_login_page
-from auth import clear_remember_me, get_remembered_accounts
+from auth import clear_remember_me, get_remembered_accounts, add_remembered_account
 import chat_system
 import portfolio_ledger
 import adaptive_engine
@@ -43,6 +43,10 @@ if not st.session_state.authenticated:
 # ── User is authenticated — set up their data directory ──────────────────────
 _user_info = st.session_state.user_info
 _username = _user_info["username"]
+
+# Upsert the active account without replacing any other remembered accounts.
+if st.session_state.get("remember_me", True):
+    add_remembered_account(_username, _user_info.get("display_name"))
 
 # For backward compatibility, create a local data dir and redirect modules
 # (portfolio_ledger and adaptive_engine still use file-based storage locally
@@ -97,6 +101,10 @@ st.markdown(ui_theme.css(), unsafe_allow_html=True)
 # Settings gets its own native Streamlit sidebar rather than sharing the
 # dashboard navigation rail.
 _early_page = st.query_params.get("page", "Overview")
+if _early_page == "AddAccount":
+    from login_page import render_add_account_page
+    render_add_account_page(st.query_params.get("return_to", "Overview"))
+    st.stop()
 if _early_page == "Settings":
     import quest_app.settings as settings
     st.sidebar.markdown("<div class='quest-settings-sidebar-title'>Settings</div>", unsafe_allow_html=True)
@@ -151,9 +159,8 @@ _selected_account = st.sidebar.selectbox(
     index=_account_usernames.index(_username), key=f"switch_account_{_username}",
 )
 if _selected_account == "+ Add account":
-    st.session_state.account_add_mode = True
-    st.session_state.authenticated = False
-    st.session_state.auth_mode = "login"
+    st.query_params["return_to"] = st.query_params.get("page", "Overview")
+    st.query_params["page"] = "AddAccount"
     st.rerun()
 elif _selected_account in _account_labels:
     _selected_index = _account_labels.index(_selected_account)

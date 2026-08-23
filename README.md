@@ -25,6 +25,8 @@ Built with Streamlit · Firebase · yfinance · Groq (Llama 3.3) · Plotly.
 - **Settings:** Added a dedicated Settings sidebar with Dashboard, Profile, Theme, Password & Security, and Sign out sections. Profile supports avatar, display name, and summary editing; Theme supports light and dark modes.
 - **Account Security:** Added Firebase-backed password changes, email changes with verification delivery, phone number updates, avatar persistence, and username migration with password checks and cooldown protection.
 - **Multi-Account Switching:** Added signed multi-account remember-me cookies with legacy migration, forged-entry rejection, account forgetting support, password-free switching between remembered accounts, and a `+ Add account` login flow.
+- **Remembered Account Persistence:** Active-account refreshes now upsert one signed cookie entry without wiping the other remembered accounts, so switching still works after reopening the browser.
+- **Sidebar Layout:** Removed Streamlit column gutters and fixed sidebar containers to fluid sizing so the profile card, account selector, icon row, and navigation cards stay flush when the sidebar is resized.
 
 QUEST is organised into a sidebar of sections:
 

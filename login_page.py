@@ -420,11 +420,53 @@ def render_login_page():
     st.stop()
 
 
+def render_add_account_page(return_to: str = "Overview") -> None:
+    """Render an authenticated user's isolated account-addition screen."""
+    from auth import add_remembered_account, login_user
+
+    st.markdown("""
+    <style>
+        .q-add-account { max-width: 520px; margin: 7vh auto 0; }
+        .q-add-account h1 { color: var(--q-text); font-size: 2rem; margin-bottom: 4px; }
+        .q-add-account p { color: var(--q-text-3); margin-top: 0; }
+    </style>
+    <div class="q-add-account">
+        <h1>Add account</h1>
+        <p>Sign in to add another account to this device.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("← Back", key="add_account_back"):
+        st.query_params["page"] = return_to or "Overview"
+        st.query_params.pop("return_to", None)
+        st.rerun()
+
+    with st.form("add_account_form", clear_on_submit=False, border=False):
+        email = st.text_input("Email", placeholder="Enter your email", key="add_account_email")
+        password = st.text_input("Password", type="password", placeholder="Enter your password", key="add_account_password")
+        submitted = st.form_submit_button("Sign In", use_container_width=True)
+
+    if submitted:
+        success, message, user_info = login_user(email, password)
+        if success and user_info:
+            add_remembered_account(user_info["username"], user_info.get("display_name"))
+            st.session_state.authenticated = True
+            st.session_state.user_info = user_info
+            st.session_state.firebase_hydrated = False
+            st.query_params["page"] = "Overview"
+            st.query_params.pop("return_to", None)
+            st.rerun()
+        else:
+            st.error(message)
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # LOGIN FORM
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _render_login(login_user, save_remember_me):
+    from auth import add_remembered_account
+
     # Live index ticker (best-effort; hidden if unavailable)
     _idx = _fetch_indices()
     if _idx:
@@ -540,6 +582,8 @@ def _render_login(login_user, save_remember_me):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _render_signup(register_user, login_user, save_remember_me):
+    from auth import add_remembered_account
+
     st.markdown("""
     <div style="margin-bottom:2rem;">
         <h2 style="font-size:1.7rem;font-weight:700;color:#f1f5f9;margin:0 0 6px 0;letter-spacing:-0.5px;">
