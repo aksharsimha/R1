@@ -1,3 +1,19 @@
+# Session: August 23, 2026
+**Author:** Aksharsimha
+
+## Goal
+Resolving UI surface bugs, fixing timezone logic, and implementing robust stock ticker search and validation.
+
+## Changes Made
+- **Stock Validation & Limits (`portfolio_ledger.py`):** Fixed zero-rupee purchase bugs and implemented robust historical ALL-TIME range validation for average buy prices (adjusted for stock splits).
+- **Time/Timezone Sync (`main.py` & `chat_system.py`):** Fixed `datetime.now()` to strictly use IST (`pytz.timezone('Asia/Kolkata')`) across the dashboard greetings and chat timestamps.
+- **Routing & State Preservation (`main.py` & `login_page.py`):** Synced sidebar navigation with `st.query_params` to fix the Back/Forward browser buttons and resolved the refresh logout issue.
+- **Mobile Rendering (`login_page.py` & `ui_theme.py`):** Injected responsive CSS media queries for phone-friendly login and dashboard flex stacking.
+- **Table Column Hiding Bug (`insights.py` & `overview_holdings.py`):** Bypassed Streamlit's native cache bugs by downgrading Insights to `st.table` and dynamically binding the data editor's key to the user's multiselect columns.
+- **Stock Search Dropdown (`overview_holdings.py`):** Replaced manual ticker typing with a dynamic auto-complete `selectbox` powered by Yahoo Finance API (automatically hiding corrupted `.BO` data in favor of `.NS`).
+
+---
+
 # Session: August 22, 2026
 **Author:** Akshar Simha
 
