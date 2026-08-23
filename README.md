@@ -11,6 +11,15 @@ Built with Streamlit · Firebase · yfinance · Groq (Llama 3.3) · Plotly.
 
 ## ✨ What it does
 
+### 📝 Latest Updates (August 23, 2026)
+*By Aksharsimha*
+- **Stock Validation & Limits:** Fixed zero-rupee purchase bugs and implemented robust historical ALL-TIME range validation for average buy prices (adjusted for stock splits).
+- **Time/Timezone Sync:** Fixed `datetime.now()` to strictly use IST (`Asia/Kolkata`) across the dashboard and chat timestamps.
+- **Routing & State Preservation:** Synced sidebar navigation with `st.query_params` to fix the Back/Forward browser buttons and resolved the refresh logout issue.
+- **Mobile Rendering:** Injected responsive CSS media queries for phone-friendly login and dashboard flex stacking.
+- **Table Column Hiding Bug:** Bypassed Streamlit's native cache bugs by downgrading Insights to `st.table` and dynamically binding the data editor's key to the user's multiselect columns.
+- **Stock Search Dropdown:** Replaced manual ticker typing with a dynamic auto-complete `selectbox` powered by Yahoo Finance API (automatically hiding corrupted `.BO` data in favor of `.NS`).
+
 QUEST is organised into a sidebar of sections:
 
 | Section | What's inside |
@@ -131,4 +140,4 @@ project_id = "..."
 
 ---
 
-*Built by Akshar. Research & education tool — not investment advice.*
+*Built by Aksharsimha (Last Updated: August 23, 2026). Research & education tool — not investment advice.*

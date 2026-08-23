@@ -73,39 +73,105 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             )
         st.markdown(_cards, unsafe_allow_html=True)
 
+    def _search_tickers(query: str):
+        if not query or not query.strip(): return []
+        try:
+            import urllib.request, urllib.parse, json as _json
+            url = "https://query2.finance.yahoo.com/v1/finance/search?q=" + urllib.parse.quote(query.strip())
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=4) as r:
+                data = _json.load(r)
+            return data.get("quotes", [])
+        except Exception:
+            return []
+
     with st.expander("＋  Add a stock", expanded=df.empty):
-        _na = st.text_input("Company / fund name", key="ov_add_name", placeholder="e.g. Reliance Industries")
-        _cfind, _cnote = st.columns([1, 2])
-        with _cfind:
-            if st.button("Find ticker", key="ov_find_ticker", use_container_width=True):
-                _sym = _lookup_ticker(st.session_state.get("ov_add_name", ""))
-                if _sym:
-                    st.session_state["ov_add_id"] = _sym
-                    st.session_state["_ov_lookup_msg"] = ("ok", _sym)
+        _query = st.text_input("🔍 Search for a company or fund", key="ov_search_q", placeholder="e.g. Tata Motors, Zomato, Reliance...")
+        
+        _na = ""
+        _id = ""
+        
+        if _query.strip():
+            _results = _search_tickers(_query)
+            if _results:
+                # Filter out pure garbage, keep equities and mutual funds from Indian exchanges
+                _temp = [q for q in _results if q.get('quoteType') in ('EQUITY', 'MUTUALFUND', 'ETF') and q.get('symbol') and q.get('exchange') in ('NSI', 'BSE')]
+                
+                # Yahoo Finance BSE (.BO) data is notoriously corrupted/truncated compared to NSE (.NS)
+                # We will drop the BSE version if an NSE version is available in the search results
+                _nsi_bases = {q['symbol'].replace('.NS', '') for q in _temp if q.get('exchange') == 'NSI'}
+                _valid = []
+                for q in _temp:
+                    if q.get('exchange') == 'BSE':
+                        if q['symbol'].replace('.BO', '') in _nsi_bases:
+                            continue # Skip BSE if NSE exists
+                    _valid.append(q)
+                if _valid:
+                    _opts = [f"{q.get('longname', q.get('shortname', 'Unknown'))} ({q['symbol']}) — {q.get('exchDisp', 'Unknown')}" for q in _valid]
+                    # Add a manual override option
+                    _opts.append("— Enter ticker manually —")
+                    
+                    _choice = st.selectbox("Select Asset", _opts, key="ov_search_sel")
+                    
+                    if _choice != "— Enter ticker manually —":
+                        # Extract symbol inside parenthesis
+                        import re
+                        _match = re.search(r'\((.*?)\)', _choice)
+                        if _match:
+                            _id = _match.group(1)
+                            _na = _choice.split(" (")[0]
                 else:
-                    st.session_state["_ov_lookup_msg"] = ("err", "")
-        _msg = st.session_state.get("_ov_lookup_msg")
-        if _msg and _msg[0] == "ok":
-            _cnote.success(f"Found {_msg[1]} — verify below, then add.")
-        elif _msg and _msg[0] == "err":
-            _cnote.warning("No match found — enter the ticker manually.")
-        _ty = st.selectbox("Type", [AssetType.EQUITY, AssetType.ETF, AssetType.MUTUAL_FUND, AssetType.DIGITAL_GOLD], key="ov_add_type")
-        _id = st.text_input("Identifier (ticker / scheme code)", key="ov_add_id", help="Auto-filled from the name — verify before adding.")
-        _am = st.number_input("Invested amount (₹)", min_value=0.0, value=0.0, step=100.0, key="ov_add_amt")
-        _qt = st.number_input("Quantity (units)", min_value=0.0, value=0.0, step=1.0, key="ov_add_qty")
-        if st.button("Add stock", key="ov_add_submit"):
-            if _na and add_asset(_na, _ty, _id, _am, _qt):
-                st.session_state.pop("_ov_lookup_msg", None)
-                st.success(f"Added {_na}")
-                time.sleep(0.6)
-                st.rerun()
+                    st.warning("No valid stocks found. Enter details manually.")
             else:
-                st.error("Could not add (already exists or invalid).")
+                st.warning("No matches found. Enter details manually.")
+                
+        # If they haven't searched, or chose manual, or search failed, show manual fields
+        if not _query.strip() or (locals().get('_choice') == "— Enter ticker manually —") or (not locals().get('_valid') and _query.strip()):
+            _na = st.text_input("Company / fund name", value=_na, key="ov_man_name")
+            _id = st.text_input("Identifier (ticker / scheme code)", value=_id, key="ov_man_id")
+
+        _ty = st.selectbox("Type", [AssetType.EQUITY, AssetType.ETF, AssetType.MUTUAL_FUND, AssetType.DIGITAL_GOLD], key="ov_add_type")
+        _avg_price = st.number_input("Average Buy Price (₹)", min_value=0.01, value=100.0, step=1.0, key="ov_add_price", format="%.2f")
+        _qt = st.number_input("Quantity (units)", min_value=0.0001, value=1.0, step=1.0, key="ov_add_qty", format="%.4f")
+        
+        if st.button("Add stock", key="ov_add_submit"):
+            if _na and _id:
+                try:
+                    # Mathematically calculate the true invested amount based on what they bought it for
+                    _am = _avg_price * _qt
+                    if add_asset(_na, _ty, _id, _am, _qt):
+                        st.success(f"Added {_na}")
+                        time.sleep(0.6)
+                        st.rerun()
+                    else:
+                        st.error("Could not add (asset with this name already exists).")
+                except ValueError as ve:
+                    st.error(str(ve))
+                except Exception as e:
+                    st.error(f"Failed to add asset: {e}")
+            else:
+                st.error("Please provide a valid company name and ticker.")
 
     if not df.empty:
         with st.expander("✎  Edit amounts & quantities"):
+            all_cols = list(df.columns)
+            default_cols = ["Name", "Invested (₹)", "Quantity", "Current Value (₹)", "P&L (₹)", "P&L %"]
+            
+            st.markdown("<div style='font-size:0.8rem;color:var(--q-text-3);margin-bottom:8px;'>Select columns to view/edit:</div>", unsafe_allow_html=True)
+            selected_cols = st.multiselect("Visible Columns", options=all_cols, default=default_cols, key="ov_edit_cols", label_visibility="collapsed")
+            
+            # Always ensure the editable/identifier columns are present so the save logic doesn't crash
+            for req in ["Name", "Invested (₹)", "Quantity"]:
+                if req not in selected_cols:
+                    selected_cols.insert(0, req)
+                    
+            # Deduplicate while preserving order
+            seen = set()
+            display_cols = [x for x in selected_cols if not (x in seen or seen.add(x))]
+            
+            _editor_key = "portfolio_editor_" + "_".join(display_cols)
             edited_df = st.data_editor(
-                df.copy(), use_container_width=True,
+                df[display_cols].copy(), use_container_width=True,
                 column_config={
                     "Invested (₹)": st.column_config.NumberColumn("Invested (₹)", min_value=0.0, format="₹ %.2f", step=0.01),
                     "Quantity": st.column_config.NumberColumn("Quantity", min_value=0.0, format="%.4f", step=0.0001),
@@ -116,17 +182,27 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     "Risk Score": st.column_config.NumberColumn("Risk Score", format="%.1f"),
                     "Risk Bucket": st.column_config.TextColumn("Risk"),
                 },
-                disabled=["Risk Rank", "Name", "Type", "Last Price", "Current Value (₹)", "P&L (₹)", "P&L %", "Volatility %", "Beta", "Max DD %", "Sharpe", "1d VaR %", "1M Ret %", "6M Ret %", "1Y Ret %", "Total Return %", "Ann Return %", "Profit Factor", "Win Rate %", "RSI", "52w Pos", "Dist 200DMA %", "Risk Score", "Risk Bucket", "Weight %"],
-                hide_index=True, key="portfolio_editor",
+                disabled=[c for c in display_cols if c not in ["Invested (₹)", "Quantity"]],
+                hide_index=True, key=_editor_key,
             )
             changes_made = False
+            has_error = False
             for idx2, row in edited_df.iterrows():
                 if df.loc[idx2, "Invested (₹)"] != row["Invested (₹)"] or df.loc[idx2, "Quantity"] != row["Quantity"]:
-                    update_asset_holdings(row["Name"], float(row["Invested (₹)"]), float(row["Quantity"]))
-                    changes_made = True
-            if changes_made:
+                    try:
+                        update_asset_holdings(row["Name"], float(row["Invested (₹)"]), float(row["Quantity"]))
+                        changes_made = True
+                    except ValueError as ve:
+                        st.error(f"Failed to update {row['Name']}: {ve}")
+                        has_error = True
+            
+            if changes_made and not has_error:
                 st.success("Saved!")
                 time.sleep(0.5)
+                st.rerun()
+            elif changes_made and has_error:
+                st.warning("Some changes were saved, but others failed.")
+                time.sleep(1.5)
                 st.rerun()
 
         with st.expander("🗑  Remove a stock"):

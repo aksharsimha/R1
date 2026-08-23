@@ -227,6 +227,20 @@ def css(theme: str = None) -> str:
         var(--q-border) 37%, var(--q-surface-2) 63%);
         background-size: 800px 100%; animation: q-shimmer 1.4s infinite; }}
 
+    /* ── Mobile Responsiveness ── */
+    @media (max-width: 768px) {{
+        .block-container {{ padding: 1rem 0.5rem !important; }}
+        .dashboard-header h1 {{ font-size: 1.5rem !important; }}
+        .dashboard-header p {{ font-size: 0.8rem !important; }}
+        .q-card {{ padding: 12px 14px !important; }}
+        .q-metric {{ padding: 10px 12px !important; }}
+        .q-metric .val {{ font-size: 1rem !important; }}
+        /* Let columns stack instead of squeezing */
+        div[data-testid="column"] {{ min-width: 100% !important; }}
+        /* Shrink the massive portfolio value font on phones */
+        #qv {{ font-size: 1.8rem !important; }}
+    }}
+
     @media (prefers-reduced-motion: reduce) {{
         .q-enter, .q-skeleton, .q-bar, .q-live, .block-container {{ animation: none !important; }}
         .q-row:hover, .q-card:hover {{ transform: none; }}

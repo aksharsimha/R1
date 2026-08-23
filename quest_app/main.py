@@ -99,7 +99,8 @@ ui_theme.init_theme()
 st.markdown(ui_theme.css(), unsafe_allow_html=True)
 
 # --- Sidebar: User Info & Logout ---
-_hour = datetime.now().hour
+import pytz
+_hour = datetime.now(pytz.timezone('Asia/Kolkata')).hour
 _greeting = "Good morning" if _hour < 12 else "Good afternoon" if _hour < 17 else "Good evening"
 
 st.sidebar.markdown(f"""
@@ -118,13 +119,29 @@ if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="logout_btn"
 
 ui_theme.theme_toggle()
 
+# Sync navigation with URL query parameters to support Back/Forward buttons
+_valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"]
+_query_page = st.query_params.get("page", "Overview")
+if _query_page not in _valid_pages:
+    _query_page = "Overview"
+
+# Find index for the default value
+_page_idx = _valid_pages.index(_query_page)
+
 st.sidebar.markdown("---")
 section = st.sidebar.radio(
     "Navigate",
-    ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"],
+    _valid_pages,
+    index=_page_idx,
     key="nav_section",
     label_visibility="collapsed",
 )
+
+# Update the URL if the user clicks a different page
+if section != _query_page:
+    st.query_params["page"] = section
+    st.rerun()
+
 st.sidebar.markdown("---")
 
 # --- Sidebar: Interactive Controls ---

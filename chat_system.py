@@ -1,3 +1,4 @@
+import pytz
 """
 QUEST Chat System — Firebase Edition
 ======================================
@@ -45,13 +46,14 @@ def _generate_chat_id() -> str:
 def _create_chat_file(chat_id: str, chat_type: str, participants: list,
                       name: str = "", created_by: str = "") -> dict:
     from firebase_db import create_chat
+    import pytz
     chat = {
         "chat_id": chat_id,
         "type": chat_type,
         "name": name,
         "participants": sorted(participants),
         "created_by": created_by,
-        "created_at": datetime.now().isoformat(),
+        "created_at": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
         "messages": [],
     }
     create_chat(chat_id, chat)
@@ -231,7 +233,7 @@ def add_to_group(chat_id: str, new_member: str, added_by: str) -> tuple[bool, st
         "id": "msg_" + uuid.uuid4().hex[:8],
         "from": "__system__",
         "text": f"{added_by} added {new_member} to the group",
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
         "type": "system",
         "read_by": [],
     })
@@ -256,7 +258,7 @@ def leave_group(chat_id: str, username: str) -> tuple[bool, str]:
         "id": "msg_" + uuid.uuid4().hex[:8],
         "from": "__system__",
         "text": f"{username} left the group",
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
         "type": "system",
         "read_by": [],
     })
@@ -284,11 +286,12 @@ def send_message(chat_id: str, from_user: str, text: str,
     if msg_type == "text" and not text.strip():
         return False, "Message cannot be empty."
 
+    import pytz
     msg = {
         "id": "msg_" + uuid.uuid4().hex[:8],
         "from": from_user,
         "text": text.strip() if text else "",
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
         "type": msg_type,
         "read_by": [from_user],
     }
@@ -396,7 +399,7 @@ def build_portfolio_snapshot(df, summary: dict, username: str) -> dict:
     if df is None or df.empty:
         return {
             "username": username,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
             "total_value": 0, "total_pnl": 0, "pnl_pct": 0,
             "n_assets": 0, "risk_score": 0, "risk_bucket": "N/A",
             "top_holdings": [],
@@ -416,7 +419,7 @@ def build_portfolio_snapshot(df, summary: dict, username: str) -> dict:
 
     return {
         "username": username,
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
         "total_value": float(summary.get("total_value", 0)),
         "total_invested": total_invested,
         "total_pnl": total_pnl,

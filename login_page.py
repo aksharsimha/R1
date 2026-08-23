@@ -59,13 +59,11 @@ def render_login_page():
         st.session_state.do_logout = False
 
     # ── Check Remember Me ────────────────────────────────────────────────────
-    if "auth_checked_remember" not in st.session_state:
-        st.session_state.auth_checked_remember = True
-        remembered = check_remember_me()
-        if remembered:
-            st.session_state.authenticated = True
-            st.session_state.user_info = remembered
-            st.rerun()
+    remembered = check_remember_me()
+    if remembered and not st.session_state.get("authenticated"):
+        st.session_state.authenticated = True
+        st.session_state.user_info = remembered
+        st.rerun()
 
     if "auth_mode" not in st.session_state:
         st.session_state.auth_mode = "login"
@@ -306,6 +304,30 @@ def render_login_page():
             max-width: 420px !important;
             margin: 0 auto !important;
             width: 100% !important;
+        }
+
+        /* ▓▓▓▓▓ MOBILE RESPONSIVENESS ▓▓▓▓▓ */
+        @media (max-width: 768px) {
+            div[data-testid="stHorizontalBlock"] {
+                flex-wrap: wrap !important;
+                flex-direction: column !important;
+            }
+            div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:first-child {
+                min-height: auto !important;
+                padding: 2rem !important;
+            }
+            div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:last-child {
+                min-height: auto !important;
+                border-left: none !important;
+            }
+            div[data-testid="stColumn"]:last-child > div {
+                padding: 2rem 1.5rem !important;
+            }
+            /* Hide the large blurred background circles on mobile to prevent overflow */
+            div[data-testid="stColumn"]:first-child > div > div:nth-child(1),
+            div[data-testid="stColumn"]:first-child > div > div:nth-child(2) {
+                display: none !important;
+            }
         }
     </style>
     """, unsafe_allow_html=True)

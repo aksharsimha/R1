@@ -92,11 +92,31 @@ def get_total_value(holdings):
     return sum(h.amount for h in holdings)
 
 def update_asset_holdings(asset_name: str, new_invested: float, new_quantity: float):
+    if new_invested <= 0 or new_quantity <= 0:
+        raise ValueError("Invested amount and quantity must be greater than zero.")
+        
     holdings = load_holdings(HOLDINGS_FILE) if os.path.exists(HOLDINGS_FILE) else []
     found = False
     old_amt = 0.0
     for h in holdings:
         if h.name == asset_name:
+            # Validate against historical max/min just like add_asset
+            try:
+                from risk_analyzer import fetch_history
+                df_hist = fetch_history(h, period="max")
+                if not df_hist.empty:
+                    implied_buy_price = new_invested / new_quantity
+                    all_time_low = df_hist['Low'].min()
+                    all_time_high = df_hist['High'].max()
+                    
+                    if implied_buy_price < (all_time_low * 0.9) or implied_buy_price > (all_time_high * 1.1):
+                        raise ValueError(f"Rejected: An average buy price of ₹{implied_buy_price:,.2f} is impossible. Historical range is ₹{all_time_low:,.2f} to ₹{all_time_high:,.2f}.")
+            except ValueError:
+                raise
+            except Exception as e:
+                # If we fail to fetch, allow the update but log it
+                pass
+                
             old_amt = h.amount
             h.amount = new_invested
             h.quantity = new_quantity
@@ -145,12 +165,37 @@ def update_asset_percentage(asset_name: str, target_percentage: float):
     return True
 
 def add_asset(name: str, asset_type: str, identifier: str, amount: float, quantity: float = 0.0):
+    if amount <= 0 or quantity <= 0:
+        raise ValueError("Invested amount and quantity must be greater than zero.")
+        
     holdings = load_holdings(HOLDINGS_FILE) if os.path.exists(HOLDINGS_FILE) else []
     for h in holdings:
         if h.name == name:
             return False # Already exists
 
     new_asset = Asset(name=name, asset_type=asset_type, identifier=identifier, amount=amount, quantity=quantity)
+    
+    # Validate the ticker/scheme before adding
+    try:
+        from risk_analyzer import fetch_history
+        # Fetch max history to ensure the buy price is realistic
+        df_hist = fetch_history(new_asset, period="max")
+        if df_hist.empty:
+            raise ValueError(f"No market data found for {identifier}.")
+            
+        implied_buy_price = amount / quantity
+        all_time_low = df_hist['Low'].min()
+        all_time_high = df_hist['High'].max()
+        
+        # Allow a 10% buffer to account for data glitches or unadjusted splits
+        if implied_buy_price < (all_time_low * 0.9) or implied_buy_price > (all_time_high * 1.1):
+            raise ValueError(f"Rejected: An average buy price of ₹{implied_buy_price:,.2f} is impossible. The all-time historical range for this asset is ₹{all_time_low:,.2f} to ₹{all_time_high:,.2f}.")
+            
+    except ValueError:
+        raise
+    except Exception as e:
+        raise ValueError(f"Invalid identifier or unable to fetch market data for {identifier}: {e}")
+
     holdings.append(new_asset)
     save_holdings(holdings, HOLDINGS_FILE)
     _sync_holdings()

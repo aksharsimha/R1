@@ -58,7 +58,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 "Reason": reason
             })
 
-        st.dataframe(pd.DataFrame(signals_data), use_container_width=True, hide_index=True)
+        _sig_df = pd.DataFrame(signals_data)
+        _sig_cols = st.multiselect("Visible Columns", options=_sig_df.columns, default=list(_sig_df.columns), key="insight_sig_cols", label_visibility="collapsed")
+        if not _sig_cols: _sig_cols = list(_sig_df.columns)
+        st.table(_sig_df[_sig_cols])
         st.markdown("---")
 
         # --- SECTION B ---
@@ -86,7 +89,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     "Action": action
                 })
 
-        st.dataframe(pd.DataFrame(rebal_data), use_container_width=True, hide_index=True)
+        _reb_df = pd.DataFrame(rebal_data)
+        if not _reb_df.empty:
+            _reb_cols = st.multiselect("Visible Columns", options=_reb_df.columns, default=list(_reb_df.columns), key="insight_reb_cols", label_visibility="collapsed")
+            if not _reb_cols: _reb_cols = list(_reb_df.columns)
+            st.table(_reb_df[_reb_cols])
         st.markdown("---")
 
         # --- SECTION C ---
