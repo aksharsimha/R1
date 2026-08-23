@@ -50,7 +50,7 @@ def _fetch_indices():
 def render_login_page():
     from auth import (
         login_user, register_user, check_remember_me,
-        save_remember_me, reset_password, clear_remember_me
+        save_remember_me, add_remembered_account, reset_password, clear_remember_me
     )
 
     if st.session_state.get("do_logout"):
@@ -60,7 +60,7 @@ def render_login_page():
 
     # ── Check Remember Me ────────────────────────────────────────────────────
     remembered = check_remember_me()
-    if remembered and not st.session_state.get("authenticated"):
+    if remembered and not st.session_state.get("authenticated") and not st.session_state.get("account_add_mode"):
         st.session_state.authenticated = True
         st.session_state.user_info = remembered
         st.rerun()
@@ -479,7 +479,8 @@ def _render_login(login_user, save_remember_me):
                 st.session_state.user_info = user_info
                 st.session_state.remember_me = remember
                 if remember:
-                    save_remember_me(user_info["username"])
+                    add_remembered_account(user_info["username"], user_info.get("display_name"))
+                st.session_state.account_add_mode = False
                 st.rerun()
             else:
                 st.error(message)
@@ -581,7 +582,8 @@ def _render_signup(register_user, login_user, save_remember_me):
                         st.session_state.user_info = user_info
                         st.session_state.remember_me = remember
                         if remember:
-                            save_remember_me(user_info["username"])
+                            add_remembered_account(user_info["username"], user_info.get("display_name"))
+                        st.session_state.account_add_mode = False
                         st.rerun()
                 else:
                     st.error(message)

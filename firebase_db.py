@@ -12,6 +12,8 @@ Setup:
 
 import json
 import os
+import threading
+from datetime import datetime, timezone
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, auth as firebase_auth
@@ -22,6 +24,7 @@ from firebase_admin import credentials, firestore, auth as firebase_auth
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _db = None
+_init_lock = threading.Lock()
 
 
 def init_firebase():
@@ -31,28 +34,35 @@ def init_firebase():
     if _db is not None:
         return _db
 
-    # Already initialized by another import?
-    if firebase_admin._apps:
-        _db = firestore.client()
-        return _db
+    # Streamlit can run this function concurrently during reruns or new sessions.
+    with _init_lock:
+        if _db is not None:
+            return _db
 
-    # Try .streamlit/firebase_key.json first (local dev)
-    key_path = os.path.join(_HERE, ".streamlit", "firebase_key.json")
-    if os.path.exists(key_path):
-        cred = credentials.Certificate(key_path)
-        firebase_admin.initialize_app(cred)
-        _db = firestore.client()
-        return _db
+        # Reuse the default app if another module initialized it first.
+        try:
+            app = firebase_admin.get_app()
+        except ValueError:
+            app = None
 
-    # Try Streamlit secrets (cloud deployment)
-    try:
-        key_dict = dict(st.secrets["firebase"])
-        cred = credentials.Certificate(key_dict)
-        firebase_admin.initialize_app(cred)
-        _db = firestore.client()
-        return _db
-    except Exception:
-        pass
+        if app is None:
+            # Try .streamlit/firebase_key.json first (local dev)
+            key_path = os.path.join(_HERE, ".streamlit", "firebase_key.json")
+            if os.path.exists(key_path):
+                cred = credentials.Certificate(key_path)
+                app = firebase_admin.initialize_app(cred)
+            else:
+                # Try Streamlit secrets (cloud deployment)
+                try:
+                    key_dict = dict(st.secrets["firebase"])
+                    cred = credentials.Certificate(key_dict)
+                    app = firebase_admin.initialize_app(cred)
+                except Exception:
+                    app = None
+
+        if app is not None:
+            _db = firestore.client(app)
+            return _db
 
     raise RuntimeError(
         "Firebase key not found. Place firebase_key.json in .streamlit/ "
@@ -224,6 +234,162 @@ def get_user_display_name(username: str) -> str:
     if doc.exists:
         return doc.to_dict().get("display_name", username)
     return username
+
+
+def get_user_profile(username: str) -> dict:
+    """Read a complete user profile, returning useful defaults when absent."""
+    db = get_db()
+    doc = db.collection("users").document(username).get()
+    return doc.to_dict() if doc.exists else {"username": username, "display_name": username}
+
+
+def _password_token(email: str, password: str) -> str | None:
+    """Verify a password and return a short-lived Firebase ID token."""
+    import requests
+
+    api_key = _get_web_api_key()
+    if not api_key:
+        return None
+    response = requests.post(
+        f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}",
+        json={"email": email, "password": password, "returnSecureToken": False},
+        timeout=10,
+    )
+    return response.json().get("idToken") if response.status_code == 200 else None
+
+
+def _within_profile_cooldown(profile: dict, field: str) -> bool:
+    value = profile.get(field)
+    if not value:
+        return False
+    if hasattr(value, "timestamp"):
+        value = datetime.fromtimestamp(value.timestamp(), tz=timezone.utc)
+    elif isinstance(value, str):
+        try:
+            value = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return False
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return (datetime.now(timezone.utc) - value).total_seconds() < 86400
+
+
+def update_display_name(username: str, display_name: str) -> tuple[bool, str]:
+    """Update the display name in Firebase Auth and the Firestore profile."""
+    name = display_name.strip()
+    if not name:
+        return False, "Display name cannot be empty."
+    profile = get_user_profile(username)
+    firebase_auth.update_user(profile["uid"], display_name=name)
+    get_db().collection("users").document(username).update({"display_name": name})
+    return True, "Display name updated."
+
+
+def update_profile(username: str, display_name: str, summary: str) -> tuple[bool, str]:
+    """Update the editable public profile fields."""
+    name = display_name.strip()
+    if not name:
+        return False, "Display name cannot be empty."
+    profile = get_user_profile(username)
+    firebase_auth.update_user(profile["uid"], display_name=name)
+    get_db().collection("users").document(username).update({
+        "display_name": name,
+        "summary": summary.strip(),
+    })
+    return True, "Profile updated."
+
+
+def update_password(username: str, current_password: str, new_password: str) -> tuple[bool, str]:
+    """Change the Firebase password after verifying the current password."""
+    profile = get_user_profile(username)
+    if len(new_password) < 6:
+        return False, "New password must be at least 6 characters."
+    if not _password_token(profile.get("email", ""), current_password):
+        return False, "Password verification failed."
+    firebase_auth.update_user(profile["uid"], password=new_password)
+    return True, "Password changed successfully."
+
+
+def update_phone(username: str, password: str, phone: str) -> tuple[bool, str]:
+    """Save a verified phone number to the user's profile."""
+    profile = get_user_profile(username)
+    if not phone.strip():
+        return False, "Enter a phone number."
+    if not _password_token(profile.get("email", ""), password):
+        return False, "Password verification failed."
+    get_db().collection("users").document(username).update({"phone": phone.strip()})
+    return True, "Phone number updated."
+
+
+def update_email(username: str, password: str, new_email: str) -> tuple[bool, str]:
+    """Change email after password verification and send a verification link."""
+    import re
+
+    email = new_email.strip().lower()
+    profile = get_user_profile(username)
+    if _within_profile_cooldown(profile, "email_changed_at"):
+        return False, "Email can only be changed once every 24 hours."
+    if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+        return False, "Enter a valid email address."
+    id_token = _password_token(profile.get("email", ""), password)
+    if not id_token:
+        return False, "Password verification failed."
+    if email == profile.get("email", "").lower():
+        return False, "Enter a different email address."
+    firebase_auth.update_user(profile["uid"], email=email)
+    import requests
+    response = requests.post(
+        f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={_get_web_api_key()}",
+        json={"requestType": "VERIFY_EMAIL", "idToken": id_token},
+        timeout=10,
+    )
+    if response.status_code != 200:
+        return False, "Email changed, but the verification email could not be sent."
+    now = datetime.now(timezone.utc).isoformat()
+    db = get_db()
+    db.collection("email_to_username").document(profile["email"]).delete()
+    db.collection("email_to_username").document(email).set({"username": username})
+    db.collection("users").document(username).update({"email": email, "email_changed_at": now})
+    return True, "Email updated. Check your new inbox for the verification link."
+
+
+def update_username(username: str, password: str, new_username: str) -> tuple[bool, str, dict | None]:
+    """Change username and move the profile's data documents."""
+    import re
+
+    new_name = new_username.strip().lower()
+    profile = get_user_profile(username)
+    if _within_profile_cooldown(profile, "username_changed_at"):
+        return False, "Username can only be changed once every 24 hours.", None
+    if not re.fullmatch(r"[a-z0-9_.-]{3,30}", new_name):
+        return False, "Username must be 3-30 characters using letters, numbers, _, -, or .", None
+    if new_name == username:
+        return False, "Enter a different username.", None
+    if not _password_token(profile.get("email", ""), password):
+        return False, "Password verification failed.", None
+    db = get_db()
+    if db.collection("users").document(new_name).get().exists:
+        return False, "Username already taken.", None
+    profile["username"] = new_name
+    profile["username_changed_at"] = datetime.now(timezone.utc).isoformat()
+    old_ref = db.collection("users").document(username)
+    new_ref = db.collection("users").document(new_name)
+    new_ref.set(profile)
+    for doc in old_ref.collection("data").stream():
+        new_ref.collection("data").document(doc.id).set(doc.to_dict())
+    old_ref.delete()
+    db.collection("email_to_username").document(profile["email"]).set({"username": new_name})
+    return True, "Username updated.", {
+        "username": new_name,
+        "display_name": profile.get("display_name", new_name),
+        "uid": profile.get("uid", ""),
+        "email": profile.get("email", ""),
+    }
+
+
+def save_avatar(username: str, avatar_data: str | None) -> None:
+    """Store or remove a small base64 avatar in the profile document."""
+    get_db().collection("users").document(username).update({"avatar": avatar_data})
 
 
 def get_all_users() -> list[str]:

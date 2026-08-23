@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import os
 import sys
@@ -15,7 +16,7 @@ from adaptive_engine import adaptive_forecast, get_learning_log, get_days_traine
 
 # --- Auth imports ---
 from login_page import render_login_page
-from auth import clear_remember_me, save_remember_me
+from auth import clear_remember_me, get_remembered_accounts
 import chat_system
 import portfolio_ledger
 import adaptive_engine
@@ -42,11 +43,6 @@ if not st.session_state.authenticated:
 # ── User is authenticated — set up their data directory ──────────────────────
 _user_info = st.session_state.user_info
 _username = _user_info["username"]
-
-# Persist the cookie during the authenticated dashboard run as well as at
-# login, ensuring the browser receives it before a later page refresh.
-if st.session_state.get("remember_me", True):
-    save_remember_me(_username)
 
 # For backward compatibility, create a local data dir and redirect modules
 # (portfolio_ledger and adaptive_engine still use file-based storage locally
@@ -98,44 +94,104 @@ import ui_theme
 ui_theme.init_theme()
 st.markdown(ui_theme.css(), unsafe_allow_html=True)
 
-# --- Sidebar: User Info & Logout ---
+# Settings gets its own native Streamlit sidebar rather than sharing the
+# dashboard navigation rail.
+_early_page = st.query_params.get("page", "Overview")
+if _early_page == "Settings":
+    import quest_app.settings as settings
+    st.sidebar.markdown("<div class='quest-settings-sidebar-title'>Settings</div>", unsafe_allow_html=True)
+    if st.sidebar.button("← Dashboard", key="settings_dashboard_sidebar", use_container_width=True):
+        st.query_params["page"] = "Overview"
+        st.rerun()
+    st.sidebar.markdown("<div class='quest-nav-label'>Account</div>", unsafe_allow_html=True)
+    _settings_section = st.sidebar.radio(
+        "Settings sections", settings._SECTIONS, key="settings_sidebar_section",
+        label_visibility="collapsed"
+    )
+    settings.render(_user_info, _settings_section)
+    st.stop()
+
+# --- Sidebar: profile, navigation, and account controls ---
 import pytz
 _hour = datetime.now(pytz.timezone('Asia/Kolkata')).hour
 _greeting = "Good morning" if _hour < 12 else "Good afternoon" if _hour < 17 else "Good evening"
+_avatar = _user_info.get("avatar")
+_avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
+                  f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
+
+_top_settings, _top_notifications = st.sidebar.columns(2)
+if _top_settings.button("⚙", key="profile_settings_icon", help="Open settings"):
+    st.query_params["page"] = "Settings"
+    st.rerun()
+if _top_notifications.button("🔔", key="profile_notifications_icon", help="Open chat notifications"):
+    st.query_params["page"] = "Chat"
+    st.rerun()
 
 st.sidebar.markdown(f"""
 <div class="quest-profile-card">
-    <div class="quest-profile-label">Signed in as</div>
-    <div class="quest-profile-name">👤 {_user_info['display_name']}</div>
-    <div class="quest-profile-user">@{_user_info['username']}</div>
+    <div class="quest-profile-avatar">{_avatar_markup}</div>
+    <div class="quest-profile-copy">
+        <div class="quest-profile-name">{_user_info['display_name']}</div>
+        <div class="quest-profile-user">@{_user_info['username']}</div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-if st.sidebar.button("🚪 Sign Out", use_container_width=True, key="logout_btn"):
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
-    st.session_state.do_logout = True
+try:
+    _accounts = get_remembered_accounts()
+except Exception:
+    _accounts = []
+if not any(account["username"] == _username for account in _accounts):
+    _accounts.append({"username": _username, "display_name": _user_info.get("display_name", _username)})
+_account_usernames = [account["username"] for account in _accounts]
+_account_labels = [f"{account['display_name']}  ·  @{account['username']}" for account in _accounts]
+_account_labels.append("+ Add account")
+_selected_account = st.sidebar.selectbox(
+    "Switch account", _account_labels,
+    index=_account_usernames.index(_username), key=f"switch_account_{_username}",
+)
+if _selected_account == "+ Add account":
+    st.session_state.account_add_mode = True
+    st.session_state.authenticated = False
+    st.session_state.auth_mode = "login"
     st.rerun()
-
-ui_theme.theme_toggle()
+elif _selected_account in _account_labels:
+    _selected_index = _account_labels.index(_selected_account)
+    _selected_username = _account_usernames[_selected_index]
+    if _selected_username != _username:
+        _selected_info = _accounts[_selected_index]
+        st.session_state.authenticated = True
+        st.session_state.user_info = {
+            "username": _selected_info["username"],
+            "display_name": _selected_info.get("display_name", _selected_info["username"]),
+        }
+        st.session_state.firebase_hydrated = False
+        st.rerun()
 
 # Sync navigation with URL query parameters to support Back/Forward buttons
-_valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"]
+_valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
+_page_labels = {
+    "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
+    "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
+    "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Settings": "⚙  Settings",
+}
 _query_page = st.query_params.get("page", "Overview")
 if _query_page not in _valid_pages:
     _query_page = "Overview"
 
-# Find index for the default value
-_page_idx = _valid_pages.index(_query_page)
+_nav_pages = [page for page in _valid_pages if page != "Settings"]
+_page_idx = _nav_pages.index(_query_page) if _query_page in _nav_pages else 0
 
-st.sidebar.markdown("---")
-section = st.sidebar.radio(
+st.sidebar.markdown("<div class='quest-nav-label'>Workspace</div>", unsafe_allow_html=True)
+_selected_label = st.sidebar.radio(
     "Navigate",
-    _valid_pages,
+    [_page_labels[page] for page in _nav_pages],
     index=_page_idx,
     key="nav_section",
     label_visibility="collapsed",
 )
+section = ("Settings" if _query_page == "Settings" else
+           next(page for page, label in _page_labels.items() if label == _selected_label))
 
 # Update the URL if the user clicks a different page
 if section != _query_page:
@@ -143,6 +199,28 @@ if section != _query_page:
     st.rerun()
 
 st.sidebar.markdown("---")
+
+# Streamlit owns the real collapse state; this replaces only its visible trigger.
+st.markdown("""
+<button id="quest-hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<script>
+(() => {
+    const button = document.getElementById('quest-hamburger');
+    if (!button || button.dataset.bound) return;
+    button.dataset.bound = 'true';
+    button.addEventListener('click', () => {
+        const native = document.querySelector('[data-testid="stSidebarCollapseButton"]') ||
+            document.querySelector('button[kind="header"]');
+        if (native) native.click();
+    });
+})();
+</script>
+""", unsafe_allow_html=True)
+
+if section == "Settings":
+        import quest_app.settings as settings
+        settings.render(_user_info)
+        st.stop()
 
 # --- Sidebar: Interactive Controls ---
 # NOTE: holdings.json is NEVER seeded here — it must exist on disk.

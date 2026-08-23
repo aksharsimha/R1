@@ -14,6 +14,7 @@ Features:
 import base64
 import hashlib
 import hmac
+import json
 import os
 import secrets
 from datetime import datetime
@@ -136,39 +137,103 @@ def _cookies() -> CookieController:
         st.session_state.cookie_controller = CookieController(key="quest_auth_cookies")
     return st.session_state.cookie_controller
 
-def save_remember_me(username: str) -> None:
-    """Persist a signed username cookie for 30 days."""
-    username = username.strip().lower()
-    payload = base64.urlsafe_b64encode(username.encode()).decode().rstrip("=")
-    signature = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
+def _remembered_cookie() -> list[dict]:
+    """Read the multi-account cookie, migrating the legacy single token."""
+    token = st.context.cookies.get(_REMEMBER_COOKIE)
+    if not token:
+        token = _cookies().get(_REMEMBER_COOKIE)
+    if not token:
+        return []
+    try:
+        entries = json.loads(str(token))
+        if isinstance(entries, dict):
+            entries = [entries]
+        if isinstance(entries, list):
+            return [entry for entry in entries if isinstance(entry, dict)]
+    except (TypeError, json.JSONDecodeError):
+        pass
+    # Legacy format: base64(username).hmac.
+    if "." in str(token):
+        payload, signature = str(token).split(".", 1)
+        username = _decode_signed_username(payload, signature)
+        if username:
+            return [{"username": username, "display_name": username,
+                     "signed_token": str(token), "_legacy": True}]
+    return []
+
+
+def _decode_signed_username(payload: str, signature: str) -> str | None:
+    expected = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(signature, expected):
+        return None
+    try:
+        return base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)).decode()
+    except Exception:
+        return None
+
+
+def _write_remembered_cookie(entries: list[dict]) -> None:
     _cookies().set(
         _REMEMBER_COOKIE,
-        f"{payload}.{signature}",
+        json.dumps(entries, separators=(",", ":")),
         max_age=_REMEMBER_DAYS * 24 * 60 * 60,
         same_site="lax",
     )
 
 
+def add_remembered_account(username: str, display_name: str | None = None) -> None:
+    """Append a signed account entry, replacing any existing entry for it."""
+    username = username.strip().lower()
+    payload = base64.urlsafe_b64encode(username.encode()).decode().rstrip("=")
+    signature = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
+    entries = [entry for entry in _remembered_cookie() if entry.get("username") != username]
+    entries.append({"username": username, "display_name": display_name or username,
+                    "signed_token": f"{payload}.{signature}"})
+    _write_remembered_cookie(entries)
+
+
+def save_remember_me(username: str) -> None:
+    """Backward-compatible alias that adds the account to remembered accounts."""
+    add_remembered_account(username)
+
+
+def get_remembered_accounts() -> list[dict]:
+    """Return valid remembered accounts and drop forged or malformed entries."""
+    valid = []
+    changed = False
+    for entry in _remembered_cookie():
+        token = str(entry.get("signed_token", ""))
+        if "." not in token:
+            changed = True
+            continue
+        payload, signature = token.split(".", 1)
+        username = _decode_signed_username(payload, signature)
+        if not username or username != str(entry.get("username", "")).strip().lower():
+            changed = True
+            continue
+        valid.append({"username": username, "display_name": entry.get("display_name") or username,
+                      "signed_token": token})
+        changed = changed or bool(entry.get("_legacy"))
+    if changed:
+        _write_remembered_cookie(valid)
+    return [{"username": entry["username"], "display_name": entry["display_name"]}
+            for entry in valid]
+
+
+def remove_remembered_account(username: str) -> None:
+    """Forget one account without affecting the other remembered accounts."""
+    username = username.strip().lower()
+    entries = [entry for entry in _remembered_cookie() if entry.get("username") != username]
+    if entries:
+        _write_remembered_cookie(entries)
+    else:
+        clear_remember_me()
+
+
 def check_remember_me() -> dict | None:
-    """Restore a user from a valid signed browser cookie."""
-    # Native request cookies are available on every fresh Streamlit session;
-    # use the component cache only as a fallback for older Streamlit versions.
-    token = st.context.cookies.get(_REMEMBER_COOKIE)
-    if not token:
-        token = _cookies().get(_REMEMBER_COOKIE)
-    if not token or "." not in str(token):
-        return None
-    payload, signature = str(token).split(".", 1)
-    expected = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(signature, expected):
-        return None
-    try:
-        username = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)).decode()
-        if not username:
-            return None
-        return {"username": username, "display_name": get_user_display_name(username)}
-    except Exception:
-        return None
+    """Restore the most recently added valid remembered account."""
+    accounts = get_remembered_accounts()
+    return accounts[-1] if accounts else None
 
 
 def clear_remember_me() -> None:

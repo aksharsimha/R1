@@ -139,19 +139,37 @@ def css(theme: str = None) -> str:
     /* ── Sidebar ── */
     section[data-testid="stSidebar"] {{ background: var(--q-surface) !important;
         border-right: 1px solid var(--q-border); }}
+    button[data-testid="stSidebarCollapseButton"],
+    button[kind="header"] {{
+        visibility: hidden !important; width: 0 !important; min-width: 0 !important;
+        height: 0 !important; padding: 0 !important; }}
 
-    /* Nav radio → styled as nav rows (hide the form circle, theme both modes) */
-    section[data-testid="stSidebar"] [role="radiogroup"] {{ gap: 3px; }}
+    #quest-hamburger {{ position: fixed; top: 14px; left: 14px; z-index: 100000;
+        width: 34px; height: 42px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 4px; padding: 6px;
+        border: 1px solid var(--q-border-2); border-radius: 9px;
+        background: var(--q-surface); color: var(--q-accent); cursor: pointer; }}
+    #quest-hamburger span {{ display: block; width: 3px; height: 19px;
+        border-radius: 2px; background: currentColor; transition: height .15s var(--q-ease); }}
+    #quest-hamburger:hover {{ background: var(--q-accent-weak); }}
+    section[data-testid="stSidebar"] .stButton > button {{ min-height: 40px; }}
+    section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] .stButton > button {{
+        min-width: 0; padding-left: 8px; padding-right: 8px; font-size: 1.05rem; }}
+
+    /* Nav radio becomes a spaced stack of card-like controls. */
+    section[data-testid="stSidebar"] [role="radiogroup"] {{ gap: 8px; }}
     section[data-testid="stSidebar"] [role="radiogroup"] > label {{
-        width: 100%; padding: 8px 12px; border-radius: 9px; cursor: pointer;
+        width: 100%; padding: 11px 12px; border: 1px solid var(--q-border);
+        border-radius: var(--q-radius-sm); cursor: pointer;
+        background: var(--q-surface-2);
         color: var(--q-text-2); transition: background .15s var(--q-ease),
-        color .15s var(--q-ease); margin: 0; }}
+        color .15s var(--q-ease), border-color .15s var(--q-ease); margin: 0; }}
     section[data-testid="stSidebar"] [role="radiogroup"] > label:hover {{
-        background: var(--q-surface-2); color: var(--q-text); }}
+        background: var(--q-accent-weak); color: var(--q-text); border-color: var(--q-border-2); }}
     section[data-testid="stSidebar"] [role="radiogroup"] > label > div:first-child {{
         display: none !important; }}   /* hide the radio circle */
     section[data-testid="stSidebar"] [role="radiogroup"] > label:has(input:checked) {{
-        background: var(--q-accent-weak); color: var(--q-accent); font-weight: 500; }}
+        background: var(--q-accent-weak); color: var(--q-accent); border-color: var(--q-accent); font-weight: 500; }}
     section[data-testid="stSidebar"] [role="radiogroup"] label p {{ font-size: .95rem; }}
 
     /* ── Buttons ── */
@@ -204,12 +222,48 @@ def css(theme: str = None) -> str:
         font-size: .9rem; }}
     .quest-profile-card {{ background: var(--q-surface-2);
         border: 1px solid var(--q-border); border-radius: var(--q-radius);
-        padding: 12px 14px; }}
+        padding: 28px 14px 14px; display: flex; align-items: center; gap: 10px;
+        position: relative; }}
+    .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
+        display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}
+    .quest-profile-avatar {{ width: 38px; height: 38px; flex: 0 0 38px;
+        display: grid; place-items: center; overflow: hidden; border-radius: 50%;
+        background: var(--q-accent-weak); color: var(--q-accent); font-weight: 600; }}
+    .quest-profile-avatar img {{ width: 100%; height: 100%; object-fit: cover; }}
+    .quest-profile-copy {{ min-width: 0; }}
     .quest-profile-label {{ font-size: .68rem; color: var(--q-text-3);
         text-transform: uppercase; letter-spacing: .6px; }}
     .quest-profile-name {{ font-size: .95rem; color: var(--q-text);
         font-weight: 500; margin-top: 2px; }}
     .quest-profile-user {{ font-size: .78rem; color: var(--q-accent); }}
+    .quest-nav-label {{ color: var(--q-text-3); font-size: .7rem; text-transform: uppercase;
+        letter-spacing: .08em; margin: 16px 0 8px; }}
+    .quest-settings-sidebar-title {{ color: var(--q-text); font-size: 1.2rem;
+        font-weight: 500; padding: 8px 0 18px; border-bottom: 1px solid var(--q-border); }}
+    .q-settings-title {{ border-bottom: 1px solid var(--q-border); padding-bottom: 14px;
+        margin-bottom: 18px; }}
+    .q-settings-title span {{ display: block; color: var(--q-text); font-size: 1.8rem; font-weight: 500; }}
+    .q-settings-title small, .q-settings-heading p {{ color: var(--q-text-3); }}
+    .q-settings-heading {{ background: var(--q-surface); border: 1px solid var(--q-border);
+        border-radius: var(--q-radius-lg); padding: 18px 20px 4px; margin-bottom: 0; }}
+    .q-settings-heading h2 {{ margin: 0; font-size: 1.15rem; }}
+    .q-settings-heading p {{ font-size: .82rem; margin-top: 5px; }}
+    .q-avatar-large {{ width: 76px; height: 76px; object-fit: cover; border-radius: 50%;
+        border: 2px solid var(--q-accent); margin: 4px 0 12px; }}
+    .q-avatar-placeholder {{ display: grid; place-items: center; background: var(--q-accent-weak);
+        color: var(--q-accent); font-size: 1.8rem; font-weight: 600; }}
+    .q-settings-rail-title {{ color: var(--q-text-3); font-size: .68rem; letter-spacing: .12em;
+        margin: 5px 0 10px; }}
+    [data-testid="stVerticalBlock"]:has(.q-settings-rail-marker) [role="radiogroup"] {{ gap: 6px; }}
+    [data-testid="stVerticalBlock"]:has(.q-settings-rail-marker) [role="radiogroup"] > label {{
+        padding: 11px 12px; border-radius: var(--q-radius-sm); color: var(--q-text-2);
+        cursor: pointer; transition: background .15s var(--q-ease), color .15s var(--q-ease); }}
+    [data-testid="stVerticalBlock"]:has(.q-settings-rail-marker) [role="radiogroup"] > label:hover {{
+        background: var(--q-surface-2); color: var(--q-text); }}
+    [data-testid="stVerticalBlock"]:has(.q-settings-rail-marker) [role="radiogroup"] > label:has(input:checked) {{
+        background: var(--q-surface-2); color: var(--q-text); font-weight: 500; }}
+    [data-testid="stVerticalBlock"]:has(.q-settings-rail-marker) [role="radiogroup"] > label > div:first-child {{
+        display: none !important; }}
 
     /* ── Motion ── */
     @keyframes q-fade {{ from {{ opacity: 0; transform: translateY(8px); }}
