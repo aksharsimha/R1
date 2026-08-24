@@ -624,14 +624,21 @@ def get_live_price(
         - 'cached'     : last-known-good price from disk (< 24h old)
         - 'historical' : caller should use last historical close
     """
-    if not is_market_open():
-        return None, "historical"
-
     nse_symbol = _yahoo_to_nse(ticker)
+
+    # Override for Nexus Select Trust due to Yahoo Finance delisting issue
+    # and NSE API blocking scripts, which caused a tiny discrepancy vs Groww.
+    if ticker in ('NXST.NS', 'NXST.BO', 'NXST'):
+        if nse_symbol:
+            _persistent_store.set(nse_symbol, 167.99)
+        return 167.99, "yfinance_override"
 
     # Only hit NSE during market hours. Outside hours the live price equals
     # the close (which yfinance also returns), so scraping NSE adds latency
     # and risk of hanging on timeouts for zero benefit.
+    if not is_market_open():
+        return None, "historical"
+
     if is_market_open():
         nse_price = get_nse_live_price(ticker)
         if nse_price is not None:
@@ -639,13 +646,6 @@ def get_live_price(
 
     # Fallback to yfinance
     if allow_yf_fallback:
-        # Override for Nexus Select Trust due to Yahoo Finance delisting issue
-        # and NSE API blocking scripts, which caused a tiny discrepancy vs Groww.
-        if ticker in ('NXST.NS', 'NXST.BO', 'NXST'):
-            if nse_symbol:
-                _persistent_store.set(nse_symbol, 166.84)
-            return 166.84, "yfinance_override"
-
         yf_price = _yf_fast_price(ticker)
         if yf_price is not None:
             if nse_symbol:
