@@ -158,8 +158,17 @@ try:
     _accounts = get_remembered_accounts()
 except Exception:
     _accounts = []
-if not any(account["username"] == _username for account in _accounts):
-    _accounts.append({"username": _username, "display_name": _user_info.get("display_name", _username)})
+
+# Deduplicate and ensure current active user is prioritized
+_merged_accounts = []
+_seen_lower = set()
+for acc in [{"username": _username, "display_name": _user_info.get("display_name", _username)}] + _accounts:
+    lower_name = acc["username"].lower()
+    if lower_name not in _seen_lower:
+        _seen_lower.add(lower_name)
+        _merged_accounts.append(acc)
+
+_accounts = _merged_accounts
 _account_usernames = [account["username"] for account in _accounts]
 _account_labels = [f"{account['display_name']}  ·  @{account['username']}" for account in _accounts]
 _account_labels.append("+ Add account")

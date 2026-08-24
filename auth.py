@@ -187,7 +187,7 @@ def _write_remembered_cookie(entries: list[dict]) -> None:
 
 def add_remembered_account(username: str, display_name: str | None = None) -> None:
     """Append a signed account entry, replacing any existing entry for it."""
-    username = username.strip().lower()
+    username = username.strip()
     payload = base64.urlsafe_b64encode(username.encode()).decode().rstrip("=")
     signature = hmac.new(_remember_secret(), payload.encode(), hashlib.sha256).hexdigest()
     entries = [entry for entry in _remembered_cookie() if entry.get("username") != username]
@@ -212,7 +212,7 @@ def get_remembered_accounts() -> list[dict]:
             continue
         payload, signature = token.split(".", 1)
         username = _decode_signed_username(payload, signature)
-        if not username or username != str(entry.get("username", "")).strip().lower():
+        if not username or username != str(entry.get("username", "")).strip():
             changed = True
             continue
         valid.append({"username": username, "display_name": entry.get("display_name") or username,
@@ -226,7 +226,7 @@ def get_remembered_accounts() -> list[dict]:
 
 def remove_remembered_account(username: str) -> None:
     """Forget one account without affecting the other remembered accounts."""
-    username = username.strip().lower()
+    username = username.strip()
     entries = [entry for entry in _remembered_cookie() if entry.get("username") != username]
     if entries:
         _write_remembered_cookie(entries)
