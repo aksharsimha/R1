@@ -243,7 +243,10 @@ def check_remember_me() -> dict | None:
 def clear_remember_me() -> None:
     """Remove the browser cookie and any legacy local marker."""
     try:
-        _cookies().remove(_REMEMBER_COOKIE)
+        ctrl = _cookies()
+        # Set to empty first to avoid KeyError if the controller was just initialized
+        ctrl.set(_REMEMBER_COOKIE, "[]")
+        ctrl.remove(_REMEMBER_COOKIE)
     except Exception:
         pass
     # Clean up any leftover .remember_me files from the old system
