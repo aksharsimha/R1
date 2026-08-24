@@ -109,6 +109,7 @@ if _early_page == "Settings":
     import quest_app.settings as settings
     st.sidebar.markdown("<div class='quest-settings-sidebar-title'>Settings</div>", unsafe_allow_html=True)
     if st.sidebar.button("← Dashboard", key="settings_dashboard_sidebar", use_container_width=True):
+        st.session_state.nav_section = "⌂  Overview"
         st.query_params["page"] = "Overview"
         st.rerun()
     st.sidebar.markdown("<div class='quest-nav-label'>Account</div>", unsafe_allow_html=True)
@@ -135,11 +136,13 @@ _icon_col1, _icon_col2 = st.sidebar.columns(2, gap="small")
 with _icon_col1:
     if st.button("⚙", key="sidebar_settings_btn", help="Open settings",
                  use_container_width=True):
+        st.session_state.nav_section = "⚙  Settings"
         st.query_params["page"] = "Settings"
         st.rerun()
 with _icon_col2:
     if st.button("🔔", key="sidebar_chat_btn", help="Open chat / notifications",
                  use_container_width=True):
+        st.session_state.nav_section = "◍  Chat"
         st.query_params["page"] = "Chat"
         st.rerun()
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
