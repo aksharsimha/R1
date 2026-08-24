@@ -624,6 +624,9 @@ def get_live_price(
         - 'cached'     : last-known-good price from disk (< 24h old)
         - 'historical' : caller should use last historical close
     """
+    if not is_market_open():
+        return None, "historical"
+
     nse_symbol = _yahoo_to_nse(ticker)
 
     # Only hit NSE during market hours. Outside hours the live price equals
