@@ -144,8 +144,12 @@ def _remembered_cookie() -> list[dict]:
         token = _cookies().get(_REMEMBER_COOKIE)
     if not token:
         return []
+    
+    import urllib.parse
+    token_str = urllib.parse.unquote(str(token))
+
     try:
-        entries = json.loads(str(token))
+        entries = json.loads(token_str)
         if isinstance(entries, dict):
             entries = [entries]
         if isinstance(entries, list):
@@ -153,12 +157,12 @@ def _remembered_cookie() -> list[dict]:
     except (TypeError, json.JSONDecodeError):
         pass
     # Legacy format: base64(username).hmac.
-    if "." in str(token):
-        payload, signature = str(token).split(".", 1)
+    if "." in token_str:
+        payload, signature = token_str.split(".", 1)
         username = _decode_signed_username(payload, signature)
         if username:
             return [{"username": username, "display_name": username,
-                     "signed_token": str(token), "_legacy": True}]
+                     "signed_token": token_str, "_legacy": True}]
     return []
 
 
