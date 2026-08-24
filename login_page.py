@@ -57,9 +57,11 @@ def render_login_page():
         clear_remember_me()
         st.session_state.auth_checked_remember = True
         st.session_state.do_logout = False
-
-    # ── Check Remember Me ────────────────────────────────────────────────────
-    remembered = check_remember_me()
+        remembered = None
+    else:
+        # ── Check Remember Me ────────────────────────────────────────────────────
+        remembered = check_remember_me()
+        
     if remembered and not st.session_state.get("authenticated") and not st.session_state.get("account_add_mode"):
         # Hydrate full profile from Firestore (cookie only stores username/display_name)
         try:
