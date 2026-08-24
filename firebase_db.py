@@ -192,6 +192,9 @@ def verify_login(email: str, password: str) -> tuple[bool, str, dict | None]:
         "uid": profile.get("uid", ""),
         "email": email,
     }
+    # Include avatar so the sidebar profile card shows it immediately
+    if profile.get("avatar"):
+        user_info["avatar"] = profile["avatar"]
     return True, f"Welcome back, {user_info['display_name']}!", user_info
 
 

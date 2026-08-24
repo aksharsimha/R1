@@ -176,11 +176,24 @@ elif _selected_account in _account_labels:
     _selected_username = _account_usernames[_selected_index]
     if _selected_username != _username:
         _selected_info = _accounts[_selected_index]
+        # Hydrate full profile from Firestore (cookie only has username/display_name)
+        try:
+            _switch_profile = firebase_db.get_user_profile(_selected_username)
+            _switch_user_info = {
+                "username": _selected_info["username"],
+                "display_name": _switch_profile.get("display_name", _selected_info.get("display_name", _selected_info["username"])),
+                "uid": _switch_profile.get("uid", ""),
+                "email": _switch_profile.get("email", ""),
+            }
+            if _switch_profile.get("avatar"):
+                _switch_user_info["avatar"] = _switch_profile["avatar"]
+        except Exception:
+            _switch_user_info = {
+                "username": _selected_info["username"],
+                "display_name": _selected_info.get("display_name", _selected_info["username"]),
+            }
         st.session_state.authenticated = True
-        st.session_state.user_info = {
-            "username": _selected_info["username"],
-            "display_name": _selected_info.get("display_name", _selected_info["username"]),
-        }
+        st.session_state.user_info = _switch_user_info
         st.session_state.firebase_hydrated = False
         st.rerun()
 

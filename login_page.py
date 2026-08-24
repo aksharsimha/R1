@@ -61,8 +61,22 @@ def render_login_page():
     # ── Check Remember Me ────────────────────────────────────────────────────
     remembered = check_remember_me()
     if remembered and not st.session_state.get("authenticated") and not st.session_state.get("account_add_mode"):
+        # Hydrate full profile from Firestore (cookie only stores username/display_name)
+        try:
+            import firebase_db
+            _profile = firebase_db.get_user_profile(remembered["username"])
+            _full_info = {
+                "username": remembered["username"],
+                "display_name": _profile.get("display_name", remembered.get("display_name", remembered["username"])),
+                "uid": _profile.get("uid", ""),
+                "email": _profile.get("email", ""),
+            }
+            if _profile.get("avatar"):
+                _full_info["avatar"] = _profile["avatar"]
+        except Exception:
+            _full_info = remembered
         st.session_state.authenticated = True
-        st.session_state.user_info = remembered
+        st.session_state.user_info = _full_info
         st.rerun()
 
     if "auth_mode" not in st.session_state:
