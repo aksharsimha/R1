@@ -139,9 +139,12 @@ def _cookies() -> CookieController:
 
 def _remembered_cookie() -> list[dict]:
     """Read the multi-account cookie, migrating the legacy single token."""
-    token = st.context.cookies.get(_REMEMBER_COOKIE)
-    if not token:
-        token = _cookies().get(_REMEMBER_COOKIE)
+    if "auth_cookie_override" in st.session_state:
+        token = st.session_state.auth_cookie_override
+    else:
+        token = st.context.cookies.get(_REMEMBER_COOKIE)
+        if not token:
+            token = _cookies().get(_REMEMBER_COOKIE)
     if not token:
         return []
     
@@ -177,12 +180,18 @@ def _decode_signed_username(payload: str, signature: str) -> str | None:
 
 
 def _write_remembered_cookie(entries: list[dict]) -> None:
-    _cookies().set(
-        _REMEMBER_COOKIE,
-        json.dumps(entries, separators=(",", ":")),
-        max_age=_REMEMBER_DAYS * 24 * 60 * 60,
-        same_site="lax",
-    )
+    """Write the multi-account JSON array to the browser cookie."""
+    token_str = json.dumps(entries, separators=(",", ":"))
+    try:
+        _cookies().set(
+            _REMEMBER_COOKIE,
+            token_str,
+            max_age=_REMEMBER_DAYS * 24 * 60 * 60,
+            same_site="lax",
+        )
+        st.session_state.auth_cookie_override = token_str
+    except Exception:
+        pass
 
 
 def add_remembered_account(username: str, display_name: str | None = None) -> None:
@@ -242,6 +251,7 @@ def check_remember_me() -> dict | None:
 
 def clear_remember_me() -> None:
     """Remove the browser cookie and any legacy local marker."""
+    st.session_state.auth_cookie_override = "[]"
     try:
         ctrl = _cookies()
         # Set to empty first to avoid KeyError if the controller was just initialized

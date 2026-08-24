@@ -118,6 +118,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             from auth import clear_remember_me
             clear_remember_me()
             for key in list(st.session_state.keys()):
-                del st.session_state[key]
+                if key != "auth_cookie_override":
+                    del st.session_state[key]
             st.session_state.do_logout = True
             st.rerun()
