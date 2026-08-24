@@ -481,6 +481,23 @@ def save_predictions_fb(username: str, predictions: list):
     })
 
 
+def get_v2_forecasts_fb(username: str) -> list:
+    """Read v2 prediction tracker forecasts from Firestore."""
+    db = get_db()
+    doc = db.collection("users").document(username).collection("data").document("v2_forecasts").get()
+    if doc.exists:
+        return doc.to_dict().get("forecasts", [])
+    return []
+
+
+def save_v2_forecasts_fb(username: str, forecasts: list):
+    """Save v2 prediction tracker forecasts to Firestore."""
+    db = get_db()
+    db.collection("users").document(username).collection("data").document("v2_forecasts").set({
+        "forecasts": forecasts,
+    })
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Adaptive Engine (EWMA State)
 # ──────────────────────────────────────────────────────────────────────────────

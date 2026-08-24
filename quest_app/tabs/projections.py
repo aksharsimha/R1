@@ -141,6 +141,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             _changed = False
             for _e in _tlog:
                 if _e.get("actual") is None and _e.get("target_date") == _today_str:
+                    _diff = _cur_val - _e.get("base", _cur_val)
+                    if _e.get("base", 0) > 0 and abs(_diff) > _e.get("base") * 0.10:
+                        _injection = _cur_val - _e["base"]
+                        _e["base"] += _injection
+                        _e["predicted"] += _injection
                     _e["actual"] = _cur_val
                     _e["error"] = round(_cur_val - _e["predicted"], 2)
                     if _e.get("base") is not None:
@@ -155,6 +160,9 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 try:
                     with open(_tlog_file, "w", encoding="utf-8") as _tf:
                         _tj2.dump(_tlog[-90:], _tf, indent=2)
+                    import firebase_sync
+                    if "_quest_username" in st.session_state:
+                        firebase_sync.sync_v2_forecasts(st.session_state._quest_username, _tlog_file)
                 except Exception:
                     pass
 

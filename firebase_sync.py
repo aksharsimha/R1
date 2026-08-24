@@ -51,6 +51,14 @@ def hydrate(username: str, user_data_dir: str):
         _write_json(pred_path, fb_preds)
         print(f"[Sync] Hydrated predictions ({len(fb_preds)} entries)", file=sys.stderr)
 
+    # ── V2 Forecasts ──────────────────────────────────────────────────────
+    from firebase_db import get_v2_forecasts_fb
+    v2_path = os.path.join(user_data_dir, "v2_forecast_log.json")
+    fb_v2 = get_v2_forecasts_fb(username)
+    if fb_v2:
+        _write_json(v2_path, fb_v2)
+        print(f"[Sync] Hydrated v2 forecasts ({len(fb_v2)} entries)", file=sys.stderr)
+
     # ── EWMA State ────────────────────────────────────────────────────────
     ewma_path = os.path.join(user_data_dir, "adaptive_state.json")
     fb_ewma = get_ewma_state(username)
@@ -101,6 +109,17 @@ def sync_predictions(username: str, pred_file: str):
             save_predictions_fb(username, data)
     except Exception as e:
         print(f"[Sync] Predictions sync failed: {e}", file=sys.stderr)
+
+
+def sync_v2_forecasts(username: str, pred_file: str):
+    """Push local v2_forecast_log.json to Firestore."""
+    try:
+        data = _read_json(pred_file)
+        if data is not None:
+            from firebase_db import save_v2_forecasts_fb
+            save_v2_forecasts_fb(username, data)
+    except Exception as e:
+        print(f"[Sync] V2 Forecast sync failed: {e}", file=sys.stderr)
 
 
 def sync_ewma_state(username: str, state_file: str):
