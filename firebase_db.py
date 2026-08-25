@@ -241,6 +241,8 @@ def get_user_display_name(username: str) -> str:
 
 def get_user_profile(username: str) -> dict:
     """Read a complete user profile, returning useful defaults when absent."""
+    if not username or not username.strip():
+        return {"username": "", "display_name": ""}
     db = get_db()
     doc = db.collection("users").document(username).get()
     return doc.to_dict() if doc.exists else {"username": username, "display_name": username}
