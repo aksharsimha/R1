@@ -8,7 +8,7 @@ from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
-from risk_analyzer import analyze_portfolio, generate_recommendations, load_holdings, save_holdings, DEFAULT_PORTFOLIO, Asset, AssetType
+from risk_analyzer import analyze_portfolio, generate_recommendations, load_holdings, save_holdings, DEFAULT_PORTFOLIO, Asset, AssetType, get_portfolio_growth
 from portfolio_ledger import get_transactions, update_asset_holdings, update_asset_percentage, add_asset, remove_asset, HOLDINGS_FILE
 from portfolio_ledger import save_daily_prediction, evaluate_past_predictions, get_predictions, ewma_catchup, confirm_manual_close
 from news_sentiment import get_asset_sentiment, get_archived_articles
@@ -147,15 +147,7 @@ with _icon_col2:
         st.rerun()
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
-st.sidebar.markdown(f"""
-<div class="quest-profile-card">
-    <div class="quest-profile-avatar">{_avatar_markup}</div>
-    <div class="quest-profile-copy">
-        <div class="quest-profile-name">{_user_info['display_name']}</div>
-        <div class="quest-profile-user">@{_user_info['username']}</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+_profile_placeholder = st.sidebar.empty()
 
 try:
     _accounts = get_remembered_accounts()
@@ -290,6 +282,24 @@ st.markdown(f"""
 with st.spinner("Analyzing portfolio data..."):
     try:
         df, summary = analyze_portfolio(current_assets, period="2y", verbose=False)
+        
+        # FEATURE A: Update Profile Card with Growth Stat
+        p_growth = get_portfolio_growth(df, summary)
+        g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
+        g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
+        _profile_placeholder.markdown(f"""
+        <div class="quest-profile-card">
+            <div class="quest-profile-avatar">{_avatar_markup}</div>
+            <div class="quest-profile-copy" style="flex:1;">
+                <div class="quest-profile-name">{_user_info['display_name']}</div>
+                <div class="quest-profile-user">@{_user_info['username']}</div>
+            </div>
+            <div style="text-align: right; line-height: 1.2;">
+                <div style="font-size: 0.65rem; color: var(--q-text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Growth</div>
+                <div style="color: {g_color}; font-size: 0.85rem; font-weight: 600;">{g_sign}₹{p_growth["growth_abs"]:,.0f}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         # ── Step 1: Compute EWMA seeds from historical market data ─────────
         if not df.empty:

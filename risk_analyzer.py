@@ -539,6 +539,20 @@ def analyze_asset(asset: Asset,
 # =====================================================================
 # Portfolio analysis
 # =====================================================================
+
+def get_portfolio_growth(df: pd.DataFrame, summary: dict) -> dict:
+    """Calculate centralized growth metrics to ensure UI consistency."""
+    total_invested = df['Invested (₹)'].sum() if df is not None and not df.empty else 0.0
+    total_value = summary.get('total_value', 0.0)
+    growth_abs = total_value - total_invested
+    growth_pct = (growth_abs / total_invested * 100) if total_invested > 0 else 0.0
+    return {
+        "invested": total_invested,
+        "current": total_value,
+        "growth_abs": growth_abs,
+        "growth_pct": growth_pct
+    }
+
 def analyze_portfolio(assets: List[Asset], period: str = "2y",
                       verbose: bool = True,
                       prefetched_prices: Optional[Dict[str, tuple]] = None

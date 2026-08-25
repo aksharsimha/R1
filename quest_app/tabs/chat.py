@@ -12,8 +12,34 @@ import chat_system
 import nse_live as _nse
 
 
+@st.dialog("Public Profile")
+def _show_public_profile(username: str):
+    import firebase_db
+    profile = firebase_db.get_user_profile(username)
+    if profile:
+        av = profile.get("avatar")
+        disp = profile.get("display_name", username)
+        av_html = f'<img src="{av}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--q-accent);">' if av else f'<div style="width:80px;height:80px;border-radius:50%;background:var(--q-accent);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:bold;">{disp[:1].upper()}</div>'
+        st.markdown(f"""
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:15px;">
+            {av_html}
+            <div>
+                <h3 style="margin:0;">{disp}</h3>
+                <p style="margin:0;color:var(--q-text-3);">@{username}</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.caption("This is a public profile. Private portfolio data is hidden.")
+    else:
+        st.error("User not found.")
+
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
+    if "view_profile" in st.query_params:
+        target_user = st.query_params["view_profile"]
+        del st.query_params["view_profile"]
+        _show_public_profile(target_user)
+
     total_invested = df['Invested (\u20b9)'].sum() if df is not None and not df.empty else 0.0
     total_pnl = df['P&L (\u20b9)'].sum() if df is not None and not df.empty else 0.0
     total_pnl_perc = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
@@ -266,8 +292,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val">₹{pd_data.get('total_value', 0):,.2f}</div>
                                     <div class="label" style="margin-top:6px;">P&L</div>
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('pnl_pct', 0):+.1f}%</div>
-                                    <div class="label" style="margin-top:6px;">Risk</div>
-                                    <div class="val">{pd_data.get('risk_score', 0):.0f} ({pd_data.get('risk_bucket', 'N/A')})</div>
+                                    <div class="label" style="margin-top:6px;">Growth</div>
+                                    <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
                             msgs_html += f'<div class="chat-msg-row sent">{bubble}</div>'
@@ -285,8 +311,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val">₹{pd_data.get('total_value', 0):,.2f}</div>
                                     <div class="label" style="margin-top:6px;">P&L</div>
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('pnl_pct', 0):+.1f}%</div>
-                                    <div class="label" style="margin-top:6px;">Risk</div>
-                                    <div class="val">{pd_data.get('risk_score', 0):.0f} ({pd_data.get('risk_bucket', 'N/A')})</div>
+                                    <div class="label" style="margin-top:6px;">Growth</div>
+                                    <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
                             msgs_html += f'<div class="chat-msg-row received">{bubble}</div>'
