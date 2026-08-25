@@ -173,11 +173,16 @@ def verify_login(email: str, password: str) -> tuple[bool, str, dict | None]:
         return False, f"Login failed: {error_msg}", None
 
     # Get username from email mapping
-    email_doc = db.collection("email_to_username").document(email).get()
+    try:
+        email_doc = db.collection("email_to_username").document(email).get()
+    except Exception as e:
+        return False, f"Login failed: {str(e)}", None
     if not email_doc.exists:
         return False, "Account not found. Please sign up.", None
 
-    username = email_doc.to_dict()["username"]
+    username = email_doc.to_dict().get("username", "").strip()
+    if not username:
+        return False, "Account data corrupted. Please contact support.", None
 
     # Get full profile
     profile_doc = db.collection("users").document(username).get()
