@@ -54,7 +54,6 @@ def render_login_page():
     )
 
     if st.session_state.get("do_logout"):
-        clear_remember_me()
         st.session_state.auth_checked_remember = True
         st.session_state.do_logout = False
         remembered = None
