@@ -116,7 +116,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
         _card_start("Sign out", "End this QUEST session on this device.")
         if st.button("Sign out", type="primary", use_container_width=True):
             from auth import remove_remembered_account
-            _current_user = _user_info.get("username", "")
+            _current_user = user_info.get("username", "")
             if _current_user:
                 remove_remembered_account(_current_user)
             for key in list(st.session_state.keys()):
