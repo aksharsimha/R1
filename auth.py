@@ -182,6 +182,7 @@ def _decode_signed_username(payload: str, signature: str) -> str | None:
 def _write_remembered_cookie(entries: list[dict]) -> None:
     """Write the multi-account JSON array to the browser cookie."""
     token_str = json.dumps(entries, separators=(",", ":"))
+    st.session_state.auth_cookie_override = token_str
     try:
         _cookies().set(
             _REMEMBER_COOKIE,
@@ -189,7 +190,6 @@ def _write_remembered_cookie(entries: list[dict]) -> None:
             max_age=_REMEMBER_DAYS * 24 * 60 * 60,
             same_site="lax",
         )
-        st.session_state.auth_cookie_override = token_str
     except Exception:
         pass
 
