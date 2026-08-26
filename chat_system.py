@@ -374,7 +374,16 @@ def get_messages(chat_id: str, limit: int = 100) -> list[dict]:
     chat = _load_chat(chat_id)
     if not chat:
         return []
-    return chat.get("messages", [])[-limit:]
+    messages = []
+    seen_ids = set()
+    for message in chat.get("messages", []):
+        message_id = message.get("id")
+        if message_id and message_id in seen_ids:
+            continue
+        if message_id:
+            seen_ids.add(message_id)
+        messages.append(message)
+    return messages[-limit:]
 
 
 def get_chat_info(chat_id: str) -> dict | None:
@@ -396,12 +405,13 @@ def get_chat_info(chat_id: str) -> dict | None:
 # ──────────────────────────────────────────────────────────────────────────────
 
 def get_unread_count(chat_id: str, username: str) -> int:
-    chat = _load_chat(chat_id)
-    if not chat:
-        return 0
     count = 0
-    for msg in chat.get("messages", []):
-        if msg.get("from") != username and username not in msg.get("read_by", []):
+    for msg in get_messages(chat_id):
+        if (
+            msg.get("type") != "system"
+            and msg.get("from") != username
+            and username not in msg.get("read_by", [])
+        ):
             count += 1
     return count
 
@@ -456,6 +466,16 @@ def get_user_chats(username: str) -> list[dict]:
 
     chats.sort(key=lambda c: c["last_time"], reverse=True)
     return chats
+
+
+def get_unread_conversation_count(username: str) -> int:
+    """Return the number of conversations containing unread messages."""
+    return sum(chat_info["unread"] > 0 for chat_info in get_user_chats(username))
+
+
+def get_unread_sender_count(username: str) -> int:
+    """Backward-compatible alias for the notification badge count."""
+    return get_unread_conversation_count(username)
 
 
 # ──────────────────────────────────────────────────────────────────────────────

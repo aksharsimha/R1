@@ -133,6 +133,11 @@ _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
 # st.button() triggers a server-side rerun so the session is preserved.
 st.sidebar.markdown('<div class="quest-icon-btn-row">', unsafe_allow_html=True)
 _icon_col1, _icon_col2 = st.sidebar.columns(2, gap="small")
+try:
+    _unread_conversation_count = chat_system.get_unread_conversation_count(_username)
+except Exception:
+    _unread_conversation_count = 0
+_notification_label = f"🔔 {_unread_conversation_count}" if _unread_conversation_count else "🔔"
 with _icon_col1:
     if st.button("⚙", key="sidebar_settings_btn", help="Open settings",
                  use_container_width=True):
@@ -140,7 +145,7 @@ with _icon_col1:
         st.query_params["page"] = "Settings"
         st.rerun()
 with _icon_col2:
-    if st.button("🔔", key="sidebar_chat_btn", help="Open chat / notifications",
+    if st.button(_notification_label, key="sidebar_chat_btn", help="Open chat / notifications",
                  use_container_width=True):
         st.session_state.nav_section = "◍  Chat"
         st.query_params["page"] = "Chat"

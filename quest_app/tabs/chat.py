@@ -320,19 +320,14 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     st.markdown(f'<div style="max-height:450px;overflow-y:auto;padding:8px 0;">{msgs_html}</div>', unsafe_allow_html=True)
 
                 # ── Message input ────────────────────────────────────────────
-                st.markdown("<br>", unsafe_allow_html=True)
-                ic, bc = st.columns([5, 1])
-                with ic:
-                    new_msg = st.text_input(
-                        "Message", key="chat_msg_input",
-                        placeholder="Type a message...",
-                        label_visibility="collapsed",
-                    )
-                with bc:
-                    if st.button("Send", key="chat_send_btn", use_container_width=True):
-                        if new_msg and new_msg.strip():
-                            chat_system.send_message(active_id, _chat_user, new_msg)
-                            st.rerun()
+                new_msg = st.chat_input(
+                    "Type a message...",
+                    key="chat_msg_input",
+                )
+                if new_msg and new_msg.strip():
+                    sent, _ = chat_system.send_message(active_id, _chat_user, new_msg)
+                    if sent:
+                        st.rerun()
 
     # =============================================================================
     # ⚡ MICHAEL TAB (AI Chat Assistant)
