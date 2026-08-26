@@ -15,51 +15,61 @@ Friends, DMs, group chats, portfolio sharing — all stored in Firestore.
 """
 
 
-def _send_email_notification(sender_email: str, sender_password: str, sender_name: str, receiver_email: str, msg_text: str):
+def _send_email_notification(sender_email: str, sender_password: str, sender_name: str, receiver_email: str, msg_text: str) -> bool:
+    server = None
     try:
-        # Build the email
         msg = MIMEMultipart()
         msg['From'] = f"QUEST Notifications <{sender_email}>"
         msg['To'] = receiver_email
         msg['Subject'] = f"New message from {sender_name}"
-        
-        # Keep it simple and clean
         body = f"You have a new message from {sender_name} on QUEST:\n\n\"{msg_text}\"\n\nLog in to reply!"
         msg.attach(MIMEText(body, 'plain'))
-        
-        # Send it
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+
+        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=20)
         server.starttls()
         server.login(sender_email, sender_password)
         server.send_message(msg)
-        server.quit()
+        return True
     except Exception as e:
         print(f"Failed to send email notification: {e}")
+        return False
+    finally:
+        if server is not None:
+            try:
+                server.quit()
+            except Exception:
+                pass
 
-def _trigger_email_bg(sender_name: str, receiver_username: str, msg_text: str):
+def _trigger_email_bg(sender_name: str, receiver_username: str, msg_text: str) -> bool:
     try:
-        if "SMTP_EMAIL" not in st.secrets or "SMTP_PASSWORD" not in st.secrets:
-            return
-            
+        sender_email = st.secrets.get("SMTP_EMAIL", "").strip()
+        sender_password = st.secrets.get("SMTP_PASSWORD", "").replace(" ", "").strip()
+        if not sender_email or not sender_password:
+            print("Gmail notification skipped: SMTP_EMAIL or SMTP_PASSWORD is not configured.")
+            return False
+
         from firebase_db import get_db
         db = get_db()
-        if not db: return
-        
+        if not db:
+            print("Gmail notification skipped: Firebase is unavailable.")
+            return False
+
         user_doc = db.collection("users").document(receiver_username).get()
-        if not user_doc.exists: return
-        
-        receiver_email = user_doc.to_dict().get("email")
-        if not receiver_email: return
-        
-        sender_email = st.secrets["SMTP_EMAIL"]
-        sender_password = st.secrets["SMTP_PASSWORD"].replace(" ", "")
-        
-        # Fire and forget in a background thread so it doesn't lag the UI
-        t = threading.Thread(target=_send_email_notification, args=(sender_email, sender_password, sender_name, receiver_email, msg_text))
-        t.daemon = True
-        t.start()
+        if not user_doc.exists:
+            print(f"Gmail notification skipped: receiver '{receiver_username}' was not found.")
+            return False
+
+        receiver_email = (user_doc.to_dict().get("email") or "").strip()
+        if not receiver_email:
+            print(f"Gmail notification skipped: receiver '{receiver_username}' has no email.")
+            return False
+
+        return _send_email_notification(
+            sender_email, sender_password, sender_name, receiver_email, msg_text
+        )
     except Exception as e:
         print(f"Failed to trigger bg email: {e}")
+        return False
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -364,7 +374,6 @@ def send_message(chat_id: str, from_user: str, text: str,
         # Fire off an email notification to everyone else in the chat
         for participant in chat["participants"]:
             if participant != from_user:
-                # Fire and forget
                 _trigger_email_bg(sender_display, participant, msg["text"])
                 
     return success, "Message sent."
@@ -376,14 +385,20 @@ def get_messages(chat_id: str, limit: int = 100) -> list[dict]:
         return []
     messages = []
     seen_ids = set()
-    for message in chat.get("messages", []):
+    for index, message in enumerate(chat.get("messages", [])):
         message_id = message.get("id")
         if message_id and message_id in seen_ids:
             continue
         if message_id:
             seen_ids.add(message_id)
-        messages.append(message)
-    return messages[-limit:]
+        messages.append((message, index))
+
+    def chronological_key(item):
+        message, index = item
+        return (message.get("timestamp", ""), index)
+
+    messages.sort(key=chronological_key)
+    return [message for message, _ in messages[-limit:]]
 
 
 def get_chat_info(chat_id: str) -> dict | None:
@@ -444,7 +459,7 @@ def get_user_chats(username: str) -> list[dict]:
         if username not in chat.get("participants", []):
             continue
 
-        messages = chat.get("messages", [])
+        messages = get_messages(chat_id)
         last_msg = messages[-1] if messages else None
 
         if chat["type"] == "direct":

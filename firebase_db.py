@@ -585,6 +585,7 @@ def save_chat(chat_id: str, chat: dict):
     """Save a chat document to Firestore."""
     db = get_db()
     db.collection("chats").document(chat_id).set(chat)
+    return True
 
 
 def create_chat(chat_id: str, chat: dict):
