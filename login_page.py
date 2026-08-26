@@ -57,6 +57,9 @@ def render_login_page():
         st.session_state.auth_checked_remember = True
         st.session_state.do_logout = False
         remembered = None
+    elif st.session_state.get("login_submit") or st.session_state.get("add_account_submit"):
+        # Rule 3: Manual override. Skip auto-login if actively submitting a form.
+        remembered = None
     else:
         # ── Check Remember Me ────────────────────────────────────────────────────
         remembered = check_remember_me()
@@ -465,11 +468,16 @@ def render_add_account_page(return_to: str = "Overview") -> None:
     with st.form("add_account_form", clear_on_submit=False, border=False):
         email = st.text_input("Email", placeholder="Enter your email", key="add_account_email")
         password = st.text_input("Password", type="password", placeholder="Enter your password", key="add_account_password")
-        submitted = st.form_submit_button("Sign In", use_container_width=True)
+        submitted = st.form_submit_button("Sign In", use_container_width=True, key="add_account_submit")
 
     if submitted:
         success, message, user_info = login_user(email, password)
         if success and user_info:
+            # Rule 1 & 4: Clean state for isolated mode
+            for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts"]:
+                if k in st.session_state:
+                    del st.session_state[k]
+                    
             add_remembered_account(user_info["username"], user_info.get("display_name"))
             st.session_state.authenticated = True
             st.session_state.user_info = user_info
@@ -533,11 +541,16 @@ def _render_login(login_user, save_remember_me):
         remember = st.checkbox("Remember me on this device", value=True, key="lr")
 
         # Submit
-        submitted = st.form_submit_button("Sign In", use_container_width=True)
+        submitted = st.form_submit_button("Sign In", use_container_width=True, key="login_submit")
 
         if submitted:
             success, message, user_info = login_user(email, password)
             if success:
+                # Rule 1: Clean old state to prevent contamination
+                for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts"]:
+                    if k in st.session_state:
+                        del st.session_state[k]
+                
                 st.session_state.authenticated = True
                 st.session_state.user_info = user_info
                 st.session_state.remember_me = remember
