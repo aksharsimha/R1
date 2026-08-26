@@ -55,7 +55,6 @@ def render_login_page():
 
     if st.session_state.get("do_logout"):
         st.session_state.auth_checked_remember = True
-        st.session_state.do_logout = False
         remembered = None
     elif st.session_state.get("login_submit") or st.session_state.get("add_account_submit"):
         # Rule 3: Manual override. Skip auto-login if actively submitting a form.
@@ -474,7 +473,7 @@ def render_add_account_page(return_to: str = "Overview") -> None:
         success, message, user_info = login_user(email, password)
         if success and user_info:
             # Rule 1 & 4: Clean state for isolated mode
-            for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts"]:
+            for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts", "do_logout"]:
                 if k in st.session_state:
                     del st.session_state[k]
                     
@@ -547,7 +546,7 @@ def _render_login(login_user, save_remember_me):
             success, message, user_info = login_user(email, password)
             if success:
                 # Rule 1: Clean old state to prevent contamination
-                for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts"]:
+                for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts", "do_logout"]:
                     if k in st.session_state:
                         del st.session_state[k]
                 
