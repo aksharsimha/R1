@@ -51,14 +51,14 @@ DARK = {
 LIGHT = {
     "bg":          "#F7F6F2",
     "surface":     "#FFFFFF",
-    "surface_2":   "#F1EFE8",
-    "border":      "#E4E2DA",
-    "border_2":    "#D3D1C7",
-    "text":        "#2C2C2A",
-    "text_2":      "#5F5E5A",
-    "text_3":      "#8A887F",
+    "surface_2":   "#ECEAE2",
+    "border":      "#D6D3C9",
+    "border_2":    "#B9B6AB",
+    "text":        "#20201E",
+    "text_2":      "#454440",
+    "text_3":      "#62615B",
     "accent":      "#0F6E56",
-    "accent_weak": "#E1F5EE",
+    "accent_weak": "#CDEFE4",
     "pos":         "#0F6E56",
     "neg":         "#993C1D",
     "warn":        "#854F0B",
@@ -238,6 +238,42 @@ def css(theme: str = None) -> str:
     .stButton > button:hover {{ background: var(--q-accent-weak);
         border-color: var(--q-accent); }}
     .stButton > button:active {{ transform: scale(.98); }}
+
+    /* Streamlit widget labels can override the inherited theme colour. */
+    .stApp [data-testid="stWidgetLabel"] p,
+    .stApp [data-testid="stRadio"] [role="radiogroup"] label,
+    .stApp [data-testid="stRadio"] [role="radiogroup"] label p,
+    .stApp [data-testid="stRadioOption"],
+    .stApp [data-testid="stRadioOption"] * {{
+        color: var(--q-text) !important;
+        -webkit-text-fill-color: var(--q-text) !important;
+        opacity: 1 !important;
+    }}
+    .stApp [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked),
+    .stApp [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) p {{
+        color: var(--q-text) !important;
+    }}
+    .stApp [data-testid="stRadioOption"]:has(input:checked),
+    .stApp [data-testid="stRadioOption"]:has(input:checked) * {{
+        color: var(--q-accent) !important;
+        -webkit-text-fill-color: var(--q-accent) !important;
+    }}
+    .stApp [data-testid="stSidebar"] [data-testid="stRadioOption"],
+    .stApp [data-testid="stSidebar"] [data-testid="stRadioOption"] * {{
+        color: var(--q-text) !important;
+        -webkit-text-fill-color: var(--q-text) !important;
+    }}
+    .stApp input, .stApp textarea, .stApp select {{
+        color: var(--q-text) !important;
+        background-color: var(--q-surface) !important;
+        border-color: var(--q-border-2) !important;
+    }}
+    .stApp input[type="radio"], .stApp input[type="checkbox"] {{
+        accent-color: var(--q-accent) !important;
+    }}
+    .stApp button svg, .stApp [role="button"] svg {{
+        color: currentColor !important; stroke: currentColor !important;
+    }}
 
     /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 1px solid var(--q-border); }}

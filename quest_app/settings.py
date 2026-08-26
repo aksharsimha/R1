@@ -6,7 +6,7 @@ import firebase_db
 import ui_theme
 
 
-_SECTIONS = ["Profile", "Theme", "Password & Security", "Sign out"]
+_SECTIONS = ["Profile", "Theme", "Sign out"]
 
 
 def _card_start(title: str, subtitle: str = "") -> None:
@@ -75,42 +75,6 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
         if (dark == "Dark") != (ui_theme.current_theme() == "dark"):
             st.session_state.ui_theme = "dark" if dark == "Dark" else "light"
             st.rerun()
-
-    elif selected == "Password & Security":
-        _card_start("Password & Security", "Keep your sign-in details up to date.")
-        with st.form("password_form"):
-            old_password = st.text_input("Old password", type="password")
-            new_password = st.text_input("New password", type="password")
-            confirm_password = st.text_input("Confirm new password", type="password")
-            if st.form_submit_button("Change password", use_container_width=True):
-                if new_password != confirm_password:
-                    st.error("New passwords do not match.")
-                else:
-                    try:
-                        ok, message = firebase_db.update_password(username, old_password, new_password)
-                        st.success(message) if ok else st.error(message)
-                    except Exception as exc:
-                        st.error(f"Could not update password: {exc}")
-
-        with st.form("email_form"):
-            new_email = st.text_input("Gmail / email", value=profile.get("email", ""))
-            email_password = st.text_input("Password", type="password", key="email_password")
-            if st.form_submit_button("Update email", use_container_width=True):
-                try:
-                    ok, message = firebase_db.update_email(username, email_password, new_email)
-                    st.success(message) if ok else st.error(message)
-                except Exception as exc:
-                    st.error(f"Could not update email: {exc}")
-
-        with st.form("phone_form"):
-            phone = st.text_input("Phone number", value=profile.get("phone", ""), placeholder="+91 98765 43210")
-            phone_password = st.text_input("Password", type="password", key="phone_password")
-            if st.form_submit_button("Update phone number", use_container_width=True):
-                try:
-                    ok, message = firebase_db.update_phone(username, phone_password, phone)
-                    st.success(message) if ok else st.error(message)
-                except Exception as exc:
-                    st.error(f"Could not update phone number: {exc}")
 
     else:
         _card_start("Sign out", "End this QUEST session on this device.")

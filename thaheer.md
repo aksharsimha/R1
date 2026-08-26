@@ -18,6 +18,19 @@
 - Added Firebase support updates used by the chat and account flows.
 - Updated dashboard routing and sidebar behavior.
 
+### Latest working-tree updates
+- Improved chat responsiveness with fragment-scoped reruns for chat actions,
+  reducing unnecessary full-dashboard refreshes.
+- Preserved chat scroll position across rerenders, automatically following new
+  messages when the user is already near the latest message, and added explicit
+  scroll-to-latest behavior after sending or sharing a message.
+- Kept the chat input visible while the message list scrolls.
+- Removed the Password & Security section from the Settings navigation and
+  page rendering.
+- Increased light-theme contrast for surfaces, borders, text, and accent states.
+- Applied theme-aware colors to widget labels, inputs, radio buttons, checkboxes,
+  and button icons for more consistent light and dark mode rendering.
+
 ### Files included in this push
 - `auth.py`
 - `chat_system.py`

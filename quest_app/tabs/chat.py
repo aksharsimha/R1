@@ -33,6 +33,7 @@ def _show_public_profile(username: str):
     else:
         st.error("User not found.")
 
+@st.fragment
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
     if "view_profile" in st.query_params:
@@ -115,6 +116,13 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             border-radius: 10px;
             margin-left: 8px;
         }
+        /* Keep Streamlit's generated input anchored while the message list scrolls. */
+        [data-testid="stChatInput"] {
+            position: sticky !important;
+            bottom: 0;
+            z-index: 20;
+            background: var(--q-surface, transparent);
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -137,10 +145,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     rc1.markdown(f"**{req_from}**")
                     if rc2.button("✓", key=f"acc_{req_from}", help="Accept"):
                         chat_system.accept_friend_request(_chat_user, req_from)
-                        st.rerun()
+                        st.rerun(scope="fragment")
                     if rc3.button("✗", key=f"dec_{req_from}", help="Decline"):
                         chat_system.decline_friend_request(_chat_user, req_from)
-                        st.rerun()
+                        st.rerun(scope="fragment")
 
         # ── Chat list ────────────────────────────────────────────────────────
         user_chats = chat_system.get_user_chats(_chat_user)
@@ -166,7 +174,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 ):
                     st.session_state.active_chat_id = cid
                     chat_system.mark_as_read(cid, _chat_user)
-                    st.rerun()
+                    st.rerun(scope="fragment")
         else:
             st.caption("No conversations yet. Add a friend below!")
 
@@ -183,7 +191,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             st.success(msg)
                         else:
                             st.error(msg)
-                        st.rerun()
+                        st.rerun(scope="fragment")
 
         # ── Create Group ─────────────────────────────────────────────────────
         friends = chat_system.get_friends(_chat_user)
@@ -200,7 +208,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                 st.success(msg)
                             else:
                                 st.error(msg)
-                            st.rerun()
+                            st.rerun(scope="fragment")
 
         # ── Sent requests ────────────────────────────────────────────────────
         sent = chat_system.get_sent_requests(_chat_user)
@@ -244,7 +252,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         st.caption(f"Members: {members_str}")
                 with hdr2:
                     if st.button("🔄", key="chat_refresh", help="Refresh messages"):
-                        st.rerun()
+                        st.rerun(scope="fragment")
                 with hdr3:
                     if st.button("📊", key="share_portfolio", help="Share portfolio"):
                         snapshot = chat_system.build_portfolio_snapshot(df, summary, _chat_user)
@@ -255,12 +263,15 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             msg_type="portfolio_share",
                             portfolio_data=snapshot,
                         )
-                        st.rerun()
+                        st.session_state.chat_scroll_to_latest = True
+                        st.rerun(scope="fragment")
 
                 st.markdown("---")
 
                 # ── Messages ─────────────────────────────────────────────────
                 messages = chat_system.get_messages(active_id, limit=100)
+                force_scroll = st.session_state.pop("chat_scroll_to_latest", False)
+                message_version = messages[-1].get("id") or messages[-1].get("timestamp", "") if messages else "empty"
 
                 if not messages:
                     st.caption("No messages yet. Say hello! 👋")
@@ -317,7 +328,60 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
                             msgs_html += f'<div class="chat-msg-row received">{bubble}</div>'
 
-                    st.markdown(f'<div style="max-height:450px;overflow-y:auto;padding:8px 0;">{msgs_html}</div>', unsafe_allow_html=True)
+                    st.html(f'''
+                    <div id="quest-chat-messages" data-chat-id="{active_id}"
+                        data-force-scroll="{'true' if force_scroll else 'false'}"
+                        data-message-version="{message_version}"
+                         style="max-height:450px;overflow-y:auto;padding:8px 0;">
+                        {msgs_html}
+                    </div>
+                    <script>
+                    (function() {{
+                        var container = document.getElementById('quest-chat-messages');
+                        if (!container) return;
+
+                        var chatId = container.getAttribute('data-chat-id');
+                        var stateKey = 'quest-chat-scroll:' + chatId;
+                        var versionKey = stateKey + ':version';
+                        var openedChatKey = 'quest-chat-open';
+                        var messageVersion = container.getAttribute('data-message-version') || '';
+                        var nearBottom = function() {{
+                            return container.scrollHeight - container.scrollTop - container.clientHeight < 48;
+                        }};
+                        var forceScroll = container.getAttribute('data-force-scroll') === 'true';
+                        var firstRender = sessionStorage.getItem(versionKey) === null;
+                        var openedChat = sessionStorage.getItem(openedChatKey) !== chatId;
+                        var messageChanged = sessionStorage.getItem(versionKey) !== messageVersion;
+                        var followLatest = forceScroll || openedChat || sessionStorage.getItem(stateKey) !== 'away';
+
+                        var rememberPosition = function() {{
+                            var atBottom = nearBottom();
+                            sessionStorage.setItem(stateKey, atBottom ? 'bottom' : 'away');
+                            followLatest = atBottom;
+                        }};
+                        container.addEventListener('scroll', rememberPosition, {{ passive: true }});
+
+                        var scrollLatest = function() {{
+                            if (!followLatest) return;
+                            container.scrollTop = container.scrollHeight;
+                        }};
+
+                        requestAnimationFrame(function() {{
+                            if (firstRender || (messageChanged && followLatest)) scrollLatest();
+                            sessionStorage.setItem(openedChatKey, chatId);
+                            sessionStorage.setItem(versionKey, messageVersion);
+                            if (firstRender || (messageChanged && followLatest)) sessionStorage.setItem(stateKey, 'bottom');
+                        }});
+
+                        if (window.ResizeObserver) {{
+                            var resizeObserver = new ResizeObserver(function() {{
+                                if (followLatest) scrollLatest();
+                            }});
+                            resizeObserver.observe(container);
+                        }}
+                    }})();
+                    </script>
+                    ''', unsafe_allow_javascript=True)
 
                 # ── Message input ────────────────────────────────────────────
                 new_msg = st.chat_input(
@@ -327,7 +391,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 if new_msg and new_msg.strip():
                     sent, _ = chat_system.send_message(active_id, _chat_user, new_msg)
                     if sent:
-                        st.rerun()
+                        st.session_state.chat_scroll_to_latest = True
+                        st.rerun(scope="fragment")
 
     # =============================================================================
     # ⚡ MICHAEL TAB (AI Chat Assistant)
