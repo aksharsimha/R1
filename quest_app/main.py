@@ -201,6 +201,11 @@ elif _selected_account in _account_labels:
                 "username": _selected_info["username"],
                 "display_name": _selected_info.get("display_name", _selected_info["username"]),
             }
+        
+        # Rule 5: Pin the active account to the end of the cookie so new tabs open to this account.
+        if st.session_state.get("remember_me", True):
+            add_remembered_account(_switch_user_info["username"], _switch_user_info.get("display_name"))
+            
         st.session_state.authenticated = True
         st.session_state.user_info = _switch_user_info
         st.session_state.firebase_hydrated = False

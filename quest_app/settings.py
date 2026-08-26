@@ -119,8 +119,9 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             _current_user = user_info.get("username", "")
             if _current_user:
                 remove_remembered_account(_current_user)
+            _preserve_keys = {"auth_cookie_override", "cookie_controller"}
             for key in list(st.session_state.keys()):
-                if key != "auth_cookie_override":
+                if key not in _preserve_keys:
                     del st.session_state[key]
             st.session_state.do_logout = True
             st.rerun()
