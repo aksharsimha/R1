@@ -99,9 +99,13 @@ import ui_theme
 ui_theme.init_theme()
 st.markdown(ui_theme.css(), unsafe_allow_html=True)
 
-# Settings gets its own native Streamlit sidebar rather than sharing the
-# dashboard navigation rail.
-_early_page = st.query_params.get("page", "Overview")
+if st.session_state.get("just_logged_in"):
+    st.session_state.just_logged_in = False
+    st.query_params["page"] = "Overview"
+    st.query_params.pop("return_to", None)
+    _early_page = "Overview"
+else:
+    _early_page = st.query_params.get("page", "Overview")
 if _early_page == "AddAccount":
     from login_page import render_add_account_page
     render_add_account_page(st.query_params.get("return_to", "Overview"))

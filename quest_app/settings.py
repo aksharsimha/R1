@@ -85,6 +85,8 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             for key in list(st.session_state.keys()):
                 if key not in _preserve_keys:
                     del st.session_state[key]
+            st.query_params["page"] = "Overview"
+            st.query_params.pop("return_to", None)
             st.session_state.do_logout = True
             st.query_params["logged_out"] = "true"
             st.rerun()
