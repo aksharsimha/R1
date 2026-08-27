@@ -5,6 +5,10 @@ import datetime as _dt
 import plotly.express as px
 import plotly.graph_objects as go
 import time
+import uuid as _uuid
+import re as _re
+import smtplib as _smtplib
+from email.mime.text import MIMEText as _MIMEText
 import ui_theme
 from risk_analyzer import AssetType
 from portfolio_ledger import add_asset, remove_asset, update_asset_holdings
@@ -42,6 +46,102 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     _events = _pload(_ev_file, [])
     _tasks = _pload(_tk_file, [])
+    _today = _pdt.date.today()
+    _now = _pdt.datetime.now()
+
+    def _normalise_task(task):
+        status = task.get("status")
+        if status not in {"Pending", "Completed", "Failed"}:
+            status = "Completed" if task.get("done", False) else "Pending"
+        due_date = task.get("due_date", "")
+        if due_date and not isinstance(due_date, str):
+            due_date = str(due_date)
+        return {
+            "id": task.get("id") or _uuid.uuid4().hex,
+            "title": task.get("title", task.get("text", "")).strip(),
+            "description": task.get("description", task.get("notes", "")),
+            "priority": task.get("priority", "Medium") if task.get("priority", "Medium") in {"High", "Medium", "Low"} else "Medium",
+            "due_date": due_date,
+            "due_time": task.get("due_time", ""),
+            "category": task.get("category", "General") or "General",
+            "reminder": task.get("reminder", ""),
+            "estimate": task.get("estimate", ""),
+            "subtasks": task.get("subtasks", []),
+            "recurrence": task.get("recurrence", "Does not repeat"),
+            "reminder_sent": task.get("reminder_sent", ""),
+            "status": status,
+        }
+
+    _tasks = [_normalise_task(t) for t in _tasks if isinstance(t, dict) and (t.get("title") or t.get("text"))]
+
+    def _reminder_time(task):
+        if not task.get("reminder") or not task.get("due_date"):
+            return None
+        try:
+            due = _pdt.datetime.fromisoformat(f"{task['due_date']}T{(task.get('due_time') or '09:00')[:5]}")
+        except (TypeError, ValueError):
+            return None
+        reminder = task["reminder"].strip().lower()
+        if reminder in {"at due time", "at due", "on time", "now"}:
+            return due
+        if reminder.isdigit():
+            return due - _dt.timedelta(minutes=int(reminder))
+        match = _re.search(r"(\d+)\s*(minute|minutes|min|hour|hours|day|days)", reminder)
+        if not match:
+            return None
+        amount = int(match.group(1))
+        unit = match.group(2)
+        delta = _dt.timedelta(minutes=amount) if unit.startswith("min") else _dt.timedelta(hours=amount) if unit.startswith("hour") else _dt.timedelta(days=amount)
+        return due - delta if "before" in reminder or "prior" in reminder or "ahead" in reminder else due
+
+    def _send_task_reminder(task, recipient):
+        sender = str(st.secrets.get("SMTP_EMAIL", "")).strip()
+        password = str(st.secrets.get("SMTP_PASSWORD", "")).replace(" ", "").strip()
+        if not sender or not password or not recipient:
+            return False
+        message = _MIMEText(
+            f"Reminder from QUEST\n\n{task['title']}\n\n"
+            f"Due: {task.get('due_date', 'No date')} {task.get('due_time', '')}\n"
+            f"Category: {task.get('category', 'General')}\n\n"
+            f"{task.get('description', '')}".strip(), "plain")
+        message["From"] = f"QUEST Planner <{sender}>"
+        message["To"] = recipient
+        message["Subject"] = f"QUEST reminder: {task['title']}"
+        server = None
+        try:
+            server = _smtplib.SMTP("smtp.gmail.com", 587, timeout=20)
+            server.starttls()
+            server.login(sender, password)
+            server.send_message(message)
+            return True
+        except Exception as error:
+            print(f"Failed to send task reminder: {error}")
+            return False
+        finally:
+            if server is not None:
+                try:
+                    server.quit()
+                except Exception:
+                    pass
+
+    def _dispatch_task_reminders(tasks):
+        recipient = str((_user_info or {}).get("email", "")).strip()
+        if not recipient:
+            return False
+        changed = False
+        current_time = _pdt.datetime.now()
+        for task in tasks:
+            target = _reminder_time(task)
+            if task["status"] != "Pending" or target is None or task.get("reminder_sent"):
+                continue
+            if current_time >= target:
+                if _send_task_reminder(task, recipient):
+                    task["reminder_sent"] = current_time.isoformat(timespec="seconds")
+                    changed = True
+        return changed
+
+    if _dispatch_task_reminders(_tasks):
+        _psave(_tk_file, _tasks)
 
     st.markdown(
         f"<div style='font-size:1.4rem;font-weight:500;color:var(--q-text);margin-bottom:2px;'>Planner</div>"
@@ -149,31 +249,155 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     # ── To-do tab ─────────────────────────────────────────────────────────────
     with _ptab2:
-        _tc1, _tc2 = st.columns([5, 1])
-        _newtask = _tc1.text_input("New task", key="new_task", placeholder="What needs doing?",
-                                   label_visibility="collapsed")
-        if _tc2.button("Add", key="add_task", use_container_width=True) and _newtask.strip():
-            _tasks.append({"text": _newtask.strip(), "done": False})
-            _psave(_tk_file, _tasks)
-            st.rerun()
+        _status_colors = {"Completed": _ppal["pos"], "Failed": _ppal["neg"], "Pending": _ppal["warn"]}
+        _priority_colors = {"High": _ppal["neg"], "Medium": _ppal["warn"], "Low": _ppal["pos"]}
+        _counts = {s: sum(t["status"] == s for t in _tasks) for s in ("Completed", "Failed", "Pending")}
+        _rate = round(_counts["Completed"] / len(_tasks) * 100) if _tasks else 0
+        st.markdown(
+            f"<div class='q-card q-enter' style='padding:14px 16px;margin-bottom:12px;'>"
+            f"<div style='font-size:.76rem;color:var(--q-text-3);text-transform:uppercase;letter-spacing:1px;'>Productivity</div>"
+            f"<div style='display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 10px;font-size:.86rem;'>"
+            f"<span><b>{len(_tasks)}</b> Total</span><span style='color:{_ppal['pos']}'><b>{_counts['Completed']}</b> Completed</span>"
+            f"<span style='color:{_ppal['neg']}'><b>{_counts['Failed']}</b> Failed</span><span style='color:{_ppal['warn']}'><b>{_counts['Pending']}</b> Pending</span>"
+            f"<span style='margin-left:auto;color:var(--q-accent);'><b>{_rate}%</b> Completion Rate</span></div>"
+            f"<div style='height:7px;background:var(--q-surface-2);border-radius:5px;overflow:hidden;'>"
+            f"<div style='height:100%;width:{_rate}%;background:var(--q-accent);transition:width .35s ease;'></div></div></div>", unsafe_allow_html=True)
 
-        _open_tasks = [t for t in _tasks if not t.get("done")]
-        _done_tasks = [t for t in _tasks if t.get("done")]
-        _n_open = len(_open_tasks)
-        st.markdown(f"<div style='font-size:.8rem;color:var(--q-text-3);margin:8px 0;'>"
-                    f"{_n_open} open · {len(_done_tasks)} done</div>", unsafe_allow_html=True)
+        with st.expander("＋  Add task", expanded=not _tasks):
+            with st.form("add_productivity_task", clear_on_submit=True):
+                _a1, _a2 = st.columns([2, 1])
+                _title = _a1.text_input("Task title", placeholder="What needs doing?")
+                _priority = _a2.selectbox("Priority", ["High", "Medium", "Low"], index=1)
+                _description = st.text_area("Description / notes", height=70)
+                _a3, _a4, _a5 = st.columns(3)
+                _due = _a3.date_input("Due date", value=None)
+                _due_time = _a4.time_input("Due time", value=None)
+                _category = _a5.text_input("Category", value="General")
+                _a6, _a7, _a8 = st.columns(3)
+                _reminder = _a6.text_input("Reminder", placeholder="e.g. 30 min before")
+                _estimate = _a7.text_input("Estimated time", placeholder="e.g. 45 min")
+                _repeat = _a8.selectbox("Repeat", ["Does not repeat", "Daily", "Every weekday", "Weekly", "Monthly", "Custom"])
+                _subtasks_text = st.text_area("Subtasks / checklist", placeholder="One item per line", height=60)
+                if st.form_submit_button("Create task", type="primary"):
+                    if _title.strip():
+                        _tasks.append({"id": _uuid.uuid4().hex, "title": _title.strip(), "description": _description.strip(),
+                                       "priority": _priority, "due_date": str(_due) if _due else "", "due_time": str(_due_time) if _due_time else "",
+                                       "category": _category.strip() or "General", "reminder": _reminder.strip(), "estimate": _estimate.strip(),
+                                       "subtasks": [{"text": x.strip(), "done": False} for x in _subtasks_text.splitlines() if x.strip()],
+                                       "recurrence": _repeat, "status": "Pending"})
+                        _psave(_tk_file, _tasks)
+                        st.rerun()
 
-        for _i, _t in enumerate(_tasks):
-            _tk1, _tk2 = st.columns([9, 1])
-            _checked = _tk1.checkbox(_t.get("text", ""), value=_t.get("done", False), key=f"task_{_i}")
-            if _checked != _t.get("done", False):
-                _t["done"] = _checked
+        _test_col, _test_info = st.columns([1, 3])
+        if _test_col.button("Send test email", key="send_task_test_email"):
+            _recipient = str((_user_info or {}).get("email", "")).strip()
+            _test_task = {"title": "QUEST email test", "due_date": str(_today), "due_time": "now",
+                          "category": "Planner", "description": "Your QUEST Gmail reminder setup is working."}
+            if not _recipient:
+                st.error("No linked email is available for this account.")
+            elif _send_task_reminder(_test_task, _recipient):
+                st.success(f"Test email sent to {_recipient}.")
+            else:
+                st.error("Email could not be sent. Check the Gmail App Password and SMTP settings.")
+
+        _f1, _f2, _f3, _f4 = st.columns([2, 1, 1, 1])
+        _search = _f1.text_input("Search tasks", placeholder="Search title, notes, category", label_visibility="collapsed")
+        _view = _f2.selectbox("View", ["All Tasks", "Today", "Upcoming", "Overdue", "Completed", "Failed", "High Priority"], label_visibility="collapsed")
+        _filter_status = _f3.selectbox("Status", ["Any status", "Pending", "Completed", "Failed"], label_visibility="collapsed")
+        _sort = _f4.selectbox("Sort", ["Due date", "Priority", "Category", "Newest"], label_visibility="collapsed")
+
+        def _due_key(task):
+            return task.get("due_date") or "9999-12-31"
+        def _matches(task):
+            due = task.get("due_date", "")
+            haystack = " ".join(str(task.get(k, "")) for k in ("title", "description", "category")).lower()
+            if _search.strip().lower() not in haystack:
+                return False
+            if _filter_status != "Any status" and task["status"] != _filter_status:
+                return False
+            if _view == "Today" and due != str(_today): return False
+            if _view == "Upcoming" and (not due or due <= str(_today)): return False
+            if _view == "Overdue" and (not due or due >= str(_today) or task["status"] != "Pending"): return False
+            if _view == "Completed" and task["status"] != "Completed": return False
+            if _view == "Failed" and task["status"] != "Failed": return False
+            if _view == "High Priority" and task["priority"] != "High": return False
+            return True
+        _visible = [t for t in _tasks if _matches(t)]
+        if _sort == "Priority":
+            _visible.sort(key=lambda t: {"High": 0, "Medium": 1, "Low": 2}[t["priority"]])
+        elif _sort == "Category": _visible.sort(key=lambda t: t.get("category", "").lower())
+        elif _sort == "Newest": _visible = list(reversed(_visible))
+        else: _visible.sort(key=_due_key)
+        st.markdown(f"<div style='font-size:.78rem;color:var(--q-text-3);margin:12px 0 8px;'>{len(_visible)} task(s) shown</div>", unsafe_allow_html=True)
+
+        @st.dialog("Task details")
+        def _task_dialog(task):
+            with st.form(f"edit_task_{task['id']}"):
+                _etitle = st.text_input("Task title", value=task["title"])
+                _edesc = st.text_area("Description / notes", value=task["description"], height=90)
+                _ep, _es = st.columns(2)
+                _epriority = _ep.selectbox("Priority", ["High", "Medium", "Low"], index=["High", "Medium", "Low"].index(task["priority"]))
+                _estatus = _es.selectbox("Status", ["Pending", "Completed", "Failed"], index=["Pending", "Completed", "Failed"].index(task["status"]))
+                _edate = st.date_input("Due date", value=_pdt.date.fromisoformat(task["due_date"]) if task["due_date"] else None)
+                _etime = st.text_input("Due time", value=task["due_time"])
+                _ecat = st.text_input("Category", value=task["category"])
+                _erem = st.text_input("Reminder", value=task["reminder"])
+                _eest = st.text_input("Estimated time", value=task["estimate"])
+                _erepeat = st.selectbox("Repeat", ["Does not repeat", "Daily", "Every weekday", "Weekly", "Monthly", "Custom"], index=["Does not repeat", "Daily", "Every weekday", "Weekly", "Monthly", "Custom"].index(task["recurrence"]) if task["recurrence"] in ["Does not repeat", "Daily", "Every weekday", "Weekly", "Monthly", "Custom"] else 0)
+                _est = st.text_area("Subtasks / checklist", value="\n".join(x.get("text", "") for x in task["subtasks"]), height=70)
+                if st.form_submit_button("Save changes", type="primary"):
+                    task.update(title=_etitle.strip(), description=_edesc.strip(), priority=_epriority, status=_estatus,
+                                due_date=str(_edate) if _edate else "", due_time=_etime.strip(), category=_ecat.strip() or "General",
+                                reminder=_erem.strip(), estimate=_eest.strip(), recurrence=_erepeat,
+                                subtasks=[{"text": x.strip(), "done": False} for x in _est.splitlines() if x.strip()])
+                    _psave(_tk_file, _tasks)
+                    st.rerun()
+
+        for _i, _task in enumerate(_visible):
+            _due_label = f"Due {_task['due_date']}" if _task["due_date"] else "No due date"
+            if _task["due_time"]: _due_label += f" · {_task['due_time'][:5]}"
+            _overdue = _task["status"] == "Pending" and _task["due_date"] and _task["due_date"] < str(_today)
+            _sub_done = sum(x.get("done", False) for x in _task["subtasks"])
+            _desc = (_task["description"][:110] + "…") if len(_task["description"]) > 110 else _task["description"]
+            st.markdown(f"<div class='q-card q-enter' style='padding:12px 14px;margin-bottom:8px;border-left:3px solid {_priority_colors[_task['priority']]};opacity:{'0.62' if _task['status'] != 'Pending' else '1'};'>"
+                        f"<div style='display:flex;justify-content:space-between;gap:8px;'><b style='color:var(--q-text);'>{_task['title']}</b>"
+                        f"<span style='color:{_priority_colors[_task['priority']]};font-size:.74rem;'>● {_task['priority']}</span></div>"
+                        f"<div style='font-size:.75rem;color:var(--q-text-3);margin-top:4px;'>{_due_label} · {_task['category']}" + (f" · {_sub_done}/{len(_task['subtasks'])} subtasks" if _task["subtasks"] else "") + (f" · <span style='color:{_ppal['neg']}'>Overdue</span>" if _overdue else "") + "</div>"
+                        + (f"<div style='font-size:.79rem;color:var(--q-text-2);margin-top:6px;'>{_desc}</div>" if _desc else "") + "</div>", unsafe_allow_html=True)
+            _status_choice = st.selectbox("Status", ["Pending", "Completed", "Failed"],
+                                          index=["Pending", "Completed", "Failed"].index(_task["status"]),
+                                          key=f"task_status_{_task['id']}", label_visibility="collapsed")
+            if _status_choice != _task["status"]:
+                _task["status"] = _status_choice
                 _psave(_tk_file, _tasks)
                 st.rerun()
-            if _tk2.button("🗑", key=f"del_task_{_i}"):
-                _tasks.remove(_t)
-                _psave(_tk_file, _tasks)
-                st.rerun()
-
-        if not _tasks:
-            st.info("No tasks yet — add your first above.")
+            _b1, _b2, _b3, _b4, _b5, _b6, _b7, _b8 = st.columns([1, 1, 1, 1, 1.5, 1, 1, 1])
+            for _col, _label, _status in ((_b1, "✅", "Completed"), (_b2, "❌", "Failed"), (_b3, "⏳", "Pending")):
+                if _col.button(_label, key=f"status_{_status}_{_task['id']}", help=f"Mark {_status}") and _task["status"] != _status:
+                    _task["status"] = _status; _psave(_tk_file, _tasks); st.rerun()
+            if _b4.button("Edit", key=f"edit_{_task['id']}"): _task_dialog(_task)
+            if _b5.button("Duplicate", key=f"dup_{_task['id']}"):
+                _copy = dict(_task); _copy["id"] = _uuid.uuid4().hex; _copy["title"] += " (copy)"; _tasks.insert(_tasks.index(_task) + 1, _copy); _psave(_tk_file, _tasks); st.rerun()
+            if _b6.button("Delete", key=f"delete_{_task['id']}"):
+                st.session_state[f"confirm_delete_{_task['id']}"] = True
+            _task_index = _tasks.index(_task)
+            if _b7.button("↑", key=f"up_{_task['id']}", help="Move task up") and _task_index > 0:
+                _tasks[_task_index - 1], _tasks[_task_index] = _tasks[_task_index], _tasks[_task_index - 1]
+                _psave(_tk_file, _tasks); st.rerun()
+            if _b8.button("↓", key=f"down_{_task['id']}", help="Move task down") and _task_index < len(_tasks) - 1:
+                _tasks[_task_index + 1], _tasks[_task_index] = _tasks[_task_index], _tasks[_task_index + 1]
+                _psave(_tk_file, _tasks); st.rerun()
+            if _task["subtasks"]:
+                for _sub_i, _subtask in enumerate(_task["subtasks"]):
+                    _sub_done = st.checkbox(_subtask.get("text", ""), value=_subtask.get("done", False), key=f"subtask_{_task['id']}_{_sub_i}")
+                    if _sub_done != _subtask.get("done", False):
+                        _subtask["done"] = _sub_done; _psave(_tk_file, _tasks); st.rerun()
+            if st.session_state.get(f"confirm_delete_{_task['id']}"):
+                st.warning("Delete this task permanently?")
+                _y, _n = st.columns(2)
+                if _y.button("Confirm delete", key=f"yes_{_task['id']}"):
+                    _tasks.remove(_task); _psave(_tk_file, _tasks); st.session_state.pop(f"confirm_delete_{_task['id']}", None); st.rerun()
+                if _n.button("Cancel", key=f"no_{_task['id']}"):
+                    st.session_state.pop(f"confirm_delete_{_task['id']}", None); st.rerun()
+        if not _visible:
+            st.info("No matching tasks. Add a task or adjust your filters.")
