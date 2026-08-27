@@ -53,7 +53,7 @@ def render_login_page():
         save_remember_me, add_remembered_account, reset_password, clear_remember_me
     )
 
-    if st.session_state.get("do_logout"):
+    if st.session_state.get("do_logout") or st.query_params.get("logged_out") == "true":
         st.session_state.auth_checked_remember = True
         remembered = None
     elif st.session_state.get("login_submit") or st.session_state.get("add_account_submit"):
@@ -88,6 +88,7 @@ def render_login_page():
             st.session_state.user_info = _full_info
             st.query_params["page"] = "Overview"
             st.query_params.pop("return_to", None)
+            st.query_params.pop("logged_out", None)
             st.rerun()
 
     if "auth_mode" not in st.session_state:
@@ -485,6 +486,7 @@ def render_add_account_page(return_to: str = "Overview") -> None:
             st.session_state.firebase_hydrated = False
             st.query_params["page"] = "Overview"
             st.query_params.pop("return_to", None)
+            st.query_params.pop("logged_out", None)
             st.rerun()
         else:
             st.error(message)
@@ -561,6 +563,7 @@ def _render_login(login_user, save_remember_me):
                 st.query_params["page"] = "Overview"
                 st.query_params["page"] = "Overview"
                 st.query_params.pop("return_to", None)
+                st.query_params.pop("logged_out", None)
                 st.rerun()
             else:
                 st.error(message)
@@ -596,6 +599,7 @@ def _render_login(login_user, save_remember_me):
         }
         st.query_params["page"] = "Overview"
         st.query_params.pop("return_to", None)
+        st.query_params.pop("logged_out", None)
         st.rerun()
 
     # Rotating finance quote
@@ -670,6 +674,7 @@ def _render_signup(register_user, login_user, save_remember_me):
                         st.session_state.account_add_mode = False
                         st.query_params["page"] = "Overview"
                         st.query_params.pop("return_to", None)
+                        st.query_params.pop("logged_out", None)
                         st.rerun()
                 else:
                     st.error(message)

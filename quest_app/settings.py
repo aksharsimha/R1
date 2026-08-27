@@ -79,13 +79,12 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
     else:
         _card_start("Sign out", "End this QUEST session on this device.")
         if st.button("Sign out", type="primary", use_container_width=True):
-            from auth import remove_remembered_account
-            _current_user = user_info.get("username", "")
-            if _current_user:
-                remove_remembered_account(_current_user)
+            # We purposely do NOT call remove_remembered_account here.
+            # This allows the account to stay in the multi-account cookie (so it appears in the Switcher).
             _preserve_keys = {"auth_cookie_override", "cookie_controller"}
             for key in list(st.session_state.keys()):
                 if key not in _preserve_keys:
                     del st.session_state[key]
             st.session_state.do_logout = True
+            st.query_params["logged_out"] = "true"
             st.rerun()
