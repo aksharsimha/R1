@@ -44,3 +44,34 @@
 - `quest_app/settings.py`
 - `quest_app/tabs/chat.py`
 - `thaheer/README.md`
+
+## 2026-08-27
+
+### Planner and Gmail reminders
+- Replaced the checkbox-only To-do list with a persistent productivity task
+  manager.
+- Added Pending, Completed, and Failed task states with an editable Status
+  selector.
+- Added task descriptions, priorities, due dates and times, categories,
+  reminders, estimated time, recurrence choices, and subtasks.
+- Added productivity totals, completion rate, progress bar, search, filters,
+  sorting, overdue detection, duplicate, delete confirmation, and task
+  reordering.
+- Added migration for existing `{text, done}` task records.
+- Added Gmail SMTP reminder delivery to the signed-in account email, including
+  numeric reminders such as `1` for one minute before the due time.
+- Added a Send test email action and retry behavior when delivery fails.
+
+### Chat UI and presence
+- Redesigned the chat area with a dark conversation rail, active conversation
+  styling, avatar header, message bubbles, and responsive layout.
+- Added functional conversation search, new conversation dialog, back
+  navigation, profile/details actions, refresh, and portfolio sharing.
+- Removed the layout spacer that caused a large empty area above the chat.
+- Added Firestore `last_seen` heartbeats and real Online/Offline status based on
+  recent activity.
+- Restarted and verified the local Streamlit app at `http://localhost:8501`.
+
+### Git updates
+- Published the Planner, Gmail reminder, chat UI, and presence updates to the
+  remote `main` branch.
