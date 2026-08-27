@@ -253,6 +253,35 @@ def get_user_profile(username: str) -> dict:
     return doc.to_dict() if doc.exists else {"username": username, "display_name": username}
 
 
+def set_user_presence(username: str) -> bool:
+    """Record the latest heartbeat for a signed-in user."""
+    if not username or not get_db():
+        return False
+    try:
+        get_db().collection("users").document(username).update({
+            "last_seen": datetime.now(timezone.utc),
+        })
+        return True
+    except Exception:
+        return False
+
+
+def is_user_online(username: str, timeout_seconds: int = 90) -> bool:
+    """Return whether a user's last heartbeat is within the active window."""
+    profile = get_user_profile(username)
+    last_seen = profile.get("last_seen")
+    if not last_seen:
+        return False
+    try:
+        if isinstance(last_seen, str):
+            last_seen = datetime.fromisoformat(last_seen.replace("Z", "+00:00"))
+        if last_seen.tzinfo is None:
+            last_seen = last_seen.replace(tzinfo=timezone.utc)
+        return (datetime.now(timezone.utc) - last_seen).total_seconds() <= timeout_seconds
+    except (TypeError, ValueError):
+        return False
+
+
 def _password_token(email: str, password: str) -> str | None:
     """Verify a password and return a short-lived Firebase ID token."""
     import requests

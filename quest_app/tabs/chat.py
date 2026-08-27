@@ -63,6 +63,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         total_val = 0.0
     _chat_user = _user_info["username"]
     _chat_display = _user_info["display_name"]
+    import firebase_db
+    firebase_db.set_user_presence(_chat_user)
 
     # ── Chat CSS ─────────────────────────────────────────────────────────────
     st.markdown("""
@@ -306,7 +308,14 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         title = chat_info["name"]
                         members_str = ", ".join(chat_info["participants"])
                     _initial = title[:1].upper() if title else "?"
-                    st.markdown(f"<div class='chat-header'><div class='chat-avatar'>{_initial}</div><div class='chat-online'></div><div><div class='chat-header-name'>{title}</div><div class='chat-header-status'>Status: <span>Online</span></div></div></div>", unsafe_allow_html=True)
+                    if chat_info["type"] == "direct" and other:
+                        _is_online = firebase_db.is_user_online(other[0])
+                    else:
+                        _is_online = False
+                    _presence_label = "Online" if _is_online else "Offline"
+                    _presence_color = "#26c281" if _is_online else "var(--q-text-3)"
+                    _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
+                    st.markdown(f"<div class='chat-header'><div class='chat-avatar'>{_initial}</div>{_presence_dot}<div><div class='chat-header-name'>{title}</div><div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div></div></div>", unsafe_allow_html=True)
                     if chat_info["type"] == "group":
                         st.caption(f"Members: {members_str}")
                 with hdr2:
