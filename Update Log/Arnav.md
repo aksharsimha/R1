@@ -67,4 +67,4 @@ Resolve the issue where signing out from the settings page and signing back in r
 
 ## Validation
 - Verified that local changes merge cleanly with the new "Soft Sign-Out" feature pulled from upstream.
-- Successfully committed and pushed the changes to the GitHub repository.
+- Successfully committed the changes locally.
