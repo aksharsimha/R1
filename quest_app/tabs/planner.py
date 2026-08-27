@@ -371,20 +371,17 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 _task["status"] = _status_choice
                 _psave(_tk_file, _tasks)
                 st.rerun()
-            _b1, _b2, _b3, _b4, _b5, _b6, _b7, _b8 = st.columns([1, 1, 1, 1, 1.5, 1, 1, 1])
-            for _col, _label, _status in ((_b1, "✅", "Completed"), (_b2, "❌", "Failed"), (_b3, "⏳", "Pending")):
-                if _col.button(_label, key=f"status_{_status}_{_task['id']}", help=f"Mark {_status}") and _task["status"] != _status:
-                    _task["status"] = _status; _psave(_tk_file, _tasks); st.rerun()
-            if _b4.button("Edit", key=f"edit_{_task['id']}"): _task_dialog(_task)
-            if _b5.button("Duplicate", key=f"dup_{_task['id']}"):
+            _b1, _b2, _b3, _b4, _b5 = st.columns([1, 1.5, 1, 1, 1])
+            if _b1.button("Edit", key=f"edit_{_task['id']}"): _task_dialog(_task)
+            if _b2.button("Duplicate", key=f"dup_{_task['id']}"):
                 _copy = dict(_task); _copy["id"] = _uuid.uuid4().hex; _copy["title"] += " (copy)"; _tasks.insert(_tasks.index(_task) + 1, _copy); _psave(_tk_file, _tasks); st.rerun()
-            if _b6.button("Delete", key=f"delete_{_task['id']}"):
+            if _b3.button("Delete", key=f"delete_{_task['id']}"):
                 st.session_state[f"confirm_delete_{_task['id']}"] = True
             _task_index = _tasks.index(_task)
-            if _b7.button("↑", key=f"up_{_task['id']}", help="Move task up") and _task_index > 0:
+            if _b4.button("↑", key=f"up_{_task['id']}", help="Move task up") and _task_index > 0:
                 _tasks[_task_index - 1], _tasks[_task_index] = _tasks[_task_index], _tasks[_task_index - 1]
                 _psave(_tk_file, _tasks); st.rerun()
-            if _b8.button("↓", key=f"down_{_task['id']}", help="Move task down") and _task_index < len(_tasks) - 1:
+            if _b5.button("↓", key=f"down_{_task['id']}", help="Move task down") and _task_index < len(_tasks) - 1:
                 _tasks[_task_index + 1], _tasks[_task_index] = _tasks[_task_index], _tasks[_task_index + 1]
                 _psave(_tk_file, _tasks); st.rerun()
             if _task["subtasks"]:
