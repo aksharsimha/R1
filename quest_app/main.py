@@ -16,7 +16,7 @@ from adaptive_engine import adaptive_forecast, get_learning_log, get_days_traine
 
 # --- Auth imports ---
 from login_page import render_login_page
-from auth import clear_remember_me, get_remembered_accounts, add_remembered_account
+from auth import clear_remember_me, get_remembered_accounts, add_remembered_account, sync_cookies_to_browser
 import chat_system
 import portfolio_ledger
 import adaptive_engine
@@ -25,6 +25,7 @@ import firebase_db
 
 # --- Page Config ---
 st.set_page_config(page_title="Portfolio Risk Monitor", page_icon="📈", layout="wide")
+sync_cookies_to_browser()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Firebase Initialization — must come BEFORE auth
