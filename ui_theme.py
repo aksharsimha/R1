@@ -384,7 +384,7 @@ def css(theme: str = None) -> str:
         .q-metric {{ padding: 10px 12px !important; }}
         .q-metric .val {{ font-size: 1rem !important; }}
         /* Let columns stack instead of squeezing */
-        div[data-testid="column"] {{ min-width: 100% !important; }}
+        div[data-testid="stColumn"] {{ min-width: 100% !important; }}
         /* Shrink the massive portfolio value font on phones */
         #qv {{ font-size: 1.8rem !important; }}
     }}
