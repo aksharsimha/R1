@@ -88,5 +88,4 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             st.query_params["page"] = "Overview"
             st.query_params.pop("return_to", None)
             st.session_state.do_logout = True
-            st.query_params["logged_out"] = "true"
             st.rerun()

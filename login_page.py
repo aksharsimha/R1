@@ -488,7 +488,6 @@ def render_add_account_page(return_to: str = "Overview") -> None:
             st.session_state.just_logged_in = True
             st.query_params["page"] = "Overview"
             st.query_params.pop("return_to", None)
-            st.query_params.pop("logged_out", None)
             st.rerun()
         else:
             st.error(message)
@@ -565,7 +564,6 @@ def _render_login(login_user, save_remember_me):
                 st.session_state.just_logged_in = True
                 st.query_params["page"] = "Overview"
                 st.query_params.pop("return_to", None)
-                st.query_params.pop("logged_out", None)
                 st.rerun()
             else:
                 st.error(message)
@@ -602,7 +600,6 @@ def _render_login(login_user, save_remember_me):
         st.session_state.just_logged_in = True
         st.query_params["page"] = "Overview"
         st.query_params.pop("return_to", None)
-        st.query_params.pop("logged_out", None)
         st.rerun()
 
     # Rotating finance quote
@@ -678,7 +675,6 @@ def _render_signup(register_user, login_user, save_remember_me):
                         st.session_state.just_logged_in = True
                         st.query_params["page"] = "Overview"
                         st.query_params.pop("return_to", None)
-                        st.query_params.pop("logged_out", None)
                         st.rerun()
                 else:
                     st.error(message)
