@@ -40,3 +40,16 @@ Fix two persistent sidebar bugs: (1) nav items not stretching to the full sideba
 - `grep` confirmed zero remaining `href="?page=` anchors in `main.py`.
 - `st.button` keys `sidebar_settings_btn` and `sidebar_chat_btn` confirmed present at lines 136 and 141.
 - Streamlit app restarted cleanly on `http://localhost:8501` with no import or runtime errors.
+
+## [2026-08-24] — Fix: Login always lands on Settings instead of Overview
+
+### Fixed
+- **Post-login navigation reset**: After logging out and back in (any
+  account — manual login, remembered account, new signup, or live demo),
+  the app was landing on the Settings page instead of Overview. Added
+  `st.query_params["page"] = "Overview"` and
+  `st.query_params.pop("return_to", None)` right before each `st.rerun()`
+  in `login_page.py`'s login/signup/demo success paths, so navigation
+  correctly resets to Overview on every fresh authentication.
+
+  
