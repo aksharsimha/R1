@@ -22,3 +22,14 @@
 
 7. **Sign-Out Race Condition & Hijack Fix (login_page.py)**
    - Fixed a bug where do_logout was wiped instantly. It now persists securely until a new, successful login occurs, stopping the app from auto-logging into the wrong account while you type.
+
+# Update Log - 2026-08-27 19:43:12 IST
+
+### Account Switcher & Soft Sign Out Fix
+
+1. **"Soft" Sign Out Implementation (quest_app/settings.py & login_page.py)**
+   - Changed the behavior of the "Sign Out" button. Previously, signing out would permanently delete the account from the multi-account cookie, causing it to vanish from the Account Switcher.
+   - Now, signing out wipes the active session but safely preserves the account in the browser's memory so it remains available in the Switcher.
+   - Added a persistent ?logged_out=true URL parameter. This securely blocks the app from aggressively auto-logging the user back in after a sign-out (even across page refreshes), while keeping their accounts remembered in the background.
+   - The logged_out parameter is cleanly stripped from the URL the moment a new successful login occurs.
+
