@@ -55,3 +55,15 @@ av_section radio button memory to maintain state.
   - Upgraded the tracker math to dynamically detect large capital injections (deposits/withdrawals over 10%). If a massive swing happens, the tracker now intelligently adjusts its historical predictions upward to account for the new capital, eliminating the massive 43k+ error gaps.
   - Ran a one-time script to mathematically correct and fix the historical log.
 
+---
+
+# Session: August 27, 2026
+**Author:** Akshar Simha
+
+## Goal
+Fixing mobile layout breakage after Streamlit update.
+
+## Changes Made
+- **Mobile CSS Refactor (`ui_theme.py`):** Fixed broken mobile responsiveness. Updated the CSS media query flex-stacking selectors from Streamlit's old `[data-testid="column"]` to the new `[data-testid="stColumn"]` to restore proper vertical stacking on phone screens.
+
+
