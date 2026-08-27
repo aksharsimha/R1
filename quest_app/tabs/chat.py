@@ -181,7 +181,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     chat_sidebar, chat_main = st.columns([1, 2.5])
 
     with chat_sidebar:
-        st.markdown("<div class='chat-rail'>", unsafe_allow_html=True)
         _conversation_title, _compose = st.columns([5, 1])
         _conversation_title.markdown("<div class='chat-title'><span class='chat-title-icon'>♣</span>Conversations</div>", unsafe_allow_html=True)
         if _compose.button("✎", key="new_conversation", help="New conversation"):
@@ -271,7 +270,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             with st.expander(f"📤 Sent Requests ({len(sent)})"):
                 for s in sent:
                     st.caption(f"⏳ {s} — pending")
-            st.markdown("</div>", unsafe_allow_html=True)
 
     # ── Chat Main Area ───────────────────────────────────────────────────────
     with chat_main:
@@ -294,7 +292,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 chat_system.mark_as_read(active_id, _chat_user)
 
                 # ── Chat header ──────────────────────────────────────────────
-                st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
                 hdr0, hdr1, hdr2, hdr3 = st.columns([1, 4, 1, 1])
                 with hdr0:
                     if st.button("←", key="chat_back", help="Back to conversations"):
@@ -465,7 +462,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     if sent:
                         st.session_state.chat_scroll_to_latest = True
                         st.rerun(scope="fragment")
-                    st.markdown("</div>", unsafe_allow_html=True)
 
     # =============================================================================
     # ⚡ MICHAEL TAB (AI Chat Assistant)
