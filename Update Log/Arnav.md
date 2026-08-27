@@ -52,4 +52,19 @@ Fix two persistent sidebar bugs: (1) nav items not stretching to the full sideba
   in `login_page.py`'s login/signup/demo success paths, so navigation
   correctly resets to Overview on every fresh authentication.
 
-  
+---
+
+# Session: August 27, 2026 — Fix Signout/Signin Redirect Race Condition
+**Author:** Arnav
+
+## Goal
+Resolve the issue where signing out from the settings page and signing back in redirected users (especially other developers or in incognito mode) back to the Settings page instead of the Overview page.
+
+## Changes Made
+- **Early Page Routing (`quest_app/main.py`):** Added a check for a `just_logged_in` session state flag. If present, the routing forces the page to `"Overview"` and clears the flag. This acts as a robust server-side override to bypass browser-side query parameter race conditions.
+- **Login success paths (`login_page.py`):** Updated all login paths (auto-login, manual login, live demo, signup, and add-account screen) to set `st.session_state.just_logged_in = True` on successful authentication. Cleaned up duplicate assignments of `st.query_params["page"] = "Overview"`.
+- **Sign-Out Transition (`quest_app/settings.py`):** Updated the "Sign out" button to reset the `page` query parameter to `"Overview"` and pop `return_to` immediately upon sign-out. This clears the settings URL parameter early, allowing the browser plenty of time to process the URL update before the user logs back in.
+
+## Validation
+- Verified that local changes merge cleanly with the new "Soft Sign-Out" feature pulled from upstream.
+- Successfully committed the changes locally.

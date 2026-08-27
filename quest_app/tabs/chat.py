@@ -389,7 +389,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         else:
                             # ── Received message ─────────────────────────────
                             sender = msg["from"]
-                            bubble = f'<div class="chat-bubble received"><div class="chat-sender">{sender}</div>{msg["text"]}'
+                            bubble = f'<div class="chat-bubble received"><div class="chat-sender"><a href="?page=Chat&view_profile={sender}" target="_self" style="text-decoration:none;color:inherit;">{sender}</a></div>{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
                                 pnl_color = "#34d399" if pd_data.get("total_pnl", 0) >= 0 else "#f87171"

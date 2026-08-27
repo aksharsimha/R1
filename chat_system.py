@@ -534,28 +534,3 @@ def build_portfolio_snapshot(df, summary: dict, username: str) -> dict:
         "growth_pct": float(growth["growth_pct"]),
         "top_holdings": top_holdings
     }
-
-    total_invested = float(df["Invested (₹)"].sum())
-    total_pnl = float(df["P&L (₹)"].sum())
-
-    top = df.nlargest(5, "Current Value (₹)")
-    top_holdings = []
-    for _, row in top.iterrows():
-        top_holdings.append({
-            "name": str(row["Name"]),
-            "value": float(row["Current Value (₹)"]),
-            "pnl_pct": float(row["P&L %"]) if "P&L %" in row else 0,
-        })
-
-    return {
-        "username": username,
-        "timestamp": datetime.now(pytz.timezone('Asia/Kolkata')).isoformat(),
-        "total_value": float(summary.get("total_value", 0)),
-        "total_invested": total_invested,
-        "total_pnl": total_pnl,
-        "pnl_pct": (total_pnl / total_invested * 100) if total_invested > 0 else 0,
-        "n_assets": int(summary.get("n_assets", 0)),
-        "risk_score": float(summary.get("portfolio_risk_score", 0)),
-        "risk_bucket": str(summary.get("portfolio_risk_bucket", "N/A")),
-        "top_holdings": top_holdings,
-    }
