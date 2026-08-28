@@ -83,9 +83,9 @@ YF_TICKER_OVERRIDES = {
 # Fixed settlement price overrides for securities with broker/exchange discrepancies after market close
 # (e.g. Nexus Select Trust REIT where Groww closing valuation is 166.99 vs Yahoo Finance's 166.95)
 SETTLEMENT_PRICE_OVERRIDES = {
-    "NXST": 166.99,
-    "NXST.BO": 166.99,
-    "NXST.NS": 166.99,
+    "NXST": 167.01,
+    "NXST.BO": 167.01,
+    "NXST.NS": 167.01,
 }
 
 # Known BSE scrip codes for top Indian equities (for instant BSE fallback)
