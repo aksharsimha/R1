@@ -232,7 +232,7 @@ else:
                 add_remembered_account(_switch_user_info["username"], _switch_user_info.get("display_name"))
                 
             # WIPE OLD CACHED DATA BEFORE RERUN TO PREVENT CROSS-ACCOUNT LEAKS
-            for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts", "do_logout"]:
+            for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts", "do_logout", "_analysis_df", "_analysis_summary", "_analysis_ts"]:
                 if k in st.session_state:
                     del st.session_state[k]
                     
@@ -308,21 +308,12 @@ except Exception:
     asset_names = []
 
 # --- Main Dashboard ---
-try:
-    import firebase_db
-    _test_db = firebase_db.get_db()
-    _fb_status = "<span style='color:green;'>Firebase OK</span>"
-except Exception as e:
-    _fb_status = f"<span style='color:red;font-size:0.8rem;'>Firebase Error: {str(e)}</span>"
-    st.error(f"🔴 FIREBASE CONNECTION FAILED: {str(e)}")
-
 st.markdown(f"""
 <div class="dashboard-header">
     <h1>⚡ QUEST</h1>
     <p>Quantitative Unified Equity Surveillance Tracker</p>
     <div style="margin-top:1rem;font-size:1.1rem;color:var(--q-text-3);font-weight:500;text-transform:none;letter-spacing:0;">
         {_greeting}, <span style="color:var(--q-text);font-weight:500;">{_user_info['display_name']}</span>
-        <br>{_fb_status}
     </div>
 </div>
 """, unsafe_allow_html=True)
