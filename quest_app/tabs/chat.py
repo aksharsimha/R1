@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from datetime import datetime
 import datetime as _dt
 import plotly.express as px
 import plotly.graph_objects as go
@@ -12,14 +13,40 @@ import chat_system
 import nse_live as _nse
 
 
+def _get_profile_cached(username: str) -> dict:
+    if not username:
+        return {}
+    if "_user_profiles_cache" not in st.session_state:
+        st.session_state._user_profiles_cache = {}
+    if username not in st.session_state._user_profiles_cache:
+        try:
+            import firebase_db
+            prof = firebase_db.get_user_profile(username)
+            st.session_state._user_profiles_cache[username] = prof or {}
+        except Exception:
+            st.session_state._user_profiles_cache[username] = {}
+    return st.session_state._user_profiles_cache.get(username, {})
+
+
+def _render_avatar_html(username: str, display_name: str = "", size: int = 54, css_class: str = "chat-avatar") -> str:
+    prof = _get_profile_cached(username) if username else {}
+    av = prof.get("avatar")
+    disp = prof.get("display_name") or display_name or username or "User"
+    if av:
+        return f'<img src="{av}" class="{css_class}" style="width:{size}px;height:{size}px;border-radius:50%;object-fit:cover;" alt="{disp}">'
+    else:
+        init = disp[:1].upper() if disp else "?"
+        font_size = max(11, int(size * 0.44))
+        return f'<div class="{css_class}" style="width:{size}px;height:{size}px;border-radius:50%;display:grid;place-items:center;font-size:{font_size}px;font-weight:600;">{init}</div>'
+
+
 @st.dialog("Public Profile")
 def _show_public_profile(username: str):
     import firebase_db
     profile = firebase_db.get_user_profile(username)
     if profile:
-        av = profile.get("avatar")
         disp = profile.get("display_name", username)
-        av_html = f'<img src="{av}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--q-accent);">' if av else f'<div style="width:80px;height:80px;border-radius:50%;background:var(--q-accent);color:white;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:bold;">{disp[:1].upper()}</div>'
+        av_html = _render_avatar_html(username, disp, size=80, css_class="q-avatar-large")
         st.markdown(f"""
         <div style="display:flex;align-items:center;gap:20px;margin-bottom:15px;">
             {av_html}
@@ -86,9 +113,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         }
         .chat-title { color: var(--q-text); font-size: 1.25rem; font-weight: 600; margin: 4px 0 18px; }
         .chat-title-icon { color: #8b6cff; margin-right: 7px; }
-        .chat-header { display:flex; align-items:center; gap:12px; border-bottom:1px solid rgba(112,126,171,.16); padding:2px 4px 16px; }
-        .chat-avatar { width:54px; height:54px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(145deg,#323b52,#111621); border:2px solid #697591; color:#aeb8ce; font-size:1.55rem; box-shadow:0 0 0 4px rgba(69,78,106,.18); }
-        .chat-online { width:12px; height:12px; border-radius:50%; background:#26c281; border:2px solid #101520; margin-left:-23px; margin-top:38px; }
+        .chat-header { display:flex; align-items:center; gap:14px; border-bottom:1px solid rgba(112,126,171,.16); padding:2px 4px 16px; }
+        .chat-avatar-wrap { position:relative; display:inline-flex; flex-shrink:0; width:54px; height:54px; }
+        .chat-avatar { width:54px; height:54px; border-radius:50%; object-fit:cover; display:grid; place-items:center; background:linear-gradient(145deg,#323b52,#111621); border:2px solid #697591; color:#aeb8ce; font-size:1.55rem; box-shadow:0 0 0 4px rgba(69,78,106,.18); flex-shrink:0; }
+        .chat-online { width:14px; height:14px; border-radius:50%; background:#26c281; border:2px solid #101520; position:absolute; bottom:0; right:0; z-index:2; }
         .chat-header-name { color:var(--q-text); font-size:1.25rem; font-weight:600; }
         .chat-header-status { color:var(--q-text-3); font-size:.78rem; margin-top:2px; }
         .chat-header-status span { color:#26c281; }
@@ -103,10 +131,24 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             .chat-rail { min-height:0; border-right:0; border-bottom:1px solid rgba(112,126,171,.2); border-radius:10px; }
             .chat-header-name { font-size:1.05rem; }
         }
-        .chat-msg-row { display: flex; margin-bottom: 10px; }
+        .chat-msg-row { display: flex; margin-bottom: 12px; align-items: flex-end; }
         .chat-msg-row.sent { justify-content: flex-end; }
         .chat-msg-row.received { justify-content: flex-start; }
         .chat-msg-row.system-row { justify-content: center; }
+        .chat-msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid rgba(112,126,171,.35);
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(145deg,#323b52,#111621);
+            color: #aeb8ce;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
         .chat-bubble {
             max-width: 70%;
             padding: 10px 14px;
@@ -300,26 +342,28 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         st.session_state.active_chat_id = None
                         st.rerun(scope="fragment")
                 with hdr1:
-                    icon = "👤" if chat_info["type"] == "direct" else "👥"
                     if chat_info["type"] == "direct":
                         other = [p for p in chat_info["participants"] if p != _chat_user]
-                        title = other[0] if other else "Chat"
+                        other_user = other[0] if other else ""
+                        other_prof = _get_profile_cached(other_user) if other_user else {}
+                        title = other_prof.get("display_name") or other_user or "Chat"
+                        _is_online = firebase_db.is_user_online(other_user) if other_user else False
+                        _avatar_markup = _render_avatar_html(other_user, title, size=54, css_class="chat-avatar")
                     else:
                         title = chat_info["name"]
                         members_str = ", ".join(chat_info["participants"])
-                    _initial = title[:1].upper() if title else "?"
-                    if chat_info["type"] == "direct" and other:
-                        _is_online = firebase_db.is_user_online(other[0])
-                    else:
                         _is_online = False
+                        _avatar_markup = "<div class='chat-avatar' style='font-size:1.5rem;'>👥</div>"
+
                     _presence_label = "Online" if _is_online else "Offline"
                     _presence_color = "#26c281" if _is_online else "var(--q-text-3)"
                     _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
-                    st.markdown(f"<div class='chat-header'><div class='chat-avatar'>{_initial}</div>{_presence_dot}<div><div class='chat-header-name'>{title}</div><div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div></div></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='chat-header'><div class='chat-avatar-wrap'>{_avatar_markup}{_presence_dot}</div><div><div class='chat-header-name'>{title}</div><div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div></div></div>", unsafe_allow_html=True)
                     if chat_info["type"] == "group":
                         st.caption(f"Members: {members_str}")
                 with hdr2:
-                    if st.button("🔄", key="chat_refresh", help="Refresh messages"):
+                    if st.button("🔄", key="chat_refresh", help="Refresh messages & avatars"):
+                        st.session_state.pop("_user_profiles_cache", None)
                         st.rerun(scope="fragment")
                 with hdr3:
                     _header_action = "👤" if chat_info["type"] == "direct" else "ⓘ"
@@ -370,6 +414,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             </div>"""
                         elif msg["from"] == _chat_user:
                             # ── Sent message ─────────────────────────────────
+                            my_av_markup = _render_avatar_html(_chat_user, _chat_display, size=32, css_class="chat-msg-avatar")
                             bubble = f'<div class="chat-bubble sent">{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
@@ -385,11 +430,14 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
-                            msgs_html += f'<div class="chat-msg-row sent">{bubble}</div>'
+                            msgs_html += f'<div class="chat-msg-row sent">{bubble}<div style="margin-left:8px;flex-shrink:0;">{my_av_markup}</div></div>'
                         else:
                             # ── Received message ─────────────────────────────
                             sender = msg["from"]
-                            bubble = f'<div class="chat-bubble received"><div class="chat-sender"><a href="?page=Chat&view_profile={sender}" target="_self" style="text-decoration:none;color:inherit;">{sender}</a></div>{msg["text"]}'
+                            sender_prof = _get_profile_cached(sender)
+                            sender_disp = sender_prof.get("display_name", sender)
+                            sender_av_markup = _render_avatar_html(sender, sender_disp, size=32, css_class="chat-msg-avatar")
+                            bubble = f'<div class="chat-bubble received"><div class="chat-sender"><a href="?page=Chat&view_profile={sender}" target="_self" style="text-decoration:none;color:inherit;">{sender_disp} (@{sender})</a></div>{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
                                 pnl_color = "#34d399" if pd_data.get("total_pnl", 0) >= 0 else "#f87171"
@@ -404,7 +452,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
-                            msgs_html += f'<div class="chat-msg-row received">{bubble}</div>'
+                            msgs_html += f'<div class="chat-msg-row received"><div style="margin-right:8px;flex-shrink:0;">{sender_av_markup}</div>{bubble}</div>'
 
                     st.html(f'''
                     <div id="quest-chat-messages" data-chat-id="{active_id}"

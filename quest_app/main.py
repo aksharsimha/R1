@@ -130,6 +130,15 @@ import pytz
 _hour = datetime.now(pytz.timezone('Asia/Kolkata')).hour
 _greeting = "Good morning" if _hour < 12 else "Good afternoon" if _hour < 17 else "Good evening"
 _avatar = _user_info.get("avatar")
+if not _avatar:
+    try:
+        _my_p = firebase_db.get_user_profile(_username)
+        if _my_p and _my_p.get("avatar"):
+            _avatar = _my_p["avatar"]
+            _user_info["avatar"] = _avatar
+            st.session_state.user_info["avatar"] = _avatar
+    except Exception:
+        pass
 _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
                   f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
 

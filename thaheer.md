@@ -75,3 +75,19 @@
 ### Git updates
 - Published the Planner, Gmail reminder, chat UI, and presence updates to the
   remote `main` branch.
+
+## 2026-08-28
+
+### Chat Avatars & Profile Pictures
+- Replaced letter placeholders with actual user profile avatars across the Chat tab (`quest_app/tabs/chat.py`).
+- Added cached profile and avatar rendering helpers (`_get_profile_cached`, `_render_avatar_html`) to load avatars from Firestore.
+- Updated the Chat header to show the other participant's avatar image alongside a live status badge (`.chat-avatar-wrap`).
+- Added avatar thumbnails to both received messages (left side) and sent messages (right side) in the message stream.
+- Updated the Public Profile dialog and the chat refresh button (🔄) to invalidate cached profile avatars upon manual refresh.
+
+### Sidebar Profile Picture Hydration
+- Updated `quest_app/main.py` to automatically hydrate `avatar` from Firestore if not yet present in session state, ensuring the sidebar profile card always displays the active user's image.
+
+### Git & Remote Sync
+- Synchronized commits across `origin/master` and `origin/main`.
+- Renamed `Update Log/Tahir.md` to `Update Log/Thaheer.md`.
