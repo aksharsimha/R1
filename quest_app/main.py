@@ -514,7 +514,9 @@ elif _active("tab5"):
     import quest_app.tabs.projections as tb
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
 elif _active("tab6"):
+    import importlib
     import quest_app.tabs.news as tb
+    importlib.reload(tb)
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
 elif _active("tab_chat"):
     import quest_app.tabs.chat as tb
