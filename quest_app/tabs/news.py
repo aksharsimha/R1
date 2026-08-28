@@ -161,56 +161,115 @@ def _view_all_news_dialog(all_articles: list):
 """), unsafe_allow_html=True)
 
 
-@st.dialog("📁 Historical News Archive")
+@st.dialog("📁 10-Year Historical News & Sentiment Archive (2016 - 2026)")
 def _archive_dialog():
-    st.markdown("<h3 style='margin:0 0 10px;'>Browse Historical News Archive</h3>", unsafe_allow_html=True)
-    st.caption("Search through previously analyzed news and historical market events.")
+    st.markdown("<h3 style='margin:0 0 6px;'>10-Year Market Intelligence Archive</h3>", unsafe_allow_html=True)
+    st.caption("Explore historical market news, landmark corporate events, budget declarations, and sentiment data from 2016 to 2026.")
     
     archive = get_archived_articles()
-    all_dates = set()
-    for t_arts in archive.values():
-        for a in t_arts:
-            d = str(a.get("date", ""))[:10]
-            if d:
-                all_dates.add(d)
-                
-    sorted_dates = sorted(list(all_dates), reverse=True)
-    if not sorted_dates:
-        sorted_dates = [datetime.now().strftime("%Y-%m-%d")]
     
-    c1, c2 = st.columns([1, 1])
-    with c1:
-        selected_date = st.selectbox("Select Date", sorted_dates)
-    with c2:
-        search_kw = st.text_input("Filter within date", placeholder="Keyword or company name")
-        
-    date_articles = []
+    # Extract all articles with their metadata
+    all_archive_items = []
+    years_set = set()
     for ticker, arts in archive.items():
         for a in arts:
-            if str(a.get("date", ""))[:10] == selected_date:
-                if not search_kw or search_kw.lower() in (a.get("title", "") + a.get("summary", "")).lower():
-                    date_articles.append((ticker, a))
-                    
-    if date_articles:
-        st.markdown(f"<p style='color:var(--q-text-3);font-size:0.85rem;'>{len(date_articles)} article(s) found on <strong>{selected_date}</strong>:</p>", unsafe_allow_html=True)
-        for ticker, art in date_articles[:15]:
-            title = art.get("title", "Archived News")
-            url = art.get("url", "#")
-            score = art.get("sentiment_score", 0.0)
-            label = art.get("sentiment_label", "⚪ Neutral")
-            cat = art.get("category", "MARKET UPDATE")
+            d_str = str(a.get("date", ""))[:10]
+            year = d_str[:4] if len(d_str) >= 4 and d_str[:4].isdigit() else "2026"
+            years_set.add(year)
+            all_archive_items.append({
+                "ticker": ticker,
+                "date": d_str or "2026-01-01",
+                "year": year,
+                "title": a.get("title", "Archived News"),
+                "summary": a.get("summary", ""),
+                "url": a.get("url") or a.get("link", "#"),
+                "score": a.get("sentiment_score", a.get("score", 0.0)),
+                "label": a.get("sentiment_label", "⚪ Neutral"),
+                "category": a.get("category", "MARKET UPDATE"),
+                "connection": a.get("connection_score", 50),
+            })
+            
+    # Sort all items chronologically descending
+    all_archive_items.sort(key=lambda x: x["date"], reverse=True)
+    
+    # 10-Year Filters
+    c1, c2, c3 = st.columns([1.2, 1.2, 2])
+    with c1:
+        year_options = ["All Years (2016-2026)"] + sorted(list(years_set), reverse=True)
+        selected_year = st.selectbox("Filter by Year", year_options, key="arch_sel_year")
+    with c2:
+        cat_options = ["All Categories", "MARKET UPDATE", "TECHNOLOGY", "BANKING & FINANCE", "ENERGY & POWER", "COMMODITIES & METALS", "REAL ESTATE", "EARNINGS"]
+        selected_cat = st.selectbox("Category", cat_options, key="arch_sel_cat")
+    with c3:
+        search_kw = st.text_input("Search Keyword, Ticker or Event", placeholder="e.g. Reliance, GST, COVID, Demonetization, Budget", key="arch_search_kw")
+
+    # Era quick tags
+    st.markdown("""
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px;">
+        <span style="font-size:0.72rem;color:var(--q-text-3);padding-top:4px;">Landmark Eras:</span>
+        <span style="font-size:0.7rem;background:rgba(99,102,241,0.12);color:#a5b4fc;padding:3px 8px;border-radius:12px;">🚀 2024-26 AI & 25k NIFTY</span>
+        <span style="font-size:0.7rem;background:rgba(16,185,129,0.12);color:#34d399;padding:3px 8px;border-radius:12px;">🌕 2023 Chandrayaan-3</span>
+        <span style="font-size:0.7rem;background:rgba(239,68,68,0.12);color:#f87171;padding:3px 8px;border-radius:12px;">📉 2022 Rate Hikes</span>
+        <span style="font-size:0.7rem;background:rgba(16,185,129,0.12);color:#34d399;padding:3px 8px;border-radius:12px;">📈 2021 Tech IPO Boom</span>
+        <span style="font-size:0.7rem;background:rgba(239,68,68,0.12);color:#f87171;padding:3px 8px;border-radius:12px;">🦠 2020 COVID Crash</span>
+        <span style="font-size:0.7rem;background:rgba(99,102,241,0.12);color:#a5b4fc;padding:3px 8px;border-radius:12px;">🏛️ 2019 Tax Cuts</span>
+        <span style="font-size:0.7rem;background:rgba(239,68,68,0.12);color:#f87171;padding:3px 8px;border-radius:12px;">⚠️ 2018 IL&FS Crisis</span>
+        <span style="font-size:0.7rem;background:rgba(99,102,241,0.12);color:#a5b4fc;padding:3px 8px;border-radius:12px;">📜 2017 GST</span>
+        <span style="font-size:0.7rem;background:rgba(245,158,11,0.12);color:#fbbf24;padding:3px 8px;border-radius:12px;">💵 2016 Demonetization & Jio</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Filter logic
+    filtered = all_archive_items
+    if selected_year != "All Years (2016-2026)":
+        filtered = [item for item in filtered if item["year"] == selected_year]
+    if selected_cat != "All Categories":
+        filtered = [item for item in filtered if item["category"] == selected_cat]
+    if search_kw and search_kw.strip():
+        kw = search_kw.strip().lower()
+        filtered = [
+            item for item in filtered
+            if kw in item["title"].lower()
+            or kw in item["summary"].lower()
+            or kw in item["ticker"].lower()
+            or kw in item["year"]
+        ]
+
+    st.markdown(f"<p style='color:var(--q-text-3);font-size:0.85rem;'>Showing <strong>{len(filtered)}</strong> archived article(s) across 10-year timeline:</p>", unsafe_allow_html=True)
+
+    if filtered:
+        for art in filtered[:25]:
+            ticker = art["ticker"]
+            title = art["title"]
+            summary = art["summary"]
+            url = art["url"]
+            score = art["score"]
+            label = art["label"]
+            cat = art["category"]
+            d_str = art["date"]
+            year = art["year"]
+            
+            score_color = "#10b981" if score > 0.15 else "#ef4444" if score < -0.15 else "#818cf8"
             
             st.markdown(textwrap.dedent(f"""
-<div style="background:var(--q-surface-2);border-radius:10px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--q-border);">
-<div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:3px;">
-<span style="font-weight:600;color:var(--q-accent);">{ticker} &bull; {cat}</span>
-<span>{label} ({score:+.2f})</span>
+<div style="background:var(--q-surface-2);border-radius:12px;padding:12px 14px;margin-bottom:10px;border-left:3px solid {score_color};border-top:1px solid var(--q-border);border-right:1px solid var(--q-border);border-bottom:1px solid var(--q-border);">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+<div style="display:flex;gap:6px;align-items:center;">
+<span style="font-size:0.68rem;font-weight:700;background:rgba(99,102,241,0.15);color:#818cf8;padding:2px 6px;border-radius:4px;">{year}</span>
+<span style="font-size:0.72rem;font-weight:600;color:var(--q-text);">{ticker}</span>
+<span style="font-size:0.7rem;color:var(--q-text-3);">&bull; {cat}</span>
 </div>
-<a href="{url}" target="_blank" style="color:var(--q-text);font-size:0.88rem;font-weight:500;text-decoration:none;">{title}</a>
+<div style="font-size:0.75rem;color:var(--q-text-3);">
+📅 {d_str} &bull; <span style="color:{score_color};font-weight:600;">{label} ({score:+.2f})</span>
+</div>
+</div>
+<a href="{url}" target="_blank" style="color:var(--q-text);font-size:0.92rem;font-weight:600;text-decoration:none;display:block;margin:4px 0 3px;">{title}</a>
+<p style="font-size:0.8rem;color:var(--q-text-2);margin:0 0 6px;line-height:1.4;">{summary}</p>
+<div style="font-size:0.72rem;"><a href="{url}" target="_blank" style="color:var(--q-accent);text-decoration:none;">Read Original Report / Source →</a></div>
 </div>
 """), unsafe_allow_html=True)
     else:
-        st.info("No archived articles found for the selected criteria.")
+        st.info("No historical articles matched your filters. Try selecting 'All Years' or searching for broader terms like 'Reliance', 'Market', or 'GDP'.")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -518,7 +577,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     adj_disp = f"{sent_adj:+.2f}" if sent_adj is not None else "N/A"
 
     # ── Top Header Row ────────────────────────────────────────────────────────
-    hdr_c1, hdr_c2 = st.columns([5, 2])
+    hdr_c1, hdr_c2 = st.columns([6, 1.6])
     with hdr_c1:
         st.markdown(textwrap.dedent(f"""
 <div class="q-news-header">
@@ -530,14 +589,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 </div>
 """), unsafe_allow_html=True)
     with hdr_c2:
-        btn_c1, btn_c2, btn_c3 = st.columns([1, 1, 1])
+        btn_c1, btn_c2 = st.columns([1, 1])
         with btn_c1:
             if st.button("🔍", key="btn_top_search", help="Search News & Holdings", use_container_width=True):
                 _search_dialog(all_articles, current_assets)
         with btn_c2:
-            if st.button("🔔 3", key="btn_top_notif", help="View Notifications", use_container_width=True):
-                _notifications_dialog(_user_info)
-        with btn_c3:
             if st.button("👤", key="btn_top_profile", help="View Profile", use_container_width=True):
                 _show_public_profile(_username)
 
