@@ -55,6 +55,9 @@ def init_firebase():
                 # Try Streamlit secrets (cloud deployment)
                 try:
                     key_dict = dict(st.secrets["firebase"])
+                    # Fix escaped newlines if user copy-pasted the raw string from JSON
+                    if "private_key" in key_dict:
+                        key_dict["private_key"] = key_dict["private_key"].replace('\\n', '\n')
                     cred = credentials.Certificate(key_dict)
                     app = firebase_admin.initialize_app(cred)
                 except Exception:
