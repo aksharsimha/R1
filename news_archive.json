@@ -1347,6 +1347,48 @@
       "sentiment_score": 0.3333,
       "sentiment_label": "🟢 Positive",
       "connection_score": 0
+    },
+    {
+      "date": "2026-08-26T01:30:05Z",
+      "title": "AI Will Deflate Value of IT Work by Up to 25%, Hexaware CEO Says",
+      "summary": "AI could lower the price of routine IT projects by as much as 25%, the head of India’s Hexaware Technologies Ltd. said, highlighting the impact the technology will have on a sector known for labor-intensive tasks.",
+      "url": "https://finance.yahoo.com/technology/ai/articles/ai-deflate-value-25-hexaware-013005383.html",
+      "sentiment_score": -0.3333,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/KzKbLYzU1HxtwQGH9NR1RA--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/bloomberg_holding_pen_162/a75a290c26fe1e14420b508e549a25d2.jpg",
+      "read_time": "1 min read",
+      "stock_name": "Tata Consultancy Services",
+      "ticker": "TCS.NS"
+    },
+    {
+      "date": "2026-08-25T18:02:45Z",
+      "title": "Porsche sharpens focus on core business with MHP sale to India’s TCS",
+      "summary": "The transaction, part of Porsche’s Sportwagenschmiede 35 plan, will see a TCS subsidiary acquire full ownership of MHP Management- und IT-Beratung.",
+      "url": "https://finance.yahoo.com/technology/ai/articles/porsche-sharpens-focus-core-business-180245000.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65,
+      "category": "MARKET UPDATE",
+      "image_url": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&auto=format&fit=crop&q=80",
+      "read_time": "1 min read",
+      "stock_name": "Tata Consultancy Services",
+      "ticker": "TCS.NS"
+    },
+    {
+      "date": "2026-08-25T12:54:25Z",
+      "title": "Porsche sells MHP consulting unit to TCS in $1.5 billion AI deal",
+      "summary": "TCS will acquire MHP for 320 million euros and establish an AI Mobility Centre of Excellence for the German automaker",
+      "url": "https://finance.yahoo.com/technology/ai/articles/porsche-sells-mhp-consulting-unit-125425554.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/bRN91rMUOlZKhDrzpxjdHA--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/quartz_855/8089dcd04ad694e405a2db7033a68e23.jpg",
+      "read_time": "1 min read",
+      "stock_name": "Tata Consultancy Services",
+      "ticker": "TCS.NS"
     }
   ],
   "AARTIDRUGS.NS": [
@@ -1486,6 +1528,48 @@
       "sentiment_score": 0.3333,
       "sentiment_label": "🟢 Positive",
       "connection_score": 0
+    },
+    {
+      "date": "2026-08-27T14:53:41Z",
+      "title": "Asian Equities Traded in the US as American Depositary Receipts Head Slightly Lower in Thursday Trading",
+      "summary": "Asian equities traded in the US as American depositary receipts were tracking lower Thursday morning",
+      "url": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-145341703.html",
+      "sentiment_score": -1.0,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0,
+      "category": "ENERGY & POWER",
+      "image_url": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&auto=format&fit=crop&q=80",
+      "read_time": "1 min read",
+      "stock_name": "Infosys",
+      "ticker": "INFY.NS"
+    },
+    {
+      "date": "2026-08-26T16:00:55Z",
+      "title": "CIOs are still waiting for AI’s cost savings",
+      "summary": "Pressure to deploy, not measurable gains, are setting the pace for enterprise AI investments, according to an Infosys report.",
+      "url": "https://finance.yahoo.com/technology/ai/articles/cios-still-waiting-ai-cost-160055325.html",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 15,
+      "category": "BANKING & FINANCE",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/2fjDBrPArnaf8kB4Bq4_Hw--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/cio_dive_389/4a451f14bcd0663d2f1ad90f14cc230c",
+      "read_time": "1 min read",
+      "stock_name": "Infosys",
+      "ticker": "INFY.NS"
+    },
+    {
+      "date": "2026-08-26T01:30:05Z",
+      "title": "AI Will Deflate Value of IT Work by Up to 25%, Hexaware CEO Says",
+      "summary": "AI could lower the price of routine IT projects by as much as 25%, the head of India’s Hexaware Technologies Ltd. said, highlighting the impact the technology will have on a sector known for labor-intensive tasks.",
+      "url": "https://finance.yahoo.com/technology/ai/articles/ai-deflate-value-25-hexaware-013005383.html",
+      "sentiment_score": -0.3333,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/KzKbLYzU1HxtwQGH9NR1RA--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/bloomberg_holding_pen_162/a75a290c26fe1e14420b508e549a25d2.jpg",
+      "read_time": "1 min read",
+      "stock_name": "Infosys",
+      "ticker": "INFY.NS"
     }
   ],
   "ITC.NS": [
@@ -1506,6 +1590,182 @@
       "sentiment_score": 0.0,
       "sentiment_label": "⚪ Neutral",
       "connection_score": 0
+    }
+  ],
+  "^NSEI": [
+    {
+      "date": "2026-08-28T02:37:19Z",
+      "title": "Indian shares set to open higher; Fed chair speech, closing auction volatility in focus",
+      "summary": "Aug 28 (Reuters) - Indian shares are expected to open higher on Friday after two straight sessions of losses, although caution may persist ahead of a speech by the Federal Reserve chair and after",
+      "url": "https://finance.yahoo.com/news/indian-shares-set-open-higher-023719785.html",
+      "sentiment_score": 0.6667,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/41SBAOzs7BCbWyiTv6N1dw--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/c90e26d702d72c0509ea9390beb3f7e7.jpg",
+      "read_time": "1 min read",
+      "stock_name": "NIFTY 50",
+      "ticker": "^NSEI"
+    },
+    {
+      "date": "2026-08-27T10:44:12Z",
+      "title": "India's HDFC Bank slips to 2-1/2-year low as legal, leadership woes linger",
+      "summary": "By Bharath Rajeswaran and Vivek Kumar M Aug 27 (Reuters) - Shares of HDFC Bank, India's top private lender, fell for a third straight session on Thursday, dragging the country's benchmark stock index",
+      "url": "https://finance.yahoo.com/news/indias-hdfc-bank-slips-2-091645918.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0,
+      "category": "BANKING & FINANCE",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/MdmJU5tRcXcatoBRGDhSqg--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/b1826bed392da9840bcf2306ef215f27.jpg",
+      "read_time": "1 min read",
+      "stock_name": "NIFTY 50",
+      "ticker": "^NSEI"
+    },
+    {
+      "date": "2026-08-26T17:31:28Z",
+      "title": "India equity outlook cut again as foreign funds seek value elsewhere in Asia: Reuters poll",
+      "summary": "By Vivek Mishra BENGALURU, Aug 26 (Reuters) - India's stock market will trade lower by the middle of next year than it did at the start of 2026, according to a Reuters poll of equity analysts — the",
+      "url": "https://finance.yahoo.com/news/india-equity-outlook-cut-again-092251458.html",
+      "sentiment_score": -0.3333,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/iEO8QYnUQGmnq4XDDbHokw--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/f9a98caa8567d66ad1ca4ac3fc61aa2d.jpg",
+      "read_time": "1 min read",
+      "stock_name": "NIFTY 50",
+      "ticker": "^NSEI"
+    }
+  ],
+  "RELIANCE.NS": [
+    {
+      "date": "2026-08-17T18:27:44Z",
+      "title": "Rolls-Royce Stock Hits First New High In 14 Years. Firm Announces Engine Project.",
+      "summary": "Shares climbed to a record high for the first time in more than 12 years after the company announced a jet-engine project for a military plane program in India.",
+      "url": "",
+      "sentiment_score": 0.3333,
+      "sentiment_label": "🟢 Positive",
+      "connection_score": 0,
+      "category": "ENERGY & POWER",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/k2WLI7RRisRPXAUxBsXIpQ--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/ibd.com/f6c413b91ff4a9a36d06ad2a7de9eb24.jpg",
+      "read_time": "1 min read",
+      "stock_name": "Reliance Industries",
+      "ticker": "RELIANCE.NS"
+    },
+    {
+      "date": "2026-08-08T00:01:00Z",
+      "title": "ELAM: Let’s make deal – not",
+      "summary": "Trump’s energy frustrations are not liable to be resolved this year. Tuesday, Trump told Fox News that the U.S. and Iran were close to a deal to open the Strait of Hormuz. He then leaped to the conclusion that would lower the price of gasoline from the current nationwide price of $4.06 to $2.50. Anyone with that much of a misunderstanding of the worldwide supply chain from crude oil to ...",
+      "url": "https://finance.yahoo.com/energy/articles/elam-let-deal-not-000100531.html",
+      "sentiment_score": -0.3333,
+      "sentiment_label": "🔴 Negative",
+      "connection_score": 0,
+      "category": "TECHNOLOGY",
+      "image_url": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80",
+      "read_time": "2 min read",
+      "stock_name": "Reliance Industries",
+      "ticker": "RELIANCE.NS"
+    },
+    {
+      "date": "2026-08-05T12:13:21Z",
+      "title": "Reliance's luxury unit brings Kim Kardashian's SKIMS to India",
+      "summary": "Aug 5 (Reuters) - Reliance Brands, the luxury retail arm of Reliance Retail, has partnered with Kim Kardashian's SKIMS to bring the shapewear brand to India, as global companies race to enter the",
+      "url": "https://finance.yahoo.com/news/reliances-luxury-unit-brings-kim-121321384.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/VmyS2djqF5Rk8p8akJXw2g--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/f8fb3587262058a5df7625c04a73e9ff",
+      "read_time": "1 min read",
+      "stock_name": "Reliance Industries",
+      "ticker": "RELIANCE.NS"
+    }
+  ],
+  "HDFCBANK.NS": [
+    {
+      "date": "2026-08-28T14:37:11Z",
+      "title": "Asian Equities Traded in the US as American Depositary Receipts Rise in Friday Trading, Up 2% for Week",
+      "summary": "Asian equities traded in the US as American depositary receipts were rising sharply Friday morning,",
+      "url": "https://finance.yahoo.com/markets/world-indices/articles/asian-equities-traded-us-american-143711971.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0,
+      "category": "BANKING & FINANCE",
+      "image_url": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=600&auto=format&fit=crop&q=80",
+      "read_time": "1 min read",
+      "stock_name": "HDFC Bank",
+      "ticker": "HDFCBANK.NS"
+    },
+    {
+      "date": "2026-08-27T10:44:12Z",
+      "title": "India's HDFC Bank slips to 2-1/2-year low as legal, leadership woes linger",
+      "summary": "By Bharath Rajeswaran and Vivek Kumar M Aug 27 (Reuters) - Shares of HDFC Bank, India's top private lender, fell for a third straight session on Thursday, dragging the country's benchmark stock index",
+      "url": "https://finance.yahoo.com/news/indias-hdfc-bank-slips-2-091645918.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65,
+      "category": "BANKING & FINANCE",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/MdmJU5tRcXcatoBRGDhSqg--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/b1826bed392da9840bcf2306ef215f27.jpg",
+      "read_time": "1 min read",
+      "stock_name": "HDFC Bank",
+      "ticker": "HDFCBANK.NS"
+    },
+    {
+      "date": "2026-08-21T15:40:01Z",
+      "title": "BKEAY or HDB: Which Is the Better Value Stock Right Now?",
+      "summary": "BKEAY vs. HDB: Which Stock Is the Better Value Option?",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/bkeay-hdb-better-value-stock-154001336.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 0,
+      "category": "BANKING & FINANCE",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/7RWCsILY3cj9W3b.c8_jtQ--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/zacks.com/3d7c5b2146ac04ffd51752e17ff2a619.jpg",
+      "read_time": "1 min read",
+      "stock_name": "HDFC Bank",
+      "ticker": "HDFCBANK.NS"
+    }
+  ],
+  "TATAMOTORS.NS": [
+    {
+      "date": "2025-10-22T06:05:34Z",
+      "title": "Jaguar Land Rover hack cost UK economy $2.5 billion, report says",
+      "summary": "By James Pearson LONDON (Reuters) -The August hack of Jaguar Land Rover (JLR), owned by India's Tata Motors, cost the British economy 1.9 billion pounds ($2.55 billion) and affected over 5,000",
+      "url": "https://finance.yahoo.com/news/jaguar-land-rover-hack-cost-060534996.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15,
+      "category": "BANKING & FINANCE",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/yMQCZpb7tsfJHG6Lf9HRRA--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/b5c608dd20f02318b7fb7d17b257e2bf",
+      "read_time": "1 min read",
+      "stock_name": "Tata Motors",
+      "ticker": "TATAMOTORS.NS"
+    },
+    {
+      "date": "2025-10-22T06:02:24Z",
+      "title": "Jaguar Land Rover hack cost UK economy an estimated $2.5 billion, report says",
+      "summary": "LONDON (Reuters) -The hack of Jaguar Land Rover, owned by India's Tata Motors, cost the British economy an estimated 1.9 billion pounds ($2.55 billion) and affected over 5,000 organisations, an independent cybersecurity body said in a report published on Wednesday.  The report was produced by the Cyber Monitoring Centre, an independent, not for profit organisation made up of industry specialists, including the former head of Britain's National Cyber Security Centre.  \"This incident appears to be the most economically damaging cyber event to hit the UK, with the vast majority of the financial impact being due to the loss of manufacturing output at JLR and its suppliers,\" the report said.",
+      "url": "https://finance.yahoo.com/news/jaguar-land-rover-hack-cost-060224865.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 15,
+      "category": "EARNINGS",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/0SbhYk..twRMM054OSMQZA--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters-finance.com/fdc49f5a370b7aefa0e46dd1181fc2af",
+      "read_time": "3 min read",
+      "stock_name": "Tata Motors",
+      "ticker": "TATAMOTORS.NS"
+    },
+    {
+      "date": "2025-10-10T07:54:55Z",
+      "title": "Trustee of India's Tata charity arm calls internal disagreements 'unprecedented'",
+      "summary": "By Aditya Kalra NEW DELHI (Reuters) -A trustee of Tata Group's charity arm has said its decision to vote him off the board of the $180-billion business empire it controls was \"unprecedented\" and",
+      "url": "https://finance.yahoo.com/news/trustee-indias-tata-charity-arm-075455747.html",
+      "sentiment_score": 0.0,
+      "sentiment_label": "⚪ Neutral",
+      "connection_score": 65,
+      "category": "TECHNOLOGY",
+      "image_url": "https://s.yimg.com/uu/api/res/1.2/0oL7utcKERZbVPGM.z_dMA--~B/Zmk9c3RyaW07aD0xMjg7dz0xNzA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/reuters.com/026532a680f2fd73cac1652a0ad3acd7",
+      "read_time": "1 min read",
+      "stock_name": "Tata Motors",
+      "ticker": "TATAMOTORS.NS"
     }
   ]
 }
