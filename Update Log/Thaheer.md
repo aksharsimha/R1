@@ -7,11 +7,11 @@
 - Swapped two-column layout so Latest News is placed on the Left and Market Overview on the Right.
 - Removed top sentiment KPI metric cards and sentiment summary bar to streamline header and eliminate clutter.
 - Built Market Overview panel with live NIFTY 50 and SENSEX metrics, sparklines, and market breadth (Advances / Declines / Unchanged).
-- Added **🔥 Trending Market Topics** section with interactive market theme pills (`#NIFTY25K`, `#Q2Results`, `#RBIPolicy`, `#AITechRally`, etc.).
+- Made **🔥 Trending Market Topics** fully clickable with deep dive analysis dialogs covering catalysts, impacted stocks, and related news for `#NIFTY25K`, `#Q2Results`, `#RBIPolicy`, `#AITechRally`, `#GreenHydrogen`, `#DefencePSU`, `#AutoDemand`, and `#BankMergers`.
 - Added **📅 Earnings & Dividends Calendar** integrated with Yahoo Finance to display upcoming quarter results release dates, consensus EPS estimates, and dividend ex-dates for user holdings and Indian market leaders.
 - Built Latest News feed with live market articles from NSE benchmarks, category tags, thumbnails, read times, and `View All News →` modal.
 - Removed notification icon from top header and preserved Search 🔍 and Profile 👤 quick actions.
-- Built 10-Year Historical News & Sentiment Archive (2016-2026) 📁 with multi-year filter, era milestone shortcuts, and keyword/ticker search.
+- Built **2-Year Monthly Historical News & Sentiment Archive (2025 - 2026)** 📁 with individual month selection (`01 - January` through `12 - December`), year selector, and keyword/ticker search.
 
 ### Chat Avatars & Profile Pictures
 - Replaced letter placeholders with actual user profile avatars across the Chat tab (`quest_app/tabs/chat.py`).
