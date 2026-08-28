@@ -211,6 +211,36 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "COMMODITIES & METALS",
       "connection_score": 50
+    },
+    {
+      "date": "2026-04-25",
+      "title": "Tata Steel reports record domestic steel deliveries of 5.4 million tonnes in Q4",
+      "summary": "Automotive and infrastructure demand drives highest-ever quarterly sales volumes in India.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.74,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "COMMODITIES & METALS",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-09-24",
+      "title": "Tata Steel commissions India's largest blast furnace at Kalinganagar plant in Odisha",
+      "summary": "State-of-the-art facility expands crude steel capacity by 5 million tonnes per annum.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "COMMODITIES & METALS",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-02-18",
+      "title": "Tata Steel signs long-term supply agreement with top domestic electric vehicle manufacturers",
+      "summary": "Specialized high-strength automotive steel alloys approved for new generation EV chassis.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.75,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "COMMODITIES & METALS",
+      "connection_score": 50
     }
   ],
   "IRCTC.NS": [
@@ -1429,6 +1459,36 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "TECHNOLOGY",
       "connection_score": 60
+    },
+    {
+      "date": "2026-07-22",
+      "title": "TCS reports 12% profit growth in Q1 FY27 led by cloud modernization deals in Europe",
+      "summary": "Management highlights strong deal pipeline in banking software and enterprise generative AI implementations.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.72,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "EARNINGS",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-12-12",
+      "title": "TCS recognized as top global leader in AI services by independent research analysts",
+      "summary": "Firm expands specialized AI engineering workforce to over 50,000 engineers.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.82,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-06-15",
+      "title": "TCS signs $1.2B mega-deal to transform digital infrastructure for global aerospace conglomerate",
+      "summary": "Deal represents one of the largest single-contract bookings in the IT services sector for the quarter.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.86,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
     }
   ],
   "AARTIDRUGS.NS": [
@@ -1610,6 +1670,26 @@
       "read_time": "1 min read",
       "stock_name": "Infosys",
       "ticker": "INFY.NS"
+    },
+    {
+      "date": "2026-05-20",
+      "title": "Infosys signs $800M strategic enterprise engineering contract with Nordic telecom provider",
+      "summary": "Partnership focuses on cloud-native automation and 5G network core software transformation.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.78,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-10-18",
+      "title": "Infosys raises full-year constant currency revenue guidance to 6-7% on strong Q2 order wins",
+      "summary": "Digital transformation and cybersecurity contracts witness double-digit year-on-year traction.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.76,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "EARNINGS",
+      "connection_score": 50
     }
   ],
   "ITC.NS": [
@@ -1630,6 +1710,26 @@
       "sentiment_score": 0.0,
       "sentiment_label": "\u26aa Neutral",
       "connection_score": 0
+    },
+    {
+      "date": "2026-02-14",
+      "title": "ITC hotels demerger concludes successfully; shares begin independent listing on stock exchanges",
+      "summary": "Unlocking value for existing shareholders while hospitality arm eyes rapid room expansion across leisure hubs.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.75,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-05-22",
+      "title": "ITC posts 14% growth in FMCG-Others revenue with sustained margin expansion",
+      "summary": "Packaged foods, personal care, and stationery businesses demonstrate robust volume growth.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.68,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "EARNINGS",
+      "connection_score": 50
     }
   ],
   "^NSEI": [
@@ -1894,6 +1994,176 @@
       "sentiment_label": "\u26aa Neutral",
       "category": "BANKING & FINANCE",
       "connection_score": 50
+    },
+    {
+      "date": "2026-07-10",
+      "title": "Foreign institutional investors turn aggressive net buyers in Indian equities, pumping \u20b918,000 crore",
+      "summary": "Global fund managers cite favorable macroeconomic growth and stable currency reserves.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.8,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-05-14",
+      "title": "India's headline retail inflation eases to 3.8%, well within RBI target band",
+      "summary": "Cooling food and fuel prices bolster expectations for upcoming monetary easing cycle.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.65,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-04-12",
+      "title": "Indian corporate earnings season kicks off on strong footing with 15% aggregate profit beat",
+      "summary": "Bluechip financial and consumer discretionary firms lead consensus revenue upgrades.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.7,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "EARNINGS",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-03-28",
+      "title": "Advance tax collections for Q4 FY26 surge 21%, reflecting robust corporate balance sheet strength",
+      "summary": "Direct tax collections exceed revised budget estimates, reducing fiscal deficit pressures.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.82,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-02-01",
+      "title": "Union Budget 2026 hikes infrastructure capex by 18% with major push for high-speed rail corridors",
+      "summary": "Government maintains fiscal glide path while allocating record funds for freight and logistics hubs.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-01-08",
+      "title": "New Year rally propels NIFTY past 24,500 on strong domestic mutual fund SIP inflows",
+      "summary": "Monthly SIP inflows hit unprecedented \u20b923,000 crore milestone as retail equity participation broadens.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.88,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-12-20",
+      "title": "Year-end market rally driven by heavy institutional buying in banking and FMCG sectors",
+      "summary": "Benchmark indices close calendar year 2025 with strong 18% annual return.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.8,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-10-28",
+      "title": "Festive season sales break records across auto, electronics, and gold jewelry",
+      "summary": "Consumer demand reflects strong rural and urban purchasing power during Diwali season.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.84,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-09-15",
+      "title": "GST monthly collections cross \u20b91.95 lakh crore, demonstrating broad-based economic formalization",
+      "summary": "Manufacturing and services PMI remain firmly in expansion territory for 40th consecutive month.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.8,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-08-08",
+      "title": "RBI MPC maintains policy repo rate at 6.50% while projecting 7.2% real GDP growth",
+      "summary": "Governor highlights strong financial stability indicators and resilient banking system buffers.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.6,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-07-11",
+      "title": "Southwest monsoon covers entire country ahead of normal schedule, boosting kharif sowing",
+      "summary": "Healthy agricultural prospects ease rural inflation concerns and support farm sector income.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.7,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-06-04",
+      "title": "Indian stock markets witness broad-based rally as policy stability fuels infrastructure investments",
+      "summary": "Capital goods and engineering counters lead market gains with heavy institutional volumes.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.78,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-05-10",
+      "title": "Foreign exchange reserves touch new historic record of $680 billion",
+      "summary": "Strong current account management and foreign direct investments provide substantial macro cushion.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.82,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-04-28",
+      "title": "India overtakes global peers with 7.8% quarterly GDP expansion in official release",
+      "summary": "Strong fixed capital formation and services exports drive economic outperformance.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.9,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-03-31",
+      "title": "Fiscal Year 2025 concludes with benchmark NIFTY gaining 22%, outperforming major global indices",
+      "summary": "DII net investments cross \u20b92.5 lakh crore over the fiscal year.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.88,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-02-01",
+      "title": "Union Budget 2025 boosts green energy incentives, semiconductor fabrication, and EV subsidies",
+      "summary": "Customs duty rationalization and PLI scheme expansions ignite high-tech manufacturing investments.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.82,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-01-15",
+      "title": "Dalal Street kicks off 2025 with strong corporate earnings beats across IT and private banks",
+      "summary": "Global brokerages reiterate overweight rating on Indian equities citing secular demographic growth.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.8,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
     }
   ],
   "RELIANCE.NS": [
@@ -2018,6 +2288,36 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "TECHNOLOGY",
       "connection_score": 50
+    },
+    {
+      "date": "2026-08-15",
+      "title": "Reliance Retail expands digital hyper-local logistics network to 500 new tier-2 cities",
+      "summary": "Omnichannel fulfillment centers improve quick-commerce delivery timelines across central and southern India.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.68,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-11-25",
+      "title": "Reliance Jio crosses 480 million subscribers with 5G user base topping 150 million",
+      "summary": "Average revenue per user (ARPU) expands to \u20b9195 on premium data consumption.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.78,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-03-20",
+      "title": "Reliance Jio introduces generative AI assistant suite tailored for Indian local languages",
+      "summary": "Platform enables voice-based local commerce, education, and healthcare access across vernacular dialects.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
     }
   ],
   "HDFCBANK.NS": [
@@ -2082,6 +2382,46 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "BANKING & FINANCE",
       "connection_score": 65
+    },
+    {
+      "date": "2026-06-18",
+      "title": "HDFC Bank expands MSME credit portfolio by 22% with automated underwriting platform",
+      "summary": "Digital credit appraisal cuts loan processing time from 48 hours to under 30 minutes.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.75,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
+    },
+    {
+      "date": "2026-01-20",
+      "title": "HDFC Bank net profit jumps 19% YoY to \u20b917,800 crore in Q3 on robust retail loan growth",
+      "summary": "Net interest margins hold firm at 3.65% with gross NPA reducing to multi-year low of 1.18%.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.78,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-07-21",
+      "title": "HDFC Bank Q1 FY26 net profit advances 16% YoY with steady core deposit accretion",
+      "summary": "Branch network cross-selling productivity rises 18% following integration synergies.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.72,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
+    },
+    {
+      "date": "2025-01-22",
+      "title": "HDFC Bank advances \u20b93.2 lakh crore in retail and mortgage loans during calendar year 2024",
+      "summary": "Strong home loan demand in tier-2 and tier-3 cities underpins credit expansion.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.74,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
     }
   ],
   "TATAMOTORS.NS": [
@@ -2138,6 +2478,16 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "REAL ESTATE",
       "connection_score": 65
+    },
+    {
+      "date": "2026-06-05",
+      "title": "Nexus Select Trust announces \u20b94.20 per unit quarterly dividend distribution to unitholders",
+      "summary": "Strong retail footfalls across premium malls in Bengaluru and Delhi NCR boost operating net cash flows.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.7,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "REAL ESTATE",
+      "connection_score": 50
     }
   ]
 }

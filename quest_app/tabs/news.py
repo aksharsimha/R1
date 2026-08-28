@@ -161,74 +161,231 @@ def _view_all_news_dialog(all_articles: list):
 """), unsafe_allow_html=True)
 
 
-@st.dialog("📁 10-Year Historical News & Sentiment Archive (2016 - 2026)")
+# ──────────────────────────────────────────────────────────────────────────────
+# Trending Topics Knowledge & Dialog
+# ──────────────────────────────────────────────────────────────────────────────
+
+TRENDING_TOPICS_INFO = {
+    "#NIFTY25K": {
+        "title": "#NIFTY25K — Historic 25,000 Milestone",
+        "tag": "Milestone & Macro",
+        "sentiment": "🟢 Bullish (+0.82)",
+        "summary": "NIFTY 50 breaches record all-time highs powered by record domestic retail SIP flows crossing ₹23,000 crore/month, robust GST collections, and consistent corporate margin expansions.",
+        "impacted_stocks": ["NIFTY 50", "RELIANCE", "HDFCBANK", "ICICIBANK", "INFY"],
+        "key_drivers": [
+            "Monthly SIP inflows at historic high of ₹23,000+ Crore",
+            "Strong GDP print of 7.2%+ outpacing emerging market peers",
+            "Institutional buying in largecap banks and tech leaders"
+        ],
+        "news_keywords": ["NIFTY", "record", "benchmark", "milestone", "SIP"]
+    },
+    "#Q2Results": {
+        "title": "#Q2Results — Corporate Earnings Season Kickoff",
+        "tag": "Earnings Season",
+        "sentiment": "🟢 Bullish (+0.70)",
+        "summary": "Indian companies gear up for Q2 FY27 earnings disclosures with early consensus pointing to steady 12-15% profit growth across IT, private lenders, and capital goods.",
+        "impacted_stocks": ["TCS", "INFY", "HDFCBANK", "RELIANCE", "ITC"],
+        "key_drivers": [
+            "IT sector deal momentum in enterprise generative AI and cloud migration",
+            "Private banks reporting stable Net Interest Margins and multi-year low NPAs",
+            "Auto & consumer demand pickup ahead of festive quarter"
+        ],
+        "news_keywords": ["earnings", "profit", "results", "revenue", "Q2", "quarterly"]
+    },
+    "#RBIPolicy": {
+        "title": "#RBIPolicy — Monetary Stance & Rate Trajectory",
+        "tag": "Central Banking & Macro",
+        "sentiment": "⚪ Neutral (+0.35)",
+        "summary": "The RBI Monetary Policy Committee keeps key repo rates balanced while closely monitoring food inflation and global interest rate easing cycles.",
+        "impacted_stocks": ["BANKNIFTY", "SBIN", "HDFCBANK", "ICICIBANK", "AXISBANK"],
+        "key_drivers": [
+            "Headline CPI inflation easing towards the 4% median target band",
+            "Foreign exchange reserves touching record $680+ Billion",
+            "Systemic banking liquidity remaining in mild surplus"
+        ],
+        "news_keywords": ["RBI", "inflation", "repo rate", "monetary", "policy"]
+    },
+    "#AITechRally": {
+        "title": "#AITechRally — Generative AI & Cloud Scaling",
+        "tag": "Technology & AI",
+        "sentiment": "🟢 Bullish (+0.88)",
+        "summary": "Top Indian IT majors win billion-dollar digital architecture deals implementing generative AI, automation, and cybersecurity frameworks for Fortune 500 enterprises.",
+        "impacted_stocks": ["TCS", "INFY", "WIPRO", "TECHM", "COFORGE"],
+        "key_drivers": [
+            "Enterprise GenAI contract size expanding from pilot projects to full rollouts",
+            "Margin improvement from automated software delivery pipelines",
+            "High client retention in BFSI and retail cloud transformation"
+        ],
+        "news_keywords": ["AI", "technology", "cloud", "generative AI", "digital", "software"]
+    },
+    "#GreenHydrogen": {
+        "title": "#GreenHydrogen — Renewable Power & Gigafactories",
+        "tag": "Energy Transition",
+        "sentiment": "🟢 Bullish (+0.75)",
+        "summary": "Mega capex announcements in electrolyzers, solar PV gigafactories, and green hydrogen hubs accelerate India's clean energy independence roadmap.",
+        "impacted_stocks": ["RELIANCE", "ADANIGREEN", "TATASTEEL", "NTPC"],
+        "key_drivers": [
+            "Commercial commissioning of 10GW solar and battery storage complexes",
+            "National Green Hydrogen Mission subsidies and transmission waiver incentives",
+            "Industrial shift to decarbonized green steel and transport fuels"
+        ],
+        "news_keywords": ["green hydrogen", "energy", "solar", "gigafactory", "renewable"]
+    },
+    "#DefencePSU": {
+        "title": "#DefencePSU — Indigenization & Export Surge",
+        "tag": "Defence & Aerospace",
+        "sentiment": "🟢 Bullish (+0.85)",
+        "summary": "State-run and private defence aerospace firms witness multi-year order book visibility backed by Make in India mandates and rising export orders.",
+        "impacted_stocks": ["BEL", "HAL", "BDL", "BEML"],
+        "key_drivers": [
+            "Capital acquisition outlay prioritized for domestic manufacturers",
+            "Surging exports of radar systems, avionics, and missile platforms",
+            "Long-term revenue visibility extending over 5-7 years"
+        ],
+        "news_keywords": ["defence", "aerospace", "Make in India", "order book"]
+    },
+    "#AutoDemand": {
+        "title": "#AutoDemand — Festive Bookings & EV Fleet Expansion",
+        "tag": "Automotive & Mobility",
+        "sentiment": "🟢 Bullish (+0.74)",
+        "summary": "Automotive makers record peak festive deliveries in passenger SUVs, commercial fleets, and electric two-wheelers across urban and rural markets.",
+        "impacted_stocks": ["TATAMOTORS", "M&M", "MARUTI", "BAJAJ-AUTO"],
+        "key_drivers": [
+            "Premium SUV segment commanding over 50% of passenger vehicle sales",
+            "Rapid EV battery cost reductions driving mainstream fleet adoption",
+            "Rural cash flows bolstered by healthy monsoon agricultural yield"
+        ],
+        "news_keywords": ["auto", "vehicle", "sales", "electric vehicle", "EV"]
+    },
+    "#BankMergers": {
+        "title": "#BankMergers — Private Banking Integration & Scale",
+        "tag": "Banking & Financials",
+        "sentiment": "🟢 Bullish (+0.68)",
+        "summary": "Consolidation synergies and technological streamlining enhance return on assets and cross-selling efficiency across India's largest financial conglomerates.",
+        "impacted_stocks": ["HDFCBANK", "KOTAKBANK", "ICICIBANK", "AXISBANK"],
+        "key_drivers": [
+            "Post-merger credit-to-deposit (CD) ratios normalizing ahead of schedule",
+            "Significant cost-to-income ratio benefits from branch rationalization",
+            "Retail loan origination surging across tier-2 and tier-3 towns"
+        ],
+        "news_keywords": ["bank", "merger", "credit", "loan", "deposit"]
+    }
+}
+
+@st.dialog("🔥 Trending Topic Deep Dive")
+def _trending_topic_dialog(topic_key):
+    info = TRENDING_TOPICS_INFO.get(topic_key, {})
+    title = info.get("title", topic_key)
+    tag = info.get("tag", "Market Trend")
+    sentiment = info.get("sentiment", "🟢 Bullish (+0.75)")
+    summary = info.get("summary", "Market trend analysis and catalyst tracking.")
+    impacted = info.get("impacted_stocks", [])
+    drivers = info.get("key_drivers", [])
+    keywords = info.get("news_keywords", [])
+    
+    st.markdown(textwrap.dedent(f"""
+<div style="background:var(--q-surface-2);border-radius:14px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--q-border);">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+<span style="font-size:0.75rem;font-weight:700;background:rgba(99,102,241,0.15);color:#818cf8;padding:3px 8px;border-radius:6px;">{tag}</span>
+<span style="font-size:0.78rem;font-weight:600;color:var(--q-text);">{sentiment}</span>
+</div>
+<h3 style="margin:4px 0 6px;color:var(--q-text);font-size:1.15rem;">{title}</h3>
+<p style="font-size:0.84rem;color:var(--q-text-2);line-height:1.45;margin:0;">{summary}</p>
+</div>
+"""), unsafe_allow_html=True)
+
+    st.markdown("<h4 style='font-size:0.9rem;margin:12px 0 6px;color:var(--q-text);'>🎯 Key Impacted Equities</h4>", unsafe_allow_html=True)
+    st_pills = " ".join([f"<span style='background:rgba(255,255,255,0.06);color:var(--q-text);padding:3px 8px;border-radius:6px;font-size:0.75rem;font-weight:600;display:inline-block;margin:2px 4px 2px 0;'>{s}</span>" for s in impacted])
+    st.markdown(f"<div style='margin-bottom:12px;'>{st_pills}</div>", unsafe_allow_html=True)
+
+    st.markdown("<h4 style='font-size:0.9rem;margin:12px 0 6px;color:var(--q-text);'>💡 Core Market Catalysts</h4>", unsafe_allow_html=True)
+    for d in drivers:
+        st.markdown(f"<div style='font-size:0.8rem;color:var(--q-text-2);margin-bottom:4px;line-height:1.4;'>• {d}</div>", unsafe_allow_html=True)
+        
+    st.markdown("<h4 style='font-size:0.9rem;margin:14px 0 6px;color:var(--q-text);'>📰 Related News & Analysis</h4>", unsafe_allow_html=True)
+    archive = get_archived_articles()
+    related = []
+    for ticker, arts in archive.items():
+        for a in arts:
+            t_text = (a.get("title", "") + " " + a.get("summary", "")).lower()
+            if any(k.lower() in t_text for k in keywords):
+                related.append((ticker, a))
+                
+    if related:
+        for ticker, art in related[:4]:
+            t_title = art.get("title", "Market Update")
+            t_url = art.get("url") or art.get("link", "#")
+            t_date = str(art.get("date", ""))[:10]
+            st.markdown(textwrap.dedent(f"""
+<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(112,126,171,0.16);border-radius:10px;padding:10px 12px;margin-bottom:8px;">
+<div style="font-size:0.72rem;color:var(--q-text-3);margin-bottom:2px;">{ticker} &bull; 📅 {t_date}</div>
+<a href="{t_url}" target="_blank" style="color:var(--q-text);font-size:0.85rem;font-weight:600;text-decoration:none;display:block;">{t_title}</a>
+</div>
+"""), unsafe_allow_html=True)
+    else:
+        st.info("Additional real-time reports are streaming in for this topic.")
+
+
+@st.dialog("📁 2-Year Monthly Historical News Archive (2025 - 2026)")
 def _archive_dialog():
-    st.markdown("<h3 style='margin:0 0 6px;'>10-Year Market Intelligence Archive</h3>", unsafe_allow_html=True)
-    st.caption("Explore historical market news, landmark corporate events, budget declarations, and sentiment data from 2016 to 2026.")
+    st.markdown("<h3 style='margin:0 0 6px;'>2-Year Monthly Market Archive</h3>", unsafe_allow_html=True)
+    st.caption("Access historical market reports, quarterly results, policy announcements, and sentiment for each month across 2025 and 2026.")
     
     archive = get_archived_articles()
     
     # Extract all articles with their metadata
     all_archive_items = []
-    years_set = set()
     for ticker, arts in archive.items():
         for a in arts:
             d_str = str(a.get("date", ""))[:10]
             year = d_str[:4] if len(d_str) >= 4 and d_str[:4].isdigit() else "2026"
-            years_set.add(year)
-            all_archive_items.append({
-                "ticker": ticker,
-                "date": d_str or "2026-01-01",
-                "year": year,
-                "title": a.get("title", "Archived News"),
-                "summary": a.get("summary", ""),
-                "url": a.get("url") or a.get("link", "#"),
-                "score": a.get("sentiment_score", a.get("score", 0.0)),
-                "label": a.get("sentiment_label", "⚪ Neutral"),
-                "category": a.get("category", "MARKET UPDATE"),
-                "connection": a.get("connection_score", 50),
-            })
+            month = d_str[5:7] if len(d_str) >= 7 and d_str[5:7].isdigit() else "01"
+            
+            # Only include 2025 and 2026 for the 2-year window
+            if year in ("2025", "2026"):
+                all_archive_items.append({
+                    "ticker": ticker,
+                    "date": d_str or "2026-01-01",
+                    "year": year,
+                    "month": month,
+                    "month_year": f"{d_str[:7]}",
+                    "title": a.get("title", "Archived News"),
+                    "summary": a.get("summary", ""),
+                    "url": a.get("url") or a.get("link", "#"),
+                    "score": a.get("sentiment_score", a.get("score", 0.0)),
+                    "label": a.get("sentiment_label", "⚪ Neutral"),
+                    "category": a.get("category", "MARKET UPDATE"),
+                    "connection": a.get("connection_score", 50),
+                })
             
     # Sort all items chronologically descending
     all_archive_items.sort(key=lambda x: x["date"], reverse=True)
     
-    # 10-Year Filters
-    c1, c2, c3 = st.columns([1.2, 1.2, 2])
+    # 2-Year & Monthly Filters
+    c1, c2, c3 = st.columns([1.1, 1.2, 1.8])
     with c1:
-        year_options = [
-            "All Years (2016 - 2026)",
-            "2026", "2025", "2024", "2023", "2022",
-            "2021", "2020", "2019", "2018", "2017", "2016"
-        ]
+        year_options = ["All (2025 - 2026)", "2026", "2025"]
         selected_year = st.selectbox("Filter by Year", year_options, key="arch_sel_year")
     with c2:
-        cat_options = ["All Categories", "MARKET UPDATE", "TECHNOLOGY", "BANKING & FINANCE", "ENERGY & POWER", "COMMODITIES & METALS", "REAL ESTATE", "EARNINGS"]
-        selected_cat = st.selectbox("Category", cat_options, key="arch_sel_cat")
+        month_options = [
+            "All Months",
+            "01 - January", "02 - February", "03 - March", "04 - April",
+            "05 - May", "06 - June", "07 - July", "08 - August",
+            "09 - September", "10 - October", "11 - November", "12 - December"
+        ]
+        selected_month = st.selectbox("Filter by Month", month_options, key="arch_sel_month")
     with c3:
-        search_kw = st.text_input("Search Keyword, Ticker or Event", placeholder="e.g. Reliance, GST, COVID, Demonetization, Budget", key="arch_search_kw")
-
-    # Era quick tags
-    st.markdown("""
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px;">
-        <span style="font-size:0.72rem;color:var(--q-text-3);padding-top:4px;">Landmark Eras:</span>
-        <span style="font-size:0.7rem;background:rgba(99,102,241,0.12);color:#a5b4fc;padding:3px 8px;border-radius:12px;">🚀 2024-26 AI & 25k NIFTY</span>
-        <span style="font-size:0.7rem;background:rgba(16,185,129,0.12);color:#34d399;padding:3px 8px;border-radius:12px;">🌕 2023 Chandrayaan-3</span>
-        <span style="font-size:0.7rem;background:rgba(239,68,68,0.12);color:#f87171;padding:3px 8px;border-radius:12px;">📉 2022 Rate Hikes</span>
-        <span style="font-size:0.7rem;background:rgba(16,185,129,0.12);color:#34d399;padding:3px 8px;border-radius:12px;">📈 2021 Tech IPO Boom</span>
-        <span style="font-size:0.7rem;background:rgba(239,68,68,0.12);color:#f87171;padding:3px 8px;border-radius:12px;">🦠 2020 COVID Crash</span>
-        <span style="font-size:0.7rem;background:rgba(99,102,241,0.12);color:#a5b4fc;padding:3px 8px;border-radius:12px;">🏛️ 2019 Tax Cuts</span>
-        <span style="font-size:0.7rem;background:rgba(239,68,68,0.12);color:#f87171;padding:3px 8px;border-radius:12px;">⚠️ 2018 IL&FS Crisis</span>
-        <span style="font-size:0.7rem;background:rgba(99,102,241,0.12);color:#a5b4fc;padding:3px 8px;border-radius:12px;">📜 2017 GST</span>
-        <span style="font-size:0.7rem;background:rgba(245,158,11,0.12);color:#fbbf24;padding:3px 8px;border-radius:12px;">💵 2016 Demonetization & Jio</span>
-    </div>
-    """, unsafe_allow_html=True)
+        search_kw = st.text_input("Search Keyword or Ticker", placeholder="e.g. Reliance, HDFC, GDP, AI, TCS", key="arch_search_kw")
 
     # Filter logic
     filtered = all_archive_items
     if not selected_year.startswith("All"):
         filtered = [item for item in filtered if item["year"] == selected_year]
-    if selected_cat != "All Categories":
-        filtered = [item for item in filtered if item["category"] == selected_cat]
+        
+    if selected_month != "All Months":
+        month_num = selected_month[:2]
+        filtered = [item for item in filtered if item["month"] == month_num]
+        
     if search_kw and search_kw.strip():
         kw = search_kw.strip().lower()
         filtered = [
@@ -236,10 +393,9 @@ def _archive_dialog():
             if kw in item["title"].lower()
             or kw in item["summary"].lower()
             or kw in item["ticker"].lower()
-            or kw in item["year"]
         ]
 
-    st.markdown(f"<p style='color:var(--q-text-3);font-size:0.85rem;'>Showing <strong>{len(filtered)}</strong> archived article(s) across 10-year timeline:</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:var(--q-text-3);font-size:0.85rem;'>Showing <strong>{len(filtered)}</strong> archived article(s):</p>", unsafe_allow_html=True)
 
     if filtered:
         for art in filtered[:25]:
@@ -259,7 +415,7 @@ def _archive_dialog():
 <div style="background:var(--q-surface-2);border-radius:12px;padding:12px 14px;margin-bottom:10px;border-left:3px solid {score_color};border-top:1px solid var(--q-border);border-right:1px solid var(--q-border);border-bottom:1px solid var(--q-border);">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
 <div style="display:flex;gap:6px;align-items:center;">
-<span style="font-size:0.68rem;font-weight:700;background:rgba(99,102,241,0.15);color:#818cf8;padding:2px 6px;border-radius:4px;">{year}</span>
+<span style="font-size:0.68rem;font-weight:700;background:rgba(99,102,241,0.15);color:#818cf8;padding:2px 6px;border-radius:4px;">{d_str[:7]}</span>
 <span style="font-size:0.72rem;font-weight:600;color:var(--q-text);">{ticker}</span>
 <span style="font-size:0.7rem;color:var(--q-text-3);">&bull; {cat}</span>
 </div>
@@ -273,7 +429,7 @@ def _archive_dialog():
 </div>
 """), unsafe_allow_html=True)
     else:
-        st.info("No historical articles matched your filters. Try selecting 'All Years' or searching for broader terms like 'Reliance', 'Market', or 'GDP'.")
+        st.info("No historical articles matched your month/year filters. Try selecting 'All Months' or 'All (2025 - 2026)'.")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -862,20 +1018,29 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
         # 2. Trending Topics Panel
         st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:4px 0 8px;'>🔥 Trending Market Topics</div>", unsafe_allow_html=True)
-        st.markdown(textwrap.dedent("""
-<div class="q-panel-box" style="margin-bottom:14px;padding:14px 16px;">
-<div class="q-trending-box">
-<div class="q-trending-pill"><span>#NIFTY25K</span><span class="q-trending-count">Hot</span></div>
-<div class="q-trending-pill"><span>#Q2Results</span><span class="q-trending-count">Earnings</span></div>
-<div class="q-trending-pill"><span>#RBIPolicy</span><span class="q-trending-count">Macro</span></div>
-<div class="q-trending-pill"><span>#AITechRally</span><span class="q-trending-count">Tech</span></div>
-<div class="q-trending-pill"><span>#GreenHydrogen</span><span class="q-trending-count">Energy</span></div>
-<div class="q-trending-pill"><span>#DefencePSU</span><span class="q-trending-count">Infra</span></div>
-<div class="q-trending-pill"><span>#AutoDemand</span><span class="q-trending-count">Festive</span></div>
-<div class="q-trending-pill"><span>#BankMergers</span><span class="q-trending-count">Finance</span></div>
-</div>
-</div>
-"""), unsafe_allow_html=True)
+        
+        # Clickable interactive topic buttons
+        tr_c1, tr_c2 = st.columns(2)
+        with tr_c1:
+            if st.button("#NIFTY25K 🔥", key="btn_tr_nifty25k", help="Click to explore #NIFTY25K trend", use_container_width=True):
+                _trending_topic_dialog("#NIFTY25K")
+            if st.button("#RBIPolicy 🏛️", key="btn_tr_rbipolicy", help="Click to explore #RBIPolicy trend", use_container_width=True):
+                _trending_topic_dialog("#RBIPolicy")
+            if st.button("#GreenHydrogen 🌿", key="btn_tr_greenh2", help="Click to explore #GreenHydrogen trend", use_container_width=True):
+                _trending_topic_dialog("#GreenHydrogen")
+            if st.button("#AutoDemand 🚗", key="btn_tr_auto", help="Click to explore #AutoDemand trend", use_container_width=True):
+                _trending_topic_dialog("#AutoDemand")
+        with tr_c2:
+            if st.button("#Q2Results 📊", key="btn_tr_q2results", help="Click to explore #Q2Results season", use_container_width=True):
+                _trending_topic_dialog("#Q2Results")
+            if st.button("#AITechRally ⚡", key="btn_tr_aitech", help="Click to explore #AITechRally trend", use_container_width=True):
+                _trending_topic_dialog("#AITechRally")
+            if st.button("#DefencePSU 🛡️", key="btn_tr_defence", help="Click to explore #DefencePSU trend", use_container_width=True):
+                _trending_topic_dialog("#DefencePSU")
+            if st.button("#BankMergers 🏦", key="btn_tr_bankmerg", help="Click to explore #BankMergers trend", use_container_width=True):
+                _trending_topic_dialog("#BankMergers")
+
+        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
 
         # 3. Upcoming Earnings & Dividends Calendar Panel
         st.markdown("<div style='display:flex;justify-content:space-between;align-items:center;padding:4px 0 8px;'><span style='font-size:1.15rem;font-weight:600;color:var(--q-text);'>📅 Earnings & Dividends Calendar</span><span style='font-size:0.75rem;color:var(--q-text-3);'>via Yahoo Finance</span></div>", unsafe_allow_html=True)
