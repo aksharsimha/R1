@@ -142,6 +142,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     if add_asset(_na, _ty, _id, _am, _qt):
                         st.success(f"Added {_na}")
                         time.sleep(0.6)
+                        st.session_state.pop("_analysis_ts", None)
                         st.rerun()
                     else:
                         st.error("Could not add (asset with this name already exists).")
@@ -199,10 +200,12 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             if changes_made and not has_error:
                 st.success("Saved!")
                 time.sleep(0.5)
+                st.session_state.pop("_analysis_ts", None)
                 st.rerun()
             elif changes_made and has_error:
                 st.warning("Some changes were saved, but others failed.")
                 time.sleep(1.5)
+                st.session_state.pop("_analysis_ts", None)
                 st.rerun()
 
         with st.expander("🗑  Remove a stock"):
@@ -212,6 +215,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     if remove_asset(_rm):
                         st.success(f"Removed {_rm}")
                         time.sleep(0.6)
+                        st.session_state.pop("_analysis_ts", None)
                         st.rerun()
     else:
         st.caption("Add your first stock above to bring your dashboard to life.")

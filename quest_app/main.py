@@ -311,11 +311,27 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Analyze Data
+# Analyze Data — cached in session_state so a full re-fetch + re-analysis
+# only happens once every 30s, not on every widget interaction.
+_ANALYSIS_TTL = 30  # seconds
+_now_ts_analysis = time.time()
+_analysis_stale = (
+    "_analysis_df" not in st.session_state
+    or "_analysis_summary" not in st.session_state
+    or (_now_ts_analysis - st.session_state.get("_analysis_ts", 0)) > _ANALYSIS_TTL
+)
+
 with st.spinner("Analyzing portfolio data..."):
     try:
-        df, summary = analyze_portfolio(current_assets, period="2y", verbose=False)
-        
+        if _analysis_stale:
+            df, summary = analyze_portfolio(current_assets, period="2y", verbose=False)
+            st.session_state["_analysis_df"] = df
+            st.session_state["_analysis_summary"] = summary
+            st.session_state["_analysis_ts"] = _now_ts_analysis
+        else:
+            df = st.session_state["_analysis_df"]
+            summary = st.session_state["_analysis_summary"]
+
         # FEATURE A: Update Profile Card with Growth Stat
         p_growth = get_portfolio_growth(df, summary)
         g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
