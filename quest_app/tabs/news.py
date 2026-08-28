@@ -690,7 +690,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0;'>📈 Market Overview</div>", unsafe_allow_html=True)
         with mkt_h2:
             if st.button("View Analytics →", key="btn_mkt_analytics", use_container_width=True):
-                st.session_state.nav_section = "⌂  Overview"
                 st.query_params["page"] = "Analytics"
                 st.rerun()
 
