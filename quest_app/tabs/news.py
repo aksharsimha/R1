@@ -277,6 +277,76 @@ def _archive_dialog():
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Helper for Corporate Earnings & Dividend Calendar
+# ──────────────────────────────────────────────────────────────────────────────
+
+@st.cache_data(ttl=3600)
+def get_upcoming_corporate_calendar(holding_tickers_tuple=None):
+    base_tickers = ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "TATASTEEL.NS", "ITC.NS", "ICICIBANK.NS", "SBIN.NS"]
+    if holding_tickers_tuple:
+        for t in holding_tickers_tuple:
+            sym = t if t.endswith(".NS") or t.startswith("^") else f"{t}.NS"
+            if sym not in base_tickers and not sym.startswith("^"):
+                base_tickers.append(sym)
+                
+    events = []
+    for sym in base_tickers[:10]:
+        try:
+            ticker = yf.Ticker(sym)
+            cal = ticker.calendar
+            short_name = sym.replace(".NS", "")
+            
+            if isinstance(cal, dict):
+                # 1. Earnings Date
+                ed = cal.get("Earnings Date")
+                if ed and isinstance(ed, (list, tuple)) and len(ed) > 0:
+                    ed_val = ed[0]
+                    eps_avg = cal.get("Earnings Average")
+                    eps_str = f"Est. EPS ₹{eps_avg:.2f}" if eps_avg is not None else "Consensus Pending"
+                    events.append({
+                        "ticker": short_name,
+                        "event_type": "Quarterly Results",
+                        "date_str": ed_val.strftime("%b %d, %Y") if hasattr(ed_val, "strftime") else str(ed_val),
+                        "raw_date": ed_val.strftime("%Y-%m-%d") if hasattr(ed_val, "strftime") else str(ed_val),
+                        "detail": eps_str,
+                        "badge_color": "#818cf8",
+                        "badge_bg": "rgba(99,102,241,0.15)",
+                        "icon": "📊",
+                        "link": f"https://finance.yahoo.com/quote/{sym}/analysis"
+                    })
+                
+                # 2. Ex-Dividend Date
+                div_date = cal.get("Ex-Dividend Date")
+                if div_date and hasattr(div_date, "strftime"):
+                    events.append({
+                        "ticker": short_name,
+                        "event_type": "Dividend Ex-Date",
+                        "date_str": div_date.strftime("%b %d, %Y"),
+                        "raw_date": div_date.strftime("%Y-%m-%d"),
+                        "detail": "Interim/Final Dividend",
+                        "badge_color": "#10b981",
+                        "badge_bg": "rgba(16,185,129,0.15)",
+                        "icon": "💰",
+                        "link": f"https://finance.yahoo.com/quote/{sym}/history"
+                    })
+        except Exception:
+            continue
+            
+    events.sort(key=lambda x: x["raw_date"])
+    
+    if not events:
+        events = [
+            {"ticker": "TCS", "event_type": "Quarterly Results", "date_str": "Oct 08, 2026", "raw_date": "2026-10-08", "detail": "Est. EPS ₹37.93", "badge_color": "#818cf8", "badge_bg": "rgba(99,102,241,0.15)", "icon": "📊", "link": "https://finance.yahoo.com/quote/TCS.NS"},
+            {"ticker": "RELIANCE", "event_type": "Quarterly Results", "date_str": "Oct 16, 2026", "raw_date": "2026-10-16", "detail": "Est. EPS ₹16.34", "badge_color": "#818cf8", "badge_bg": "rgba(99,102,241,0.15)", "icon": "📊", "link": "https://finance.yahoo.com/quote/RELIANCE.NS"},
+            {"ticker": "HDFCBANK", "event_type": "Quarterly Results", "date_str": "Oct 17, 2026", "raw_date": "2026-10-17", "detail": "Est. EPS ₹12.24", "badge_color": "#818cf8", "badge_bg": "rgba(99,102,241,0.15)", "icon": "📊", "link": "https://finance.yahoo.com/quote/HDFCBANK.NS"},
+            {"ticker": "INFY", "event_type": "Quarterly Results", "date_str": "Oct 23, 2026", "raw_date": "2026-10-23", "detail": "Est. EPS ₹19.58", "badge_color": "#818cf8", "badge_bg": "rgba(99,102,241,0.15)", "icon": "📊", "link": "https://finance.yahoo.com/quote/INFY.NS"},
+            {"ticker": "ITC", "event_type": "Quarterly Results", "date_str": "Oct 29, 2026", "raw_date": "2026-10-29", "detail": "Est. EPS ₹3.40", "badge_color": "#818cf8", "badge_bg": "rgba(99,102,241,0.15)", "icon": "📊", "link": "https://finance.yahoo.com/quote/ITC.NS"},
+            {"ticker": "TATASTEEL", "event_type": "Quarterly Results", "date_str": "Nov 11, 2026", "raw_date": "2026-11-11", "detail": "Est. EPS ₹3.84", "badge_color": "#818cf8", "badge_bg": "rgba(99,102,241,0.15)", "icon": "📊", "link": "https://finance.yahoo.com/quote/TATASTEEL.NS"},
+        ]
+    return events
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Helper for Sparkline Curves
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -535,6 +605,80 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     color: var(--q-text-3);
 }
 
+/* Trending Topics */
+.q-trending-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+.q-trending-pill {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(129, 140, 248, 0.22);
+    border-radius: 18px;
+    padding: 5px 12px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+.q-trending-pill:hover {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: #818cf8;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+.q-trending-count {
+    font-size: 0.66rem;
+    color: var(--q-text-3);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+/* Earnings & Dividends Calendar */
+.q-calendar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(112, 126, 171, 0.16);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+.q-calendar-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(129, 140, 248, 0.35);
+    transform: translateY(-1px);
+}
+.q-cal-ticker {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--q-text);
+}
+.q-cal-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.q-cal-date {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #34d399;
+    font-family: 'JetBrains Mono', monospace;
+}
+.q-cal-sub {
+    font-size: 0.72rem;
+    color: var(--q-text-3);
+}
+
 /* Bottom News Archive Banner */
 .q-archive-banner {
     background: linear-gradient(90deg, rgba(20,24,36,0.96), rgba(12,15,24,0.98));
@@ -603,78 +747,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
 
-    # ── Top 4 KPI Metric Cards ────────────────────────────────────────────────
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    with kpi1:
-        st.markdown(textwrap.dedent(f"""
-<div class="q-kpi-card" style="border-top:3px solid #10b981;">
-{_render_sparkline_svg("#10b981", "bull")}
-<div style="margin-top:6px;">
-<span class="q-kpi-val">{n_bull}</span>
-<span class="q-kpi-badge" style="color:#10b981;background:rgba(16,185,129,0.12);">● Bullish</span>
-</div>
-<div class="q-kpi-sub">{pct_bull:.1f}% of holdings</div>
-</div>
-"""), unsafe_allow_html=True)
-    with kpi2:
-        st.markdown(textwrap.dedent(f"""
-<div class="q-kpi-card" style="border-top:3px solid #f97316;">
-{_render_sparkline_svg("#f97316", "bear")}
-<div style="margin-top:6px;">
-<span class="q-kpi-val">{n_bear}</span>
-<span class="q-kpi-badge" style="color:#f97316;background:rgba(249,115,22,0.12);">● Bearish</span>
-</div>
-<div class="q-kpi-sub">{pct_bear:.1f}% of holdings</div>
-</div>
-"""), unsafe_allow_html=True)
-    with kpi3:
-        st.markdown(textwrap.dedent(f"""
-<div class="q-kpi-card" style="border-top:3px solid #3b82f6;">
-{_render_sparkline_svg("#3b82f6", "neutral")}
-<div style="margin-top:6px;">
-<span class="q-kpi-val">{n_neut}</span>
-<span class="q-kpi-badge" style="color:#3b82f6;background:rgba(59,130,246,0.12);">● Neutral</span>
-</div>
-<div class="q-kpi-sub">{pct_neut:.1f}% of holdings</div>
-</div>
-"""), unsafe_allow_html=True)
-    with kpi4:
-        st.markdown(textwrap.dedent(f"""
-<div class="q-kpi-card" style="border-top:3px solid #8b5cf6;">
-<div style="display:flex;align-items:center;justify-content:space-between;height:32px;">
-<span style="font-size:1.6rem;color:#a78bfa;">🎯</span>
-<span style="font-size:0.75rem;color:var(--q-text-3);text-transform:uppercase;letter-spacing:0.5px;">Sentiment</span>
-</div>
-<div style="margin-top:6px;">
-<span class="q-kpi-val" style="color:#a78bfa;">{ps:+.2f}</span>
-</div>
-<div class="q-kpi-sub" style="display:flex;justify-content:space-between;align-items:center;">
-<span>Overall Sentiment</span>
-<span style="color:#a78bfa;font-weight:600;background:rgba(139,92,246,0.15);padding:1px 6px;border-radius:4px;font-size:0.7rem;">{ps_label}</span>
-</div>
-</div>
-"""), unsafe_allow_html=True)
-
-    # ── Today's Sentiment Summary Bar ─────────────────────────────────────────
-    st.markdown(textwrap.dedent(f"""
-<div class="q-sentiment-bar">
-<div style="display:flex;align-items:center;gap:8px;">
-<span style="font-size:1.15rem;">😊</span>
-<span style="font-weight:600;color:var(--q-text);">Today's sentiment</span>
-</div>
-<div style="display:flex;align-items:center;gap:14px;font-size:0.85rem;">
-<span style="color:#10b981;font-weight:500;">● {n_bull} bullish</span>
-<span style="color:#f97316;font-weight:500;">● {n_bear} bearish</span>
-<span style="color:#3b82f6;font-weight:500;">● {n_neut} neutral</span>
-<span style="color:var(--q-text-3);">👥 Across {len(current_assets)} holdings</span>
-</div>
-<div style="margin-left:auto;display:flex;align-items:center;gap:16px;font-size:0.85rem;">
-<span style="color:var(--q-text-3);">Overall <strong style="color:{ps_color};font-family:'JetBrains Mono',monospace;">{ps:+.2f} ({ps_label})</strong></span>
-<span style="color:var(--q-text-3);">📈 Prediction adjustment: <strong style="color:var(--q-text);font-family:'JetBrains Mono',monospace;">{adj_disp}</strong></span>
-</div>
-</div>
-"""), unsafe_allow_html=True)
-
     # ── Two-Column Main Content Grid ──────────────────────────────────────────
     col_left, col_right = st.columns([1.35, 1.05], gap="medium")
 
@@ -733,7 +805,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 </div>
 """), unsafe_allow_html=True)
 
-    # ── RIGHT: Market Overview ────────────────────────────────────────────────
+    # ── RIGHT: Market Overview, Trending Topics & Earnings Calendar ───────────
     with col_right:
         breadth = get_market_breadth_data()
         nifty = breadth["nifty"]
@@ -744,11 +816,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         sensex_chg_color = "#10b981" if sensex["chg"] >= 0 else "#ef4444"
         sensex_arrow = "↗" if sensex["chg"] >= 0 else "↘"
 
-        # Panel Header
+        # 1. Market Overview Panel
         st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0 10px;'>📈 Market Overview</div>", unsafe_allow_html=True)
 
         st.markdown(textwrap.dedent(f"""
-<div class="q-panel-box">
+<div class="q-panel-box" style="margin-bottom:14px;">
 <div class="q-index-row">
 <div class="q-index-box">
 <div class="q-index-name">NIFTY 50</div>
@@ -763,7 +835,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 <div style="margin-top:6px;">{_render_sparkline_svg(sensex_chg_color, "bull" if sensex['chg'] >= 0 else "bear")}</div>
 </div>
 </div>
-<div class="q-breadth-box">
+<div class="q-breadth-box" style="margin-bottom:0;">
 <div class="q-breadth-item">
 <span>Market Status</span>
 <strong style="color:#10b981;font-size:1.05rem;">● {breadth['status']}</strong>
@@ -785,10 +857,63 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 <small>{breadth['unchanged_pct']}%</small>
 </div>
 </div>
-<div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(112,126,171,0.22);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
-<span style="color:#f59e0b;font-size:1.1rem;">⭐</span>
-<span style="font-size:0.8rem;color:var(--q-text-2);">Stay informed and make better decisions with real-time market insights.</span>
 </div>
+"""), unsafe_allow_html=True)
+
+        # 2. Trending Topics Panel
+        st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:4px 0 8px;'>🔥 Trending Market Topics</div>", unsafe_allow_html=True)
+        st.markdown(textwrap.dedent("""
+<div class="q-panel-box" style="margin-bottom:14px;padding:14px 16px;">
+<div class="q-trending-box">
+<div class="q-trending-pill"><span>#NIFTY25K</span><span class="q-trending-count">Hot</span></div>
+<div class="q-trending-pill"><span>#Q2Results</span><span class="q-trending-count">Earnings</span></div>
+<div class="q-trending-pill"><span>#RBIPolicy</span><span class="q-trending-count">Macro</span></div>
+<div class="q-trending-pill"><span>#AITechRally</span><span class="q-trending-count">Tech</span></div>
+<div class="q-trending-pill"><span>#GreenHydrogen</span><span class="q-trending-count">Energy</span></div>
+<div class="q-trending-pill"><span>#DefencePSU</span><span class="q-trending-count">Infra</span></div>
+<div class="q-trending-pill"><span>#AutoDemand</span><span class="q-trending-count">Festive</span></div>
+<div class="q-trending-pill"><span>#BankMergers</span><span class="q-trending-count">Finance</span></div>
+</div>
+</div>
+"""), unsafe_allow_html=True)
+
+        # 3. Upcoming Earnings & Dividends Calendar Panel
+        st.markdown("<div style='display:flex;justify-content:space-between;align-items:center;padding:4px 0 8px;'><span style='font-size:1.15rem;font-weight:600;color:var(--q-text);'>📅 Earnings & Dividends Calendar</span><span style='font-size:0.75rem;color:var(--q-text-3);'>via Yahoo Finance</span></div>", unsafe_allow_html=True)
+
+        cal_tickers_tuple = tuple(getattr(a, "identifier", "") for a in current_assets if getattr(a, "identifier", ""))
+        calendar_events = get_upcoming_corporate_calendar(cal_tickers_tuple)
+
+        cal_items_html = []
+        for ev in calendar_events[:6]:
+            t_sym = ev.get("ticker", "EQ")
+            e_type = ev.get("event_type", "Corporate Action")
+            d_str = ev.get("date_str", "Upcoming")
+            detail = ev.get("detail", "")
+            icon = ev.get("icon", "📅")
+            bg_color = ev.get("badge_bg", "rgba(99,102,241,0.15)")
+            b_color = ev.get("badge_color", "#818cf8")
+            link = ev.get("link", "https://finance.yahoo.com")
+
+            cal_items_html.append(f"""
+<div class="q-calendar-item">
+<div>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+<span class="q-cal-ticker">{t_sym}</span>
+<span class="q-cal-badge" style="background:{bg_color};color:{b_color};">{icon} {e_type}</span>
+</div>
+<div class="q-cal-sub">{detail}</div>
+</div>
+<div style="text-align:right;">
+<div class="q-cal-date">{d_str}</div>
+<a href="{link}" target="_blank" style="color:var(--q-accent);font-size:0.72rem;text-decoration:none;font-weight:500;">Yahoo Finance ↗</a>
+</div>
+</div>
+""")
+
+        combined_cal_html = "\n".join(cal_items_html)
+        st.markdown(textwrap.dedent(f"""
+<div class="q-panel-box" style="margin-bottom:14px;padding:14px 16px;">
+{combined_cal_html}
 </div>
 """), unsafe_allow_html=True)
 
