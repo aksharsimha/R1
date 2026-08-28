@@ -321,18 +321,57 @@ _analysis_stale = (
     or (_now_ts_analysis - st.session_state.get("_analysis_ts", 0)) > _ANALYSIS_TTL
 )
 
+# ── Debug timing (visible only when ?debug=1 is in the URL) ──────────────────
+_DEBUG = st.query_params.get("debug") == "1"
+_dbg_t = {}  # timing accumulator: label -> elapsed seconds
+
 with st.spinner("Analyzing portfolio data..."):
     try:
         if _analysis_stale:
+            _t0 = time.time()
             df, summary = analyze_portfolio(current_assets, period="2y", verbose=False)
+            _dbg_t["analyze_portfolio"] = time.time() - _t0
             st.session_state["_analysis_df"] = df
             st.session_state["_analysis_summary"] = summary
             st.session_state["_analysis_ts"] = _now_ts_analysis
+
+            # ── Steps 1-3: EWMA + prediction grading — only when analysis refreshes ──
+            # Gated by _analysis_stale so file I/O doesn't run on every widget click.
+            if not df.empty:
+                has_mf = any(a.asset_type == AssetType.MUTUAL_FUND for a in current_assets)
+                _vol_ann_seed = summary.get('portfolio_volatility', 0.15)
+                if pd.isna(_vol_ann_seed): _vol_ann_seed = 0.15
+                _mu_ann_seed = summary.get('weighted_ann_return', 12.0)
+                if pd.isna(_mu_ann_seed): _mu_ann_seed = 12.0
+                _mu_ann_seed = _mu_ann_seed / 100.0
+                _current_val_seed = summary.get('total_value', 0.0)
+                _hist_mu_daily = _current_val_seed * (((1 + _mu_ann_seed) ** (1/365)) - 1)
+                _hist_sigma_daily = _current_val_seed * (_vol_ann_seed / (252 ** 0.5))
+
+                # ── Step 2: EWMA catch-up ─────────────────────────────────────────
+                # Scans ALL graded entries in predictions_log.json that are not yet
+                # in adaptive_state.json's learning_log, and applies EWMA updates
+                # immediately, regardless of when those entries were graded.
+                _t0 = time.time()
+                ewma_catchup(
+                    historical_mu=_hist_mu_daily,
+                    historical_sigma=_hist_sigma_daily,
+                )
+
+                # ── Step 3: Grade any new predictions + cascade ───────────────────
+                evaluate_past_predictions(
+                    _current_val_seed,
+                    has_mf,
+                    historical_mu=_hist_mu_daily,
+                    historical_sigma=_hist_sigma_daily,
+                )
+                _dbg_t["ewma_and_evaluate"] = time.time() - _t0
         else:
+
             df = st.session_state["_analysis_df"]
             summary = st.session_state["_analysis_summary"]
 
-        # FEATURE A: Update Profile Card with Growth Stat
+        # FEATURE A: Update Profile Card with Growth Stat (runs every rerun — cheap)
         p_growth = get_portfolio_growth(df, summary)
         g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
         g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
@@ -349,35 +388,6 @@ with st.spinner("Analyzing portfolio data..."):
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
-        # ── Step 1: Compute EWMA seeds from historical market data ─────────
-        if not df.empty:
-            has_mf = any(a.asset_type == AssetType.MUTUAL_FUND for a in current_assets)
-            _vol_ann_seed = summary.get('portfolio_volatility', 0.15)
-            if pd.isna(_vol_ann_seed): _vol_ann_seed = 0.15
-            _mu_ann_seed = summary.get('weighted_ann_return', 12.0)
-            if pd.isna(_mu_ann_seed): _mu_ann_seed = 12.0
-            _mu_ann_seed = _mu_ann_seed / 100.0
-            _current_val_seed = summary.get('total_value', 0.0)
-            _hist_mu_daily = _current_val_seed * (((1 + _mu_ann_seed) ** (1/365)) - 1)
-            _hist_sigma_daily = _current_val_seed * (_vol_ann_seed / (252 ** 0.5))
-
-            # ── Step 2: EWMA catch-up — FIRST thing on every app load ────────
-            # Scans ALL graded entries in predictions_log.json that are not yet
-            # in adaptive_state.json's learning_log, and applies EWMA updates
-            # immediately, regardless of when those entries were graded.
-            ewma_catchup(
-                historical_mu=_hist_mu_daily,
-                historical_sigma=_hist_sigma_daily,
-            )
-
-            # ── Step 3: Grade any new predictions + cascade ───────────────────
-            evaluate_past_predictions(
-                _current_val_seed,
-                has_mf,
-                historical_mu=_hist_mu_daily,
-                historical_sigma=_hist_sigma_daily,
-            )
 
     except Exception as e:
         st.error(f"Error fetching market data: {e}")
@@ -396,22 +406,34 @@ if (
         _sent_score_accum = 0.0
         _sent_weight_accum = 0.0
         _sent_negative_count = 0
-        for _sa in current_assets:
-            if not _sa.identifier:
-                continue
-            try:
-                _sd = get_asset_sentiment(_sa.identifier, stock_name=_sa.name, limit=4)
-                _sv = _sd.get('score', 0.0) or 0.0
-                # weight by portfolio share
-                _asset_row = df[df['Name'] == _sa.name] if not df.empty else None
-                _asset_val = float(_asset_row['Current Value (₹)'].iloc[0]) if (_asset_row is not None and not _asset_row.empty) else 0.0
-                _w = _asset_val / _total_val_sent
-                _sent_score_accum += _sv * _w
-                _sent_weight_accum += _w
-                if _sv < -0.15:
-                    _sent_negative_count += 1
-            except Exception:
-                pass
+
+        # Build list of assets that have an identifier
+        _sent_assets = [_sa for _sa in current_assets if _sa.identifier]
+
+        def _fetch_one_sentiment(_sa):
+            """Fetch sentiment for a single asset; returns (asset, result_dict)."""
+            return _sa, get_asset_sentiment(_sa.identifier, stock_name=_sa.name, limit=4)
+
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        _t0 = time.time()
+        with ThreadPoolExecutor(max_workers=8) as _sent_pool:
+            _sent_futures = {_sent_pool.submit(_fetch_one_sentiment, _sa): _sa for _sa in _sent_assets}
+            for _fut in as_completed(_sent_futures):
+                try:
+                    _sa, _sd = _fut.result()
+                    _sv = _sd.get('score', 0.0) or 0.0
+                    # weight by portfolio share
+                    _asset_row = df[df['Name'] == _sa.name] if not df.empty else None
+                    _asset_val = float(_asset_row['Current Value (₹)'].iloc[0]) if (_asset_row is not None and not _asset_row.empty) else 0.0
+                    _w = _asset_val / _total_val_sent
+                    _sent_score_accum += _sv * _w
+                    _sent_weight_accum += _w
+                    if _sv < -0.15:
+                        _sent_negative_count += 1
+                except Exception:
+                    pass
+        _dbg_t["sentiment_parallel"] = time.time() - _t0
+
         st.session_state['_sentiment_score'] = _sent_score_accum / _sent_weight_accum if _sent_weight_accum > 0 else 0.0
         st.session_state['_sentiment_neg_count'] = _sent_negative_count
         st.session_state['_sentiment_ts'] = _now_ts
@@ -420,8 +442,17 @@ if (
         st.session_state.setdefault('_sentiment_neg_count', 0)
         st.session_state['_sentiment_ts'] = _now_ts
 
+# ── Debug timing panel — remove once timings are captured ─────────────────────
+if _DEBUG and _dbg_t:
+    st.markdown("---")
+    st.markdown("**⏱ Debug Timings** *(remove `?debug=1` to hide)*")
+    for _lbl, _elapsed in _dbg_t.items():
+        st.write(f"• `{_lbl}`: **{_elapsed:.2f}s**")
+    st.markdown("---")
+
 portfolio_sentiment_score = st.session_state.get('_sentiment_score', 0.0)
 _sentiment_neg_count = st.session_state.get('_sentiment_neg_count', 0)
+
 
 # Top Metrics
 total_invested = df["Invested (₹)"].sum() if not df.empty else 0.0
