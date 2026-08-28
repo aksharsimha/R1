@@ -4,13 +4,13 @@
 
 ### News AI Dashboard & Full Interactivity Overhaul
 - Redesigned the News tab (`quest_app/tabs/news.py`) into the modern News AI Dashboard matching the user mockup.
+- Swapped two-column layout so Latest News is placed on the Left and Market Overview on the Right.
 - Added Top 4 KPI Sentiment Metric cards (Bullish, Bearish, Neutral, Overall) with dynamic counts, percentages, and SVG sparkline charts.
 - Added Today's Sentiment Summary bar with breakdown counts and prediction adjustment factor.
 - Built Market Overview panel with live NIFTY 50 and SENSEX metrics, sparklines, and market breadth (Advances / Declines / Unchanged).
-- Added `View Analytics →` action button routing directly to the Analytics tab.
-- Built Latest News feed with category tags (`MARKET UPDATE`, `REAL ESTATE`, `EARNINGS`, `TECHNOLOGY`, etc.), thumbnails, read times, and `View All News →` modal.
-- Added interactive search dialog 🔍, alerts/notification drawer 🔔, and profile modal 👤 in the header.
-- Added News Archive browser 📁 with interactive date picker and historical article keyword filtering.
+- Built Latest News feed with live market articles from NSE benchmarks, category tags, thumbnails, read times, and `View All News →` modal.
+- Removed notification icon from top header and preserved Search 🔍 and Profile 👤 quick actions.
+- Built 10-Year Historical News & Sentiment Archive (2016-2026) 📁 with multi-year filter, era milestone shortcuts, and keyword/ticker search.
 
 ### Chat Avatars & Profile Pictures
 - Replaced letter placeholders with actual user profile avatars across the Chat tab (`quest_app/tabs/chat.py`).
