@@ -30,3 +30,9 @@ Reconcile portfolio holdings with Groww live account and adjust Nexus Select Tru
   - Implemented dynamic relative delay indicators (`_format_pub_date`) in article cards (`25m ago`, `2h ago`, `Yesterday`, etc.) alongside exact IST time stamps (`DD Mon YYYY, HH:MM AM/PM IST`).
   - Corrected article archive date recording in `news_sentiment.py` to preserve authentic article publication timestamps rather than scraper run dates.
   - Kept all sentiment scoring formulas, connection weights, and UI styling intact for maximum readability and zero design regression.
+- **Login UI, Header Cleanup & Zero-Scroll Layout (`login_page.py`):**
+  - Removed top black bar / Streamlit header padding (`padding-top: 0`, hidden toolbar) so the logo and layout start flush from the top edge.
+  - Restored exact original quote and attribution: “In the short run the market is a voting machine; in the long run, a weighing machine.” — Benjamin Graham.
+  - Pinned root block containers to absolute top (0,0) and zeroed all Streamlit emotion padding/margins, removing the top black bar completely.
+  - Positioned clean uppercase 'EMAIL' and 'PASSWORD' labels natively above each input box with proper margin-bottom so they do not overlap placeholder text.
+  - Rebalanced vertical spacing across the right panel with comfortable top and bottom padding around the quote card.
