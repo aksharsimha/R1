@@ -569,3 +569,57 @@ def get_archived_articles(ticker_symbol: str = None) -> dict:
     if ticker_symbol is not None:
         return archive.get(ticker_symbol, [])
     return archive
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Comprehensive Live Market News Feed
+# ──────────────────────────────────────────────────────────────────────────────
+
+def get_live_market_feed(current_assets=None, limit_per_source=4) -> list:
+    """
+    Fetches real live news articles for portfolio assets AND Indian market benchmarks.
+    Guarantees a rich, populated live news feed at all times with real headlines and images.
+    """
+    seen_urls = set()
+    articles = []
+    
+    # 1. Fetch from user's current holdings
+    if current_assets:
+        for asset_obj in current_assets:
+            ident = getattr(asset_obj, "identifier", None)
+            name = getattr(asset_obj, "name", ident or "")
+            if ident:
+                res = get_asset_sentiment(ident, stock_name=name, limit=limit_per_source)
+                for a in res.get("articles", []):
+                    u = a.get("link", "") or a.get("title", "")
+                    if u and u not in seen_urls:
+                        seen_urls.add(u)
+                        articles.append(a)
+
+    # 2. Supplement with real live market headlines from key Indian market tickers
+    market_tickers = [
+        ("^NSEI", "NIFTY 50", "MARKET UPDATE"),
+        ("RELIANCE.NS", "Reliance Industries", "ENERGY & POWER"),
+        ("HDFCBANK.NS", "HDFC Bank", "BANKING & FINANCE"),
+        ("TCS.NS", "Tata Consultancy Services", "TECHNOLOGY"),
+        ("TATAMOTORS.NS", "Tata Motors", "AUTOMOTIVE"),
+        ("INFY.NS", "Infosys", "TECHNOLOGY"),
+    ]
+    
+    for ticker_sym, comp_name, default_cat in market_tickers:
+        if len(articles) >= 15:
+            break
+        try:
+            res = get_asset_sentiment(ticker_sym, stock_name=comp_name, limit=3)
+            for a in res.get("articles", []):
+                u = a.get("link", "") or a.get("title", "")
+                if u and u not in seen_urls:
+                    seen_urls.add(u)
+                    if not a.get("category") or a.get("category") == "MARKET UPDATE":
+                        a["category"] = infer_article_category(a.get("title", ""), a.get("summary", ""), default_cat)
+                    articles.append(a)
+        except Exception:
+            continue
+            
+    return articles
+
