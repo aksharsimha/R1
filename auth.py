@@ -158,7 +158,8 @@ def _remembered_cookie() -> list[dict]:
         if isinstance(entries, dict):
             entries = [entries]
         if isinstance(entries, list):
-            return [entry for entry in entries if isinstance(entry, dict)]
+            valid = [entry for entry in entries if isinstance(entry, dict) and entry.get("username") != "demo_guest"]
+            if valid: return valid
     except Exception:
         pass
 
@@ -168,7 +169,8 @@ def _remembered_cookie() -> list[dict]:
         if isinstance(entries, dict):
             entries = [entries]
         if isinstance(entries, list):
-            return [entry for entry in entries if isinstance(entry, dict)]
+            valid = [entry for entry in entries if isinstance(entry, dict) and entry.get("username") != "demo_guest"]
+            if valid: return valid
     except (TypeError, json.JSONDecodeError):
         pass
         
@@ -176,7 +178,7 @@ def _remembered_cookie() -> list[dict]:
     if "." in token_str:
         payload, signature = token_str.split(".", 1)
         username = _decode_signed_username(payload, signature)
-        if username:
+        if username and username != "demo_guest":
             return [{"username": username, "display_name": username,
                      "signed_token": token_str, "_legacy": True}]
     return []

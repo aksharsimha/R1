@@ -46,7 +46,7 @@ _user_info = st.session_state.user_info
 _username = _user_info["username"]
 
 # Upsert the active account without replacing any other remembered accounts.
-if st.session_state.get("remember_me", True):
+if st.session_state.get("remember_me", True) and _username != "demo_guest":
     add_remembered_account(_username, _user_info.get("display_name"))
 
 # For backward compatibility, create a local data dir and redirect modules
@@ -217,7 +217,7 @@ elif _selected_account in _account_labels:
             }
         
         # Rule 5: Pin the active account to the end of the cookie so new tabs open to this account.
-        if st.session_state.get("remember_me", True):
+        if st.session_state.get("remember_me", True) and _switch_user_info["username"] != "demo_guest":
             add_remembered_account(_switch_user_info["username"], _switch_user_info.get("display_name"))
             
         st.session_state.authenticated = True
