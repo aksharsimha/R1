@@ -359,7 +359,7 @@ def get_asset_sentiment(
 
             # ── Persist to archive ─────────────────────────────────────────────
             archive_record = {
-                "date":             today_str,
+                "date":             pub_date if pub_date else today_str,
                 "title":            title,
                 "summary":          summary,
                 "url":              link,

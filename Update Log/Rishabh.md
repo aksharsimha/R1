@@ -25,3 +25,8 @@ Reconcile portfolio holdings with Groww live account and adjust Nexus Select Tru
   - Updated `SETTLEMENT_PRICE_OVERRIDES` for **Nexus Select Trust** (`NXST`, `NXST.BO`, `NXST.NS`) to **₹167.01** to match the latest Groww closing price settlement of ₹5,678.34 across 34 shares.
 - **Localhost Deployment:**
   - Verified local server running on `http://localhost:8501`.
+- **News Timing, IST Timezone & Delay Indicators (`news.py` & `news_sentiment.py`):**
+  - Upgraded article timestamp parsing (`_parse_pub_date`) to support ISO strings, UTC offsets, and Unix timestamps, converting all news timestamps to Indian Standard Time (`Asia/Kolkata` / IST).
+  - Implemented dynamic relative delay indicators (`_format_pub_date`) in article cards (`25m ago`, `2h ago`, `Yesterday`, etc.) alongside exact IST time stamps (`DD Mon YYYY, HH:MM AM/PM IST`).
+  - Corrected article archive date recording in `news_sentiment.py` to preserve authentic article publication timestamps rather than scraper run dates.
+  - Kept all sentiment scoring formulas, connection weights, and UI styling intact for maximum readability and zero design regression.

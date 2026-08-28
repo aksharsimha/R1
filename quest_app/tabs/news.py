@@ -86,15 +86,48 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     """, unsafe_allow_html=True)
 
     # ── Helpers ─────────────────────────────────────────────────────
+    import pytz
+    _IST = pytz.timezone("Asia/Kolkata")
+
     def _parse_pub_date(raw):
         if not raw:
             return None
         try:
             if isinstance(raw, (int, float)):
-                return _dt.datetime.utcfromtimestamp(raw)
-            return _dt.datetime.fromisoformat(str(raw)[:19])
+                return _dt.datetime.fromtimestamp(raw, tz=_dt.timezone.utc).astimezone(_IST)
+            raw_str = str(raw).strip()
+            if raw_str.endswith("Z"):
+                return _dt.datetime.fromisoformat(raw_str.replace("Z", "+00:00")).astimezone(_IST)
+            if "+" in raw_str or (len(raw_str) > 10 and "-" in raw_str[10:]):
+                return _dt.datetime.fromisoformat(raw_str).astimezone(_IST)
+            dt_naive = _dt.datetime.fromisoformat(raw_str[:19])
+            return dt_naive.replace(tzinfo=_dt.timezone.utc).astimezone(_IST)
         except Exception:
             return None
+
+    def _format_pub_date(pub_dt):
+        if not pub_dt:
+            return "", ""
+        now_ist = _dt.datetime.now(_IST)
+        diff = now_ist - pub_dt
+        sec = diff.total_seconds()
+        if sec < 0:
+            rel = "Just now"
+        elif sec < 60:
+            rel = f"{int(sec)}s ago"
+        elif sec < 3600:
+            mins = int(sec // 60)
+            rel = f"{mins}m ago"
+        elif sec < 86400:
+            hrs = int(sec // 3600)
+            rel = f"{hrs}h ago"
+        elif sec < 172800:
+            rel = "Yesterday"
+        else:
+            days = int(sec // 86400)
+            rel = f"{days}d ago"
+        date_str = pub_dt.strftime("%d %b %Y, %I:%M %p IST")
+        return date_str, rel
 
     def _render_article(art, idx):
         """Render a single article card as HTML."""
@@ -120,7 +153,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         score_val = art.get('score', 0.0)
 
         pub_dt = _parse_pub_date(art.get('date'))
-        date_str = pub_dt.strftime('%d %b %Y') if pub_dt else ''
+        date_str, rel_str = _format_pub_date(pub_dt)
+        time_meta = f" &bull; {date_str} &bull; <span style='color:var(--q-accent);font-weight:500;'>{rel_str}</span>" if date_str else ""
         provider  = art.get('provider', 'Unknown')
         title     = art.get('title', '(no title)')
         summary   = art.get('summary', '')
@@ -132,7 +166,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         <div class="art-card" style="{border}">
             <a class="art-link" href="{link}" target="_blank">{title}</a>
             <p style="font-size:0.78rem; color:var(--q-text-3); margin:4px 0 8px;">
-                {provider} &bull; {date_str}
+                {provider}{time_meta}
             </p>
             <span class="badge" style="color:{conn_color};">Relevance: {conn_badge} ({conn_score})</span>
             <span class="badge" style="color:{sent_color};">Sentiment: {score_val:+.2f}</span>
@@ -156,12 +190,12 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 </span>
             </div>
             <p style="margin:0 0 0.8rem; font-size:0.78rem; color:var(--q-text-3);">
-                {article_count} article(s) today{stale_note}
+                {article_count} recent article(s){stale_note}
             </p>
         """
 
     if not df.empty:
-        _cutoff = _dt.datetime.utcnow() - _dt.timedelta(days=30)
+        _cutoff = _dt.datetime.now(_IST) - _dt.timedelta(days=30)
 
         # ── Summary bar ────────────────────────────────────────────
         # Use the cached sentiment computed at app startup
