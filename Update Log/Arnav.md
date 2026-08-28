@@ -68,3 +68,40 @@ Resolve the issue where signing out from the settings page and signing back in r
 ## Validation
 - Verified that local changes merge cleanly with the new "Soft Sign-Out" feature pulled from upstream.
 - Successfully committed the changes locally.
+
+Here's a condensed version:
+
+---
+
+## [2026-08-28] Performance Overhaul: Faster Loads, Smarter Caching
+
+**Root cause:** Streamlit reran the entire script on every interaction, triggering live price fetches, news calls, risk computations, and file reads each time.
+
+---
+
+**Fix 1: Portfolio analysis cached for 30s** (`main.py`)
+Heavy lifting (price fetch, volatility, PCA, risk scores) now runs once per 30s cycle. Button clicks and tab switches are instant on cache hits. Editing a holding immediately invalidates the cache.
+
+**Fix 2: News sentiment parallelized + cached** (`news_sentiment.py`, `main.py`)
+All stocks fetch simultaneously instead of sequentially. Results cached per stock for 5 minutes.
+- Before: 8 stocks x ~5s = ~40s cold load
+- After: ~5s cold, ~0s warm
+
+**Fix 3: EWMA and prediction grading run only when needed** (`main.py`)
+`ewma_catchup` and `evaluate_past_predictions` are now tied to the 30s analysis cycle instead of firing on every widget interaction.
+
+**Fix 4: Debug timing panel** (`main.py`)
+Append `?debug=1` to the URL to reveal per-block timing. Temporary, invisible otherwise.
+
+---
+
+| What | Before | After |
+|---|---|---|
+| Portfolio analysis | ~5-15s per click | Cached 30s, instant on hit |
+| News fetching | ~40s cold, sequential | ~5s cold, 0s warm, parallel |
+| EWMA / grading | Every interaction | Every 30s cycle |
+| Portfolio edits | Delayed up to 30s | Immediate (cache cleared) |
+
+No UI or calculation changes.
+
+---

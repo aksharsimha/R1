@@ -17,6 +17,14 @@ from datetime import datetime
 
 import yfinance as yf
 
+# ── Optional Streamlit cache — graceful no-op when running outside Streamlit ──
+try:
+    import streamlit as st
+    _cache = st.cache_data(ttl=300)
+except Exception:
+    def _cache(fn):  # type: ignore[misc]
+        return fn
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
@@ -345,10 +353,11 @@ def _append_to_archive(ticker_symbol: str, article_record: dict) -> None:
 # Core sentiment fetch — called per ticker
 # ──────────────────────────────────────────────────────────────────────────────
 
+@_cache
 def get_asset_sentiment(
     ticker_symbol: str,
     stock_name: str = "",
-    sector_keywords: list = None,
+    sector_keywords: tuple = None,
     limit: int = 8,
 ) -> dict:
     """
