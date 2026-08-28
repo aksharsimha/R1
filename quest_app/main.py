@@ -183,47 +183,63 @@ for acc in [{"username": _username, "display_name": _user_info.get("display_name
         _merged_accounts.append(acc)
 
 _accounts = _merged_accounts
-_account_usernames = [account["username"] for account in _accounts]
-_account_labels = [f"{account['display_name']}  ·  @{account['username']}" for account in _accounts]
-_account_labels.append("+ Add account")
-_selected_account = st.sidebar.selectbox(
-    "Switch account", _account_labels,
-    index=_account_usernames.index(_username), key=f"switch_account_{_username}",
-)
-if _selected_account == "+ Add account":
-    st.query_params["return_to"] = st.query_params.get("page", "Overview")
-    st.query_params["page"] = "AddAccount"
-    st.rerun()
-elif _selected_account in _account_labels:
-    _selected_index = _account_labels.index(_selected_account)
-    _selected_username = _account_usernames[_selected_index]
-    if _selected_username != _username:
-        _selected_info = _accounts[_selected_index]
-        # Hydrate full profile from Firestore (cookie only has username/display_name)
-        try:
-            _switch_profile = firebase_db.get_user_profile(_selected_username)
-            _switch_user_info = {
-                "username": _selected_info["username"],
-                "display_name": _switch_profile.get("display_name", _selected_info.get("display_name", _selected_info["username"])),
-                "uid": _switch_profile.get("uid", ""),
-                "email": _switch_profile.get("email", ""),
-            }
-            if _switch_profile.get("avatar"):
-                _switch_user_info["avatar"] = _switch_profile["avatar"]
-        except Exception:
-            _switch_user_info = {
-                "username": _selected_info["username"],
-                "display_name": _selected_info.get("display_name", _selected_info["username"]),
-            }
-        
-        # Rule 5: Pin the active account to the end of the cookie so new tabs open to this account.
-        if st.session_state.get("remember_me", True) and _switch_user_info["username"] != "demo_guest":
-            add_remembered_account(_switch_user_info["username"], _switch_user_info.get("display_name"))
-            
-        st.session_state.authenticated = True
-        st.session_state.user_info = _switch_user_info
-        st.session_state.firebase_hydrated = False
+if _username == "demo_guest":
+    # Quarantine the demo user: NO account switcher allowed.
+    st.sidebar.markdown(
+        f"""
+        <div style='padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;'>
+            <div style='font-size: 0.9rem; font-weight: 600; color: #f8fafc;'>{_user_info.get('display_name', 'Demo User')}</div>
+            <div style='font-size: 0.75rem; color: #94a3b8;'>@{_username}</div>
+        </div>
+        """, unsafe_allow_html=True
+    )
+else:
+    _account_usernames = [account["username"] for account in _accounts]
+    _account_labels = [f"{account['display_name']}  ·  @{account['username']}" for account in _accounts]
+    _account_labels.append("+ Add account")
+    _selected_account = st.sidebar.selectbox(
+        "Switch account", _account_labels,
+        index=_account_usernames.index(_username), key=f"switch_account_{_username}",
+    )
+    if _selected_account == "+ Add account":
+        st.query_params["return_to"] = st.query_params.get("page", "Overview")
+        st.query_params["page"] = "AddAccount"
         st.rerun()
+    elif _selected_account in _account_labels:
+        _selected_index = _account_labels.index(_selected_account)
+        _selected_username = _account_usernames[_selected_index]
+        if _selected_username != _username:
+            _selected_info = _accounts[_selected_index]
+            # Hydrate full profile from Firestore (cookie only has username/display_name)
+            try:
+                _switch_profile = firebase_db.get_user_profile(_selected_username)
+                _switch_user_info = {
+                    "username": _selected_info["username"],
+                    "display_name": _switch_profile.get("display_name", _selected_info.get("display_name", _selected_info["username"])),
+                    "uid": _switch_profile.get("uid", ""),
+                    "email": _switch_profile.get("email", ""),
+                }
+                if _switch_profile.get("avatar"):
+                    _switch_user_info["avatar"] = _switch_profile["avatar"]
+            except Exception:
+                _switch_user_info = {
+                    "username": _selected_info["username"],
+                    "display_name": _selected_info.get("display_name", _selected_info["username"]),
+                }
+            
+            # Rule 5: Pin the active account to the end of the cookie so new tabs open to this account.
+            if st.session_state.get("remember_me", True) and _switch_user_info["username"] != "demo_guest":
+                add_remembered_account(_switch_user_info["username"], _switch_user_info.get("display_name"))
+                
+            # WIPE OLD CACHED DATA BEFORE RERUN TO PREVENT CROSS-ACCOUNT LEAKS
+            for k in ["firebase_hydrated", "show_risk_breakdown", "_sentiment_score", "_sentiment_neg_count", "_sentiment_ts", "do_logout"]:
+                if k in st.session_state:
+                    del st.session_state[k]
+                    
+            st.session_state.authenticated = True
+            st.session_state.user_info = _switch_user_info
+            st.session_state.firebase_hydrated = False
+            st.rerun()
 
 # Sync navigation with URL query parameters to support Back/Forward buttons
 _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
