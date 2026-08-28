@@ -99,6 +99,12 @@
 ### Sidebar Profile Picture Hydration
 - Updated `quest_app/main.py` to automatically hydrate `avatar` from Firestore if not yet present in session state, ensuring the sidebar profile card always displays the active user's image.
 
+### Login Page UI & Full-Bleed Layout
+- Removed the empty black top bar by stripping Streamlit header heights and container padding across root DOM nodes (`.stApp`, `section.main`, `div[data-testid="stAppViewBlockContainer"]`, `div[data-testid="stMainBlockContainer"]`, `div[data-testid="stVerticalBlock"]`).
+- Zeroed out default vertical container gap and hidden markdown/style element wrappers to ensure full-bleed `top: 0px` split-screen alignment.
+- Restored clean field labels (`EMAIL`, `PASSWORD`) positioned directly above the input fields and properly centered the login container vertically.
+- Restored the Benjamin Graham quote and styled the live index ticker chip at the top of the auth panel.
+
 ### Git & Remote Sync
 - Synchronized commits across `origin/master` and `origin/main`.
 - Resolved merge conflicts with remote commits cleanly.
