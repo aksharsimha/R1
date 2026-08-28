@@ -191,6 +191,26 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "COMMODITIES & METALS",
       "connection_score": 60
+    },
+    {
+      "date": "2018-05-18",
+      "title": "Tata Steel acquires Bhushan Steel under Insolvency and Bankruptcy Code (IBC)",
+      "summary": "Landmark IBC resolution adds 5.6 million tonnes of steel capacity in Odisha, consolidating domestic market leadership.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.72,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "COMMODITIES & METALS",
+      "connection_score": 50
+    },
+    {
+      "date": "2016-05-28",
+      "title": "Insolvency and Bankruptcy Code (IBC) enacted by Parliament to resolve non-performing assets",
+      "summary": "Landmark legislative reform transforms debt resolution mechanism for Indian lenders and corporate borrowers.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.75,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "COMMODITIES & METALS",
+      "connection_score": 50
     }
   ],
   "IRCTC.NS": [
@@ -1744,6 +1764,136 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "TECHNOLOGY",
       "connection_score": 50
+    },
+    {
+      "date": "2017-11-17",
+      "title": "Moody's upgrades India's sovereign credit rating to Baa2 after 13-year hiatus",
+      "summary": "International rating agency cites landmark reforms including GST, IBC, and bank recapitalization for the upgrade.",
+      "url": "https://www.moodys.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 45
+    },
+    {
+      "date": "2026-08-28",
+      "title": "NIFTY 50 trades resiliently around 24,175 with positive market breadth across Dalal Street",
+      "summary": "Benchmark indices demonstrated strong resilience with domestic institutional investors injecting fresh liquidity across banking and tech heavyweights.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.45,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2024-06-05",
+      "title": "Indian markets stage massive recovery after election day volatility, NIFTY reclaims 23,000",
+      "summary": "Broad-based buying returns to Dalal Street as coalition clarity stabilizes market expectations, lifting PSU and infrastructure counters.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.55,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2023-09-12",
+      "title": "NIFTY 50 crosses historic 20,000 milestone fueled by robust domestic SIP flows",
+      "summary": "Indian equities enter a new era as retail investor participation via mutual fund SIPs crosses 16,000 crore rupees per month.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2022-10-18",
+      "title": "Indian equities outperform global peers despite aggressive US Federal Reserve rate hikes",
+      "summary": "NIFTY demonstrates strong decoupling from Wall Street as domestic macro fundamentals and bank balance sheet health remain resilient.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.4,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2021-10-19",
+      "title": "NIFTY touches 18,600 all-time peak amid unprecedented retail trading surge and tech IPO frenzy",
+      "summary": "Post-pandemic digital boom accelerates equity demat account additions across Tier 2 and Tier 3 Indian cities.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.9,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2021-02-01",
+      "title": "Union Budget 2021 unleashes landmark health and infrastructure boost, markets surge 5%",
+      "summary": "No new taxes and aggressive privatizations of public sector assets ignite a powerful bull market rally.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.75,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2020-03-24",
+      "title": "Nationwide lockdown announced; Indian markets stabilize after severe global circuit break",
+      "summary": "RBI steps in with targeted long-term repo operations (TLTRO) and moratoria to cushion financial system liquidity during peak pandemic shock.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": -0.85,
+      "sentiment_label": "\ud83d\udd34 Negative",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2020-04-30",
+      "title": "Tech and Pharma lead dramatic V-shaped market recovery as digital and healthcare demand explodes",
+      "summary": "FIIs resume aggressive net purchases in Indian equities following global central bank monetary stimulus packages.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.65,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2019-05-23",
+      "title": "General Election 2019 outcome triggers euphoric breakout on Dalal Street, NIFTY breaches 12,000",
+      "summary": "Strong electoral mandate bolsters foreign capital inflows and long-term reform expectations.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.8,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2018-09-21",
+      "title": "IL&FS debt default triggers liquidity squeeze across NBFCs and mutual fund debt schemes",
+      "summary": "Credit rating downgrades prompt regulatory vigilance as government supersedes IL&FS board to prevent systemic contagion.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": -0.78,
+      "sentiment_label": "\ud83d\udd34 Negative",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
+    },
+    {
+      "date": "2018-02-01",
+      "title": "Budget 2018 reintroduces 10% Long Term Capital Gains (LTCG) tax on equity gains above 1 lakh",
+      "summary": "Markets digest grandfathering provisions as long-term domestic institutional flows continue to anchor equity valuations.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": -0.2,
+      "sentiment_label": "\u26aa Neutral",
+      "category": "MARKET UPDATE",
+      "connection_score": 50
+    },
+    {
+      "date": "2016-11-08",
+      "title": "Demonetization of high-value currency notes announced; digital payment adoption accelerates",
+      "summary": "Withdrawal of 500 and 1,000 rupee notes spurs rapid formal financialization and bank deposit surges across India.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.1,
+      "sentiment_label": "\u26aa Neutral",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
     }
   ],
   "RELIANCE.NS": [
@@ -1798,6 +1948,76 @@
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "ENERGY & POWER",
       "connection_score": 60
+    },
+    {
+      "date": "2025-08-20",
+      "title": "Jio Financial Services and BlackRock launch tech-driven wealth management joint venture",
+      "summary": "JV aims to democratize access to affordable asset management solutions for millions of Indian retail investors.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.8,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 50
+    },
+    {
+      "date": "2024-08-29",
+      "title": "Reliance AGM: 1:1 Bonus share issue announced; Retail and Telecom expansion on track",
+      "summary": "Mukesh Ambani outlines future roadmap focusing on AI infrastructure, Jio Brain platform, and deep-tech investments.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.82,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "EARNINGS",
+      "connection_score": 50
+    },
+    {
+      "date": "2022-08-29",
+      "title": "Reliance announces \u20b92 lakh crore 5G rollout commitment across pan-India by December 2023",
+      "summary": "Standalone 5G architecture deployment accelerates enterprise digitization and cloud adoption across sectors.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.75,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
+    },
+    {
+      "date": "2021-06-24",
+      "title": "Reliance announces \u20b975,000 crore mega Green Energy pivot at Jamnagar Complex",
+      "summary": "Building 4 Gigafactories for Solar Photovoltaic, Green Hydrogen, Fuel Cells, and Energy Storage Batteries.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.88,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "ENERGY & POWER",
+      "connection_score": 50
+    },
+    {
+      "date": "2020-04-22",
+      "title": "Facebook invests $5.7 billion for 9.99% stake in Jio Platforms; debt-free target achieved",
+      "summary": "Global tech giants including Google, Silver Lake, and KKR invest over 1.5 lakh crore rupees into Reliance's digital arm.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.95,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
+    },
+    {
+      "date": "2019-08-12",
+      "title": "Saudi Aramco signs non-binding Letter of Intent for 20% stake in Reliance O2C division",
+      "summary": "Mega partnership announced at 42nd AGM alongside Zero Net Debt roadmap by March 2021.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "ENERGY & POWER",
+      "connection_score": 50
+    },
+    {
+      "date": "2017-07-21",
+      "title": "Reliance launches JioPhone with 4G VoLTE effectively for free at \u20b91,500 refundable deposit",
+      "summary": "Disruptive feature phone bridges digital divide for 500 million 2G users across rural and suburban India.",
+      "url": "https://www.nseindia.com",
+      "sentiment_score": 0.85,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "TECHNOLOGY",
+      "connection_score": 50
     }
   ],
   "HDFCBANK.NS": [
@@ -1849,6 +2069,16 @@
       "summary": "Historic $40 billion mega-merger takes effect, expanding mortgage distribution reach across 8,000+ branches.",
       "url": "https://www.hdfcbank.com",
       "sentiment_score": 0.78,
+      "sentiment_label": "\ud83d\udfe2 Positive",
+      "category": "BANKING & FINANCE",
+      "connection_score": 65
+    },
+    {
+      "date": "2021-08-17",
+      "title": "RBI lifts ban on HDFC Bank issuing new credit cards after technology audit and IT upgrades",
+      "summary": "Bank resumes aggressive card onboarding with target of issuing 500,000 new cards per month.",
+      "url": "https://www.rbi.org.in",
+      "sentiment_score": 0.75,
       "sentiment_label": "\ud83d\udfe2 Positive",
       "category": "BANKING & FINANCE",
       "connection_score": 65

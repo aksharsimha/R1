@@ -195,7 +195,11 @@ def _archive_dialog():
     # 10-Year Filters
     c1, c2, c3 = st.columns([1.2, 1.2, 2])
     with c1:
-        year_options = ["All Years (2016-2026)"] + sorted(list(years_set), reverse=True)
+        year_options = [
+            "All Years (2016 - 2026)",
+            "2026", "2025", "2024", "2023", "2022",
+            "2021", "2020", "2019", "2018", "2017", "2016"
+        ]
         selected_year = st.selectbox("Filter by Year", year_options, key="arch_sel_year")
     with c2:
         cat_options = ["All Categories", "MARKET UPDATE", "TECHNOLOGY", "BANKING & FINANCE", "ENERGY & POWER", "COMMODITIES & METALS", "REAL ESTATE", "EARNINGS"]
@@ -221,7 +225,7 @@ def _archive_dialog():
 
     # Filter logic
     filtered = all_archive_items
-    if selected_year != "All Years (2016-2026)":
+    if not selected_year.startswith("All"):
         filtered = [item for item in filtered if item["year"] == selected_year]
     if selected_cat != "All Categories":
         filtered = [item for item in filtered if item["category"] == selected_cat]
