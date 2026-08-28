@@ -684,14 +684,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         sensex_chg_color = "#10b981" if sensex["chg"] >= 0 else "#ef4444"
         sensex_arrow = "↗" if sensex["chg"] >= 0 else "↘"
 
-        # Panel Header with Action Button
-        mkt_h1, mkt_h2 = st.columns([3, 2])
-        with mkt_h1:
-            st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0;'>📈 Market Overview</div>", unsafe_allow_html=True)
-        with mkt_h2:
-            if st.button("View Analytics →", key="btn_mkt_analytics", use_container_width=True):
-                st.query_params["page"] = "Analytics"
-                st.rerun()
+        # Panel Header
+        st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0 10px;'>📈 Market Overview</div>", unsafe_allow_html=True)
 
         st.markdown(textwrap.dedent(f"""
 <div class="q-panel-box">
