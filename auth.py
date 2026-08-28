@@ -151,6 +151,18 @@ def _remembered_cookie() -> list[dict]:
     import urllib.parse
     token_str = urllib.parse.unquote(str(token))
 
+    # Try decoding as base64 JSON first (the new bulletproof format)
+    try:
+        decoded_bytes = base64.urlsafe_b64decode(token_str + "=" * (-len(token_str) % 4))
+        entries = json.loads(decoded_bytes.decode('utf-8'))
+        if isinstance(entries, dict):
+            entries = [entries]
+        if isinstance(entries, list):
+            return [entry for entry in entries if isinstance(entry, dict)]
+    except Exception:
+        pass
+
+    # Try raw JSON (the previous format that was breaking in Safari)
     try:
         entries = json.loads(token_str)
         if isinstance(entries, dict):
@@ -159,6 +171,7 @@ def _remembered_cookie() -> list[dict]:
             return [entry for entry in entries if isinstance(entry, dict)]
     except (TypeError, json.JSONDecodeError):
         pass
+        
     # Legacy format: base64(username).hmac.
     if "." in token_str:
         payload, signature = token_str.split(".", 1)
@@ -194,7 +207,10 @@ def sync_cookies_to_browser() -> None:
 
 def _write_remembered_cookie(entries: list[dict]) -> None:
     """Write the multi-account JSON array to the browser cookie."""
-    token_str = json.dumps(entries, separators=(",", ":"))
+    raw_json = json.dumps(entries, separators=(",", ":"))
+    # Base64 encode it so strict browsers don't truncate at commas/quotes
+    token_str = base64.urlsafe_b64encode(raw_json.encode('utf-8')).decode('utf-8').rstrip('=')
+    
     st.session_state.auth_cookie_override = token_str
     try:
         _cookies().set(
