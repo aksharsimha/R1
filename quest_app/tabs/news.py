@@ -616,10 +616,65 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 """), unsafe_allow_html=True)
 
     # ── Two-Column Main Content Grid ──────────────────────────────────────────
-    col_left, col_right = st.columns([1.05, 1.35], gap="medium")
+    col_left, col_right = st.columns([1.35, 1.05], gap="medium")
 
-    # ── LEFT: Market Overview ─────────────────────────────────────────────────
+    # ── LEFT: Latest News ─────────────────────────────────────────────────────
     with col_left:
+        news_h1, news_h2 = st.columns([3, 2])
+        with news_h1:
+            st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0;'>📰 Latest News</div>", unsafe_allow_html=True)
+        with news_h2:
+            if st.button("View All News →", key="btn_view_all_news", use_container_width=True):
+                _view_all_news_dialog(all_articles)
+
+        # Build items HTML cleanly
+        articles_html = []
+        display_articles = all_articles[:4] if all_articles else []
+        
+        for art in display_articles:
+            title = art.get("title", "Market Intelligence Update")
+            link = art.get("link", "#")
+            summary_text = art.get("summary", "")
+            cat = art.get("category", infer_article_category(title, summary_text))
+            img_url = art.get("image_url", CATEGORY_IMAGES.get(cat, CATEGORY_IMAGES["MARKET UPDATE"]))
+            read_time = art.get("read_time", "2 min read")
+            ticker_tag = art.get("ticker", "Market")
+            dt_str = str(art.get("date", ""))[:10]
+            if not dt_str or dt_str == "None" or dt_str == "nan":
+                dt_str = datetime.now().strftime("%b %d, %Y")
+
+            desc_snippet = (summary_text[:130] + "...") if len(summary_text) > 130 else summary_text
+
+            articles_html.append(f"""
+<div class="q-news-item">
+<img src="{img_url}" class="q-news-thumb" alt="{cat}">
+<div class="q-news-content">
+<div class="q-news-tag">{cat}</div>
+<a href="{link}" target="_blank" class="q-news-headline">{title}</a>
+<p class="q-news-desc">{desc_snippet}</p>
+<div class="q-news-meta">
+<span>📅 {dt_str}</span>
+<span>⏱️ {read_time}</span>
+<span style="color:#818cf8;font-weight:600;">🏷️ {ticker_tag}</span>
+</div>
+</div>
+</div>
+""")
+
+        combined_news_items = "\n".join(articles_html)
+
+        st.markdown(textwrap.dedent(f"""
+<div class="q-panel-box">
+{combined_news_items}
+<div style="text-align:center;padding:12px 0 4px;color:var(--q-text-3);font-size:0.8rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+<span>No more news available</span>
+<span style="font-size:1.2rem;opacity:0.6;">📰</span>
+</div>
+</div>
+"""), unsafe_allow_html=True)
+
+    # ── RIGHT: Market Overview ────────────────────────────────────────────────
+    with col_right:
         breadth = get_market_breadth_data()
         nifty = breadth["nifty"]
         sensex = breadth["sensex"]
@@ -680,61 +735,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 <div style="background:rgba(255,255,255,0.02);border:1px dashed rgba(112,126,171,0.22);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
 <span style="color:#f59e0b;font-size:1.1rem;">⭐</span>
 <span style="font-size:0.8rem;color:var(--q-text-2);">Stay informed and make better decisions with real-time market insights.</span>
-</div>
-</div>
-"""), unsafe_allow_html=True)
-
-    # ── RIGHT: Latest News ────────────────────────────────────────────────────
-    with col_right:
-        news_h1, news_h2 = st.columns([3, 2])
-        with news_h1:
-            st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0;'>📰 Latest News</div>", unsafe_allow_html=True)
-        with news_h2:
-            if st.button("View All News →", key="btn_view_all_news", use_container_width=True):
-                _view_all_news_dialog(all_articles)
-
-        # Build items HTML cleanly
-        articles_html = []
-        display_articles = all_articles[:4] if all_articles else []
-        
-        for art in display_articles:
-            title = art.get("title", "Market Intelligence Update")
-            link = art.get("link", "#")
-            summary_text = art.get("summary", "")
-            cat = art.get("category", infer_article_category(title, summary_text))
-            img_url = art.get("image_url", CATEGORY_IMAGES.get(cat, CATEGORY_IMAGES["MARKET UPDATE"]))
-            read_time = art.get("read_time", "2 min read")
-            ticker_tag = art.get("ticker", "Market")
-            dt_str = str(art.get("date", ""))[:10]
-            if not dt_str or dt_str == "None" or dt_str == "nan":
-                dt_str = datetime.now().strftime("%b %d, %Y")
-
-            desc_snippet = (summary_text[:130] + "...") if len(summary_text) > 130 else summary_text
-
-            articles_html.append(f"""
-<div class="q-news-item">
-<img src="{img_url}" class="q-news-thumb" alt="{cat}">
-<div class="q-news-content">
-<div class="q-news-tag">{cat}</div>
-<a href="{link}" target="_blank" class="q-news-headline">{title}</a>
-<p class="q-news-desc">{desc_snippet}</p>
-<div class="q-news-meta">
-<span>📅 {dt_str}</span>
-<span>⏱️ {read_time}</span>
-<span style="color:#818cf8;font-weight:600;">🏷️ {ticker_tag}</span>
-</div>
-</div>
-</div>
-""")
-
-        combined_news_items = "\n".join(articles_html)
-
-        st.markdown(textwrap.dedent(f"""
-<div class="q-panel-box">
-{combined_news_items}
-<div style="text-align:center;padding:12px 0 4px;color:var(--q-text-3);font-size:0.8rem;display:flex;align-items:center;justify-content:center;gap:8px;">
-<span>No more news available</span>
-<span style="font-size:1.2rem;opacity:0.6;">📰</span>
 </div>
 </div>
 """), unsafe_allow_html=True)
