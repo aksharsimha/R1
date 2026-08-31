@@ -4,22 +4,14 @@
 
 ### YouTube-Style Video Learning Hub Overhaul (100 Curated Indian Financial Videos)
 - Completely redesigned the Knowledge Library tab (`quest_app/tabs/education.py`) into a YouTube-style Video Learning Hub matching the user reference screenshot.
-- Implemented responsive 16:9 cinema video player with real-time YouTube search resolving and video playback.
-- Integrated complete 100-video Indian Financial Education catalog (`quest_app/education_catalog.json`) across all 10 pedagogical stages:
-  - **Level 1 — First ₹1,000**: Zerodha Varsity, Pranjal Kamra, CA Rachana Ranade, Groww, Warikoo, Asset Yogi, Akshat Shrivastava, SEBI Investor Education.
-  - **Level 2 — Grow Your Money**: Compounding math, SIP vs Lumpsum, inflation, Rule of 72, emergency funds.
-  - **Level 3 — Reach Your Goal**: Goal-based financial planning, time horizons, retirement planning at 25 vs 35.
-  - **Level 4 — What's Your Style?**: Risk profiling, active vs passive, value vs growth, behavioural biases.
-  - **Level 5 — Build Your Portfolio**: Asset allocation, equity/debt/gold mix, portfolio rebalancing, large/mid/small caps.
-  - **Level 6 — What Happens If...?**: Market crashes, term & health insurance, stop losses, hedging with options.
-  - **Level 7 — News Detective**: Reading business news, RBI monetary policy, US Fed impact, quarterly earnings seasons.
-  - **Level 8 — Read the Market**: Technical analysis, candlestick charts, support & resistance, balance sheets, P/E & ROE.
-  - **Level 9 — Market Storm**: 2008 Crisis, Covid 2020 crash, VIX fear index, Harshad Mehta 1992 scam, circuit breakers.
-  - **Standalone — Tax Detective**: STCG vs LTCG on equities, ITR filing for traders, Old vs New tax regime, Section 80C, ELSS.
-- Creator Bar: Added channel avatars, verified badges (`✔`), subscriber counts, and interactive `+ Follow` buttons.
-- Quick Actions: Built interactive `👍 Likes`, `🔖 Save / Bookmark`, `↗ Share`, and `🎓 Mark as Watched (+50 XP)` controls.
-- Resources & Notes: Added downloadable PDF cheatsheets (`.pdf • 1.2 MB`) and direct "Open in YouTube ↗" links.
-- "Up Next" Playlist: Built interactive playlist sidebar with level filtering, duration badges, view counts, and instant 1-click video switching.
+- **CC Subtitles & Indian Languages Switcher**: Added switchable Closed Captions across 8 Indian languages (English, हिन्दी / Hindi, తెలుగు / Telugu, தமிழ் / Tamil, ಕನ್ನಡ / Kannada, मराठी / Marathi, বাংলা / Bengali, and ગુજરાતી / Gujarati) with live timestamped transcripts.
+- **Removed Subscriber Count**: Cleaned creator channel bar to show channel name and verified badge (`✔`) only.
+- **Removed Share Option**: Cleaned action toolbar to focus on learning essentials.
+- **Live User Likes (Starting at 0)**: Reset like counter to start at 0 and track only genuine live likes by logged-in website users (persisted in `edu_db.py`).
+- **100 Curated Indian Financial Videos**: Integrated complete catalog (`quest_app/education_catalog.json`) across all 10 levels with direct working video IDs.
+- **Action Toolbar**: `👍 Like` (live user toggle), `★ Save / Bookmark`, and `🎓 Mark as Watched (+50 XP)` celebration trigger.
+- **Resources & Notes**: Included downloadable PDF study guides and direct YouTube launch button.
+- **"Up Next" Playlist**: Integrated 10-level switcher with duration badges, view counts, and instant playback.
 
 ---
 

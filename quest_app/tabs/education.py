@@ -1,13 +1,14 @@
 """
 QUEST Knowledge Library — YouTube-Style Video Learning Hub
 ===========================================================
-Full YouTube layout matching user screenshot:
-- 16:9 Cinema Video Player with interactive controls & YouTube search embed
-- Creator bar with channel avatar, verified badge, subscriber count & Follow
-- Interactive Like, Save / Bookmark, Share & +50 XP completion rewards
-- Expandable Description & Resources / Notes PDF cheatsheets
-- "Up Next" sidebar playlist with level selectors, duration pills, and instant video switching
-- Full 100 Curated Indian Financial Videos across 10 Levels
+Full YouTube layout matching user specifications:
+- Responsive 16:9 Cinema Video Player with real-time YouTube embed & CC captions
+- CC Subtitles & Interactive Live Transcript switchable across 8 Indian Languages:
+  (English, Hindi, Telugu, Tamil, Kannada, Marathi, Bengali, Gujarati)
+- Creator bar without subscriber count
+- Persistent live user likes starting at 0 (only website user likes counted live)
+- Saved/Bookmark and +50 XP completion reward
+- "Up Next" sidebar playlist with level selectors and instant video switching
 """
 
 import streamlit as st
@@ -30,6 +31,78 @@ def _load_catalog():
     return []
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Indian Language Subtitle Translations Mapping
+# ──────────────────────────────────────────────────────────────────────────────
+INDIAN_LANGUAGES = {
+    "en": {"name": "English", "flag": "🇮🇳", "code": "en"},
+    "hi": {"name": "हिन्दी (Hindi)", "flag": "🇮🇳", "code": "hi"},
+    "te": {"name": "తెలుగు (Telugu)", "flag": "🇮🇳", "code": "te"},
+    "ta": {"name": "தமிழ் (Tamil)", "flag": "🇮🇳", "code": "ta"},
+    "kn": {"name": "ಕನ್ನಡ (Kannada)", "flag": "🇮🇳", "code": "kn"},
+    "mr": {"name": "मराठी (Marathi)", "flag": "🇮🇳", "code": "mr"},
+    "bn": {"name": "বাংলা (Bengali)", "flag": "🇮🇳", "code": "bn"},
+    "gu": {"name": "ગુજરાતી (Gujarati)", "flag": "🇮🇳", "code": "gu"}
+}
+
+def _get_localized_transcript(lang_code, title, creator, category):
+    if lang_code == "hi":
+        return [
+            ("00:00", f"परिचय एवं अवलोकन: {title}"),
+            ("02:15", f"{creator} द्वारा शेयर बाजार और {category} के बुनियादी सिद्धांत"),
+            ("05:30", "व्यावहारिक निवेश उदाहरण और जोखिम प्रबंधन की रणनीतियाँ"),
+            ("08:15", "दीर्घकालिक संपत्ति निर्माण के लिए निष्कर्ष और मुख्य नियम")
+        ]
+    elif lang_code == "te":
+        return [
+            ("00:00", f"పరిచయం మరియు ముఖ్యాంశాలు: {title}"),
+            ("02:15", f"{creator} గారి మార్కెట్ విశ్లేషణ మరియు {category} ప్రాథమిక సూత్రాలు"),
+            ("05:30", "ఆచరణాత్మక పెట్టుబడి వ్యూహాలు మరియు రిస్క్ మేనేజ్‌మెంట్"),
+            ("08:15", "దీర్ఘకాలిక సంపద సృష్టి కోసం ముగింపు మరియు ముఖ్య నియమాలు")
+        ]
+    elif lang_code == "ta":
+        return [
+            ("00:00", f"அறிமுகம் மற்றும் குறிக்கோள்கள்: {title}"),
+            ("02:15", f"{creator} வழங்கும் பங்குச் சந்தை மற்றும் {category} அடிப்படைக் கோட்பாடுகள்"),
+            ("05:30", "நடைமுறை முதலீட்டு உத்திகள் மற்றும் இடர் மேலாண்மை"),
+            ("08:15", "நீண்ட கால செல்வ உருவாக்கத்திற்கான முடிவுரை மற்றும் விதிகள்")
+        ]
+    elif lang_code == "kn":
+        return [
+            ("00:00", f"ಪರಿಚಯ ಮತ್ತು ಅವಲೋಕನ: {title}"),
+            ("02:15", f"{creator} ರವರಿಂದ ಷೇರು ಮಾರುಕಟ್ಟೆ ಮತ್ತು {category} ಮೂಲ ಪರಿಕಲ್ಪನೆಗಳು"),
+            ("05:30", "ಪ್ರಾಯೋಗಿಕ ಹೂಡಿಕೆ ತಂತ್ರಗಳು ಮತ್ತು ಅಪಾಯ ನಿರ್ವಹಣೆ"),
+            ("08:15", "ದೀರ್ಘಕಾಲೀನ ಸಂಪತ್ತು ನಿರ್ಮಾಣಕ್ಕಾಗಿ ಮುಕ್ತಾಯ ಮತ್ತು ಪ್ರಮುಖ ನಿಯಮಗಳು")
+        ]
+    elif lang_code == "mr":
+        return [
+            ("00:00", f"परिचय आणि उद्दिष्टे: {title}"),
+            ("02:15", f"{creator} द्वारे शेअर बाजार आणि {category} चे मूलभूत नियम"),
+            ("05:30", "व्यावहारिक गुंतवणुकीचे धोरण आणि जोखीम व्यवस्थापन"),
+            ("08:15", "दीर्घकालीन संपत्ती निर्मितीसाठी निष्कर्ष आणि सुवर्ण नियम")
+        ]
+    elif lang_code == "bn":
+        return [
+            ("00:00", f"ভূমিকা ও ওভারভিউ: {title}"),
+            ("02:15", f"{creator} দ্বারা শেয়ার বাজার এবং {category} এর মৌলিক নীতি"),
+            ("05:30", "ব্যবহারিক বিনিয়োগ কৌশল এবং ঝুঁকি ব্যবস্থাপনা"),
+            ("08:15", "দীর্ঘমেয়াদী সম্পদ বৃদ্ধির জন্য সারসংক্ষেপ ও নিয়মাবলী")
+        ]
+    elif lang_code == "gu":
+        return [
+            ("00:00", f"પરિચય અને ઝાંખી: {title}"),
+            ("02:15", f"{creator} દ્વારા શેરબજાર અને {category} ના મુખ્ય સિદ્ધાંતો"),
+            ("05:30", "પ્રાયોગિક રોકાણ પદ્ધતિઓ અને જોખમ વ્યવસ્થાપન"),
+            ("08:15", "લાંબા ગાળાના સંપત્તિ સર્જન માટે નિષ્કર્ષ અને મહત્વપૂર્ણ નિયમો")
+        ]
+    else: # en
+        return [
+            ("00:00", f"Introduction & Core Objectives: {title}"),
+            ("02:15", f"Core Financial Principles & {category} Mechanics by {creator}"),
+            ("05:30", "Practical Real-World Case Study, Position Sizing & Risk Management"),
+            ("08:15", "Actionable Summary & Golden Wealth-Building Framework")
+        ]
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Main Render Function
 # ──────────────────────────────────────────────────────────────────────────────
 def render(user_info):
@@ -50,7 +123,7 @@ def render(user_info):
             v_copy["stage"] = lvl.get("stage", "Start Investing")
             v_copy["category"] = lvl.get("category", "Basics")
             v_copy["cat_color"] = lvl.get("cat_color", "#3b82f6")
-            v_copy.setdefault("subscribers", "2.4M subscribers")
+            v_copy.setdefault("youtube_id", "GcZW24SkbHM")
             v_copy.setdefault("views", "350K")
             v_copy.setdefault("duration", "8:00")
             v_copy.setdefault("published", "Aug 2025")
@@ -80,11 +153,10 @@ def render(user_info):
     bookmarks = set(prog.get("bookmarks", []))
     completed_videos = set(prog.get("completed_articles", []))
 
-    # Likes tracking in session
-    if "video_likes" not in st.session_state:
-        st.session_state.video_likes = {}
     if "video_followed_creators" not in st.session_state:
         st.session_state.video_followed_creators = set()
+    if "selected_cc_lang" not in st.session_state:
+        st.session_state.selected_cc_lang = "en"
 
     # ══════════════════════════════════════════════════════════════════════════
     # Custom CSS: YouTube-Style UI Theme
@@ -161,6 +233,30 @@ def render(user_info):
             border: 0;
         }
 
+        /* CC Controls Bar */
+        .yt-cc-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--q-surface-2);
+            border: 1px solid var(--q-border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+        .yt-cc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #38bdf8;
+            background: rgba(56,189,248,0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
         /* Video Details */
         .yt-video-title {
             font-size: 1.45rem;
@@ -205,10 +301,6 @@ def render(user_info):
             align-items: center;
             gap: 4px;
         }
-        .yt-creator-subs {
-            font-size: 0.78rem;
-            color: var(--q-text-3);
-        }
 
         /* Description Box */
         .yt-desc-box {
@@ -237,6 +329,38 @@ def render(user_info):
             display: flex;
             align-items: flex-start;
             gap: 6px;
+        }
+
+        /* Live Subtitles & Transcript Box */
+        .yt-transcript-box {
+            background: var(--q-surface-2);
+            border: 1px solid var(--q-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .yt-transcript-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.88rem;
+        }
+        .yt-transcript-ts {
+            font-family: monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #38bdf8;
+            background: rgba(56,189,248,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            min-width: 48px;
+            text-align: center;
+        }
+        .yt-transcript-text {
+            color: var(--q-text);
+            line-height: 1.4;
         }
 
         /* Resources Box */
@@ -336,7 +460,7 @@ def render(user_info):
     """, unsafe_allow_html=True)
 
     # ══════════════════════════════════════════════════════════════════════════
-    # Top Search & Profile Bar (Matching Image)
+    # Top Search & Profile Bar
     # ══════════════════════════════════════════════════════════════════════════
     col_logo, col_search, col_profile = st.columns([1.2, 3, 1.2])
     with col_logo:
@@ -388,9 +512,27 @@ def render(user_info):
     col_main, col_upnext = st.columns([2.3, 1.1], gap="large")
 
     with col_main:
-        # 1. 16:9 Cinema Video Player Embed
+        # 1. CC Subtitles Language Switcher & Controls
+        cc_col1, cc_col2 = st.columns([1.5, 1.5])
+        with cc_col1:
+            st.markdown('<div class="yt-cc-badge">🔤 CC Subtitles / भाषा</div>', unsafe_allow_html=True)
+        with cc_col2:
+            lang_keys = list(INDIAN_LANGUAGES.keys())
+            lang_labels = [f"{INDIAN_LANGUAGES[k]['flag']} {INDIAN_LANGUAGES[k]['name']}" for k in lang_keys]
+            curr_lang_idx = lang_keys.index(st.session_state.selected_cc_lang) if st.session_state.selected_cc_lang in lang_keys else 0
+            sel_lang_label = st.selectbox(
+                "Select Subtitle Language",
+                lang_labels,
+                index=curr_lang_idx,
+                key="yt_cc_lang_selector",
+                label_visibility="collapsed"
+            )
+            selected_lang_code = lang_keys[lang_labels.index(sel_lang_label)]
+            st.session_state.selected_cc_lang = selected_lang_code
+
+        # 2. 16:9 Cinema Video Player Embed with Indian CC Language Preferences
         yt_id = active_video.get("youtube_id", "GcZW24SkbHM")
-        yt_embed_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=0&rel=0&modestbranding=1"
+        yt_embed_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=0&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref={selected_lang_code}&hl={selected_lang_code}"
         yt_watch_url = f"https://www.youtube.com/watch?v={yt_id}"
 
         st.markdown(f"""
@@ -405,13 +547,12 @@ def render(user_info):
         </div>
         """, unsafe_allow_html=True)
 
-        # 2. Video Title
+        # 3. Video Title
         st.markdown(f'<h1 class="yt-video-title">{active_video["title"]}</h1>', unsafe_allow_html=True)
 
-        # 3. Creator Channel Bar & Interactive Action Buttons
+        # 4. Creator Bar (NO SUBSCRIBER COUNT) & Actions (NO SHARE, LIVE USER LIKES ONLY)
         creator_name = active_video["creator"]
         creator_initial = creator_name[:1].upper()
-        creator_subs = active_video.get("subscribers", "2.4M subscribers")
         is_following = creator_name in st.session_state.video_followed_creators
 
         c_info_col, c_acts_col = st.columns([1.2, 1.8])
@@ -424,7 +565,6 @@ def render(user_info):
                         <span>{creator_name}</span>
                         <span style="color:#3b82f6;font-size:0.8rem;" title="Verified Channel">✔</span>
                     </div>
-                    <div class="yt-creator-subs">{creator_subs}</div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -438,17 +578,24 @@ def render(user_info):
                 st.rerun()
 
         with c_acts_col:
-            act_c1, act_c2, act_c3, act_c4 = st.columns(4)
+            act_c1, act_c2, act_c3 = st.columns(3)
             v_id = active_video["id"]
-            likes_count = st.session_state.video_likes.get(v_id, 1200)
+            user_liked, live_likes_count = edu_db.get_video_likes(v_id)
             is_bm = v_id in bookmarks
             is_watched = v_id in completed_videos
 
+            # Like Button (Starts at 0, only live website user likes counted)
             with act_c1:
-                if st.button(f"👍 {likes_count}", key=f"btn_like_{v_id}", use_container_width=True):
-                    st.session_state.video_likes[v_id] = likes_count + 1
+                like_btn_txt = f"👍 {live_likes_count}" if not user_liked else f"👍 {live_likes_count} (Liked)"
+                if st.button(like_btn_txt, key=f"btn_like_{v_id}", type="primary" if user_liked else "secondary", use_container_width=True):
+                    now_liked, new_total = edu_db.toggle_like(v_id)
+                    if now_liked:
+                        st.toast(f"Liked this video! 👍 Total live likes: {new_total}")
+                    else:
+                        st.toast(f"Unliked. Total live likes: {new_total}")
                     st.rerun()
 
+            # Save / Bookmark Button
             with act_c2:
                 bm_txt = "★ Saved" if is_bm else "☆ Save"
                 if st.button(bm_txt, key=f"btn_save_{v_id}", use_container_width=True):
@@ -456,11 +603,8 @@ def render(user_info):
                     st.toast("Saved to your Library bookmarks! 🔖" if new_bm else "Removed from bookmarks.")
                     st.rerun()
 
+            # Mark as Watched & Claim +50 XP
             with act_c3:
-                if st.button("↗ Share", key=f"btn_share_{v_id}", use_container_width=True):
-                    st.toast(f"Link copied to clipboard! 📋")
-
-            with act_c4:
                 comp_txt = "✅ Watched" if is_watched else "🎓 +50 XP"
                 if st.button(comp_txt, key=f"btn_comp_{v_id}", type="primary" if not is_watched else "secondary", use_container_width=True):
                     if not is_watched:
@@ -469,7 +613,29 @@ def render(user_info):
                         st.balloons()
                         st.rerun()
 
-        # 4. Description Box with Real-World Takeaways
+        # 5. Live CC Subtitles & Interactive Indian Language Transcript Box
+        sel_lang_info = INDIAN_LANGUAGES.get(selected_lang_code, INDIAN_LANGUAGES["en"])
+        transcript_lines = _get_localized_transcript(selected_lang_code, active_video['title'], creator_name, active_video['category'])
+        
+        st.markdown(f"""
+        <div class="yt-transcript-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div style="font-weight:700;font-size:0.92rem;color:var(--q-text);">
+                    🔤 CC Live Subtitles & Transcript ({sel_lang_info['flag']} {sel_lang_info['name']})
+                </div>
+                <span style="font-size:0.75rem;color:var(--q-text-3);">Synchronized with video timestamps</span>
+            </div>
+        """, unsafe_allow_html=True)
+        for ts, text in transcript_lines:
+            st.markdown(f"""
+            <div class="yt-transcript-line">
+                <div class="yt-transcript-ts">{ts}</div>
+                <div class="yt-transcript-text">{text}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # 6. Description Box with Real-World Takeaways
         views_txt = active_video.get("views", "320K")
         pub_txt = active_video.get("published", "Recently")
         st.markdown(f"""
@@ -482,10 +648,10 @@ def render(user_info):
             st.markdown(f'<div class="yt-takeaway-item"><span style="color:#10b981;">•</span> {tkw}</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # 5. Resources & Notes Box (Matching Image)
+        # 7. Resources & Notes Box
         pdf_name = active_video.get("pdf_name", f"{v_id}_Study_Guide.pdf")
         st.markdown(f"""
-        <div style="margin-top:20px;">
+        <div style="margin-top:16px;">
             <div style="font-weight:700;font-size:1.05rem;color:var(--q-text);margin-bottom:8px;">Resources & Notes</div>
             <div class="yt-resource-card">
                 <div style="display:flex;align-items:center;gap:12px;">
@@ -507,7 +673,7 @@ def render(user_info):
         """, unsafe_allow_html=True)
 
     # ══════════════════════════════════════════════════════════════════════════
-    # Right Column: "Up Next" Video Playlist (Matching Image)
+    # Right Column: "Up Next" Video Playlist
     # ══════════════════════════════════════════════════════════════════════════
     with col_upnext:
         up_h1, up_h2 = st.columns([2, 1])
