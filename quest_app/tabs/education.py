@@ -478,30 +478,6 @@ def render(user_info):
             st.markdown(f'<div class="yt-takeaway-item"><span style="color:#10b981;">•</span> {tkw}</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # 5. Resources & Notes Box
-        pdf_name = active_video.get("pdf_name", f"{v_id}_Study_Guide.pdf")
-        st.markdown(f"""
-        <div style="margin-top:16px;">
-            <div style="font-weight:700;font-size:1.05rem;color:var(--q-text);margin-bottom:8px;">Resources & Notes</div>
-            <div class="yt-resource-card">
-                <div style="display:flex;align-items:center;gap:12px;">
-                    <div style="font-size:1.8rem;color:#3b82f6;">📄</div>
-                    <div>
-                        <div style="font-weight:600;font-size:0.9rem;color:var(--q-text);">{pdf_name}</div>
-                        <div style="font-size:0.75rem;color:var(--q-text-3);">PDF &bull; 1.2 MB &bull; Comprehensive Module Cheatsheet</div>
-                    </div>
-                </div>
-                <div>
-                    <a href="{yt_watch_url}" target="_blank" style="text-decoration:none;">
-                        <button style="background:var(--q-surface);border:1px solid var(--q-border);color:var(--q-text);padding:6px 14px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-weight:600;">
-                            Open in YouTube ↗
-                        </button>
-                    </a>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
     # ══════════════════════════════════════════════════════════════════════════
     # Right Column: "Up Next" Video Playlist
     # ══════════════════════════════════════════════════════════════════════════

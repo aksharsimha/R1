@@ -6,11 +6,10 @@
 - Completely redesigned the Knowledge Library tab (`quest_app/tabs/education.py`) into a YouTube-style Video Learning Hub matching the user reference screenshot.
 - **Renamed Level to Module**: Updated playlist selector and video metadata to use "Module" taxonomy (`All Modules (100 Videos)`, `Module 1 — First ₹1,000` through `Module 10 — Tax Detective`).
 - **Removed Subscriber Count**: Cleaned creator channel bar to show channel name and verified badge (`✔`) only.
-- **Removed Share Option**: Cleaned action toolbar to focus on learning essentials.
+- **Removed Share Option & Resources Box**: Removed share action and external resources box for a streamlined interface.
 - **Live User Likes (Starting at 0)**: Reset like counter to start at 0 and track only genuine live likes by logged-in website users (persisted in `edu_db.py`).
 - **100 Curated Indian Financial Videos**: Integrated complete catalog (`quest_app/education_catalog.json`) across all 10 modules with direct working video IDs.
 - **Action Toolbar**: `👍 Like` (live user toggle), `★ Save / Bookmark`, and `🎓 Mark as Watched (+50 XP)` celebration trigger.
-- **Resources & Notes**: Included downloadable PDF study guides and direct YouTube launch button.
 - **"Up Next" Playlist**: Integrated 10-module switcher with duration badges, view counts, and instant playback.
 
 ---
