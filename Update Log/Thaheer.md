@@ -4,7 +4,6 @@
 
 ### YouTube-Style Video Learning Hub Overhaul (100 Curated Indian Financial Videos)
 - Completely redesigned the Knowledge Library tab (`quest_app/tabs/education.py`) into a YouTube-style Video Learning Hub matching the user reference screenshot.
-- **CC Subtitles & Indian Languages Switcher**: Added switchable Closed Captions across 8 Indian languages (English, हिन्दी / Hindi, తెలుగు / Telugu, தமிழ் / Tamil, ಕನ್ನಡ / Kannada, मराठी / Marathi, বাংলা / Bengali, and ગુજરાતી / Gujarati) with live timestamped transcripts.
 - **Removed Subscriber Count**: Cleaned creator channel bar to show channel name and verified badge (`✔`) only.
 - **Removed Share Option**: Cleaned action toolbar to focus on learning essentials.
 - **Live User Likes (Starting at 0)**: Reset like counter to start at 0 and track only genuine live likes by logged-in website users (persisted in `edu_db.py`).
