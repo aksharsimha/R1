@@ -41,14 +41,30 @@ def render(user_info):
     # Flatten all videos for quick lookup
     all_videos = []
     for lvl in catalog:
-        for v in lvl["videos"]:
+        for idx, v in enumerate(lvl.get("videos", [])):
             v_copy = dict(v)
-            v_copy["level_id"] = lvl["level_id"]
-            v_copy["level_title"] = lvl["level_title"]
-            v_copy["stage"] = lvl["stage"]
-            v_copy["category"] = lvl["category"]
-            v_copy["cat_color"] = lvl["cat_color"]
+            v_id = v.get("id") or f"{lvl.get('level_id', 'lvl')}_v{v.get('slot', idx + 1)}"
+            v_copy["id"] = v_id
+            v_copy["level_id"] = lvl.get("level_id", "level_1")
+            v_copy["level_title"] = lvl.get("level_title", "Level 1")
+            v_copy["stage"] = lvl.get("stage", "Start Investing")
+            v_copy["category"] = lvl.get("category", "Basics")
+            v_copy["cat_color"] = lvl.get("cat_color", "#3b82f6")
+            v_copy.setdefault("subscribers", "2.4M subscribers")
+            v_copy.setdefault("views", "350K")
+            v_copy.setdefault("duration", "8:00")
+            v_copy.setdefault("published", "Aug 2025")
+            v_copy.setdefault("summary", f"Explore key financial concepts in {v_copy.get('title', 'this video')} by {v_copy.get('creator', 'expert creator')}.")
+            v_copy.setdefault("key_takeaways", [
+                "Understand fundamental market dynamics and compounding principles.",
+                "Implement structured risk management and asset allocation.",
+                "Build long-term wealth with disciplined investing habits."
+            ])
             all_videos.append(v_copy)
+
+    if not all_videos:
+        st.info("No learning videos available.")
+        return
 
     # Initialize active video in session_state
     if "active_video_id" not in st.session_state or not any(v["id"] == st.session_state.active_video_id for v in all_videos):

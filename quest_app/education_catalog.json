@@ -12,70 +12,170 @@
         "title": "What is Investing? Basics for Beginners",
         "creator": "Zerodha Varsity",
         "duration": "8:15",
-        "views": "320K"
+        "views": "320K",
+        "id": "level_1_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on What is Investing? Basics for Beginners by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for What is Investing? Basics for Beginners.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "How to Open a Demat Account in India",
         "creator": "Pranjal Kamra",
         "duration": "7:40",
-        "views": "450K"
+        "views": "450K",
+        "id": "level_1_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Open a Demat Account in India by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Open a Demat Account in India.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Share Market Basics for Beginners in Hindi",
         "creator": "CA Rachana Ranade",
         "duration": "12:10",
-        "views": "1.2M"
+        "views": "1.2M",
+        "id": "level_1_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Share Market Basics for Beginners in Hindi by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Share Market Basics for Beginners in Hindi.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Stock Market for Beginners \u2014 Full Playlist Intro",
         "creator": "Groww",
         "duration": "6:50",
-        "views": "680K"
+        "views": "680K",
+        "id": "level_1_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Stock Market for Beginners \u2014 Full Playlist Intro by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Stock Market for Beginners \u2014 Full Playlist Intro.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "How to Buy Your First Stock \u2014 Step by Step",
         "creator": "Finology Legal / Pranjal Kamra",
         "duration": "9:05",
-        "views": "510K"
+        "views": "510K",
+        "id": "level_1_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Buy Your First Stock \u2014 Step by Step by Finology Legal / Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Buy Your First Stock \u2014 Step by Step.",
+          "Practical implementation framework by Finology Legal / Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Investing with Just \u20b91,000 \u2014 Where to Start",
         "creator": "Warikoo",
         "duration": "6:15",
-        "views": "890K"
+        "views": "890K",
+        "id": "level_1_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Investing with Just \u20b91,000 \u2014 Where to Start by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Investing with Just \u20b91,000 \u2014 Where to Start.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "Demat vs Trading Account Explained",
         "creator": "Zerodha Varsity",
         "duration": "5:30",
-        "views": "290K"
+        "views": "290K",
+        "id": "level_1_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Demat vs Trading Account Explained by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Demat vs Trading Account Explained.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "What are Stocks, Shares, Equity \u2014 Simply Explained",
         "creator": "Asset Yogi",
         "duration": "10:20",
-        "views": "740K"
+        "views": "740K",
+        "id": "level_1_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on What are Stocks, Shares, Equity \u2014 Simply Explained by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for What are Stocks, Shares, Equity \u2014 Simply Explained.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "Common Beginner Mistakes in the Stock Market",
         "creator": "Akshat Shrivastava",
         "duration": "11:45",
-        "views": "620K"
+        "views": "620K",
+        "id": "level_1_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Common Beginner Mistakes in the Stock Market by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Common Beginner Mistakes in the Stock Market.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "SEBI and Investor Protection in India",
         "creator": "SEBI Investor Education",
         "duration": "7:10",
-        "views": "180K"
+        "views": "180K",
+        "id": "level_1_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on SEBI and Investor Protection in India by SEBI Investor Education, tailored for Indian financial markets.",
+        "pdf_name": "level_1_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for SEBI and Investor Protection in India.",
+          "Practical implementation framework by SEBI Investor Education.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -92,70 +192,170 @@
         "title": "Power of Compounding Explained with Examples",
         "creator": "CA Rachana Ranade",
         "duration": "11:15",
-        "views": "980K"
+        "views": "980K",
+        "id": "level_2_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Power of Compounding Explained with Examples by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Power of Compounding Explained with Examples.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "SIP vs Lumpsum \u2014 What Works Better",
         "creator": "Groww",
         "duration": "7:25",
-        "views": "530K"
+        "views": "530K",
+        "id": "level_2_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on SIP vs Lumpsum \u2014 What Works Better by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for SIP vs Lumpsum \u2014 What Works Better.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "How Inflation Eats Your Savings",
         "creator": "Labour Law Advisor",
         "duration": "9:50",
-        "views": "1.1M"
+        "views": "1.1M",
+        "id": "level_2_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How Inflation Eats Your Savings by Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How Inflation Eats Your Savings.",
+          "Practical implementation framework by Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Rule of 72 \u2014 Double Your Money",
         "creator": "Pranjal Kamra",
         "duration": "6:10",
-        "views": "420K"
+        "views": "420K",
+        "id": "level_2_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Rule of 72 \u2014 Double Your Money by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Rule of 72 \u2014 Double Your Money.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Saving vs Investing \u2014 The Real Difference",
         "creator": "Warikoo",
         "duration": "8:30",
-        "views": "710K"
+        "views": "710K",
+        "id": "level_2_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Saving vs Investing \u2014 The Real Difference by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Saving vs Investing \u2014 The Real Difference.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Best SIP Strategy for Beginners in India",
         "creator": "Shashank Udupa",
         "duration": "10:05",
-        "views": "390K"
+        "views": "390K",
+        "id": "level_2_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Best SIP Strategy for Beginners in India by Shashank Udupa, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Best SIP Strategy for Beginners in India.",
+          "Practical implementation framework by Shashank Udupa.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "How \u20b95,000 SIP Becomes \u20b91 Crore",
         "creator": "Asset Yogi",
         "duration": "13:20",
-        "views": "1.4M"
+        "views": "1.4M",
+        "id": "level_2_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How \u20b95,000 SIP Becomes \u20b91 Crore by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How \u20b95,000 SIP Becomes \u20b91 Crore.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Time in the Market vs Timing the Market",
         "creator": "Akshat Shrivastava",
         "duration": "11:00",
-        "views": "580K"
+        "views": "580K",
+        "id": "level_2_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Time in the Market vs Timing the Market by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Time in the Market vs Timing the Market.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "Emergency Fund \u2014 How Much and Where to Park",
         "creator": "Labour Law Advisor",
         "duration": "10:45",
-        "views": "870K"
+        "views": "870K",
+        "id": "level_2_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Emergency Fund \u2014 How Much and Where to Park by Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Emergency Fund \u2014 How Much and Where to Park.",
+          "Practical implementation framework by Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Compounding Real Life Examples \u2014 Warren Buffett",
         "creator": "Finology",
         "duration": "9:15",
-        "views": "490K"
+        "views": "490K",
+        "id": "level_2_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Compounding Real Life Examples \u2014 Warren Buffett by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_2_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Compounding Real Life Examples \u2014 Warren Buffett.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -172,70 +372,170 @@
         "title": "Goal Based Investing \u2014 Complete Framework",
         "creator": "CA Rachana Ranade",
         "duration": "10:40",
-        "views": "640K"
+        "views": "640K",
+        "id": "level_3_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Goal Based Investing \u2014 Complete Framework by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Goal Based Investing \u2014 Complete Framework.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "How to Plan for a Car / House / Wedding",
         "creator": "Asset Yogi",
         "duration": "12:15",
-        "views": "820K"
+        "views": "820K",
+        "id": "level_3_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Plan for a Car / House / Wedding by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Plan for a Car / House / Wedding.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Financial Planning for 20s and 30s in India",
         "creator": "Warikoo",
         "duration": "9:30",
-        "views": "910K"
+        "views": "910K",
+        "id": "level_3_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Financial Planning for 20s and 30s in India by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Financial Planning for 20s and 30s in India.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Retirement Planning \u2014 Start at 25 vs 35",
         "creator": "Pranjal Kamra",
         "duration": "8:50",
-        "views": "530K"
+        "views": "530K",
+        "id": "level_3_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Retirement Planning \u2014 Start at 25 vs 35 by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Retirement Planning \u2014 Start at 25 vs 35.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Short Term vs Long Term Investing",
         "creator": "Groww",
         "duration": "7:15",
-        "views": "410K"
+        "views": "410K",
+        "id": "level_3_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Short Term vs Long Term Investing by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Short Term vs Long Term Investing.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "SMART Financial Goals Explained",
         "creator": "Labour Law Advisor",
         "duration": "8:40",
-        "views": "370K"
+        "views": "370K",
+        "id": "level_3_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on SMART Financial Goals Explained by Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for SMART Financial Goals Explained.",
+          "Practical implementation framework by Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "How Much Money Do You Need to Retire in India",
         "creator": "Shashank Udupa",
         "duration": "11:20",
-        "views": "680K"
+        "views": "680K",
+        "id": "level_3_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How Much Money Do You Need to Retire in India by Shashank Udupa, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How Much Money Do You Need to Retire in India.",
+          "Practical implementation framework by Shashank Udupa.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Bucket Strategy for Multiple Goals",
         "creator": "Invest Aaj For Kal",
         "duration": "10:05",
-        "views": "290K"
+        "views": "290K",
+        "id": "level_3_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Bucket Strategy for Multiple Goals by Invest Aaj For Kal, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Bucket Strategy for Multiple Goals.",
+          "Practical implementation framework by Invest Aaj For Kal.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "Sinking Funds Explained",
         "creator": "Finology",
         "duration": "7:50",
-        "views": "240K"
+        "views": "240K",
+        "id": "level_3_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Sinking Funds Explained by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Sinking Funds Explained.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "How to Reverse Engineer Your Financial Goal",
         "creator": "Akshat Shrivastava",
         "duration": "12:00",
-        "views": "520K"
+        "views": "520K",
+        "id": "level_3_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Reverse Engineer Your Financial Goal by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_3_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Reverse Engineer Your Financial Goal.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -252,70 +552,170 @@
         "title": "Risk Profiling \u2014 Are You Aggressive or Conservative",
         "creator": "CA Rachana Ranade",
         "duration": "9:45",
-        "views": "470K"
+        "views": "470K",
+        "id": "level_4_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Risk Profiling \u2014 Are You Aggressive or Conservative by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Risk Profiling \u2014 Are You Aggressive or Conservative.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "Active vs Passive Investing",
         "creator": "Pranjal Kamra",
         "duration": "8:20",
-        "views": "380K"
+        "views": "380K",
+        "id": "level_4_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Active vs Passive Investing by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Active vs Passive Investing.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Value vs Growth Investing \u2014 Which Suits You",
         "creator": "Finology",
         "duration": "11:10",
-        "views": "490K"
+        "views": "490K",
+        "id": "level_4_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Value vs Growth Investing \u2014 Which Suits You by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Value vs Growth Investing \u2014 Which Suits You.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Trader vs Investor \u2014 Know the Difference",
         "creator": "Zerodha Varsity",
         "duration": "6:30",
-        "views": "310K"
+        "views": "310K",
+        "id": "level_4_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Trader vs Investor \u2014 Know the Difference by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Trader vs Investor \u2014 Know the Difference.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Behavioural Finance \u2014 Your Biases as an Investor",
         "creator": "Akshat Shrivastava",
         "duration": "13:15",
-        "views": "560K"
+        "views": "560K",
+        "id": "level_4_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Behavioural Finance \u2014 Your Biases as an Investor by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Behavioural Finance \u2014 Your Biases as an Investor.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Warren Buffett vs Rakesh Jhunjhunwala Style",
         "creator": "Groww",
         "duration": "10:50",
-        "views": "720K"
+        "views": "720K",
+        "id": "level_4_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Warren Buffett vs Rakesh Jhunjhunwala Style by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Warren Buffett vs Rakesh Jhunjhunwala Style.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "Momentum Investing Explained",
         "creator": "Sahil Bhadviya",
         "duration": "8:40",
-        "views": "280K"
+        "views": "280K",
+        "id": "level_4_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Momentum Investing Explained by Sahil Bhadviya, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Momentum Investing Explained.",
+          "Practical implementation framework by Sahil Bhadviya.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Contrarian Investing \u2014 Going Against the Crowd",
         "creator": "Invest Aaj For Kal",
         "duration": "9:55",
-        "views": "210K"
+        "views": "210K",
+        "id": "level_4_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Contrarian Investing \u2014 Going Against the Crowd by Invest Aaj For Kal, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Contrarian Investing \u2014 Going Against the Crowd.",
+          "Practical implementation framework by Invest Aaj For Kal.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "How to Find Your Investing Style Quiz Walkthrough",
         "creator": "Warikoo",
         "duration": "7:45",
-        "views": "430K"
+        "views": "430K",
+        "id": "level_4_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Find Your Investing Style Quiz Walkthrough by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Find Your Investing Style Quiz Walkthrough.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Dividend Investing vs Capital Appreciation",
         "creator": "Asset Yogi",
         "duration": "12:30",
-        "views": "650K"
+        "views": "650K",
+        "id": "level_4_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Dividend Investing vs Capital Appreciation by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_4_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Dividend Investing vs Capital Appreciation.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -332,70 +732,170 @@
         "title": "Asset Allocation \u2014 The Most Important Decision",
         "creator": "CA Rachana Ranade",
         "duration": "11:30",
-        "views": "590K"
+        "views": "590K",
+        "id": "level_5_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Asset Allocation \u2014 The Most Important Decision by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Asset Allocation \u2014 The Most Important Decision.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "How to Build a Diversified Portfolio in India",
         "creator": "Pranjal Kamra",
         "duration": "10:15",
-        "views": "640K"
+        "views": "640K",
+        "id": "level_5_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Build a Diversified Portfolio in India by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Build a Diversified Portfolio in India.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Equity + Debt + Gold \u2014 Ideal Mix by Age",
         "creator": "Asset Yogi",
         "duration": "14:00",
-        "views": "890K"
+        "views": "890K",
+        "id": "level_5_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Equity + Debt + Gold \u2014 Ideal Mix by Age by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Equity + Debt + Gold \u2014 Ideal Mix by Age.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "What is Portfolio Rebalancing",
         "creator": "Zerodha Varsity",
         "duration": "7:10",
-        "views": "260K"
+        "views": "260K",
+        "id": "level_5_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on What is Portfolio Rebalancing by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for What is Portfolio Rebalancing.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Large Cap vs Mid Cap vs Small Cap Allocation",
         "creator": "Groww",
         "duration": "8:45",
-        "views": "510K"
+        "views": "510K",
+        "id": "level_5_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Large Cap vs Mid Cap vs Small Cap Allocation by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Large Cap vs Mid Cap vs Small Cap Allocation.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Core Satellite Portfolio Strategy",
         "creator": "Finology",
         "duration": "9:20",
-        "views": "330K"
+        "views": "330K",
+        "id": "level_5_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Core Satellite Portfolio Strategy by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Core Satellite Portfolio Strategy.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "How Many Stocks Should You Hold",
         "creator": "Akshat Shrivastava",
         "duration": "10:40",
-        "views": "480K"
+        "views": "480K",
+        "id": "level_5_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How Many Stocks Should You Hold by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How Many Stocks Should You Hold.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "ETFs vs Mutual Funds vs Direct Stocks",
         "creator": "Shashank Udupa",
         "duration": "11:50",
-        "views": "420K"
+        "views": "420K",
+        "id": "level_5_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on ETFs vs Mutual Funds vs Direct Stocks by Shashank Udupa, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for ETFs vs Mutual Funds vs Direct Stocks.",
+          "Practical implementation framework by Shashank Udupa.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "International Diversification for Indian Investors",
         "creator": "Warikoo",
         "duration": "8:10",
-        "views": "360K"
+        "views": "360K",
+        "id": "level_5_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on International Diversification for Indian Investors by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for International Diversification for Indian Investors.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Sample \u20b910 Lakh Portfolio Breakdown",
         "creator": "Invest Aaj For Kal",
         "duration": "13:10",
-        "views": "450K"
+        "views": "450K",
+        "id": "level_5_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Sample \u20b910 Lakh Portfolio Breakdown by Invest Aaj For Kal, tailored for Indian financial markets.",
+        "pdf_name": "level_5_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Sample \u20b910 Lakh Portfolio Breakdown.",
+          "Practical implementation framework by Invest Aaj For Kal.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -412,70 +912,170 @@
         "title": "What Happens if the Market Crashes 50%",
         "creator": "Akshat Shrivastava",
         "duration": "12:50",
-        "views": "710K"
+        "views": "710K",
+        "id": "level_6_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on What Happens if the Market Crashes 50% by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for What Happens if the Market Crashes 50%.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "Term Insurance \u2014 Why Every Earner Needs It",
         "creator": "Labour Law Advisor",
         "duration": "11:00",
-        "views": "1.3M"
+        "views": "1.3M",
+        "id": "level_6_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Term Insurance \u2014 Why Every Earner Needs It by Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Term Insurance \u2014 Why Every Earner Needs It.",
+          "Practical implementation framework by Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Health Insurance Explained for Beginners",
         "creator": "Ditto Insurance / Labour Law Advisor",
         "duration": "10:15",
-        "views": "920K"
+        "views": "920K",
+        "id": "level_6_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Health Insurance Explained for Beginners by Ditto Insurance / Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Health Insurance Explained for Beginners.",
+          "Practical implementation framework by Ditto Insurance / Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Stop Loss and Position Sizing Basics",
         "creator": "Zerodha Varsity",
         "duration": "6:45",
-        "views": "340K"
+        "views": "340K",
+        "id": "level_6_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Stop Loss and Position Sizing Basics by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Stop Loss and Position Sizing Basics.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Hedging with Options for Beginners",
         "creator": "Pranjal Kamra",
         "duration": "9:30",
-        "views": "410K"
+        "views": "410K",
+        "id": "level_6_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Hedging with Options for Beginners by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Hedging with Options for Beginners.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "What if You Lose Your Job Tomorrow",
         "creator": "Warikoo",
         "duration": "8:20",
-        "views": "580K"
+        "views": "580K",
+        "id": "level_6_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on What if You Lose Your Job Tomorrow by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for What if You Lose Your Job Tomorrow.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "Sequence of Returns Risk in Retirement",
         "creator": "Shashank Udupa",
         "duration": "10:40",
-        "views": "290K"
+        "views": "290K",
+        "id": "level_6_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Sequence of Returns Risk in Retirement by Shashank Udupa, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Sequence of Returns Risk in Retirement.",
+          "Practical implementation framework by Shashank Udupa.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Black Swan Events \u2014 Preparing for the Unexpected",
         "creator": "Finology",
         "duration": "9:10",
-        "views": "310K"
+        "views": "310K",
+        "id": "level_6_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Black Swan Events \u2014 Preparing for the Unexpected by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Black Swan Events \u2014 Preparing for the Unexpected.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "Debt Trap \u2014 How to Recognise and Escape",
         "creator": "CA Rachana Ranade",
         "duration": "11:45",
-        "views": "520K"
+        "views": "520K",
+        "id": "level_6_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Debt Trap \u2014 How to Recognise and Escape by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Debt Trap \u2014 How to Recognise and Escape.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Nominee vs Legal Heir \u2014 What Really Happens",
         "creator": "Labour Law Advisor",
         "duration": "9:50",
-        "views": "1.5M"
+        "views": "1.5M",
+        "id": "level_6_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Nominee vs Legal Heir \u2014 What Really Happens by Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_6_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Nominee vs Legal Heir \u2014 What Really Happens.",
+          "Practical implementation framework by Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -492,70 +1092,170 @@
         "title": "How to Read Business News Like a Pro",
         "creator": "CA Rachana Ranade",
         "duration": "10:30",
-        "views": "430K"
+        "views": "430K",
+        "id": "level_7_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Read Business News Like a Pro by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Read Business News Like a Pro.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "Understanding RBI Monetary Policy Announcements",
         "creator": "Finology",
         "duration": "9:15",
-        "views": "380K"
+        "views": "380K",
+        "id": "level_7_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Understanding RBI Monetary Policy Announcements by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Understanding RBI Monetary Policy Announcements.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "How US Fed Rate Decisions Affect Indian Markets",
         "creator": "Akshat Shrivastava",
         "duration": "11:20",
-        "views": "620K"
+        "views": "620K",
+        "id": "level_7_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How US Fed Rate Decisions Affect Indian Markets by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How US Fed Rate Decisions Affect Indian Markets.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Reading Company Announcements on BSE/NSE",
         "creator": "Zerodha Varsity",
         "duration": "7:50",
-        "views": "270K"
+        "views": "270K",
+        "id": "level_7_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Reading Company Announcements on BSE/NSE by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Reading Company Announcements on BSE/NSE.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "How to Filter Noise from Financial News",
         "creator": "Pranjal Kamra",
         "duration": "8:40",
-        "views": "350K"
+        "views": "350K",
+        "id": "level_7_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Filter Noise from Financial News by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Filter Noise from Financial News.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Understanding Quarterly Results Season",
         "creator": "Groww",
         "duration": "8:10",
-        "views": "410K"
+        "views": "410K",
+        "id": "level_7_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Understanding Quarterly Results Season by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Understanding Quarterly Results Season.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "Sentiment Analysis in Stock Markets",
         "creator": "Sahil Bhadviya",
         "duration": "9:00",
-        "views": "240K"
+        "views": "240K",
+        "id": "level_7_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Sentiment Analysis in Stock Markets by Sahil Bhadviya, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Sentiment Analysis in Stock Markets.",
+          "Practical implementation framework by Sahil Bhadviya.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Union Budget Impact on Stock Market",
         "creator": "CA Rachana Ranade",
         "duration": "13:40",
-        "views": "890K"
+        "views": "890K",
+        "id": "level_7_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Union Budget Impact on Stock Market by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Union Budget Impact on Stock Market.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "How Global News Moves Indian Markets",
         "creator": "Invest Aaj For Kal",
         "duration": "10:15",
-        "views": "320K"
+        "views": "320K",
+        "id": "level_7_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How Global News Moves Indian Markets by Invest Aaj For Kal, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How Global News Moves Indian Markets.",
+          "Practical implementation framework by Invest Aaj For Kal.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Pump and Dump / Fake News Traps to Avoid",
         "creator": "Warikoo",
         "duration": "7:30",
-        "views": "670K"
+        "views": "670K",
+        "id": "level_7_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Pump and Dump / Fake News Traps to Avoid by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_7_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Pump and Dump / Fake News Traps to Avoid.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -572,70 +1272,170 @@
         "title": "Technical Analysis for Beginners \u2014 Full Guide",
         "creator": "Zerodha Varsity",
         "duration": "14:20",
-        "views": "850K"
+        "views": "850K",
+        "id": "level_8_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Technical Analysis for Beginners \u2014 Full Guide by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Technical Analysis for Beginners \u2014 Full Guide.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "How to Read a Candlestick Chart",
         "creator": "Pranjal Kamra",
         "duration": "10:45",
-        "views": "720K"
+        "views": "720K",
+        "id": "level_8_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Read a Candlestick Chart by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Read a Candlestick Chart.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Support and Resistance Explained",
         "creator": "Booming Bulls / Anish Singh Thakur",
         "duration": "12:10",
-        "views": "1.1M"
+        "views": "1.1M",
+        "id": "level_8_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Support and Resistance Explained by Booming Bulls / Anish Singh Thakur, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Support and Resistance Explained.",
+          "Practical implementation framework by Booming Bulls / Anish Singh Thakur.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Fundamental Analysis \u2014 Reading a Balance Sheet",
         "creator": "CA Rachana Ranade",
         "duration": "15:00",
-        "views": "960K"
+        "views": "960K",
+        "id": "level_8_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Fundamental Analysis \u2014 Reading a Balance Sheet by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Fundamental Analysis \u2014 Reading a Balance Sheet.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "P/E, P/B, ROE \u2014 Key Ratios Explained",
         "creator": "Finology",
         "duration": "11:30",
-        "views": "580K"
+        "views": "580K",
+        "id": "level_8_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on P/E, P/B, ROE \u2014 Key Ratios Explained by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for P/E, P/B, ROE \u2014 Key Ratios Explained.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Moving Averages Explained Simply",
         "creator": "Ghanshyam Tech / Trading Chanakya",
         "duration": "13:00",
-        "views": "640K"
+        "views": "640K",
+        "id": "level_8_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Moving Averages Explained Simply by Ghanshyam Tech / Trading Chanakya, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Moving Averages Explained Simply.",
+          "Practical implementation framework by Ghanshyam Tech / Trading Chanakya.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "How to Read the NIFTY Chart",
         "creator": "Vivek Bajaj / StockEdge",
         "duration": "11:15",
-        "views": "390K"
+        "views": "390K",
+        "id": "level_8_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Read the NIFTY Chart by Vivek Bajaj / StockEdge, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Read the NIFTY Chart.",
+          "Practical implementation framework by Vivek Bajaj / StockEdge.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Volume Analysis \u2014 What It Tells You",
         "creator": "Zerodha Varsity",
         "duration": "8:20",
-        "views": "310K"
+        "views": "310K",
+        "id": "level_8_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Volume Analysis \u2014 What It Tells You by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Volume Analysis \u2014 What It Tells You.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "Market Cap, Free Float, Circuit Filters",
         "creator": "Groww",
         "duration": "7:40",
-        "views": "420K"
+        "views": "420K",
+        "id": "level_8_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Market Cap, Free Float, Circuit Filters by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Market Cap, Free Float, Circuit Filters.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "How FIIs and DIIs Move the Market",
         "creator": "Akshat Shrivastava",
         "duration": "12:30",
-        "views": "570K"
+        "views": "570K",
+        "id": "level_8_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How FIIs and DIIs Move the Market by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_8_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How FIIs and DIIs Move the Market.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -652,70 +1452,170 @@
         "title": "2008 Financial Crisis Explained for Indians",
         "creator": "Finology",
         "duration": "13:45",
-        "views": "760K"
+        "views": "760K",
+        "id": "level_9_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on 2008 Financial Crisis Explained for Indians by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for 2008 Financial Crisis Explained for Indians.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "Covid Crash 2020 \u2014 Lessons for Investors",
         "creator": "CA Rachana Ranade",
         "duration": "12:30",
-        "views": "680K"
+        "views": "680K",
+        "id": "level_9_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Covid Crash 2020 \u2014 Lessons for Investors by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Covid Crash 2020 \u2014 Lessons for Investors.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "How to Invest During a Bear Market",
         "creator": "Pranjal Kamra",
         "duration": "9:50",
-        "views": "490K"
+        "views": "490K",
+        "id": "level_9_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Invest During a Bear Market by Pranjal Kamra, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Invest During a Bear Market.",
+          "Practical implementation framework by Pranjal Kamra.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Understanding the VIX \u2014 Fear Index",
         "creator": "Zerodha Varsity",
         "duration": "7:20",
-        "views": "280K"
+        "views": "280K",
+        "id": "level_9_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Understanding the VIX \u2014 Fear Index by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Understanding the VIX \u2014 Fear Index.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Harshad Mehta Scam \u2014 The 1992 Storm",
         "creator": "Groww",
         "duration": "14:15",
-        "views": "1.8M"
+        "views": "1.8M",
+        "id": "level_9_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Harshad Mehta Scam \u2014 The 1992 Storm by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Harshad Mehta Scam \u2014 The 1992 Storm.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Yes Bank / DHFL / IL&FS; \u2014 What Went Wrong",
         "creator": "Akshat Shrivastava",
         "duration": "13:10",
-        "views": "610K"
+        "views": "610K",
+        "id": "level_9_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Yes Bank / DHFL / IL&FS; \u2014 What Went Wrong by Akshat Shrivastava, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Yes Bank / DHFL / IL&FS; \u2014 What Went Wrong.",
+          "Practical implementation framework by Akshat Shrivastava.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "Circuit Breakers and Market Halts Explained",
         "creator": "Finology",
         "duration": "8:40",
-        "views": "340K"
+        "views": "340K",
+        "id": "level_9_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Circuit Breakers and Market Halts Explained by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Circuit Breakers and Market Halts Explained.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "Investor Psychology During a Crash",
         "creator": "Warikoo",
         "duration": "9:15",
-        "views": "530K"
+        "views": "530K",
+        "id": "level_9_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Investor Psychology During a Crash by Warikoo, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Investor Psychology During a Crash.",
+          "Practical implementation framework by Warikoo.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "How to Rebalance After a Big Fall",
         "creator": "Asset Yogi",
         "duration": "11:00",
-        "views": "420K"
+        "views": "420K",
+        "id": "level_9_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to Rebalance After a Big Fall by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to Rebalance After a Big Fall.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Nifty Historical Crashes and Recoveries",
         "creator": "Shashank Udupa",
         "duration": "10:25",
-        "views": "390K"
+        "views": "390K",
+        "id": "level_9_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Nifty Historical Crashes and Recoveries by Shashank Udupa, tailored for Indian financial markets.",
+        "pdf_name": "level_9_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Nifty Historical Crashes and Recoveries.",
+          "Practical implementation framework by Shashank Udupa.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   },
@@ -732,70 +1632,170 @@
         "title": "STCG vs LTCG on Stocks and Mutual Funds",
         "creator": "CA Rachana Ranade",
         "duration": "11:50",
-        "views": "820K"
+        "views": "820K",
+        "id": "level_tax_v1",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on STCG vs LTCG on Stocks and Mutual Funds by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot1_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for STCG vs LTCG on Stocks and Mutual Funds.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 2,
         "title": "How to File ITR for Stock Market Income",
         "creator": "Labour Law Advisor",
         "duration": "14:20",
-        "views": "1.1M"
+        "views": "1.1M",
+        "id": "level_tax_v2",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on How to File ITR for Stock Market Income by Labour Law Advisor, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot2_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for How to File ITR for Stock Market Income.",
+          "Practical implementation framework by Labour Law Advisor.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 3,
         "title": "Old vs New Tax Regime \u2014 Which to Pick",
         "creator": "Shashank Udupa",
         "duration": "10:15",
-        "views": "690K"
+        "views": "690K",
+        "id": "level_tax_v3",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Old vs New Tax Regime \u2014 Which to Pick by Shashank Udupa, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot3_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Old vs New Tax Regime \u2014 Which to Pick.",
+          "Practical implementation framework by Shashank Udupa.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 4,
         "title": "Section 80C \u2014 All Deductions Explained",
         "creator": "CA Anoop Bhatia",
         "duration": "12:00",
-        "views": "540K"
+        "views": "540K",
+        "id": "level_tax_v4",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Section 80C \u2014 All Deductions Explained by CA Anoop Bhatia, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot4_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Section 80C \u2014 All Deductions Explained.",
+          "Practical implementation framework by CA Anoop Bhatia.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 5,
         "title": "Tax on Intraday, F&O;, and Delivery Trading",
         "creator": "Zerodha Varsity",
         "duration": "9:30",
-        "views": "370K"
+        "views": "370K",
+        "id": "level_tax_v5",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Tax on Intraday, F&O;, and Delivery Trading by Zerodha Varsity, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot5_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Tax on Intraday, F&O;, and Delivery Trading.",
+          "Practical implementation framework by Zerodha Varsity.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 6,
         "title": "Tax Loss Harvesting in India",
         "creator": "Finology",
         "duration": "8:45",
-        "views": "410K"
+        "views": "410K",
+        "id": "level_tax_v6",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Tax Loss Harvesting in India by Finology, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot6_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Tax Loss Harvesting in India.",
+          "Practical implementation framework by Finology.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 7,
         "title": "Capital Gains on Real Estate and Gold",
         "creator": "Asset Yogi",
         "duration": "13:10",
-        "views": "680K"
+        "views": "680K",
+        "id": "level_tax_v7",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Capital Gains on Real Estate and Gold by Asset Yogi, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot7_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Capital Gains on Real Estate and Gold.",
+          "Practical implementation framework by Asset Yogi.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 8,
         "title": "ELSS Mutual Funds \u2014 Save Tax and Grow",
         "creator": "Groww",
         "duration": "8:20",
-        "views": "460K"
+        "views": "460K",
+        "id": "level_tax_v8",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on ELSS Mutual Funds \u2014 Save Tax and Grow by Groww, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot8_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for ELSS Mutual Funds \u2014 Save Tax and Grow.",
+          "Practical implementation framework by Groww.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 9,
         "title": "Dividend Taxation Rules in India",
         "creator": "CA Rachana Ranade",
         "duration": "10:40",
-        "views": "530K"
+        "views": "530K",
+        "id": "level_tax_v9",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Dividend Taxation Rules in India by CA Rachana Ranade, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot9_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Dividend Taxation Rules in India.",
+          "Practical implementation framework by CA Rachana Ranade.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       },
       {
         "slot": 10,
         "title": "Common ITR Filing Mistakes to Avoid",
         "creator": "CA Anoop Bhatia",
         "duration": "11:15",
-        "views": "390K"
+        "views": "390K",
+        "id": "level_tax_v10",
+        "subscribers": "2.5M subscribers",
+        "published": "Aug 2025",
+        "summary": "Complete lesson on Common ITR Filing Mistakes to Avoid by CA Anoop Bhatia, tailored for Indian financial markets.",
+        "pdf_name": "level_tax_slot10_Cheatsheet.pdf",
+        "key_takeaways": [
+          "Key concept breakdown for Common ITR Filing Mistakes to Avoid.",
+          "Practical implementation framework by CA Anoop Bhatia.",
+          "Actionable takeaways for your personal wealth strategy."
+        ]
       }
     ]
   }
