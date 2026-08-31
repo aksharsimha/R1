@@ -13,6 +13,8 @@ DEFAULT_PROGRESS = {
     "virtual_balance": 15000.0,
     "badges": [],
     "completed_levels": [],
+    "completed_articles": [],
+    "bookmarks": [],
     "current_level": "Level 1"
 }
 
@@ -39,6 +41,31 @@ def load_progress() -> dict:
                 return data
         except Exception:
             return DEFAULT_PROGRESS.copy()
+
+def toggle_bookmark(article_id: str) -> bool:
+    """Toggles bookmark status and returns True if now bookmarked, False otherwise."""
+    prog = load_progress()
+    bms = prog.get("bookmarks", [])
+    if article_id in bms:
+        bms.remove(article_id)
+        is_bookmarked = False
+    else:
+        bms.append(article_id)
+        is_bookmarked = True
+    prog["bookmarks"] = bms
+    save_progress(prog)
+    return is_bookmarked
+
+def complete_article(article_id: str, xp_award: int = 50) -> int:
+    """Marks article as completed and awards XP if not already completed. Returns total XP."""
+    prog = load_progress()
+    comp = prog.get("completed_articles", [])
+    if article_id not in comp:
+        comp.append(article_id)
+        prog["completed_articles"] = comp
+        prog["total_xp"] = prog.get("total_xp", 0) + xp_award
+        save_progress(prog)
+    return prog.get("total_xp", 0)
 
 def save_progress(data: dict) -> None:
     filepath = _get_filepath()
