@@ -389,9 +389,9 @@ def render(user_info):
 
     with col_main:
         # 1. 16:9 Cinema Video Player Embed
-        yt_search_query = urllib.parse.quote(f"{active_video['title']} {active_video['creator']}")
-        yt_embed_url = f"https://www.youtube-nocookie.com/embed?listType=search&list={yt_search_query}&autoplay=0"
-        yt_watch_url = f"https://www.youtube.com/results?search_query={yt_search_query}"
+        yt_id = active_video.get("youtube_id", "GcZW24SkbHM")
+        yt_embed_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=0&rel=0&modestbranding=1"
+        yt_watch_url = f"https://www.youtube.com/watch?v={yt_id}"
 
         st.markdown(f"""
         <div class="yt-player-container">
