@@ -450,36 +450,7 @@ def render(user_info):
         </div>
         """, unsafe_allow_html=True)
 
-        # 2. Watch Progress Tracker & 80% Requirement Gate
-        prog_col1, prog_col2 = st.columns([2.2, 1.8])
-        with prog_col1:
-            st.progress(cur_watch_prog / 100.0)
-            if cur_watch_prog >= 80 or v_id in completed_videos:
-                st.markdown(f'<div style="font-size:0.8rem;color:#10b981;font-weight:700;">🎉 Watch Progress: {cur_watch_prog}% &bull; 80% Milestone Reached (XP Unlocked!)</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div style="font-size:0.8rem;color:var(--q-text-3);font-weight:600;">⏳ Watch Progress: {cur_watch_prog}% &bull; Watch at least 80% to earn +50 XP</div>', unsafe_allow_html=True)
-        with prog_col2:
-            # Quick interactive progress markers
-            p1, p2, p3, p4 = st.columns(4)
-            with p1:
-                if st.button("25%", key=f"btn_p25_{v_id}", use_container_width=True):
-                    st.session_state[prog_key] = 25
-                    st.rerun()
-            with p2:
-                if st.button("50%", key=f"btn_p50_{v_id}", use_container_width=True):
-                    st.session_state[prog_key] = 50
-                    st.rerun()
-            with p3:
-                if st.button("80% 🔓", key=f"btn_p80_{v_id}", type="primary" if cur_watch_prog < 80 else "secondary", use_container_width=True):
-                    st.session_state[prog_key] = 80
-                    st.toast("80% Milestone reached! +50 XP reward unlocked 🎉")
-                    st.rerun()
-            with p4:
-                if st.button("100%", key=f"btn_p100_{v_id}", use_container_width=True):
-                    st.session_state[prog_key] = 100
-                    st.rerun()
-
-        # 3. Video Title & Instant Other-Language Switcher Pill
+        # 2. Video Title & Instant Other-Language Switcher Pill
         t_row1, t_row2 = st.columns([2.6, 1.4])
         with t_row1:
             st.markdown(f'<h1 class="yt-video-title">{active_video["title"]}</h1>', unsafe_allow_html=True)
@@ -499,7 +470,7 @@ def render(user_info):
                         st.session_state.active_video_id = topic_map[cur_tkey]["en"]["id"]
                         st.rerun()
 
-        # 4. Creator Bar (NO FOLLOW BUTTON, NO SUB COUNT) & Action Bar
+        # 3. Creator Bar (NO FOLLOW BUTTON, NO SUB COUNT) & Action Bar
         creator_name = active_video["creator"]
         creator_initial = creator_name[:1].upper()
 
@@ -521,6 +492,7 @@ def render(user_info):
             act_c1, act_c2, act_c3 = st.columns(3)
             user_liked, live_likes_count = edu_db.get_video_likes(v_id)
             is_bm = v_id in bookmarks
+            is_watched = v_id in completed_videos
 
             # Like Button (Starts at 0, only live website user likes counted)
             with act_c1:
@@ -541,20 +513,15 @@ def render(user_info):
                     st.toast("Saved to your Library bookmarks! 🔖" if new_bm else "Removed from bookmarks.")
                     st.rerun()
 
-            # 80% Watch Requirement Gate for +50 XP Reward
+            # Mark as Watched & Claim +50 XP (When completely watched)
             with act_c3:
-                if v_id in completed_videos:
-                    st.button("✅ +50 XP Earned", key=f"btn_comp_{v_id}", type="secondary", disabled=True, use_container_width=True)
-                elif cur_watch_prog >= 80:
-                    if st.button("🎓 Claim +50 XP", key=f"btn_comp_{v_id}", type="primary", use_container_width=True):
+                comp_txt = "✅ Watched (+50 XP)" if is_watched else "🎓 +50 XP"
+                if st.button(comp_txt, key=f"btn_comp_{v_id}", type="primary" if not is_watched else "secondary", disabled=is_watched, use_container_width=True):
+                    if not is_watched:
                         new_xp = edu_db.complete_article(v_id, 50)
-                        st.session_state[prog_key] = 100
-                        st.toast(f"🎉 Awesome! 80%+ watched. +50 XP awarded! Total XP: {new_xp}", icon="⭐")
+                        st.toast(f"🎉 Awesome! Lesson completely watched. +50 XP awarded! Total: {new_xp} XP", icon="⭐")
                         st.balloons()
                         st.rerun()
-                else:
-                    if st.button("🔒 Watch 80% for XP", key=f"btn_comp_{v_id}", type="secondary", use_container_width=True):
-                        st.toast(f"⏳ Keep watching! Current progress is {cur_watch_prog}%. Watch at least 80% to earn +50 XP.", icon="ℹ️")
 
         # 5. Description Box with Real-World Takeaways
         views_txt = active_video.get("views", "320K")
