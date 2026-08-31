@@ -70,6 +70,9 @@ portfolio_ledger.set_data_dir(_user_data_dir, username=_username)
 adaptive_engine.set_data_dir(_user_data_dir, username=_username)
 news_sentiment.set_data_dir(_user_data_dir)
 
+import edu_db
+edu_db.set_data_dir(_user_data_dir, username=_username)
+
 # Store username and data dir in session for sync functions
 st.session_state._quest_username = _username
 st.session_state._quest_data_dir = _user_data_dir
@@ -101,11 +104,11 @@ st.markdown(ui_theme.css(), unsafe_allow_html=True)
 
 if st.session_state.get("just_logged_in"):
     st.session_state.just_logged_in = False
-    st.query_params["page"] = "Overview"
+    st.query_params["page"] = "Hub"
     st.query_params.pop("return_to", None)
-    _early_page = "Overview"
+    _early_page = "Hub"
 else:
-    _early_page = st.query_params.get("page", "Overview")
+    _early_page = st.query_params.get("page", "Hub")
 if _early_page == "AddAccount":
     from login_page import render_add_account_page
     render_add_account_page(st.query_params.get("return_to", "Overview"))
@@ -123,6 +126,19 @@ if _early_page == "Settings":
         label_visibility="collapsed"
     )
     settings.render(_user_info, _settings_section)
+    st.stop()
+
+if _early_page == "Hub":
+    import quest_app.tabs.hub as hub
+    hub.render(_user_info)
+    st.stop()
+
+if _early_page == "Edu_Overview":
+    st.markdown("## Coming Soon: The Education Dashboard")
+    st.markdown("We're currently building the Learning Path UI (the Coursera-style node graph) and the Virtual Trading sandbox you requested.")
+    if st.button("← Back to Hub"):
+        st.query_params["page"] = "Hub"
+        st.rerun()
     st.stop()
 
 # --- Sidebar: profile, navigation, and account controls ---
