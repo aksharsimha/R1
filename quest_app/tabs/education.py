@@ -409,25 +409,23 @@ def render(user_info):
     with lang_col1:
         st.markdown("""
         <div style="font-size:0.92rem;font-weight:700;color:var(--q-text);padding-top:6px;">
-            🌐 Learning Language Category:
+            Learning Language Category:
         </div>
         """, unsafe_allow_html=True)
     with lang_col2:
         is_en_selected = current_lang == "en"
-        if st.button("🇬🇧 English (100 Videos)", key="btn_switch_en", type="primary" if is_en_selected else "secondary", use_container_width=True):
+        if st.button("English (100 Videos)", key="btn_switch_en", type="primary" if is_en_selected else "secondary", use_container_width=True):
             if current_lang != "en":
                 st.session_state.edu_language = "en"
-                # Switch active video to English counterpart if available
                 cur_tkey = active_video.get("topic_key")
                 if cur_tkey and cur_tkey in topic_map:
                     st.session_state.active_video_id = topic_map[cur_tkey]["en"]["id"]
                 st.rerun()
     with lang_col3:
         is_hi_selected = current_lang == "hi"
-        if st.button("🇮🇳 हिन्दी / Hindi (100 Videos)", key="btn_switch_hi", type="primary" if is_hi_selected else "secondary", use_container_width=True):
+        if st.button("हिन्दी / Hindi (100 Videos)", key="btn_switch_hi", type="primary" if is_hi_selected else "secondary", use_container_width=True):
             if current_lang != "hi":
                 st.session_state.edu_language = "hi"
-                # Switch active video to Hindi counterpart if available
                 cur_tkey = active_video.get("topic_key")
                 if cur_tkey and cur_tkey in topic_map:
                     st.session_state.active_video_id = topic_map[cur_tkey]["hi"]["id"]
@@ -436,7 +434,7 @@ def render(user_info):
     # ══════════════════════════════════════════════════════════════════════════
     # Breadcrumbs Navigation
     # ══════════════════════════════════════════════════════════════════════════
-    lang_badge = "🇬🇧 English" if current_lang == "en" else "🇮🇳 हिन्दी"
+    lang_badge = "English" if current_lang == "en" else "हिन्दी"
     st.markdown(f"""
     <div class="yt-breadcrumbs">
         <span>Knowledge Library</span> &gt;
@@ -479,13 +477,13 @@ def render(user_info):
             if cur_tkey and cur_tkey in topic_map:
                 if current_lang == "en":
                     other_creator = topic_map[cur_tkey]["hi"]["creator"]
-                    if st.button(f"🇮🇳 Watch in हिन्दी ({other_creator})", key=f"btn_flip_lang_{cur_tkey}", use_container_width=True):
+                    if st.button(f"🔄 Watch in हिन्दी ({other_creator})", key=f"btn_flip_lang_{cur_tkey}", use_container_width=True):
                         st.session_state.edu_language = "hi"
                         st.session_state.active_video_id = topic_map[cur_tkey]["hi"]["id"]
                         st.rerun()
                 else:
                     other_creator = topic_map[cur_tkey]["en"]["creator"]
-                    if st.button(f"🇬🇧 Watch in English ({other_creator})", key=f"btn_flip_lang_{cur_tkey}", use_container_width=True):
+                    if st.button(f"🔄 Watch in English ({other_creator})", key=f"btn_flip_lang_{cur_tkey}", use_container_width=True):
                         st.session_state.edu_language = "en"
                         st.session_state.active_video_id = topic_map[cur_tkey]["en"]["id"]
                         st.rerun()

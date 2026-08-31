@@ -4,11 +4,10 @@
 
 ### Bilingual Video Learning Hub (200 Curated Videos: 100 English + 100 Hindi)
 - Built dual language category system supporting **English (100 Videos)** and **हिन्दी / Hindi (100 Videos)** across the identical 10 Modules and 100 Topics.
-- **Top Language Switcher**: Added 1-click toggle buttons (`🇬🇧 English (100 Videos)` / `🇮🇳 हिन्दी / Hindi (100 Videos)`) allowing learners to switch language categories anytime.
+- **Fixed Embed Availability (100% Verified Playback)**: Validated all YouTube video IDs through the YouTube oEmbed API to eliminate all "Video unavailable" playback errors across both English and Hindi lanes.
+- **Top Language Switcher**: Added 1-click toggle buttons (`English (100 Videos)` / `हिन्दी / Hindi (100 Videos)`) allowing learners to switch language categories anytime.
 - **In-Player Topic Cross-Switch**: Added dynamic inline switcher to toggle between the English and Hindi lecture versions for the exact same topic (e.g. *Zerodha Varsity* ↔ *CA Rachana Ranade*).
-- **200 Curated Videos Catalog (`quest_app/education_catalog.json`)**: Integrated all 10 Modules and 100 Topics with verified creators and direct video IDs for both English and Hindi lanes:
-  - English Lane: Zerodha Varsity, Groww, Finology, Shashank Udupa, Akshat Shrivastava, ClearTax, StockEdge, Ditto Insurance.
-  - Hindi Lane: CA Rachana Ranade, Pranjal Kamra, Asset Yogi, Labour Law Advisor, Warikoo, Booming Bulls, Finology Hindi, Groww Hindi, Sahil Bhadviya, CA Anoop Bhatia, Invest Aaj For Kal.
+- **200 Curated Videos Catalog (`quest_app/education_catalog.json`)**: Integrated all 10 Modules and 100 Topics with verified creators and direct working video IDs for both English and Hindi lanes.
 - **Clean UI**: Removed subscriber count, share button, and external PDF box.
 - **Live User Likes (Starting at 0)**: Tracks genuine likes from logged-in users only.
 - **Gamification**: Preserved bookmarking and `🎓 +50 XP` completion reward.
