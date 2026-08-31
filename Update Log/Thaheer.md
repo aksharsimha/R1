@@ -4,11 +4,12 @@
 
 ### Bilingual Video Learning Hub (200 Curated Videos: 100 English + 100 Hindi)
 - Built dual language category system supporting **English (100 Videos)** and **हिन्दी / Hindi (100 Videos)** across the identical 10 Modules and 100 Topics.
+- **80% Watch Progress XP Gate**: Users are required to watch at least 80% of a video lesson to unlock and claim the `🎓 +50 XP` reward, accompanied by an interactive watch progress milestone bar.
+- **Removed Follow Button & Notification Icons**: Removed the `+ Follow` button from the creator info bar and removed notification bell icons from both the top profile header and the left sidebar for a clean learning interface.
 - **Fixed Embed Availability (100% Verified Playback)**: Validated all YouTube video IDs through the YouTube oEmbed API to eliminate all "Video unavailable" playback errors across both English and Hindi lanes.
 - **Top Language Switcher**: Added 1-click toggle buttons (`English (100 Videos)` / `हिन्दी / Hindi (100 Videos)`) allowing learners to switch language categories anytime.
 - **In-Player Topic Cross-Switch**: Added dynamic inline switcher to toggle between the English and Hindi lecture versions for the exact same topic (e.g. *Zerodha Varsity* ↔ *CA Rachana Ranade*).
 - **200 Curated Videos Catalog (`quest_app/education_catalog.json`)**: Integrated all 10 Modules and 100 Topics with verified creators and direct working video IDs for both English and Hindi lanes.
-- **Clean UI**: Removed subscriber count, share button, and external PDF box.
 - **Live User Likes (Starting at 0)**: Tracks genuine likes from logged-in users only.
 - **Gamification**: Preserved bookmarking and `🎓 +50 XP` completion reward.
 

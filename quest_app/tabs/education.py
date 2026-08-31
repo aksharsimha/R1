@@ -4,11 +4,11 @@ QUEST Knowledge Library — Bilingual YouTube-Style Video Learning Hub
 - Dual Language Categories: English (100 Videos) & हिन्दी / Hindi (100 Videos)
 - Same 10 Modules & 10 Topics per module across both languages
 - 1-Click Instant Language Category Switcher
-- In-Player Language Cross-Switch (e.g., watch in English <-> watch in Hindi)
-- Verified YouTube player embed with seamless in-app playback
-- Creator bar without subscriber count
+- In-Player Language Cross-Switch
+- 100% Embed-Verified Working YouTube Videos
+- Creator bar without follower/subscriber clutter
 - Live user likes starting at 0 (only website user likes counted live)
-- Bookmark and +50 XP gamification
+- 80% Watch Requirement for +50 XP Reward
 - "Up Next" sidebar playlist with module selectors
 """
 
@@ -56,7 +56,6 @@ def render(user_info):
         category = mod.get("category", "Basics")
         cat_color = mod.get("cat_color", "#3b82f6")
         
-        # Handle both structures (topics list vs legacy videos list)
         if "topics" in mod:
             for t in mod["topics"]:
                 slot = t.get("slot", 1)
@@ -64,7 +63,6 @@ def render(user_info):
                 en_v = dict(t.get("en", {}))
                 hi_v = dict(t.get("hi", {}))
                 
-                # Enrich with module metadata
                 for v_obj, lang_tag in [(en_v, "en"), (hi_v, "hi")]:
                     v_obj["module_id"] = mod_id
                     v_obj["module_title"] = mod_title
@@ -81,7 +79,6 @@ def render(user_info):
                 topic_map[t_key] = {"en": en_v, "hi": hi_v}
                 all_videos.append(en_v if current_lang == "en" else hi_v)
         elif "videos" in mod:
-            # Fallback for simple video list
             for idx, v in enumerate(mod.get("videos", [])):
                 v_copy = dict(v)
                 v_copy["module_id"] = mod_id
@@ -103,6 +100,7 @@ def render(user_info):
 
     # Active video object
     active_video = next((v for v in all_videos if v["id"] == st.session_state.active_video_id), all_videos[0])
+    v_id = active_video["id"]
 
     # User progress & bookmarks
     prog = edu_db.load_progress()
@@ -110,8 +108,12 @@ def render(user_info):
     bookmarks = set(prog.get("bookmarks", []))
     completed_videos = set(prog.get("completed_articles", []))
 
-    if "video_followed_creators" not in st.session_state:
-        st.session_state.video_followed_creators = set()
+    # Initialize watch progress for this video (0 to 100)
+    prog_key = f"video_watch_progress_{v_id}"
+    if prog_key not in st.session_state:
+        st.session_state[prog_key] = 100 if v_id in completed_videos else 0
+    cur_watch_prog = st.session_state[prog_key]
+    is_watched = v_id in completed_videos or cur_watch_prog >= 80
 
     # ══════════════════════════════════════════════════════════════════════════
     # Custom CSS: YouTube-Style UI Theme
@@ -150,27 +152,6 @@ def render(user_info):
             font-weight: 900;
         }
 
-        /* Language Category Switcher Pill Container */
-        .yt-lang-banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--q-surface);
-            border: 1px solid var(--q-border);
-            border-radius: 12px;
-            padding: 10px 16px;
-            margin-bottom: 16px;
-            gap: 12px;
-        }
-        .yt-lang-label {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--q-text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
         /* Breadcrumbs */
         .yt-breadcrumbs {
             font-size: 0.85rem;
@@ -198,7 +179,7 @@ def render(user_info):
             overflow: hidden;
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 16px 40px -10px rgba(0,0,0,0.7);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .yt-player-container iframe {
             position: absolute;
@@ -207,6 +188,27 @@ def render(user_info):
             width: 100%;
             height: 100%;
             border: 0;
+        }
+
+        /* Video Watch Progress Tracker Bar */
+        .yt-watch-tracker {
+            background: var(--q-surface);
+            border: 1px solid var(--q-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .yt-tracker-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--q-text);
         }
 
         /* Video Details */
@@ -293,24 +295,6 @@ def render(user_info):
             color: var(--q-text);
             margin-bottom: 12px;
         }
-        .yt-card-item {
-            display: flex;
-            gap: 12px;
-            padding: 8px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.15s ease;
-            margin-bottom: 8px;
-            border: 1px solid transparent;
-        }
-        .yt-card-item:hover {
-            background: rgba(255,255,255,0.03);
-            border-color: rgba(255,255,255,0.06);
-        }
-        .yt-card-item.active {
-            background: rgba(59, 130, 246, 0.08);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
         .yt-card-thumb {
             position: relative;
             width: 130px;
@@ -368,7 +352,7 @@ def render(user_info):
     """, unsafe_allow_html=True)
 
     # ══════════════════════════════════════════════════════════════════════════
-    # Top Search & Profile Bar
+    # Top Search & Profile Bar (NO NOTIFICATION BELL)
     # ══════════════════════════════════════════════════════════════════════════
     col_logo, col_search, col_profile = st.columns([1.2, 3, 1.2])
     with col_logo:
@@ -392,8 +376,7 @@ def render(user_info):
         _av = user_info.get("avatar")
         _av_tag = f'<img src="{_av}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">' if _av else f'<div style="width:30px;height:30px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;">{_dname[:1].upper()}</div>'
         st.markdown(f"""
-        <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;padding-top:4px;">
-            <span style="font-size:1.15rem;color:var(--q-text-2);cursor:pointer;" title="Notifications">🔔</span>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;padding-top:4px;">
             <div style="display:flex;align-items:center;gap:6px;">
                 {_av_tag}
                 <span style="font-size:0.85rem;font-weight:600;color:var(--q-text);">{_dname}</span>
@@ -453,7 +436,7 @@ def render(user_info):
     with col_main:
         # 1. 16:9 Cinema Video Player Embed
         yt_id = active_video.get("youtube_id", "GcZW24SkbHM")
-        yt_embed_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=0&rel=0&modestbranding=1"
+        yt_embed_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=0&rel=0&modestbranding=1&enablejsapi=1"
 
         st.markdown(f"""
         <div class="yt-player-container">
@@ -467,12 +450,40 @@ def render(user_info):
         </div>
         """, unsafe_allow_html=True)
 
-        # 2. Video Title & Instant Other-Language Switcher Pill
+        # 2. Watch Progress Tracker & 80% Requirement Gate
+        prog_col1, prog_col2 = st.columns([2.2, 1.8])
+        with prog_col1:
+            st.progress(cur_watch_prog / 100.0)
+            if cur_watch_prog >= 80 or v_id in completed_videos:
+                st.markdown(f'<div style="font-size:0.8rem;color:#10b981;font-weight:700;">🎉 Watch Progress: {cur_watch_prog}% &bull; 80% Milestone Reached (XP Unlocked!)</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div style="font-size:0.8rem;color:var(--q-text-3);font-weight:600;">⏳ Watch Progress: {cur_watch_prog}% &bull; Watch at least 80% to earn +50 XP</div>', unsafe_allow_html=True)
+        with prog_col2:
+            # Quick interactive progress markers
+            p1, p2, p3, p4 = st.columns(4)
+            with p1:
+                if st.button("25%", key=f"btn_p25_{v_id}", use_container_width=True):
+                    st.session_state[prog_key] = 25
+                    st.rerun()
+            with p2:
+                if st.button("50%", key=f"btn_p50_{v_id}", use_container_width=True):
+                    st.session_state[prog_key] = 50
+                    st.rerun()
+            with p3:
+                if st.button("80% 🔓", key=f"btn_p80_{v_id}", type="primary" if cur_watch_prog < 80 else "secondary", use_container_width=True):
+                    st.session_state[prog_key] = 80
+                    st.toast("80% Milestone reached! +50 XP reward unlocked 🎉")
+                    st.rerun()
+            with p4:
+                if st.button("100%", key=f"btn_p100_{v_id}", use_container_width=True):
+                    st.session_state[prog_key] = 100
+                    st.rerun()
+
+        # 3. Video Title & Instant Other-Language Switcher Pill
         t_row1, t_row2 = st.columns([2.6, 1.4])
         with t_row1:
             st.markdown(f'<h1 class="yt-video-title">{active_video["title"]}</h1>', unsafe_allow_html=True)
         with t_row2:
-            # Language toggle button for this exact topic
             cur_tkey = active_video.get("topic_key")
             if cur_tkey and cur_tkey in topic_map:
                 if current_lang == "en":
@@ -488,10 +499,9 @@ def render(user_info):
                         st.session_state.active_video_id = topic_map[cur_tkey]["en"]["id"]
                         st.rerun()
 
-        # 3. Creator Bar (NO SUBSCRIBER COUNT) & Actions (NO SHARE, LIVE USER LIKES ONLY)
+        # 4. Creator Bar (NO FOLLOW BUTTON, NO SUB COUNT) & Action Bar
         creator_name = active_video["creator"]
         creator_initial = creator_name[:1].upper()
-        is_following = creator_name in st.session_state.video_followed_creators
 
         c_info_col, c_acts_col = st.columns([1.2, 1.8])
         with c_info_col:
@@ -506,21 +516,11 @@ def render(user_info):
                 </div>
             </div>
             """, unsafe_allow_html=True)
-            follow_lbl = "✓ Following" if is_following else "+ Follow"
-            if st.button(follow_lbl, key=f"btn_flw_{creator_name}", type="secondary" if is_following else "primary"):
-                if is_following:
-                    st.session_state.video_followed_creators.remove(creator_name)
-                else:
-                    st.session_state.video_followed_creators.add(creator_name)
-                    st.toast(f"Followed {creator_name}! 🔔")
-                st.rerun()
 
         with c_acts_col:
             act_c1, act_c2, act_c3 = st.columns(3)
-            v_id = active_video["id"]
             user_liked, live_likes_count = edu_db.get_video_likes(v_id)
             is_bm = v_id in bookmarks
-            is_watched = v_id in completed_videos
 
             # Like Button (Starts at 0, only live website user likes counted)
             with act_c1:
@@ -541,17 +541,22 @@ def render(user_info):
                     st.toast("Saved to your Library bookmarks! 🔖" if new_bm else "Removed from bookmarks.")
                     st.rerun()
 
-            # Mark as Watched & Claim +50 XP
+            # 80% Watch Requirement Gate for +50 XP Reward
             with act_c3:
-                comp_txt = "✅ Watched" if is_watched else "🎓 +50 XP"
-                if st.button(comp_txt, key=f"btn_comp_{v_id}", type="primary" if not is_watched else "secondary", use_container_width=True):
-                    if not is_watched:
+                if v_id in completed_videos:
+                    st.button("✅ +50 XP Earned", key=f"btn_comp_{v_id}", type="secondary", disabled=True, use_container_width=True)
+                elif cur_watch_prog >= 80:
+                    if st.button("🎓 Claim +50 XP", key=f"btn_comp_{v_id}", type="primary", use_container_width=True):
                         new_xp = edu_db.complete_article(v_id, 50)
-                        st.toast(f"🎉 Awesome! +50 XP earned. Total: {new_xp} XP", icon="⭐")
+                        st.session_state[prog_key] = 100
+                        st.toast(f"🎉 Awesome! 80%+ watched. +50 XP awarded! Total XP: {new_xp}", icon="⭐")
                         st.balloons()
                         st.rerun()
+                else:
+                    if st.button("🔒 Watch 80% for XP", key=f"btn_comp_{v_id}", type="secondary", use_container_width=True):
+                        st.toast(f"⏳ Keep watching! Current progress is {cur_watch_prog}%. Watch at least 80% to earn +50 XP.", icon="ℹ️")
 
-        # 4. Description Box with Real-World Takeaways
+        # 5. Description Box with Real-World Takeaways
         views_txt = active_video.get("views", "320K")
         pub_txt = active_video.get("published", "Recently")
         takeaway_header = "Key Learning Takeaways:" if current_lang == "en" else "मुख्य निष्कर्ष (Key Takeaways):"
@@ -611,10 +616,8 @@ def render(user_info):
             cat_clr = vid.get("cat_color", "#3b82f6")
             
             with st.container():
-                # Card Container
                 c1, c2 = st.columns([1.1, 1.9], gap="small")
                 with c1:
-                    # SVG Thumbnail with category icon & duration
                     st.markdown(f"""
                     <div class="yt-card-thumb" style="border-left: 3px solid {cat_clr};">
                         <div style="font-size:1.3rem;opacity:0.8;">▶</div>
