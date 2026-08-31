@@ -512,20 +512,20 @@ def render(user_info):
         with up_h2:
             st.markdown('<div style="font-size:0.78rem;color:var(--q-text-3);text-align:right;padding-top:4px;">Autoplay 🟢</div>', unsafe_allow_html=True)
 
-        # Level Selector / Filter
-        level_options = ["All Levels (100 Videos)"] + [lvl["level_title"] for lvl in catalog]
-        selected_level = st.selectbox(
-            "Filter Level",
-            level_options,
-            key="yt_playlist_level_filter",
+        # Module Selector / Filter
+        module_options = ["All Modules (100 Videos)"] + [lvl["level_title"] for lvl in catalog]
+        selected_module = st.selectbox(
+            "Filter Module",
+            module_options,
+            key="yt_playlist_module_filter",
             label_visibility="collapsed"
         )
 
         # Filtered playlist videos
-        if selected_level == "All Levels (100 Videos)":
+        if selected_module == "All Modules (100 Videos)":
             playlist_videos = all_videos
         else:
-            playlist_videos = [v for v in all_videos if v["level_title"] == selected_level]
+            playlist_videos = [v for v in all_videos if v["level_title"] == selected_module]
 
         # Search filter if user typed keywords
         if search_kw and search_kw.strip():
