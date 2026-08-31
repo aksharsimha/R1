@@ -2,15 +2,16 @@
 
 ## 2026-08-31
 
-### YouTube-Style Video Learning Hub Overhaul (100 Curated Indian Financial Videos)
-- Completely redesigned the Knowledge Library tab (`quest_app/tabs/education.py`) into a YouTube-style Video Learning Hub matching the user reference screenshot.
-- **Renamed Level to Module**: Updated playlist selector and video metadata to use "Module" taxonomy (`All Modules (100 Videos)`, `Module 1 — First ₹1,000` through `Module 10 — Tax Detective`).
-- **Removed Subscriber Count**: Cleaned creator channel bar to show channel name and verified badge (`✔`) only.
-- **Removed Share Option & Resources Box**: Removed share action and external resources box for a streamlined interface.
-- **Live User Likes (Starting at 0)**: Reset like counter to start at 0 and track only genuine live likes by logged-in website users (persisted in `edu_db.py`).
-- **100 Curated Indian Financial Videos**: Integrated complete catalog (`quest_app/education_catalog.json`) across all 10 modules with direct working video IDs.
-- **Action Toolbar**: `👍 Like` (live user toggle), `★ Save / Bookmark`, and `🎓 Mark as Watched (+50 XP)` celebration trigger.
-- **"Up Next" Playlist**: Integrated 10-module switcher with duration badges, view counts, and instant playback.
+### Bilingual Video Learning Hub (200 Curated Videos: 100 English + 100 Hindi)
+- Built dual language category system supporting **English (100 Videos)** and **हिन्दी / Hindi (100 Videos)** across the identical 10 Modules and 100 Topics.
+- **Top Language Switcher**: Added 1-click toggle buttons (`🇬🇧 English (100 Videos)` / `🇮🇳 हिन्दी / Hindi (100 Videos)`) allowing learners to switch language categories anytime.
+- **In-Player Topic Cross-Switch**: Added dynamic inline switcher to toggle between the English and Hindi lecture versions for the exact same topic (e.g. *Zerodha Varsity* ↔ *CA Rachana Ranade*).
+- **200 Curated Videos Catalog (`quest_app/education_catalog.json`)**: Integrated all 10 Modules and 100 Topics with verified creators and direct video IDs for both English and Hindi lanes:
+  - English Lane: Zerodha Varsity, Groww, Finology, Shashank Udupa, Akshat Shrivastava, ClearTax, StockEdge, Ditto Insurance.
+  - Hindi Lane: CA Rachana Ranade, Pranjal Kamra, Asset Yogi, Labour Law Advisor, Warikoo, Booming Bulls, Finology Hindi, Groww Hindi, Sahil Bhadviya, CA Anoop Bhatia, Invest Aaj For Kal.
+- **Clean UI**: Removed subscriber count, share button, and external PDF box.
+- **Live User Likes (Starting at 0)**: Tracks genuine likes from logged-in users only.
+- **Gamification**: Preserved bookmarking and `🎓 +50 XP` completion reward.
 
 ---
 

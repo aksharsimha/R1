@@ -1,14 +1,15 @@
 """
-QUEST Knowledge Library — YouTube-Style Video Learning Hub
-===========================================================
-Full YouTube layout:
-- Responsive 16:9 Cinema Video Player with real-time YouTube embed
+QUEST Knowledge Library — Bilingual YouTube-Style Video Learning Hub
+====================================================================
+- Dual Language Categories: English (100 Videos) & हिन्दी / Hindi (100 Videos)
+- Same 10 Modules & 10 Topics per module across both languages
+- 1-Click Instant Language Category Switcher
+- In-Player Language Cross-Switch (e.g., watch in English <-> watch in Hindi)
+- Verified YouTube player embed with seamless in-app playback
 - Creator bar without subscriber count
-- Persistent live user likes starting at 0 (only website user likes counted live)
-- Saved/Bookmark and +50 XP completion reward (No share option)
-- Structured description with Key Learning Takeaways
-- Resources & Notes PDF Study Guides
-- "Up Next" sidebar playlist with level selectors and instant video switching
+- Live user likes starting at 0 (only website user likes counted live)
+- Bookmark and +50 XP gamification
+- "Up Next" sidebar playlist with module selectors
 """
 
 import streamlit as st
@@ -18,7 +19,7 @@ import urllib.parse
 import edu_db
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Load 100-Video Catalog
+# Load 200-Video Bilingual Catalog
 # ──────────────────────────────────────────────────────────────────────────────
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _CATALOG_PATH = os.path.join(os.path.dirname(_HERE), "education_catalog.json")
@@ -39,29 +40,58 @@ def render(user_info):
         st.error("Education video catalog could not be loaded.")
         return
 
-    # Flatten all videos for quick lookup
+    # Language selection in session state (default: English)
+    if "edu_language" not in st.session_state:
+        st.session_state.edu_language = "en"
+    current_lang = st.session_state.edu_language  # "en" or "hi"
+
+    # Flatten videos for current language and build topic map
     all_videos = []
-    for lvl in catalog:
-        for idx, v in enumerate(lvl.get("videos", [])):
-            v_copy = dict(v)
-            v_id = v.get("id") or f"{lvl.get('level_id', 'lvl')}_v{v.get('slot', idx + 1)}"
-            v_copy["id"] = v_id
-            v_copy["level_id"] = lvl.get("level_id", "level_1")
-            v_copy["level_title"] = lvl.get("level_title", "Level 1")
-            v_copy["stage"] = lvl.get("stage", "Start Investing")
-            v_copy["category"] = lvl.get("category", "Basics")
-            v_copy["cat_color"] = lvl.get("cat_color", "#3b82f6")
-            v_copy.setdefault("youtube_id", "GcZW24SkbHM")
-            v_copy.setdefault("views", "350K")
-            v_copy.setdefault("duration", "8:00")
-            v_copy.setdefault("published", "Aug 2025")
-            v_copy.setdefault("summary", f"Explore key financial concepts in {v_copy.get('title', 'this video')} by {v_copy.get('creator', 'expert creator')}.")
-            v_copy.setdefault("key_takeaways", [
-                "Understand fundamental market dynamics and compounding principles.",
-                "Implement structured risk management and asset allocation.",
-                "Build long-term wealth with disciplined investing habits."
-            ])
-            all_videos.append(v_copy)
+    topic_map = {}  # topic_key -> {"en": vid_obj, "hi": vid_obj}
+
+    for mod in catalog:
+        mod_id = mod.get("module_id", "module_1")
+        mod_title = mod.get("module_title", "Module 1")
+        stage = mod.get("stage", "Start Investing")
+        category = mod.get("category", "Basics")
+        cat_color = mod.get("cat_color", "#3b82f6")
+        
+        # Handle both structures (topics list vs legacy videos list)
+        if "topics" in mod:
+            for t in mod["topics"]:
+                slot = t.get("slot", 1)
+                t_key = f"{mod_id}_slot_{slot}"
+                en_v = dict(t.get("en", {}))
+                hi_v = dict(t.get("hi", {}))
+                
+                # Enrich with module metadata
+                for v_obj, lang_tag in [(en_v, "en"), (hi_v, "hi")]:
+                    v_obj["module_id"] = mod_id
+                    v_obj["module_title"] = mod_title
+                    v_obj["stage"] = stage
+                    v_obj["category"] = category
+                    v_obj["cat_color"] = cat_color
+                    v_obj["slot"] = slot
+                    v_obj["topic_key"] = t_key
+                    v_obj.setdefault("youtube_id", "GcZW24SkbHM" if lang_tag == "en" else "Xn7KWR9EOGQ")
+                    v_obj.setdefault("views", "420K")
+                    v_obj.setdefault("duration", "9:30")
+                    v_obj.setdefault("published", "Aug 2025")
+                
+                topic_map[t_key] = {"en": en_v, "hi": hi_v}
+                all_videos.append(en_v if current_lang == "en" else hi_v)
+        elif "videos" in mod:
+            # Fallback for simple video list
+            for idx, v in enumerate(mod.get("videos", [])):
+                v_copy = dict(v)
+                v_copy["module_id"] = mod_id
+                v_copy["module_title"] = mod_title
+                v_copy["stage"] = stage
+                v_copy["category"] = category
+                v_copy["cat_color"] = cat_color
+                v_copy["slot"] = idx + 1
+                v_copy["topic_key"] = f"{mod_id}_slot_{idx + 1}"
+                all_videos.append(v_copy)
 
     if not all_videos:
         st.info("No learning videos available.")
@@ -77,7 +107,6 @@ def render(user_info):
     # User progress & bookmarks
     prog = edu_db.load_progress()
     user_xp = prog.get("total_xp", 0)
-    user_lvl = prog.get("current_level", "Level 1")
     bookmarks = set(prog.get("bookmarks", []))
     completed_videos = set(prog.get("completed_articles", []))
 
@@ -119,6 +148,27 @@ def render(user_info):
             color: #fff;
             font-size: 0.9rem;
             font-weight: 900;
+        }
+
+        /* Language Category Switcher Pill Container */
+        .yt-lang-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--q-surface);
+            border: 1px solid var(--q-border);
+            border-radius: 12px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+        .yt-lang-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--q-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* Breadcrumbs */
@@ -231,18 +281,6 @@ def render(user_info):
             display: flex;
             align-items: flex-start;
             gap: 6px;
-        }
-
-        /* Resources Box */
-        .yt-resource-card {
-            background: var(--q-surface-2);
-            border: 1px solid var(--q-border);
-            border-radius: 10px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 12px;
         }
 
         /* Up Next Playlist */
@@ -365,11 +403,44 @@ def render(user_info):
         """, unsafe_allow_html=True)
 
     # ══════════════════════════════════════════════════════════════════════════
+    # Dual Language Category Switcher (English vs हिन्दी)
+    # ══════════════════════════════════════════════════════════════════════════
+    lang_col1, lang_col2, lang_col3 = st.columns([1.5, 1.2, 1.2])
+    with lang_col1:
+        st.markdown("""
+        <div style="font-size:0.92rem;font-weight:700;color:var(--q-text);padding-top:6px;">
+            🌐 Learning Language Category:
+        </div>
+        """, unsafe_allow_html=True)
+    with lang_col2:
+        is_en_selected = current_lang == "en"
+        if st.button("🇬🇧 English (100 Videos)", key="btn_switch_en", type="primary" if is_en_selected else "secondary", use_container_width=True):
+            if current_lang != "en":
+                st.session_state.edu_language = "en"
+                # Switch active video to English counterpart if available
+                cur_tkey = active_video.get("topic_key")
+                if cur_tkey and cur_tkey in topic_map:
+                    st.session_state.active_video_id = topic_map[cur_tkey]["en"]["id"]
+                st.rerun()
+    with lang_col3:
+        is_hi_selected = current_lang == "hi"
+        if st.button("🇮🇳 हिन्दी / Hindi (100 Videos)", key="btn_switch_hi", type="primary" if is_hi_selected else "secondary", use_container_width=True):
+            if current_lang != "hi":
+                st.session_state.edu_language = "hi"
+                # Switch active video to Hindi counterpart if available
+                cur_tkey = active_video.get("topic_key")
+                if cur_tkey and cur_tkey in topic_map:
+                    st.session_state.active_video_id = topic_map[cur_tkey]["hi"]["id"]
+                st.rerun()
+
+    # ══════════════════════════════════════════════════════════════════════════
     # Breadcrumbs Navigation
     # ══════════════════════════════════════════════════════════════════════════
+    lang_badge = "🇬🇧 English" if current_lang == "en" else "🇮🇳 हिन्दी"
     st.markdown(f"""
     <div class="yt-breadcrumbs">
         <span>Knowledge Library</span> &gt;
+        <span style="color:#60a5fa;font-weight:700;">{lang_badge}</span> &gt;
         <span>{active_video['stage']}</span> &gt;
         <span>{active_video['category']}</span> &gt;
         <span class="active">{active_video['title']}</span>
@@ -385,7 +456,6 @@ def render(user_info):
         # 1. 16:9 Cinema Video Player Embed
         yt_id = active_video.get("youtube_id", "GcZW24SkbHM")
         yt_embed_url = f"https://www.youtube.com/embed/{yt_id}?autoplay=0&rel=0&modestbranding=1"
-        yt_watch_url = f"https://www.youtube.com/watch?v={yt_id}"
 
         st.markdown(f"""
         <div class="yt-player-container">
@@ -399,8 +469,26 @@ def render(user_info):
         </div>
         """, unsafe_allow_html=True)
 
-        # 2. Video Title
-        st.markdown(f'<h1 class="yt-video-title">{active_video["title"]}</h1>', unsafe_allow_html=True)
+        # 2. Video Title & Instant Other-Language Switcher Pill
+        t_row1, t_row2 = st.columns([2.6, 1.4])
+        with t_row1:
+            st.markdown(f'<h1 class="yt-video-title">{active_video["title"]}</h1>', unsafe_allow_html=True)
+        with t_row2:
+            # Language toggle button for this exact topic
+            cur_tkey = active_video.get("topic_key")
+            if cur_tkey and cur_tkey in topic_map:
+                if current_lang == "en":
+                    other_creator = topic_map[cur_tkey]["hi"]["creator"]
+                    if st.button(f"🇮🇳 Watch in हिन्दी ({other_creator})", key=f"btn_flip_lang_{cur_tkey}", use_container_width=True):
+                        st.session_state.edu_language = "hi"
+                        st.session_state.active_video_id = topic_map[cur_tkey]["hi"]["id"]
+                        st.rerun()
+                else:
+                    other_creator = topic_map[cur_tkey]["en"]["creator"]
+                    if st.button(f"🇬🇧 Watch in English ({other_creator})", key=f"btn_flip_lang_{cur_tkey}", use_container_width=True):
+                        st.session_state.edu_language = "en"
+                        st.session_state.active_video_id = topic_map[cur_tkey]["en"]["id"]
+                        st.rerun()
 
         # 3. Creator Bar (NO SUBSCRIBER COUNT) & Actions (NO SHARE, LIVE USER LIKES ONLY)
         creator_name = active_video["creator"]
@@ -468,11 +556,13 @@ def render(user_info):
         # 4. Description Box with Real-World Takeaways
         views_txt = active_video.get("views", "320K")
         pub_txt = active_video.get("published", "Recently")
+        takeaway_header = "Key Learning Takeaways:" if current_lang == "en" else "मुख्य निष्कर्ष (Key Takeaways):"
+        
         st.markdown(f"""
         <div class="yt-desc-box">
-            <div class="yt-desc-meta">{views_txt} views &bull; {pub_txt} &bull; {active_video['level_title']}</div>
+            <div class="yt-desc-meta">{views_txt} views &bull; {pub_txt} &bull; {active_video['module_title']} &bull; {lang_badge}</div>
             <div class="yt-desc-text">{active_video['summary']}</div>
-            <div style="font-weight:700;font-size:0.85rem;color:var(--q-text);margin:10px 0 6px;">Key Learning Takeaways:</div>
+            <div style="font-weight:700;font-size:0.85rem;color:var(--q-text);margin:10px 0 6px;">{takeaway_header}</div>
         """, unsafe_allow_html=True)
         for tkw in active_video.get("key_takeaways", []):
             st.markdown(f'<div class="yt-takeaway-item"><span style="color:#10b981;">•</span> {tkw}</div>', unsafe_allow_html=True)
@@ -484,16 +574,16 @@ def render(user_info):
     with col_upnext:
         up_h1, up_h2 = st.columns([2, 1])
         with up_h1:
-            st.markdown('<div class="yt-upnext-header">Up Next</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="yt-upnext-header">Up Next ({lang_badge})</div>', unsafe_allow_html=True)
         with up_h2:
             st.markdown('<div style="font-size:0.78rem;color:var(--q-text-3);text-align:right;padding-top:4px;">Autoplay 🟢</div>', unsafe_allow_html=True)
 
         # Module Selector / Filter
-        module_options = ["All Modules (100 Videos)"] + [lvl["level_title"] for lvl in catalog]
+        module_options = ["All Modules (100 Videos)"] + [mod.get("module_title", f"Module {i+1}") for i, mod in enumerate(catalog)]
         selected_module = st.selectbox(
             "Filter Module",
             module_options,
-            key="yt_playlist_module_filter",
+            key=f"yt_playlist_module_filter_{current_lang}",
             label_visibility="collapsed"
         )
 
@@ -501,7 +591,7 @@ def render(user_info):
         if selected_module == "All Modules (100 Videos)":
             playlist_videos = all_videos
         else:
-            playlist_videos = [v for v in all_videos if v["level_title"] == selected_module]
+            playlist_videos = [v for v in all_videos if v.get("module_title") == selected_module]
 
         # Search filter if user typed keywords
         if search_kw and search_kw.strip():
@@ -511,7 +601,7 @@ def render(user_info):
                 if skw in v["title"].lower() 
                 or skw in v["creator"].lower() 
                 or skw in v["category"].lower() 
-                or skw in v["level_title"].lower()
+                or skw in v["module_title"].lower()
             ]
 
         # Render list of videos
@@ -520,7 +610,6 @@ def render(user_info):
 
         for p_idx, vid in enumerate(displayed_videos):
             is_active = vid["id"] == active_video["id"]
-            active_cls = "active" if is_active else ""
             cat_clr = vid.get("cat_color", "#3b82f6")
             
             with st.container():
@@ -531,7 +620,7 @@ def render(user_info):
                     st.markdown(f"""
                     <div class="yt-card-thumb" style="border-left: 3px solid {cat_clr};">
                         <div style="font-size:1.3rem;opacity:0.8;">▶</div>
-                        <div class="yt-card-duration">{vid['duration']}</div>
+                        <div class="yt-card-duration">{vid.get('duration', '8:30')}</div>
                     </div>
                     """, unsafe_allow_html=True)
                 with c2:
@@ -542,10 +631,10 @@ def render(user_info):
                             <span>{vid['creator']}</span>
                             <span style="color:#3b82f6;font-size:0.65rem;">✔</span>
                         </div>
-                        <div class="yt-card-views">{vid['views']} views &bull; {vid['category']}</div>
+                        <div class="yt-card-views">{vid.get('views', '350K')} views &bull; {vid['category']}</div>
                     </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Play Video", key=f"btn_play_{vid['id']}_{p_idx}", use_container_width=True):
+                    if st.button("Play Video", key=f"btn_play_{vid['id']}_{p_idx}_{current_lang}", use_container_width=True):
                         st.session_state.active_video_id = vid["id"]
                         st.rerun()
 
@@ -553,10 +642,10 @@ def render(user_info):
 
         # Show more button
         if len(playlist_videos) > limit:
-            if st.button(f"Show more ({len(playlist_videos) - limit} remaining) ∨", key="btn_show_more_playlist", use_container_width=True):
+            if st.button(f"Show more ({len(playlist_videos) - limit} remaining) ∨", key=f"btn_show_more_playlist_{current_lang}", use_container_width=True):
                 st.session_state.playlist_limit = limit + 10
                 st.rerun()
         elif limit > 8:
-            if st.button("Show less ∧", key="btn_show_less_playlist", use_container_width=True):
+            if st.button("Show less ∧", key=f"btn_show_less_playlist_{current_lang}", use_container_width=True):
                 st.session_state.playlist_limit = 8
                 st.rerun()
