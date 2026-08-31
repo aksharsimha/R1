@@ -72,6 +72,7 @@ def render(user_info):
         html_str1 = f'<div class="hub-card" style="margin-bottom: 1rem;"><div class="hub-card-title">💼 Professional Portfolio</div><div class="hub-card-subtitle">Track markets. Analyze risk. Grow your wealth.</div><div class="hub-stat"><div class="hub-stat-label">Status</div><div class="hub-stat-value" style="color: #60a5fa;">Active Environment</div></div></div>'
         st.markdown(html_str1, unsafe_allow_html=True)
         if st.button("Go to Portfolio ->", key="btn_go_portfolio", use_container_width=True, type="primary"):
+            st.query_params["workspace"] = "professional"
             st.query_params["page"] = "Overview"
             st.rerun()
 
@@ -84,5 +85,6 @@ def render(user_info):
         html_str2 = f'<div class="hub-card" style="margin-bottom: 1rem;"><div class="hub-card-title">🎓 Games & Education</div><div class="hub-card-subtitle">Learn. Play. Achieve. Level up your skills.</div><div class="hub-stat" style="display:flex; justify-content:space-between; align-items:center;"><div><div class="hub-stat-label">Your Progress</div><div class="hub-stat-value" style="color: #facc15;">⭐ {xp} XP</div></div><div style="text-align: right;"><div class="hub-stat-label">Up Next</div><div class="hub-stat-value">▶️ {curr_lvl}</div></div></div><div class="hub-stat"><div class="hub-stat-label">Virtual Trading Balance</div><div class="hub-stat-value" style="color: #34d399;">₹ {bal:,.0f}</div></div></div>'
         st.markdown(html_str2, unsafe_allow_html=True)
         if st.button("Resume Learning ->", key="btn_go_education", use_container_width=True, type="primary"):
-            st.query_params["page"] = "Edu_Overview"
+            st.query_params["workspace"] = "education"
+            st.query_params["page"] = "Learning Path"
             st.rerun()

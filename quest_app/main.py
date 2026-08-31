@@ -133,13 +133,7 @@ if _early_page == "Hub":
     hub.render(_user_info)
     st.stop()
 
-if _early_page == "Edu_Overview":
-    st.markdown("## Coming Soon: The Education Dashboard")
-    st.markdown("We're currently building the Learning Path UI (the Coursera-style node graph) and the Virtual Trading sandbox you requested.")
-    if st.button("← Back to Hub"):
-        st.query_params["page"] = "Hub"
-        st.rerun()
-    st.stop()
+# Edu_Overview intercepts removed; now handled by native sidebar.
 
 # --- Sidebar: profile, navigation, and account controls ---
 import pytz
@@ -258,20 +252,35 @@ else:
             st.rerun()
 
 # Sync navigation with URL query parameters to support Back/Forward buttons
-_valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
-_page_labels = {
-    "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
-    "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
-    "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Settings": "⚙  Settings",
-}
-_query_page = st.query_params.get("page", "Overview")
+_workspace = st.query_params.get("workspace", "professional")
+
+if _workspace == "professional":
+    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
+    _page_labels = {
+        "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
+        "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
+        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Settings": "⚙  Settings",
+    }
+    _sidebar_title = "Workspace"
+    _default_page = "Overview"
+else:
+    _valid_pages = ["Learning Path", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Library", "Settings"]
+    _page_labels = {
+        "Learning Path": "🎓  Learning Path", "Virtual Trading": "📈  Virtual Trading",
+        "Leaderboard": "🏆  Leaderboard", "Badges": "🎖️  Badges",
+        "Tax Detective": "🕵️  Tax Detective", "Library": "📚  Library", "Settings": "⚙  Settings",
+    }
+    _sidebar_title = "Games & Education"
+    _default_page = "Learning Path"
+
+_query_page = st.query_params.get("page", _default_page)
 if _query_page not in _valid_pages:
-    _query_page = "Overview"
+    _query_page = _default_page
 
 _nav_pages = [page for page in _valid_pages if page != "Settings"]
 _page_idx = _nav_pages.index(_query_page) if _query_page in _nav_pages else 0
 
-st.sidebar.markdown("<div class='quest-nav-label'>Workspace</div>", unsafe_allow_html=True)
+st.sidebar.markdown(f"<div class='quest-nav-label'>{_sidebar_title}</div>", unsafe_allow_html=True)
 _selected_label = st.sidebar.radio(
     "Navigate",
     [_page_labels[page] for page in _nav_pages],
@@ -606,3 +615,9 @@ elif _active("tab_michael"):
 elif section == "Planner":
     import quest_app.tabs.planner as tb
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
+elif section == "Learning Path":
+    import quest_app.tabs.edu_overview as tb
+    tb.render(_user_info)
+elif section in ["Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Library"]:
+    st.markdown(f"## {section} (Under Construction)")
+    st.markdown("This tab is assigned to a team member and is currently being built.")
