@@ -2,20 +2,24 @@
 
 ## 2026-08-31
 
-### Knowledge Library & Games/Education Section (Mockup Matching)
-- Created dedicated Knowledge Library page (`quest_app/tabs/education.py`) matching the design mockup.
-- Connected the Library tab to the Games & Education sidebar workspace with custom XP status progress and environment switchers (`💼 Portfolio Dashboard` / `🏠 Switch to Hub`).
-- Added top search bar with `⌘ K` keyboard shortcut badge, notification bell, and user profile avatar.
-- Built 6 modern interactive educational cards with custom SVG artwork:
-  1. *Glossary of Trading Terms* (BASICS, 8 min read)
-  2. *The Power of Compounding* (INVESTING, 6 min read)
-  3. *A Guide to Capital Gains Tax* (TAXES, 7 min read)
-  4. *Support and Resistance Levels* (TRADING, 5 min read)
-  5. *Build an Emergency Fund* (PERSONAL FINANCE, 6 min read)
-  6. *Diversification Strategies* (ADVANCED STRATEGIES, 9 min read)
-- Built interactive reading dialog (`@st.dialog`) with video lecture placeholder containers (ready for future video streams), full markdown study materials, and "Mark as Completed (+50 XP)" + "Bookmark" action buttons.
-- Updated `edu_db.py` to persist bookmarks, completed modules, and XP rewards to Firestore.
-- Added bottom pagination matching the design mockup (`Showing 1-6 of 128 articles` with pagination controls).
+### YouTube-Style Video Learning Hub Overhaul (100 Curated Indian Financial Videos)
+- Completely redesigned the Knowledge Library tab (`quest_app/tabs/education.py`) into a YouTube-style Video Learning Hub matching the user reference screenshot.
+- Implemented responsive 16:9 cinema video player with real-time YouTube search resolving and video playback.
+- Integrated complete 100-video Indian Financial Education catalog (`quest_app/education_catalog.json`) across all 10 pedagogical stages:
+  - **Level 1 — First ₹1,000**: Zerodha Varsity, Pranjal Kamra, CA Rachana Ranade, Groww, Warikoo, Asset Yogi, Akshat Shrivastava, SEBI Investor Education.
+  - **Level 2 — Grow Your Money**: Compounding math, SIP vs Lumpsum, inflation, Rule of 72, emergency funds.
+  - **Level 3 — Reach Your Goal**: Goal-based financial planning, time horizons, retirement planning at 25 vs 35.
+  - **Level 4 — What's Your Style?**: Risk profiling, active vs passive, value vs growth, behavioural biases.
+  - **Level 5 — Build Your Portfolio**: Asset allocation, equity/debt/gold mix, portfolio rebalancing, large/mid/small caps.
+  - **Level 6 — What Happens If...?**: Market crashes, term & health insurance, stop losses, hedging with options.
+  - **Level 7 — News Detective**: Reading business news, RBI monetary policy, US Fed impact, quarterly earnings seasons.
+  - **Level 8 — Read the Market**: Technical analysis, candlestick charts, support & resistance, balance sheets, P/E & ROE.
+  - **Level 9 — Market Storm**: 2008 Crisis, Covid 2020 crash, VIX fear index, Harshad Mehta 1992 scam, circuit breakers.
+  - **Standalone — Tax Detective**: STCG vs LTCG on equities, ITR filing for traders, Old vs New tax regime, Section 80C, ELSS.
+- Creator Bar: Added channel avatars, verified badges (`✔`), subscriber counts, and interactive `+ Follow` buttons.
+- Quick Actions: Built interactive `👍 Likes`, `🔖 Save / Bookmark`, `↗ Share`, and `🎓 Mark as Watched (+50 XP)` controls.
+- Resources & Notes: Added downloadable PDF cheatsheets (`.pdf • 1.2 MB`) and direct "Open in YouTube ↗" links.
+- "Up Next" Playlist: Built interactive playlist sidebar with level filtering, duration badges, view counts, and instant 1-click video switching.
 
 ---
 

@@ -264,14 +264,14 @@ if _workspace == "professional":
     _sidebar_title = "Workspace"
     _default_page = "Overview"
 else:
-    _valid_pages = ["Learning Path", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Library", "Settings"]
+    _valid_pages = ["Library", "Learning Path", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Settings"]
     _page_labels = {
-        "Learning Path": "🎓  Learning Path", "Virtual Trading": "📈  Virtual Trading",
-        "Leaderboard": "🏆  Leaderboard", "Badges": "🎖️  Badges",
-        "Tax Detective": "🕵️  Tax Detective", "Library": "📚  Library", "Settings": "⚙  Settings",
+        "Library": "📚  Knowledge Library", "Learning Path": "🎓  Learning Path",
+        "Virtual Trading": "📈  Virtual Trading", "Leaderboard": "🏆  Leaderboard",
+        "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
-    _default_page = "Learning Path"
+    _default_page = "Library"
 
 _query_page = st.query_params.get("page", _default_page)
 if _query_page not in _valid_pages:

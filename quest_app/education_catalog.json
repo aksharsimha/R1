@@ -1,0 +1,802 @@
+[
+  {
+    "level_id": "level_1",
+    "level_title": "Level 1 \u2014 First \u20b91,000",
+    "level_desc": "Start Investing. Absolute basics: what investing is, why start small, opening a demat, first trade mechanics.",
+    "stage": "Start Investing",
+    "category": "Basics",
+    "cat_color": "#3b82f6",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "What is Investing? Basics for Beginners",
+        "creator": "Zerodha Varsity",
+        "duration": "8:15",
+        "views": "320K"
+      },
+      {
+        "slot": 2,
+        "title": "How to Open a Demat Account in India",
+        "creator": "Pranjal Kamra",
+        "duration": "7:40",
+        "views": "450K"
+      },
+      {
+        "slot": 3,
+        "title": "Share Market Basics for Beginners in Hindi",
+        "creator": "CA Rachana Ranade",
+        "duration": "12:10",
+        "views": "1.2M"
+      },
+      {
+        "slot": 4,
+        "title": "Stock Market for Beginners \u2014 Full Playlist Intro",
+        "creator": "Groww",
+        "duration": "6:50",
+        "views": "680K"
+      },
+      {
+        "slot": 5,
+        "title": "How to Buy Your First Stock \u2014 Step by Step",
+        "creator": "Finology Legal / Pranjal Kamra",
+        "duration": "9:05",
+        "views": "510K"
+      },
+      {
+        "slot": 6,
+        "title": "Investing with Just \u20b91,000 \u2014 Where to Start",
+        "creator": "Warikoo",
+        "duration": "6:15",
+        "views": "890K"
+      },
+      {
+        "slot": 7,
+        "title": "Demat vs Trading Account Explained",
+        "creator": "Zerodha Varsity",
+        "duration": "5:30",
+        "views": "290K"
+      },
+      {
+        "slot": 8,
+        "title": "What are Stocks, Shares, Equity \u2014 Simply Explained",
+        "creator": "Asset Yogi",
+        "duration": "10:20",
+        "views": "740K"
+      },
+      {
+        "slot": 9,
+        "title": "Common Beginner Mistakes in the Stock Market",
+        "creator": "Akshat Shrivastava",
+        "duration": "11:45",
+        "views": "620K"
+      },
+      {
+        "slot": 10,
+        "title": "SEBI and Investor Protection in India",
+        "creator": "SEBI Investor Education",
+        "duration": "7:10",
+        "views": "180K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_2",
+    "level_title": "Level 2 \u2014 Grow Your Money",
+    "level_desc": "Start Investing. Compounding, SIP mechanics, saving vs investing, inflation.",
+    "stage": "Start Investing",
+    "category": "Investing",
+    "cat_color": "#10b981",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "Power of Compounding Explained with Examples",
+        "creator": "CA Rachana Ranade",
+        "duration": "11:15",
+        "views": "980K"
+      },
+      {
+        "slot": 2,
+        "title": "SIP vs Lumpsum \u2014 What Works Better",
+        "creator": "Groww",
+        "duration": "7:25",
+        "views": "530K"
+      },
+      {
+        "slot": 3,
+        "title": "How Inflation Eats Your Savings",
+        "creator": "Labour Law Advisor",
+        "duration": "9:50",
+        "views": "1.1M"
+      },
+      {
+        "slot": 4,
+        "title": "Rule of 72 \u2014 Double Your Money",
+        "creator": "Pranjal Kamra",
+        "duration": "6:10",
+        "views": "420K"
+      },
+      {
+        "slot": 5,
+        "title": "Saving vs Investing \u2014 The Real Difference",
+        "creator": "Warikoo",
+        "duration": "8:30",
+        "views": "710K"
+      },
+      {
+        "slot": 6,
+        "title": "Best SIP Strategy for Beginners in India",
+        "creator": "Shashank Udupa",
+        "duration": "10:05",
+        "views": "390K"
+      },
+      {
+        "slot": 7,
+        "title": "How \u20b95,000 SIP Becomes \u20b91 Crore",
+        "creator": "Asset Yogi",
+        "duration": "13:20",
+        "views": "1.4M"
+      },
+      {
+        "slot": 8,
+        "title": "Time in the Market vs Timing the Market",
+        "creator": "Akshat Shrivastava",
+        "duration": "11:00",
+        "views": "580K"
+      },
+      {
+        "slot": 9,
+        "title": "Emergency Fund \u2014 How Much and Where to Park",
+        "creator": "Labour Law Advisor",
+        "duration": "10:45",
+        "views": "870K"
+      },
+      {
+        "slot": 10,
+        "title": "Compounding Real Life Examples \u2014 Warren Buffett",
+        "creator": "Finology",
+        "duration": "9:15",
+        "views": "490K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_3",
+    "level_title": "Level 3 \u2014 Reach Your Goal",
+    "level_desc": "Start Investing. Goal-based investing, financial planning, time horizons.",
+    "stage": "Start Investing",
+    "category": "Goal Planning",
+    "cat_color": "#06b6d4",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "Goal Based Investing \u2014 Complete Framework",
+        "creator": "CA Rachana Ranade",
+        "duration": "10:40",
+        "views": "640K"
+      },
+      {
+        "slot": 2,
+        "title": "How to Plan for a Car / House / Wedding",
+        "creator": "Asset Yogi",
+        "duration": "12:15",
+        "views": "820K"
+      },
+      {
+        "slot": 3,
+        "title": "Financial Planning for 20s and 30s in India",
+        "creator": "Warikoo",
+        "duration": "9:30",
+        "views": "910K"
+      },
+      {
+        "slot": 4,
+        "title": "Retirement Planning \u2014 Start at 25 vs 35",
+        "creator": "Pranjal Kamra",
+        "duration": "8:50",
+        "views": "530K"
+      },
+      {
+        "slot": 5,
+        "title": "Short Term vs Long Term Investing",
+        "creator": "Groww",
+        "duration": "7:15",
+        "views": "410K"
+      },
+      {
+        "slot": 6,
+        "title": "SMART Financial Goals Explained",
+        "creator": "Labour Law Advisor",
+        "duration": "8:40",
+        "views": "370K"
+      },
+      {
+        "slot": 7,
+        "title": "How Much Money Do You Need to Retire in India",
+        "creator": "Shashank Udupa",
+        "duration": "11:20",
+        "views": "680K"
+      },
+      {
+        "slot": 8,
+        "title": "Bucket Strategy for Multiple Goals",
+        "creator": "Invest Aaj For Kal",
+        "duration": "10:05",
+        "views": "290K"
+      },
+      {
+        "slot": 9,
+        "title": "Sinking Funds Explained",
+        "creator": "Finology",
+        "duration": "7:50",
+        "views": "240K"
+      },
+      {
+        "slot": 10,
+        "title": "How to Reverse Engineer Your Financial Goal",
+        "creator": "Akshat Shrivastava",
+        "duration": "12:00",
+        "views": "520K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_4",
+    "level_title": "Level 4 \u2014 What's Your Style?",
+    "level_desc": "Build Your Portfolio. Investor personality, risk profiling, active vs passive.",
+    "stage": "Build Your Portfolio",
+    "category": "Strategy & Style",
+    "cat_color": "#8b5cf6",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "Risk Profiling \u2014 Are You Aggressive or Conservative",
+        "creator": "CA Rachana Ranade",
+        "duration": "9:45",
+        "views": "470K"
+      },
+      {
+        "slot": 2,
+        "title": "Active vs Passive Investing",
+        "creator": "Pranjal Kamra",
+        "duration": "8:20",
+        "views": "380K"
+      },
+      {
+        "slot": 3,
+        "title": "Value vs Growth Investing \u2014 Which Suits You",
+        "creator": "Finology",
+        "duration": "11:10",
+        "views": "490K"
+      },
+      {
+        "slot": 4,
+        "title": "Trader vs Investor \u2014 Know the Difference",
+        "creator": "Zerodha Varsity",
+        "duration": "6:30",
+        "views": "310K"
+      },
+      {
+        "slot": 5,
+        "title": "Behavioural Finance \u2014 Your Biases as an Investor",
+        "creator": "Akshat Shrivastava",
+        "duration": "13:15",
+        "views": "560K"
+      },
+      {
+        "slot": 6,
+        "title": "Warren Buffett vs Rakesh Jhunjhunwala Style",
+        "creator": "Groww",
+        "duration": "10:50",
+        "views": "720K"
+      },
+      {
+        "slot": 7,
+        "title": "Momentum Investing Explained",
+        "creator": "Sahil Bhadviya",
+        "duration": "8:40",
+        "views": "280K"
+      },
+      {
+        "slot": 8,
+        "title": "Contrarian Investing \u2014 Going Against the Crowd",
+        "creator": "Invest Aaj For Kal",
+        "duration": "9:55",
+        "views": "210K"
+      },
+      {
+        "slot": 9,
+        "title": "How to Find Your Investing Style Quiz Walkthrough",
+        "creator": "Warikoo",
+        "duration": "7:45",
+        "views": "430K"
+      },
+      {
+        "slot": 10,
+        "title": "Dividend Investing vs Capital Appreciation",
+        "creator": "Asset Yogi",
+        "duration": "12:30",
+        "views": "650K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_5",
+    "level_title": "Level 5 \u2014 Build Your Portfolio",
+    "level_desc": "Build Your Portfolio. Asset allocation, diversification, portfolio construction.",
+    "stage": "Build Your Portfolio",
+    "category": "Portfolio Construction",
+    "cat_color": "#ec4899",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "Asset Allocation \u2014 The Most Important Decision",
+        "creator": "CA Rachana Ranade",
+        "duration": "11:30",
+        "views": "590K"
+      },
+      {
+        "slot": 2,
+        "title": "How to Build a Diversified Portfolio in India",
+        "creator": "Pranjal Kamra",
+        "duration": "10:15",
+        "views": "640K"
+      },
+      {
+        "slot": 3,
+        "title": "Equity + Debt + Gold \u2014 Ideal Mix by Age",
+        "creator": "Asset Yogi",
+        "duration": "14:00",
+        "views": "890K"
+      },
+      {
+        "slot": 4,
+        "title": "What is Portfolio Rebalancing",
+        "creator": "Zerodha Varsity",
+        "duration": "7:10",
+        "views": "260K"
+      },
+      {
+        "slot": 5,
+        "title": "Large Cap vs Mid Cap vs Small Cap Allocation",
+        "creator": "Groww",
+        "duration": "8:45",
+        "views": "510K"
+      },
+      {
+        "slot": 6,
+        "title": "Core Satellite Portfolio Strategy",
+        "creator": "Finology",
+        "duration": "9:20",
+        "views": "330K"
+      },
+      {
+        "slot": 7,
+        "title": "How Many Stocks Should You Hold",
+        "creator": "Akshat Shrivastava",
+        "duration": "10:40",
+        "views": "480K"
+      },
+      {
+        "slot": 8,
+        "title": "ETFs vs Mutual Funds vs Direct Stocks",
+        "creator": "Shashank Udupa",
+        "duration": "11:50",
+        "views": "420K"
+      },
+      {
+        "slot": 9,
+        "title": "International Diversification for Indian Investors",
+        "creator": "Warikoo",
+        "duration": "8:10",
+        "views": "360K"
+      },
+      {
+        "slot": 10,
+        "title": "Sample \u20b910 Lakh Portfolio Breakdown",
+        "creator": "Invest Aaj For Kal",
+        "duration": "13:10",
+        "views": "450K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_6",
+    "level_title": "Level 6 \u2014 What Happens If...?",
+    "level_desc": "Build Your Portfolio. Scenario thinking, risk management, insurance, hedging.",
+    "stage": "Build Your Portfolio",
+    "category": "Risk & Insurance",
+    "cat_color": "#f59e0b",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "What Happens if the Market Crashes 50%",
+        "creator": "Akshat Shrivastava",
+        "duration": "12:50",
+        "views": "710K"
+      },
+      {
+        "slot": 2,
+        "title": "Term Insurance \u2014 Why Every Earner Needs It",
+        "creator": "Labour Law Advisor",
+        "duration": "11:00",
+        "views": "1.3M"
+      },
+      {
+        "slot": 3,
+        "title": "Health Insurance Explained for Beginners",
+        "creator": "Ditto Insurance / Labour Law Advisor",
+        "duration": "10:15",
+        "views": "920K"
+      },
+      {
+        "slot": 4,
+        "title": "Stop Loss and Position Sizing Basics",
+        "creator": "Zerodha Varsity",
+        "duration": "6:45",
+        "views": "340K"
+      },
+      {
+        "slot": 5,
+        "title": "Hedging with Options for Beginners",
+        "creator": "Pranjal Kamra",
+        "duration": "9:30",
+        "views": "410K"
+      },
+      {
+        "slot": 6,
+        "title": "What if You Lose Your Job Tomorrow",
+        "creator": "Warikoo",
+        "duration": "8:20",
+        "views": "580K"
+      },
+      {
+        "slot": 7,
+        "title": "Sequence of Returns Risk in Retirement",
+        "creator": "Shashank Udupa",
+        "duration": "10:40",
+        "views": "290K"
+      },
+      {
+        "slot": 8,
+        "title": "Black Swan Events \u2014 Preparing for the Unexpected",
+        "creator": "Finology",
+        "duration": "9:10",
+        "views": "310K"
+      },
+      {
+        "slot": 9,
+        "title": "Debt Trap \u2014 How to Recognise and Escape",
+        "creator": "CA Rachana Ranade",
+        "duration": "11:45",
+        "views": "520K"
+      },
+      {
+        "slot": 10,
+        "title": "Nominee vs Legal Heir \u2014 What Really Happens",
+        "creator": "Labour Law Advisor",
+        "duration": "9:50",
+        "views": "1.5M"
+      }
+    ]
+  },
+  {
+    "level_id": "level_7",
+    "level_title": "Level 7 \u2014 News Detective",
+    "level_desc": "Market Detective. Reading news, sentiment, separating signal from noise.",
+    "stage": "Market Detective",
+    "category": "Market News & Sentiment",
+    "cat_color": "#14b8a6",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "How to Read Business News Like a Pro",
+        "creator": "CA Rachana Ranade",
+        "duration": "10:30",
+        "views": "430K"
+      },
+      {
+        "slot": 2,
+        "title": "Understanding RBI Monetary Policy Announcements",
+        "creator": "Finology",
+        "duration": "9:15",
+        "views": "380K"
+      },
+      {
+        "slot": 3,
+        "title": "How US Fed Rate Decisions Affect Indian Markets",
+        "creator": "Akshat Shrivastava",
+        "duration": "11:20",
+        "views": "620K"
+      },
+      {
+        "slot": 4,
+        "title": "Reading Company Announcements on BSE/NSE",
+        "creator": "Zerodha Varsity",
+        "duration": "7:50",
+        "views": "270K"
+      },
+      {
+        "slot": 5,
+        "title": "How to Filter Noise from Financial News",
+        "creator": "Pranjal Kamra",
+        "duration": "8:40",
+        "views": "350K"
+      },
+      {
+        "slot": 6,
+        "title": "Understanding Quarterly Results Season",
+        "creator": "Groww",
+        "duration": "8:10",
+        "views": "410K"
+      },
+      {
+        "slot": 7,
+        "title": "Sentiment Analysis in Stock Markets",
+        "creator": "Sahil Bhadviya",
+        "duration": "9:00",
+        "views": "240K"
+      },
+      {
+        "slot": 8,
+        "title": "Union Budget Impact on Stock Market",
+        "creator": "CA Rachana Ranade",
+        "duration": "13:40",
+        "views": "890K"
+      },
+      {
+        "slot": 9,
+        "title": "How Global News Moves Indian Markets",
+        "creator": "Invest Aaj For Kal",
+        "duration": "10:15",
+        "views": "320K"
+      },
+      {
+        "slot": 10,
+        "title": "Pump and Dump / Fake News Traps to Avoid",
+        "creator": "Warikoo",
+        "duration": "7:30",
+        "views": "670K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_8",
+    "level_title": "Level 8 \u2014 Read the Market",
+    "level_desc": "Market Detective. Technicals, charts, fundamentals, market structure.",
+    "stage": "Market Detective",
+    "category": "Technicals & Fundamentals",
+    "cat_color": "#a855f7",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "Technical Analysis for Beginners \u2014 Full Guide",
+        "creator": "Zerodha Varsity",
+        "duration": "14:20",
+        "views": "850K"
+      },
+      {
+        "slot": 2,
+        "title": "How to Read a Candlestick Chart",
+        "creator": "Pranjal Kamra",
+        "duration": "10:45",
+        "views": "720K"
+      },
+      {
+        "slot": 3,
+        "title": "Support and Resistance Explained",
+        "creator": "Booming Bulls / Anish Singh Thakur",
+        "duration": "12:10",
+        "views": "1.1M"
+      },
+      {
+        "slot": 4,
+        "title": "Fundamental Analysis \u2014 Reading a Balance Sheet",
+        "creator": "CA Rachana Ranade",
+        "duration": "15:00",
+        "views": "960K"
+      },
+      {
+        "slot": 5,
+        "title": "P/E, P/B, ROE \u2014 Key Ratios Explained",
+        "creator": "Finology",
+        "duration": "11:30",
+        "views": "580K"
+      },
+      {
+        "slot": 6,
+        "title": "Moving Averages Explained Simply",
+        "creator": "Ghanshyam Tech / Trading Chanakya",
+        "duration": "13:00",
+        "views": "640K"
+      },
+      {
+        "slot": 7,
+        "title": "How to Read the NIFTY Chart",
+        "creator": "Vivek Bajaj / StockEdge",
+        "duration": "11:15",
+        "views": "390K"
+      },
+      {
+        "slot": 8,
+        "title": "Volume Analysis \u2014 What It Tells You",
+        "creator": "Zerodha Varsity",
+        "duration": "8:20",
+        "views": "310K"
+      },
+      {
+        "slot": 9,
+        "title": "Market Cap, Free Float, Circuit Filters",
+        "creator": "Groww",
+        "duration": "7:40",
+        "views": "420K"
+      },
+      {
+        "slot": 10,
+        "title": "How FIIs and DIIs Move the Market",
+        "creator": "Akshat Shrivastava",
+        "duration": "12:30",
+        "views": "570K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_9",
+    "level_title": "Level 9 \u2014 Market Storm",
+    "level_desc": "Market Detective. Volatility, crashes, bear markets, staying calm.",
+    "stage": "Market Detective",
+    "category": "Market Crashes & Cycles",
+    "cat_color": "#ef4444",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "2008 Financial Crisis Explained for Indians",
+        "creator": "Finology",
+        "duration": "13:45",
+        "views": "760K"
+      },
+      {
+        "slot": 2,
+        "title": "Covid Crash 2020 \u2014 Lessons for Investors",
+        "creator": "CA Rachana Ranade",
+        "duration": "12:30",
+        "views": "680K"
+      },
+      {
+        "slot": 3,
+        "title": "How to Invest During a Bear Market",
+        "creator": "Pranjal Kamra",
+        "duration": "9:50",
+        "views": "490K"
+      },
+      {
+        "slot": 4,
+        "title": "Understanding the VIX \u2014 Fear Index",
+        "creator": "Zerodha Varsity",
+        "duration": "7:20",
+        "views": "280K"
+      },
+      {
+        "slot": 5,
+        "title": "Harshad Mehta Scam \u2014 The 1992 Storm",
+        "creator": "Groww",
+        "duration": "14:15",
+        "views": "1.8M"
+      },
+      {
+        "slot": 6,
+        "title": "Yes Bank / DHFL / IL&FS; \u2014 What Went Wrong",
+        "creator": "Akshat Shrivastava",
+        "duration": "13:10",
+        "views": "610K"
+      },
+      {
+        "slot": 7,
+        "title": "Circuit Breakers and Market Halts Explained",
+        "creator": "Finology",
+        "duration": "8:40",
+        "views": "340K"
+      },
+      {
+        "slot": 8,
+        "title": "Investor Psychology During a Crash",
+        "creator": "Warikoo",
+        "duration": "9:15",
+        "views": "530K"
+      },
+      {
+        "slot": 9,
+        "title": "How to Rebalance After a Big Fall",
+        "creator": "Asset Yogi",
+        "duration": "11:00",
+        "views": "420K"
+      },
+      {
+        "slot": 10,
+        "title": "Nifty Historical Crashes and Recoveries",
+        "creator": "Shashank Udupa",
+        "duration": "10:25",
+        "views": "390K"
+      }
+    ]
+  },
+  {
+    "level_id": "level_tax",
+    "level_title": "Standalone \u2014 Tax Detective",
+    "level_desc": "Standalone mini-challenge. Indian taxation for investors: STCG, LTCG, ITR, 80C, new vs old regime.",
+    "stage": "Tax Detective",
+    "category": "Taxes & ITR",
+    "cat_color": "#f97316",
+    "videos": [
+      {
+        "slot": 1,
+        "title": "STCG vs LTCG on Stocks and Mutual Funds",
+        "creator": "CA Rachana Ranade",
+        "duration": "11:50",
+        "views": "820K"
+      },
+      {
+        "slot": 2,
+        "title": "How to File ITR for Stock Market Income",
+        "creator": "Labour Law Advisor",
+        "duration": "14:20",
+        "views": "1.1M"
+      },
+      {
+        "slot": 3,
+        "title": "Old vs New Tax Regime \u2014 Which to Pick",
+        "creator": "Shashank Udupa",
+        "duration": "10:15",
+        "views": "690K"
+      },
+      {
+        "slot": 4,
+        "title": "Section 80C \u2014 All Deductions Explained",
+        "creator": "CA Anoop Bhatia",
+        "duration": "12:00",
+        "views": "540K"
+      },
+      {
+        "slot": 5,
+        "title": "Tax on Intraday, F&O;, and Delivery Trading",
+        "creator": "Zerodha Varsity",
+        "duration": "9:30",
+        "views": "370K"
+      },
+      {
+        "slot": 6,
+        "title": "Tax Loss Harvesting in India",
+        "creator": "Finology",
+        "duration": "8:45",
+        "views": "410K"
+      },
+      {
+        "slot": 7,
+        "title": "Capital Gains on Real Estate and Gold",
+        "creator": "Asset Yogi",
+        "duration": "13:10",
+        "views": "680K"
+      },
+      {
+        "slot": 8,
+        "title": "ELSS Mutual Funds \u2014 Save Tax and Grow",
+        "creator": "Groww",
+        "duration": "8:20",
+        "views": "460K"
+      },
+      {
+        "slot": 9,
+        "title": "Dividend Taxation Rules in India",
+        "creator": "CA Rachana Ranade",
+        "duration": "10:40",
+        "views": "530K"
+      },
+      {
+        "slot": 10,
+        "title": "Common ITR Filing Mistakes to Avoid",
+        "creator": "CA Anoop Bhatia",
+        "duration": "11:15",
+        "views": "390K"
+      }
+    ]
+  }
+]
