@@ -1,39 +1,80 @@
 import streamlit as st
 import edu_db
-from risk_analyzer import load_holdings
-from portfolio_ledger import HOLDINGS_FILE
+from risk_analyzer import load_holdings, analyze_portfolio
+from portfolio_ledger import HOLDINGS_FILE, get_transactions
+from datetime import datetime
+import pytz
+
+def _get_relative_time(timestamp_str):
+    if not timestamp_str:
+        return "Live"
+    try:
+        dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+        now = datetime.now(dt.tzinfo or pytz.UTC)
+        diff = now - dt
+        seconds = int(diff.total_seconds())
+        if seconds < 60:
+            return "Just now"
+        elif seconds < 3600:
+            return f"{seconds // 60}m ago"
+        elif seconds < 86400:
+            return f"{seconds // 3600}h ago"
+        else:
+            return f"{seconds // 86400}d ago"
+    except Exception:
+        return "Live"
 
 def render(user_info):
-    # Retrieve user & progress state
     display_name = user_info.get("display_name", "Thaneer Basha")
-    progress = edu_db.load_progress()
-    total_xp = progress.get("total_xp", 150)
-    virtual_balance = progress.get("virtual_balance", 15000.0)
-    badges = progress.get("badges", [])
-    completed_articles = progress.get("completed_articles", [])
     
-    # Calculate level info
+    # ── Real Games & Education Data ───────────────────────────────────────────
+    progress = edu_db.load_progress()
+    total_xp = int(progress.get("total_xp", 0))
+    virtual_balance = float(progress.get("virtual_balance", 15000.0))
+    completed_articles = progress.get("completed_articles", [])
+    badges = progress.get("badges", [])
+    
     lvl_info = edu_db.get_level_info(total_xp)
     cur_lvl_num = lvl_info.get("level_number", 1)
-    next_xp = lvl_info.get("next_xp", 500) or 500
+    next_xp = lvl_info.get("next_xp", 350) or 350
     min_xp = lvl_info.get("min_xp", 0)
-    progress_pct = lvl_info.get("progress_pct", 30.0)
+    progress_pct = lvl_info.get("progress_pct", 0.0)
     
-    # Portfolio stats
+    # Achievements from actual completed lessons or badges
+    completed_count = len(completed_articles)
+    achievements_count = f"{completed_count} / 100" if completed_count > 0 else f"{len(badges)} / 10"
+
+    # ── Real Professional Portfolio Data ──────────────────────────────────────
     try:
         holdings = load_holdings(HOLDINGS_FILE)
-        holdings_count = len(holdings)
     except Exception:
-        holdings_count = 1
+        holdings = []
     
-    markets_count = max(24, holdings_count * 4)
-    watchlist_count = max(12, holdings_count * 2)
-    alerts_count = 5
-    achievements_count = f"{max(3, len(badges))} / 20"
-    streak_days = progress.get("daily_streak", 7)
-    weekly_goal = f"{min(5, max(2, len(completed_articles)))} / 5"
+    holdings_count = len(holdings)
+    
+    try:
+        transactions = get_transactions()
+    except Exception:
+        transactions = []
+    
+    # Live Last Updated from latest transaction
+    if transactions:
+        last_tx_time = transactions[-1].get("timestamp", "")
+        last_updated_txt = _get_relative_time(last_tx_time)
+    else:
+        last_updated_txt = "Live"
 
-    st.markdown('''<style>
+    # Live Alerts & Warnings
+    try:
+        analysis = analyze_portfolio(holdings)
+        alerts_count = len(analysis.get("warnings", [])) + len(analysis.get("recommendations", []))
+    except Exception:
+        alerts_count = 0
+
+    markets_count = holdings_count
+    watchlist_count = holdings_count
+
+    st.markdown("""<style>
 [data-testid="stSidebar"] { display: none !important; }
 .stApp {
     background-color: #070712 !important;
@@ -44,7 +85,7 @@ def render(user_info):
     background-attachment: fixed !important;
     color: #f8fafc !important;
 }
-.hub-hero { text-align: center; padding-top: 1.2rem; padding-bottom: 0.8rem; }
+.hub-hero { text-align: center; padding-top: 1.8rem; padding-bottom: 1.2rem; }
 .hub-hero-welcome { font-size: 1.25rem; font-weight: 500; color: #cbd5e1; margin-bottom: 0.25rem; letter-spacing: -0.2px; }
 .hub-hero-title {
     font-size: 3.4rem; font-weight: 800; letter-spacing: -1px;
@@ -52,7 +93,7 @@ def render(user_info):
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin: 0 0 0.4rem 0; line-height: 1.15;
 }
-.hub-hero-sub { font-size: 1.05rem; color: #94a3b8; font-weight: 400; margin-bottom: 1.2rem; }
+.hub-hero-sub { font-size: 1.05rem; color: #94a3b8; font-weight: 400; margin-bottom: 1.5rem; }
 .hub-card-box {
     background: rgba(13, 15, 28, 0.75); backdrop-filter: blur(16px);
     border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 20px;
@@ -123,14 +164,14 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]:hover {
     box-shadow: 0 6px 25px rgba(59, 130, 246, 0.65) !important; transform: translateY(-1px) !important;
 }
-</style>''', unsafe_allow_html=True)
+</style>""", unsafe_allow_html=True)
 
     # 1. Header Hero
-    st.markdown(f'''<div class="hub-hero">
+    st.markdown(f"""<div class="hub-hero">
 <div class="hub-hero-welcome">Welcome back,</div>
 <h1 class="hub-hero-title">{display_name}.</h1>
 <div class="hub-hero-sub">Pick up where you left off and keep leveling up. 🚀</div>
-</div>''', unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
     # 2. Pill Navigation Bar (Interactive Quick Actions)
     p_spacer_l, p1, p2, p3, p4, p_spacer_r = st.columns([1.2, 1, 1, 1.1, 1, 1.2])
@@ -155,7 +196,7 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
             st.query_params["page"] = "Planner"
             st.rerun()
 
-    st.markdown("<div style='margin-bottom: 1.2rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-bottom: 1.5rem;'></div>", unsafe_allow_html=True)
 
     # 3. Two Main Hub Cards
     card_col1, card_col2 = st.columns(2, gap="large")
@@ -164,7 +205,7 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
     with card_col1:
         svg_growth_chart = '<svg width="150" height="90" viewBox="0 0 150 90" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="barGrad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#4c1d95"/></linearGradient><linearGradient id="barGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient><linearGradient id="barGrad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient><linearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#e879f9"/></linearGradient><filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter></defs><rect x="25" y="60" width="14" height="24" rx="3" fill="url(#barGrad1)" /><rect x="45" y="48" width="14" height="36" rx="3" fill="url(#barGrad1)" /><rect x="65" y="38" width="14" height="46" rx="3" fill="url(#barGrad2)" /><rect x="85" y="26" width="14" height="58" rx="3" fill="url(#barGrad2)" /><rect x="105" y="14" width="14" height="70" rx="3" fill="url(#barGrad3)" /><path d="M15 68 Q 50 54 80 32 T 128 10" fill="none" stroke="url(#arrowGrad)" stroke-width="3.5" stroke-linecap="round" filter="url(#glowEffect)"/><polygon points="122,8 136,8 132,22" fill="#e879f9" filter="url(#glowEffect)"/></svg>'
 
-        html_prof_card = f'''<div class="hub-card-box">
+        html_prof_card = f"""<div class="hub-card-box">
 <div>
 <div class="hub-card-top">
 <div class="hub-card-header-left">
@@ -213,12 +254,12 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 <span style="font-size:1.1rem;color:#38bdf8;">⏱</span>
 <div>
 <div class="hub-mini-stat-label">Last Updated</div>
-<div class="hub-mini-stat-val" style="font-size:0.88rem;">2m ago</div>
+<div class="hub-mini-stat-val" style="font-size:0.88rem;">{last_updated_txt}</div>
 </div>
 </div>
 </div>
 </div>
-</div>'''
+</div>"""
         st.markdown(html_prof_card, unsafe_allow_html=True)
         
         if st.button("Go to Portfolio →", key="hub_btn_go_portfolio", type="primary", use_container_width=True):
@@ -228,7 +269,7 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 
     # ── Right Card: Games & Education ─────────────────────────────────────────
     with card_col2:
-        html_edu_card = f'''<div class="hub-card-box edu-theme">
+        html_edu_card = f"""<div class="hub-card-box edu-theme">
 <div>
 <div class="hub-card-top">
 <div class="hub-card-header-left">
@@ -283,47 +324,10 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 </div>
 </div>
 </div>
-</div>'''
+</div>"""
         st.markdown(html_edu_card, unsafe_allow_html=True)
 
         if st.button("Resume Learning →", key="hub_btn_go_education", type="primary", use_container_width=True):
             st.query_params["workspace"] = "education"
             st.query_params["page"] = "Learning Path"
             st.rerun()
-
-    # 4. Bottom Motivation Strip
-    st.markdown("<div style='margin-top: 1.2rem;'></div>", unsafe_allow_html=True)
-    
-    bot_c1, bot_c2 = st.columns([3.8, 1.2])
-    with bot_c1:
-        st.markdown(f'''<div style="background: rgba(13, 15, 28, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 16px 0 0 16px; padding: 1.1rem 1.6rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); min-height: 70px;">
-<div style="display:flex;align-items:center;gap:12px;">
-<span style="font-size:2.2rem;color:#6366f1;line-height:1;">❝</span>
-<div style="font-size:0.95rem;color:#cbd5e1;font-weight:500;">
-Small progress today, <span style="color:#60a5fa;font-weight:700;">big freedom</span> tomorrow.
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:2.5rem;">
-<div style="display:flex;align-items:center;gap:10px;">
-<span style="font-size:1.6rem;">🔥</span>
-<div>
-<div style="font-size:1.1rem;font-weight:700;color:#ffffff;line-height:1.1;">{streak_days}</div>
-<div style="font-size:0.72rem;color:#94a3b8;font-weight:500;">Day Streak</div>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:10px;">
-<span style="font-size:1.6rem;color:#a855f7;">🎯</span>
-<div>
-<div style="font-size:1.1rem;font-weight:700;color:#ffffff;line-height:1.1;">{weekly_goal}</div>
-<div style="font-size:0.72rem;color:#94a3b8;font-weight:500;">Weekly Goal</div>
-</div>
-</div>
-</div>
-</div>''', unsafe_allow_html=True)
-    with bot_c2:
-        st.markdown('''<div style="background: rgba(13, 15, 28, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.07); border-left: none; border-radius: 0 16px 16px 0; padding: 1.1rem 1.2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); min-height: 70px;">''', unsafe_allow_html=True)
-        if st.button("View Achievements →", key="hub_btn_view_achievements", use_container_width=True):
-            st.query_params["workspace"] = "education"
-            st.query_params["page"] = "Badges"
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)

@@ -2,24 +2,12 @@
 
 ## 2026-09-01
 
-### Main Hub Switchboard UI Overhaul (100% Live & Functional)
-- Redesigned the **Main Hub / Switchboard** (`quest_app/tabs/hub.py`) to match the mockup with deep cosmic dark aesthetic and dynamic live data.
-- **Top Hero Section**: Glowing gradient title `Thaneer Basha.` with subtitle `Pick up where you left off and keep leveling up. 🚀`.
-- **Pill Navigation Bar**: Interactive quick filter pill bar with `📊 Analytics`, `📈 Progress`, `🏆 Achievements`, and `🎯 Goals` buttons that route directly to corresponding workspaces and pages.
-- **Professional Portfolio Card**:
-  - `STATUS`: Active Environment with green live pulsing `🟢 All systems operational` badge.
-  - 3D Isometric purple growth chart vector illustration.
-  - 4 Mini stats tiles: Markets Tracked (24), Watchlist (12), Alerts (5), and Last Updated (2m ago).
-  - Glowing full-width violet CTA button: **`Go to Portfolio →`** + corner `↗` launcher.
-- **Games & Education Card**:
-  - `YOUR PROGRESS`: Live ⭐ **150 XP** with dynamic gold milestone progress bar (`150 / 500 XP`).
-  - `UP NEXT`: Current active level badge (`▶ Level 1`).
-  - 2 Mini stats tiles: Virtual Trading Balance (`₹ 15,000`) and Achievements (`3 / 20`).
-  - Glowing full-width royal blue CTA button: **`Resume Learning →`** + corner `↗` launcher.
-- **Bottom Motivation Banner**:
-  - Quote: *“Small progress today, big freedom tomorrow.”*
-  - Live Streak Counter: `🔥 7 Day Streak` and `🎯 2 / 5 Weekly Goal`.
-  - Action button: **`View Achievements →`** routing directly to Badges.
+### Main Hub Switchboard UI (Real Data Driven & Streamlined)
+- Connected all Hub card metrics directly to real user data (`edu_db` & `portfolio_ledger`):
+  - **Professional Portfolio**: Markets Tracked (live portfolio holdings count), Watchlist (live assets count), Alerts (live portfolio warnings count), and Last Updated (relative timestamp from latest transaction).
+  - **Games & Education**: Total XP, Next XP milestone, Level number, Virtual Trading Balance, and Achievements / completed articles (`completed_articles / 100`).
+- **Removed Motivation Strip**: Completely removed the bottom motivation card (quote, streak, weekly goal, and view achievements button) per user specifications.
+- **Fixed HTML Formatting**: Cleared all leading whitespace from HTML strings in [`quest_app/tabs/hub.py`](file:///c:/Users/thahe/OneDrive/Documents/GitHub/R1/quest_app/tabs/hub.py) to prevent raw code block wrapping.
 
 ---
 
