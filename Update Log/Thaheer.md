@@ -1,5 +1,16 @@
 # Thaheer Update Log
 
+## 2026-09-01
+
+### Sidebar Environment Switcher (Instant Tab Switching Without Logout)
+- Added an **Environment Switcher** directly in the left sidebar (`💼 Portfolio` & `🎓 Education`).
+- Enables 1-click seamless switching between **💼 Professional Portfolio** and **🎓 Games & Education** at any time without logging out or losing session state.
+- Highlights the active environment with primary accent styling.
+- Dynamically swaps navigation options and preserves URL query parameters (`workspace=professional` / `workspace=education`).
+- Added a `🏠 Main Hub` return button at the bottom of the sidebar.
+
+---
+
 ## 2026-08-31
 
 ### Bilingual Video Learning Hub (200 Curated Videos: 100 English + 100 Hindi)

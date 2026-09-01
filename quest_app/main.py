@@ -240,6 +240,24 @@ else:
 # Sync navigation with URL query parameters to support Back/Forward buttons
 _workspace = st.query_params.get("workspace", "professional")
 
+# --- Sidebar: Workspace / Environment Switcher (Portfolio vs Games & Education) ---
+st.sidebar.markdown("<div class='quest-nav-label'>Environment</div>", unsafe_allow_html=True)
+_ws_col1, _ws_col2 = st.sidebar.columns(2, gap="small")
+with _ws_col1:
+    _is_prof = (_workspace == "professional")
+    if st.button("💼 Portfolio", key="sidebar_switch_prof", type="primary" if _is_prof else "secondary", use_container_width=True):
+        if not _is_prof:
+            st.query_params["workspace"] = "professional"
+            st.query_params["page"] = "Overview"
+            st.rerun()
+with _ws_col2:
+    _is_edu = (_workspace == "education")
+    if st.button("🎓 Education", key="sidebar_switch_edu", type="primary" if _is_edu else "secondary", use_container_width=True):
+        if not _is_edu:
+            st.query_params["workspace"] = "education"
+            st.query_params["page"] = "Library"
+            st.rerun()
+
 if _workspace == "professional":
     _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
     _page_labels = {
@@ -271,7 +289,7 @@ _selected_label = st.sidebar.radio(
     "Navigate",
     [_page_labels[page] for page in _nav_pages],
     index=_page_idx,
-    key="nav_section",
+    key=f"nav_section_{_workspace}",
     label_visibility="collapsed",
 )
 section = ("Settings" if _query_page == "Settings" else
@@ -282,6 +300,10 @@ if section != _query_page:
     st.query_params["page"] = section
     st.rerun()
 
+st.sidebar.markdown("---")
+if st.sidebar.button("🏠  Main Hub", key="sidebar_goto_hub", use_container_width=True):
+    st.query_params["page"] = "Hub"
+    st.rerun()
 st.sidebar.markdown("---")
 
 # Streamlit owns the real collapse state; this replaces only its visible trigger.
