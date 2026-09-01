@@ -16,6 +16,8 @@ QUEST Knowledge Library — Bilingual YouTube-Style Video Learning Hub with MICH
 import streamlit as st
 import json
 import os
+import re
+import html
 import urllib.parse
 import urllib.request
 import datetime
