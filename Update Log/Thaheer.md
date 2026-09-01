@@ -99,3 +99,16 @@
 - Applied the missing Thaheer chat patch, linked received-message senders to their profiles, and removed duplicate portfolio snapshot code.
 - Updated NSE live-data handling, including the NXST settlement price override.
 - Consolidated planner, chat, and team update-log documentation.
+
+---
+
+## 2026-09-01
+
+### Knowledge Library & MICHAEL AI Video Assistant
+- Fixed catalog topic video extraction across all 10 Modules (100 English + 100 Hindi videos) in `quest_app/tabs/education.py`.
+- Integrated embedded MICHAEL AI Video Assistant below the video player with 1-click prompt chips, contextual doubt solving, and chat history.
+- Fixed excessive whitespace and vertical gaps in chat message bubbles:
+  - Added `_format_ai_response_html()` parser to convert LLM markdown tables, numbered badges, headings, and lists into compact styled HTML elements with tight margins.
+  - Normalized consecutive newlines (`\n{3,}`) and replaced raw `white-space: pre-wrap` with structured styling in both `education.py` and `michael.py`.
+  - Unified the video description & key takeaways container into a single structured HTML render block to prevent unclosed Streamlit DOM gaps.
+- Maintained synchronization across `origin/master` and `origin/main`.
