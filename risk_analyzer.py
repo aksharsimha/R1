@@ -93,8 +93,18 @@ class Asset:
 @_cache
 def fetch_listed_history(ticker: str, period: str = "2y") -> pd.DataFrame:
     """Fetch OHLCV via yfinance for a listed ticker."""
-    df = yf.download(ticker, period=period, progress=False,
-                     auto_adjust=True, multi_level_index=False)
+    df = None
+    try:
+        df = yf.Ticker(ticker).history(period=period)
+    except Exception:
+        pass
+    if df is None or df.empty:
+        try:
+            df = yf.download(ticker, period=period, progress=False, auto_adjust=True)
+            if df is not None and not df.empty and isinstance(df.columns, pd.MultiIndex):
+                df = df.droplevel(1, axis=1)
+        except Exception:
+            pass
     if df is None or df.empty:
         raise ValueError(f"No data returned for {ticker}")
     return df
@@ -461,7 +471,7 @@ def analyze_asset(asset: Asset,
                   prefetched_prices: Optional[Dict[str, tuple]] = None) -> StockReport:
     """Run full analysis on one asset."""
     df = fetch_history(asset, period=period)
-    prices = df["Close"]
+    prices = df["Close"].squeeze() if hasattr(df["Close"], "squeeze") else df["Close"]
     returns = prices.pct_change().dropna()
 
     # Beta only meaningful for equity-like vs Nifty
@@ -568,7 +578,7 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
     try:
         market_df = fetch_listed_history(BENCHMARK, period=period)
     except Exception as e:
-        print(f"  ⚠️  Benchmark fetch failed ({e}). Beta will be NaN.")
+        print(f"  [Warning] Benchmark fetch failed ({e}). Beta will be NaN.")
         market_df = None
 
     # Batch-fetch all NSE live prices UPFRONT (one pass, ~5s total)
@@ -597,7 +607,7 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
             df_h = fetch_history(a, period=period)
             price_history[a.name] = df_h["Close"]
         except Exception as e:
-            print(f"  ⚠️  Failed: {a.name} ({a.identifier}) → {e}")
+            print(f"  [Warning] Failed: {a.name} ({a.identifier}) -> {e}")
 
     rows = []
     for r in reports:

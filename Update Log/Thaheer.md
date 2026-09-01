@@ -2,6 +2,23 @@
 
 ## 2026-09-01
 
+### ⚡ MICHAEL AI Video Study Assistant & Doubt Solver
+- Integrated **MICHAEL AI Assistant** directly into the **Knowledge Library / Education Video Player** (`quest_app/tabs/education.py`).
+- **Context-Aware Video Mentor**:
+  - Automatically loads full context for whichever of the 200 videos the user is watching (Title, Creator, Module, Language, Summary, and Key Takeaways).
+  - Clear user doubts on financial terminology (Demat, CAGR, Stop Loss, SEBI, P/E ratio, compounding, etc.) with real-world Indian stock market examples.
+  - Supports both **English** and **Hindi/Hinglish** conversations seamlessly.
+- **1-Click Quick Doubt Chips**:
+  - `💡 Simple Summary`: Breaks down the lesson in plain, friendly concepts.
+  - `📊 Indian Examples`: Explains real-world market applications with Nifty 50, BSE, and top equities.
+  - `❓ Quiz Me (3 Qs)`: Generates interactive practice multiple-choice questions from the video.
+  - `💼 Virtual Trading`: Explains how to practice the lesson concepts using the user's paper trading balance.
+- **Interactive Chat Interface**:
+  - Sleek dark glassmorphism card with user chat bubbles, timestamped answers, doubt input box, and doubt history reset.
+  - Powered by Groq / Gemini with an intelligent built-in pedagogical fallback engine.
+
+---
+
 ### Main Hub Switchboard UI (Real Data Driven & Streamlined)
 - Connected all Hub card metrics directly to real user data (`edu_db` & `portfolio_ledger`):
   - **Professional Portfolio**: Markets Tracked (live portfolio holdings count), Watchlist (live assets count), Alerts (live portfolio warnings count), and Last Updated (relative timestamp from latest transaction).
@@ -82,3 +99,16 @@
 - Applied the missing Thaheer chat patch, linked received-message senders to their profiles, and removed duplicate portfolio snapshot code.
 - Updated NSE live-data handling, including the NXST settlement price override.
 - Consolidated planner, chat, and team update-log documentation.
+
+---
+
+## 2026-09-01
+
+### Knowledge Library & MICHAEL AI Video Assistant
+- Fixed catalog topic video extraction across all 10 Modules (100 English + 100 Hindi videos) in `quest_app/tabs/education.py`.
+- Integrated embedded MICHAEL AI Video Assistant below the video player with 1-click prompt chips, contextual doubt solving, and chat history.
+- Fixed excessive whitespace and vertical gaps in chat message bubbles:
+  - Added `_format_ai_response_html()` parser to convert LLM markdown tables, numbered badges, headings, and lists into compact styled HTML elements with tight margins.
+  - Normalized consecutive newlines (`\n{3,}`) and replaced raw `white-space: pre-wrap` with structured styling in both `education.py` and `michael.py`.
+  - Unified the video description & key takeaways container into a single structured HTML render block to prevent unclosed Streamlit DOM gaps.
+- Maintained synchronization across `origin/master` and `origin/main`.
