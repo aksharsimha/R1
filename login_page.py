@@ -86,8 +86,12 @@ def render_login_page():
                 _full_info = remembered
             st.session_state.authenticated = True
             st.session_state.user_info = _full_info
-            st.session_state.just_logged_in = True
-            st.query_params["page"] = "Overview"
+            st.session_state.just_logged_in = False
+            # Preserve current URL page and workspace on refresh; fallback only if empty
+            if "page" not in st.query_params or not st.query_params.get("page"):
+                _existing_ws = st.query_params.get("workspace", "professional")
+                st.query_params["page"] = "Library" if _existing_ws == "education" else "Overview"
+                st.query_params["workspace"] = _existing_ws
             st.query_params.pop("return_to", None)
             st.query_params.pop("logged_out", None)
             st.rerun()

@@ -8,6 +8,43 @@ _username = None
 _lock = threading.Lock()
 EDU_PROGRESS_FILE = "edu_progress.json"
 
+LEVEL_PROGRESSION = [
+    {"level": 1, "id": "level_1", "name": "Level 1 — First ₹1,000", "min_xp": 0, "next_xp": 350, "stage": "Start Investing"},
+    {"level": 2, "id": "level_2", "name": "Level 2 — Grow Your Money", "min_xp": 350, "next_xp": 750, "stage": "Start Investing"},
+    {"level": 3, "id": "level_3", "name": "Level 3 — Reach Your Goal", "min_xp": 750, "next_xp": 1250, "stage": "Start Investing"},
+    {"level": 4, "id": "level_4", "name": "Level 4 — What's Your Style?", "min_xp": 1250, "next_xp": 1850, "stage": "Build Your Portfolio"},
+    {"level": 5, "id": "level_5", "name": "Level 5 — Build Your Portfolio", "min_xp": 1850, "next_xp": 2550, "stage": "Build Your Portfolio"},
+    {"level": 6, "id": "level_6", "name": "Level 6 — What Happens If...?", "min_xp": 2550, "next_xp": 3350, "stage": "Build Your Portfolio"},
+    {"level": 7, "id": "level_7", "name": "Level 7 — News Detective", "min_xp": 3350, "next_xp": 4250, "stage": "Market Detective"},
+    {"level": 8, "id": "level_8", "name": "Level 8 — Read the Market", "min_xp": 4250, "next_xp": 5250, "stage": "Market Detective"},
+    {"level": 9, "id": "level_9", "name": "Level 9 — Market Storm", "min_xp": 5250, "next_xp": 6500, "stage": "Market Detective"},
+    {"level": 10, "id": "level_tax", "name": "Level 10 — Tax & Market Master", "min_xp": 6500, "next_xp": None, "stage": "Standalone Challenge"},
+]
+
+def get_level_info(xp: int) -> dict:
+    xp_val = int(xp or 0)
+    for lvl in reversed(LEVEL_PROGRESSION):
+        if xp_val >= lvl["min_xp"]:
+            cur_min = lvl["min_xp"]
+            nxt = lvl["next_xp"]
+            if nxt is not None:
+                progress_pct = min(100.0, max(0.0, ((xp_val - cur_min) / (nxt - cur_min)) * 100.0))
+                needed_xp = nxt - xp_val
+            else:
+                progress_pct = 100.0
+                needed_xp = 0
+            return {
+                "level_number": lvl["level"],
+                "level_id": lvl["id"],
+                "level_name": lvl["name"],
+                "stage": lvl["stage"],
+                "min_xp": cur_min,
+                "next_xp": nxt,
+                "needed_xp": needed_xp,
+                "progress_pct": progress_pct
+            }
+    return get_level_info(0)
+
 DEFAULT_PROGRESS = {
     "total_xp": 0,
     "virtual_balance": 15000.0,
@@ -16,7 +53,7 @@ DEFAULT_PROGRESS = {
     "completed_articles": [],
     "bookmarks": [],
     "liked_videos": [],
-    "current_level": "Level 1"
+    "current_level": "Level 1 — First ₹1,000"
 }
 
 def set_data_dir(data_dir: str, username: str = None):
