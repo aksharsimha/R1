@@ -3,32 +3,40 @@
 ## 2026-09-01
 
 ### ⚡ MICHAEL AI Video Study Assistant & Doubt Solver
-- Integrated **MICHAEL AI Assistant** directly into the **Knowledge Library / Education Video Player** (`quest_app/tabs/education.py`).
-- **Context-Aware Video Mentor**:
-  - Automatically loads full context for whichever of the 200 videos the user is watching (Title, Creator, Module, Language, Summary, and Key Takeaways).
-  - Clear user doubts on financial terminology (Demat, CAGR, Stop Loss, SEBI, P/E ratio, compounding, etc.) with real-world Indian stock market examples.
-  - Supports both **English** and **Hindi/Hinglish** conversations seamlessly.
-- **1-Click Quick Doubt Chips**:
-  - `💡 Simple Summary`: Breaks down the lesson in plain, friendly concepts.
-  - `📊 Indian Examples`: Explains real-world market applications with Nifty 50, BSE, and top equities.
-  - `❓ Quiz Me (3 Qs)`: Generates interactive practice multiple-choice questions from the video.
-  - `💼 Virtual Trading`: Explains how to practice the lesson concepts using the user's paper trading balance.
-- **Interactive Chat Interface**:
-  - Sleek dark glassmorphism card with user chat bubbles, timestamped answers, doubt input box, and doubt history reset.
-  - Powered by Groq / Gemini with an intelligent built-in pedagogical fallback engine.
+- **Embedded In-Player AI Assistant**:
+  - Integrated **MICHAEL AI Video Assistant** directly beneath the active video lesson in the **Knowledge Library** (`quest_app/tabs/education.py`).
+  - **Context-Aware Video Mentorship**: Automatically injects complete video metadata (Title, Creator, Module, Language Track, Summary, and Key Takeaways) into the LLM system prompt.
+  - **Bilingual Doubt Resolution**: Explains complex Indian financial market concepts (Demat, CAGR, Stop Loss, SEBI, P/E ratio, compounding, NAV, mutual funds, asset allocation) in crisp English or natural Hindi/Hinglish.
+  - **Streamlined 1-Click Quick Doubt Chips**:
+    - `💡 Simple Summary`: Generates a clear, beginner-friendly conceptual breakdown.
+    - `📊 Indian Examples`: Provides real-world Indian market applications with Nifty 50, BSE, and leading index equities (Reliance, TCS, HDFC Bank).
+  - **Interactive Chat Interface**:
+    - Dark glassmorphism chat container with distinct user and AI message bubbles, timestamps, doubt input form, and chat history reset.
+    - Powered by Groq / Gemini with an intelligent built-in pedagogical fallback knowledge engine.
 
----
+### 🎨 Whitespace & UI Gap Elimination Fixes
+- **Chat Markdown & Whitespace Parser (`_format_ai_response_html`)**:
+  - Eliminated large empty vertical spaces in chat bubbles by collapsing duplicate/consecutive newlines (`\n{3,}`).
+  - Replaced unformatted `white-space: pre-wrap` with structured paragraph spacing, tidy header tags (`margin: 6px 0 2px;`), and bullet points (`margin: 2px 0 2px 8px;`).
+  - Implemented custom markdown table converter (`_render_html_table`) transforming raw pipes into native, modern dark tables (`<table>`, `<th>`, `<td>`) with compact padding and purple accent headers.
+  - Applied across both the **Knowledge Library Video Tutor** (`quest_app/tabs/education.py`) and the **Portfolio Intelligence Assistant** (`quest_app/tabs/michael.py`).
+- **Unified Video Description & Takeaways DOM Block**:
+  - Grouped the description text and bulleted takeaways into a single closed HTML render container in `quest_app/tabs/education.py` to eliminate unclosed Streamlit container margins.
+- **Import Resolution**:
+  - Resolved `NameError: name 'html' is not defined` by adding `import html` and `import re` to `quest_app/tabs/education.py` and `quest_app/tabs/michael.py`.
 
-### Main Hub Switchboard UI (Real Data Driven & Streamlined)
+### 📚 Knowledge Library Catalog Topic Extraction Fix
+- Corrected the nested topic mapping in `quest_app/tabs/education.py` to accurately parse both the **100 English** and **100 Hindi** video lessons across all 10 Modules in `education_catalog.json`.
+- Restored seamless video playback, in-player language switching, and lesson progress tracking.
+
+### 🏠 Main Hub Switchboard UI (Real Data Driven & Streamlined)
 - Connected all Hub card metrics directly to real user data (`edu_db` & `portfolio_ledger`):
-  - **Professional Portfolio**: Markets Tracked (live portfolio holdings count), Watchlist (live assets count), Alerts (live portfolio warnings count), and Last Updated (relative timestamp from latest transaction).
+  - **Professional Portfolio**: Markets Tracked (live portfolio holdings count), Watchlist (live assets count), Alerts (live portfolio warnings count from `analyze_portfolio`), and Last Updated (relative timestamp from latest ledger transaction).
   - **Games & Education**: Total XP, Next XP milestone, Level number, Virtual Trading Balance, and Achievements / completed articles (`completed_articles / 100`).
 - **Removed Motivation Strip**: Completely removed the bottom motivation card (quote, streak, weekly goal, and view achievements button) per user specifications.
-- **Fixed HTML Formatting**: Cleared all leading whitespace from HTML strings in [`quest_app/tabs/hub.py`](file:///c:/Users/thahe/OneDrive/Documents/GitHub/R1/quest_app/tabs/hub.py) to prevent raw code block wrapping.
+- **Fixed HTML Code Block Escaping**: Cleared all leading whitespace from HTML strings in `quest_app/tabs/hub.py` to prevent Streamlit's markdown parser from wrapping HTML in `<pre><code>` code blocks.
 
----
-
-### Sidebar Environment Switcher & Page Refresh State Preservation
+### 🧭 Sidebar Environment Switcher & Page Refresh State Preservation
 - Added an **Environment Switcher** directly in the left sidebar (`💼 Portfolio` & `🎓 Education`).
 - Enables 1-click seamless switching between **💼 Professional Portfolio** and **🎓 Games & Education** at any time without logging out or losing session state.
 - **Persistent Page Refresh**: Fixed cookie auto-login and query param routing so that reloading or refreshing the browser retains the exact active page and workspace without resetting to Hub or Overview.
@@ -99,17 +107,3 @@
 - Applied the missing Thaheer chat patch, linked received-message senders to their profiles, and removed duplicate portfolio snapshot code.
 - Updated NSE live-data handling, including the NXST settlement price override.
 - Consolidated planner, chat, and team update-log documentation.
-
----
-
-## 2026-09-01
-
-### Knowledge Library & MICHAEL AI Video Assistant
-- Fixed catalog topic video extraction across all 10 Modules (100 English + 100 Hindi videos) in `quest_app/tabs/education.py`.
-- Integrated embedded MICHAEL AI Video Assistant below the video player with 1-click prompt chips, contextual doubt solving, and chat history.
-- Fixed excessive whitespace and vertical gaps in chat message bubbles:
-  - Added `_format_ai_response_html()` parser to convert LLM markdown tables, numbered badges, headings, and lists into compact styled HTML elements with tight margins.
-  - Normalized consecutive newlines (`\n{3,}`) and replaced raw `white-space: pre-wrap` with structured styling in both `education.py` and `michael.py`.
-  - Unified the video description & key takeaways container into a single structured HTML render block to prevent unclosed Streamlit DOM gaps.
-  - Streamlined MICHAEL AI quick prompt chips to the 2 primary actions: `💡 Simple Summary` and `📊 Indian Examples`.
-- Maintained synchronization across `origin/master` and `origin/main`.

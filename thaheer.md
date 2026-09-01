@@ -1,111 +1,42 @@
 # Thaheer Update Log
 
-## 2026-08-26
-
-### Git and deployment
-- Pulled the latest changes from `origin/master`.
-- Merged the remote updates into the local `master` branch.
-- Relaunched the Streamlit app locally at `http://localhost:8501`.
-
-### Application changes included
-- Improved authentication and login-state handling to prevent stale or ghost
-  session state from hijacking manual login and logout flows.
-- Added and refined account settings, profile, security, and multi-account
-  switching behavior.
-- Added the `gfin.html` support page and related patch scripts from the latest
-  remote update.
-- Improved chat message sending, rendering, and notification behavior.
-- Added Firebase support updates used by the chat and account flows.
-- Updated dashboard routing and sidebar behavior.
-
-### Latest working-tree updates
-- Improved chat responsiveness with fragment-scoped reruns for chat actions,
-  reducing unnecessary full-dashboard refreshes.
-- Preserved chat scroll position across rerenders, automatically following new
-  messages when the user is already near the latest message, and added explicit
-  scroll-to-latest behavior after sending or sharing a message.
-- Kept the chat input visible while the message list scrolls.
-- Removed the Password & Security section from the Settings navigation and
-  page rendering.
-- Increased light-theme contrast for surfaces, borders, text, and accent states.
-- Applied theme-aware colors to widget labels, inputs, radio buttons, checkboxes,
-  and button icons for more consistent light and dark mode rendering.
-
-### Files included in this push
-- `auth.py`
-- `chat_system.py`
-- `firebase_db.py`
-- `gfin.html`
-- `login_page.py`
-- `patch.py`
-- `patch_chat.py`
-- `patch_sender.py`
-- `quest_app/main.py`
-- `quest_app/settings.py`
-- `quest_app/tabs/chat.py`
-- `thaheer/README.md`
-
-## 2026-08-27
-
-### Planner and Gmail reminders
-- Replaced the checkbox-only To-do list with a persistent productivity task
-  manager.
-- Added Pending, Completed, and Failed task states with an editable Status
-  selector.
-- Added task descriptions, priorities, due dates and times, categories,
-  reminders, estimated time, recurrence choices, and subtasks.
-- Added productivity totals, completion rate, progress bar, search, filters,
-  sorting, overdue detection, duplicate, delete confirmation, and task
-  reordering.
-- Added migration for existing `{text, done}` task records.
-- Added Gmail SMTP reminder delivery to the signed-in account email, including
-  numeric reminders such as `1` for one minute before the due time.
-- Added a Send test email action and retry behavior when delivery fails.
-
-### Chat UI and presence
-- Redesigned the chat area with a dark conversation rail, active conversation
-  styling, avatar header, message bubbles, and responsive layout.
-- Added functional conversation search, new conversation dialog, back
-  navigation, profile/details actions, refresh, and portfolio sharing.
-- Removed the layout spacer that caused a large empty area above the chat.
-- Added Firestore `last_seen` heartbeats and real Online/Offline status based on
-  recent activity.
-- Restarted and verified the local Streamlit app at `http://localhost:8501`.
-
-### Git updates
-- Published the Planner, Gmail reminder, chat UI, and presence updates to the
-  remote `main` branch.
-
 ## 2026-09-01
 
 ### ⚡ MICHAEL AI Video Study Assistant & Doubt Solver
-- Integrated **MICHAEL AI Assistant** directly into the **Knowledge Library / Education Video Player** (`quest_app/tabs/education.py`).
-- **Context-Aware Video Mentor**:
-  - Automatically loads full context for whichever of the 200 videos the user is watching (Title, Creator, Module, Language, Summary, and Key Takeaways).
-  - Clear user doubts on financial terminology (Demat, CAGR, Stop Loss, SEBI, P/E ratio, compounding, etc.) with real-world Indian stock market examples.
-  - Supports both **English** and **Hindi/Hinglish** conversations seamlessly.
-- **1-Click Quick Doubt Chips**:
-  - `💡 Simple Summary`: Breaks down the lesson in plain, friendly concepts.
-  - `📊 Indian Examples`: Explains real-world market applications with Nifty 50, BSE, and top equities.
-- **Interactive Chat Interface & Whitespace Gap Elimination**:
-  - Sleek dark glassmorphism card with user chat bubbles, timestamped answers, doubt input box, and doubt history reset.
-  - Added `_format_ai_response_html()` parser to transform raw markdown tables into beautifully styled HTML tables with zero excess vertical padding.
-  - Eliminated large empty black gaps by collapsing duplicate newlines and replacing raw `white-space: pre-wrap` with structured paragraph, header, and list item spacing.
-  - Unified the video description & key takeaways container into a single structured HTML render block.
-  - Powered by Groq / Gemini with an intelligent built-in pedagogical fallback engine.
+- **Embedded In-Player AI Assistant**:
+  - Integrated **MICHAEL AI Video Assistant** directly beneath the active video lesson in the **Knowledge Library** (`quest_app/tabs/education.py`).
+  - **Context-Aware Video Mentorship**: Automatically injects complete video metadata (Title, Creator, Module, Language Track, Summary, and Key Takeaways) into the LLM system prompt.
+  - **Bilingual Doubt Resolution**: Explains complex Indian financial market concepts (Demat, CAGR, Stop Loss, SEBI, P/E ratio, compounding, NAV, mutual funds, asset allocation) in crisp English or natural Hindi/Hinglish.
+  - **Streamlined 1-Click Quick Doubt Chips**:
+    - `💡 Simple Summary`: Generates a clear, beginner-friendly conceptual breakdown.
+    - `📊 Indian Examples`: Provides real-world Indian market applications with Nifty 50, BSE, and leading index equities (Reliance, TCS, HDFC Bank).
+  - **Interactive Chat Interface**:
+    - Dark glassmorphism chat container with distinct user and AI message bubbles, timestamps, doubt input form, and chat history reset.
+    - Powered by Groq / Gemini with an intelligent built-in pedagogical fallback knowledge engine.
 
----
+### 🎨 Whitespace & UI Gap Elimination Fixes
+- **Chat Markdown & Whitespace Parser (`_format_ai_response_html`)**:
+  - Eliminated large empty vertical spaces in chat bubbles by collapsing duplicate/consecutive newlines (`\n{3,}`).
+  - Replaced unformatted `white-space: pre-wrap` with structured paragraph spacing, tidy header tags (`margin: 6px 0 2px;`), and bullet points (`margin: 2px 0 2px 8px;`).
+  - Implemented custom markdown table converter (`_render_html_table`) transforming raw pipes into native, modern dark tables (`<table>`, `<th>`, `<td>`) with compact padding and purple accent headers.
+  - Applied across both the **Knowledge Library Video Tutor** (`quest_app/tabs/education.py`) and the **Portfolio Intelligence Assistant** (`quest_app/tabs/michael.py`).
+- **Unified Video Description & Takeaways DOM Block**:
+  - Grouped the description text and bulleted takeaways into a single closed HTML render container in `quest_app/tabs/education.py` to eliminate unclosed Streamlit container margins.
+- **Import Resolution**:
+  - Resolved `NameError: name 'html' is not defined` by adding `import html` and `import re` to `quest_app/tabs/education.py` and `quest_app/tabs/michael.py`.
 
-### Main Hub Switchboard UI (Real Data Driven & Streamlined)
+### 📚 Knowledge Library Catalog Topic Extraction Fix
+- Corrected the nested topic mapping in `quest_app/tabs/education.py` to accurately parse both the **100 English** and **100 Hindi** video lessons across all 10 Modules in `education_catalog.json`.
+- Restored seamless video playback, in-player language switching, and lesson progress tracking.
+
+### 🏠 Main Hub Switchboard UI (Real Data Driven & Streamlined)
 - Connected all Hub card metrics directly to real user data (`edu_db` & `portfolio_ledger`):
-  - **Professional Portfolio**: Markets Tracked (live portfolio holdings count), Watchlist (live assets count), Alerts (live portfolio warnings count), and Last Updated (relative timestamp from latest transaction).
+  - **Professional Portfolio**: Markets Tracked (live portfolio holdings count), Watchlist (live assets count), Alerts (live portfolio warnings count from `analyze_portfolio`), and Last Updated (relative timestamp from latest ledger transaction).
   - **Games & Education**: Total XP, Next XP milestone, Level number, Virtual Trading Balance, and Achievements / completed articles (`completed_articles / 100`).
 - **Removed Motivation Strip**: Completely removed the bottom motivation card (quote, streak, weekly goal, and view achievements button) per user specifications.
-- **Fixed HTML Formatting**: Cleared all leading whitespace from HTML strings in [`quest_app/tabs/hub.py`](file:///c:/Users/thahe/OneDrive/Documents/GitHub/R1/quest_app/tabs/hub.py) to prevent raw code block wrapping.
+- **Fixed HTML Code Block Escaping**: Cleared all leading whitespace from HTML strings in `quest_app/tabs/hub.py` to prevent Streamlit's markdown parser from wrapping HTML in `<pre><code>` code blocks.
 
----
-
-### Sidebar Environment Switcher & Page Refresh State Preservation
+### 🧭 Sidebar Environment Switcher & Page Refresh State Preservation
 - Added an **Environment Switcher** directly in the left sidebar (`💼 Portfolio` & `🎓 Education`).
 - Enables 1-click seamless switching between **💼 Professional Portfolio** and **🎓 Games & Education** at any time without logging out or losing session state.
 - **Persistent Page Refresh**: Fixed cookie auto-login and query param routing so that reloading or refreshing the browser retains the exact active page and workspace without resetting to Hub or Overview.
@@ -163,3 +94,16 @@
 - Synchronized commits across `origin/master` and `origin/main`.
 - Resolved merge conflicts with remote commits cleanly.
 - Renamed `Update Log/Tahir.md` to `Update Log/Thaheer.md`.
+
+---
+
+## 2026-08-27
+
+### Routing & Session Navigation
+- Fixed login and logout URL query parameter handling by removing stale `logged_out` parameter writes and ensuring clean `Overview` redirects.
+- Added `just_logged_in` session-state synchronization across `login_page.py`, `quest_app/settings.py`, and `quest_app/main.py`.
+
+### Chat System & Live Data
+- Applied the missing Thaheer chat patch, linked received-message senders to their profiles, and removed duplicate portfolio snapshot code.
+- Updated NSE live-data handling, including the NXST settlement price override.
+- Consolidated planner, chat, and team update-log documentation.
