@@ -629,6 +629,9 @@ elif section == "Learning Path":
 elif section == "Library":
     import quest_app.tabs.education as tb
     tb.render(_user_info)
-elif section in ["Virtual Trading", "Leaderboard", "Badges", "Tax Detective"]:
+elif section == "Leaderboard":
+    import quest_app.tabs.leaderboard as tb
+    tb.render(_user_info)
+elif section in ["Virtual Trading", "Badges", "Tax Detective"]:
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")

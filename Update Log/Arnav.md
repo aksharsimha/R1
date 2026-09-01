@@ -96,7 +96,7 @@ Append `?debug=1` to the URL to reveal per-block timing. Temporary, invisible ot
 ---
 
 | What | Before | After |
-|---|---|---|
+|---|---|---|streamlit run quest_app/main.py
 | Portfolio analysis | ~5-15s per click | Cached 30s, instant on hit |
 | News fetching | ~40s cold, sequential | ~5s cold, 0s warm, parallel |
 | EWMA / grading | Every interaction | Every 30s cycle |
