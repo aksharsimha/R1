@@ -78,9 +78,10 @@
 
 ## 2026-09-01
 
-### Sidebar Environment Switcher (Instant Tab Switching Without Logout)
+### Sidebar Environment Switcher & Page Refresh State Preservation
 - Added an **Environment Switcher** directly in the left sidebar (`💼 Portfolio` & `🎓 Education`).
 - Enables 1-click seamless switching between **💼 Professional Portfolio** and **🎓 Games & Education** at any time without logging out or losing session state.
+- **Persistent Page Refresh**: Fixed cookie auto-login and query param routing so that reloading or refreshing the browser retains the exact active page and workspace without resetting to Hub or Overview.
 - Highlights the active environment with primary accent styling.
 - Dynamically swaps navigation options and preserves URL query parameters (`workspace=professional` / `workspace=education`).
 - Added a `🏠 Main Hub` return button at the bottom of the sidebar.

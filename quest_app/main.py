@@ -104,11 +104,14 @@ st.markdown(ui_theme.css(), unsafe_allow_html=True)
 
 if st.session_state.get("just_logged_in"):
     st.session_state.just_logged_in = False
-    st.query_params["page"] = "Hub"
+    # If the user logged in without an existing destination in URL, go to Hub
+    if "page" not in st.query_params or not st.query_params.get("page"):
+        st.query_params["page"] = "Hub"
     st.query_params.pop("return_to", None)
-    _early_page = "Hub"
-else:
     _early_page = st.query_params.get("page", "Hub")
+else:
+    # On page refresh or direct navigation, strictly read page from URL query params
+    _early_page = st.query_params.get("page", "Overview")
 if _early_page == "AddAccount":
     from login_page import render_add_account_page
     render_add_account_page(st.query_params.get("return_to", "Overview"))
@@ -117,8 +120,8 @@ if _early_page == "Settings":
     import quest_app.settings as settings
     st.sidebar.markdown("<div class='quest-settings-sidebar-title'>Settings</div>", unsafe_allow_html=True)
     if st.sidebar.button("← Dashboard", key="settings_dashboard_sidebar", use_container_width=True):
-        st.session_state.nav_section = "⌂  Overview"
-        st.query_params["page"] = "Overview"
+        _ws = st.query_params.get("workspace", "professional")
+        st.query_params["page"] = "Library" if _ws == "education" else "Overview"
         st.rerun()
     st.sidebar.markdown("<div class='quest-nav-label'>Account</div>", unsafe_allow_html=True)
     _settings_section = st.sidebar.radio(
@@ -298,6 +301,7 @@ section = ("Settings" if _query_page == "Settings" else
 # Update the URL if the user clicks a different page
 if section != _query_page:
     st.query_params["page"] = section
+    st.query_params["workspace"] = _workspace
     st.rerun()
 
 st.sidebar.markdown("---")
