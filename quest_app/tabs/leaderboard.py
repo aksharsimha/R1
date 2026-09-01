@@ -152,8 +152,8 @@ def build_leaderboard_html(players, active_username):
     }}
 
     html, body {{
-      height: 100%;
-      background: var(--bg);
+      height: auto;
+      background: transparent;
       color: var(--text);
       font-family: var(--sans);
       overflow-x: hidden;
@@ -163,10 +163,10 @@ def build_leaderboard_html(players, active_username):
     body::-webkit-scrollbar-track {{ background: transparent; }}
     body::-webkit-scrollbar-thumb {{ background: #1a1d28; border-radius: 3px; }}
 
-    .wrap {{
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 24px 28px 60px;
+        .wrap {{
+      max-width: 100%;
+      margin: 0;
+      padding: 0 8px 20px;
     }}
 
     /* ── Header ── */
@@ -679,6 +679,73 @@ def build_leaderboard_html(players, active_username):
       margin-top: 28px;
       letter-spacing: 0.08em;
     }}
+
+    /* ── Entrance animations & hover polish ── */
+    @keyframes fadeInUp {{
+      from {{ opacity: 0; transform: translateY(14px); }}
+      to   {{ opacity: 1; transform: translateY(0); }}
+    }}
+
+    @keyframes youPulse {{
+      0%, 100% {{ box-shadow: 0 0 0 0 rgba(0,201,177,0.0); }}
+      50%      {{ box-shadow: 0 0 0 3px rgba(0,201,177,0.18); }}
+    }}
+
+    .podium-col {{
+      opacity: 0;
+      animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+    }}
+    .podium-col:nth-child(1) {{ animation-delay: 0.1s; }}
+    .podium-col:nth-child(2) {{ animation-delay: 0.2s; }}
+    .podium-col:nth-child(3) {{ animation-delay: 0.3s; }}
+
+    .row-card {{
+      opacity: 0;
+      animation: fadeInUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.15s;
+    }}
+    .row-card:nth-child(1)  {{ animation-delay: 0.03s; }}
+    .row-card:nth-child(2)  {{ animation-delay: 0.06s; }}
+    .row-card:nth-child(3)  {{ animation-delay: 0.09s; }}
+    .row-card:nth-child(4)  {{ animation-delay: 0.12s; }}
+    .row-card:nth-child(5)  {{ animation-delay: 0.15s; }}
+    .row-card:nth-child(6)  {{ animation-delay: 0.18s; }}
+    .row-card:nth-child(7)  {{ animation-delay: 0.21s; }}
+    .row-card:nth-child(8)  {{ animation-delay: 0.24s; }}
+    .row-card:nth-child(9)  {{ animation-delay: 0.27s; }}
+    .row-card:nth-child(10) {{ animation-delay: 0.30s; }}
+    .row-card:nth-child(11) {{ animation-delay: 0.33s; }}
+    .row-card:nth-child(12) {{ animation-delay: 0.36s; }}
+    .row-card:nth-child(13) {{ animation-delay: 0.39s; }}
+    .row-card:nth-child(14) {{ animation-delay: 0.42s; }}
+    .row-card:nth-child(15) {{ animation-delay: 0.45s; }}
+    .row-card:nth-child(16) {{ animation-delay: 0.48s; }}
+    .row-card:nth-child(17) {{ animation-delay: 0.51s; }}
+    .row-card:nth-child(18) {{ animation-delay: 0.54s; }}
+    .row-card:nth-child(19) {{ animation-delay: 0.57s; }}
+    .row-card:nth-child(20) {{ animation-delay: 0.60s; }}
+    .row-card:nth-child(n+21) {{ animation-delay: 0.63s; }}
+    .row-card:hover {{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124,47,255,0.18), 0 0 12px rgba(0,201,177,0.12);
+    }}
+
+    .podium-card {{
+      transition: transform 0.2s, box-shadow 0.2s;
+    }}
+    .podium-card:hover {{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.5), 0 0 18px rgba(124,47,255,0.22);
+    }}
+
+    .you-badge {{
+      animation: youPulse 2s ease-in-out infinite;
+    }}
+
+    @media (prefers-reduced-motion: reduce) {{
+      .podium-col, .row-card {{ animation: none; opacity: 1; }}
+      .you-badge {{ animation: none; }}
+    }}
   </style>
 </head>
 <body>
@@ -972,25 +1039,36 @@ def build_leaderboard_html(players, active_username):
 """
 
 def render(user_info):
-    """
-    Renders the Leaderboard tab using the bundled 'Enhance UI with
-    Animation' React leaderboard, injected with real player data.
-    """
     players = get_leaderboard_players()
     active_username = user_info.get("username", "krish_surne")
 
+    st.markdown(
+        """
+        <style>
+        .block-container {
+            padding-top: 1rem;
+            padding-left: 0rem;
+            padding-right: 0rem;
+            max-width: 100% !important;
+        }
+        iframe {
+            width: 100% !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     here = os.path.dirname(os.path.abspath(__file__))
-    html_path = os.path.join(here, "standalone_leaderboard.html")
+    html_path = os.path.join(here, "leaderboard_ui", "index.html")
 
     with open(html_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
-    data_script = f"""
-    <script>
+    data_script = f"""<script>
       window.__QUEST_PLAYERS__ = {json.dumps(players)};
       window.__QUEST_CURRENT_USER__ = {json.dumps(active_username)};
-    </script>
-    """
+    </script>"""
     html_content = html_content.replace("<head>", "<head>" + data_script, 1)
 
-    components.html(html_content, height=1400, scrolling=True)
+    components.html(html_content, height=1500, scrolling=True)
