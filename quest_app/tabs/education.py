@@ -197,21 +197,28 @@ def render(user_info):
     
     current_lang = st.session_state.edu_video_lang
 
-    # Flatten all videos for current language
+    # Flatten all videos for current language from catalog topics
     all_videos = []
     for mod in catalog:
         m_title = mod.get("module_title", "")
         m_id = mod.get("module_id", "")
-        for v in mod.get("videos", []):
-            if v.get("language") == current_lang:
-                v_copy = dict(v)
+        cat_color = mod.get("cat_color", "#3b82f6")
+        cat_name = mod.get("category", "Basics")
+        for t_idx, topic_obj in enumerate(mod.get("topics", [])):
+            v_data = topic_obj.get(current_lang)
+            if v_data:
+                v_copy = dict(v_data)
                 v_copy["module_title"] = m_title
                 v_copy["module_id"] = m_id
+                v_copy["cat_color"] = cat_color
+                v_copy["category"] = cat_name
+                v_copy["topic_index"] = t_idx
+                v_copy["youtube_embed_id"] = v_data.get("youtube_id", "")
                 all_videos.append(v_copy)
 
     # Active Video Selection
     if "active_edu_video_id" not in st.session_state or not st.session_state.active_edu_video_id:
-        st.session_state.active_edu_video_id = all_videos[0]["id"] if all_videos else "level_1_v1"
+        st.session_state.active_edu_video_id = all_videos[0]["id"] if all_videos else "module_1_t1_en"
 
     active_video = next((v for v in all_videos if v["id"] == st.session_state.active_edu_video_id), None)
     if not active_video and all_videos:
@@ -228,9 +235,9 @@ def render(user_info):
     matching_other_video = None
     for mod in catalog:
         if mod.get("module_id") == active_video.get("module_id"):
-            for v in mod.get("videos", []):
-                if v.get("language") == other_lang and v.get("topic_index") == active_video.get("topic_index"):
-                    matching_other_video = v
+            for t_idx, topic_obj in enumerate(mod.get("topics", [])):
+                if t_idx == active_video.get("topic_index"):
+                    matching_other_video = topic_obj.get(other_lang)
                     break
 
     # ──────────────────────────────────────────────────────────────────────────
@@ -435,11 +442,13 @@ def render(user_info):
             is_en = current_lang == "en"
             if st.button("🇬🇧  English (100 Videos)", key="btn_lang_en", type="primary" if is_en else "secondary", use_container_width=True):
                 st.session_state.edu_video_lang = "en"
+                st.session_state.active_edu_video_id = ""
                 st.rerun()
         with l_btn2:
             is_hi = current_lang == "hi"
             if st.button("🇮🇳  हिन्दी / Hindi (100 Videos)", key="btn_lang_hi", type="primary" if is_hi else "secondary", use_container_width=True):
                 st.session_state.edu_video_lang = "hi"
+                st.session_state.active_edu_video_id = ""
                 st.rerun()
 
     with bar_col2:
