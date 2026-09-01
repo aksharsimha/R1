@@ -1,6 +1,7 @@
 import streamlit as st
 import edu_db
-from risk_analyzer import load_holdings, HOLDINGS_FILE
+from risk_analyzer import load_holdings
+from portfolio_ledger import HOLDINGS_FILE
 
 def render(user_info):
     # Retrieve user & progress state
