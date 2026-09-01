@@ -86,5 +86,5 @@ def render(user_info):
         st.markdown(html_str2, unsafe_allow_html=True)
         if st.button("Resume Learning ->", key="btn_go_education", use_container_width=True, type="primary"):
             st.query_params["workspace"] = "education"
-            st.query_params["page"] = "Library"
+            st.query_params["page"] = "Learning Path"
             st.rerun()

@@ -1,0 +1,722 @@
+{
+  "level_1": {
+    "module_id": "level_1",
+    "module_title": "Module 1 — First ₹1,000",
+    "stage": "Start Investing",
+    "questions": [
+      {
+        "id": "l1_q1",
+        "question": "1. What is the primary function of a Demat (Dematerialized) account in India?",
+        "options": [
+          "To hold securities and shares in an electronic, digitized format",
+          "To execute daily intra-day buy and sell trading orders directly",
+          "To borrow money at zero interest directly from SEBI",
+          "To deposit physical cash for mutual fund purchases"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "To hold securities and shares in an electronic, digitized format",
+        "explanation": "A Demat account acts as a digital vault that securely stores your shares and bonds in electronic form, whereas a Trading account is used by your broker to execute actual buy and sell orders on the exchange."
+      },
+      {
+        "id": "l1_q2",
+        "question": "2. Which regulatory authority in India is responsible for protecting retail investors in the stock market?",
+        "options": [
+          "RBI (Reserve Bank of India)",
+          "SEBI (Securities and Exchange Board of India)",
+          "IRDAI (Insurance Regulatory Body)",
+          "Ministry of Corporate Affairs"
+        ],
+        "correct_idx": 1,
+        "correct_answer": "SEBI (Securities and Exchange Board of India)",
+        "explanation": "SEBI is the apex statutory market regulator in India established to protect retail investors, promote fair market practices, and regulate stock exchanges and brokers."
+      },
+      {
+        "id": "l1_q3",
+        "question": "3. What is the fundamental difference between a Stock Broker and a Depository (NSDL/CDSL)?",
+        "options": [
+          "A broker executes orders; depositories hold shares securely in demat accounts",
+          "Brokers guarantee stock profits; depositories loan money to investors",
+          "Depositories trade options; brokers manage bank reserves",
+          "There is no functional difference between them"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "A broker executes orders; depositories hold shares securely in demat accounts",
+        "explanation": "Stock brokers (like Zerodha, Groww, AngelOne) are intermediaries facilitating trade orders, while national depositories (NSDL & CDSL) act as the central repositories holding securities."
+      },
+      {
+        "id": "l1_q4",
+        "question": "4. What is the fundamental difference between Saving and Investing?",
+        "options": [
+          "Saving preserves capital with high liquidity, while Investing aims for capital growth to beat inflation by taking calculated risk",
+          "Saving guarantees 20% annual returns, while Investing always incurs heavy losses",
+          "Saving requires a Demat account, while Investing only needs cash in hand",
+          "There is no difference; both produce identical financial outcomes"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Saving preserves capital with high liquidity, while Investing aims for capital growth to beat inflation by taking calculated risk",
+        "explanation": "Savings focus on safety, capital preservation, and immediate liquidity (like bank deposits). Investing puts capital to work in productive assets (equities, mutual funds) to generate returns higher than inflation over time."
+      },
+      {
+        "id": "l1_q5",
+        "question": "5. When an investor buys 1 equity share of an Indian listed company, what do they legally acquire?",
+        "options": [
+          "Fractional ownership in the company and rights to proportionate dividends",
+          "Guaranteed fixed monthly salary from the company board",
+          "Direct control over the company CEO hiring decisions",
+          "Immunity from market capital losses"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Fractional ownership in the company and rights to proportionate dividends",
+        "explanation": "Equity shares represent ownership stakes in the underlying business, entitling shareholders to voting rights and a share of surplus profits distributed via dividends."
+      }
+    ]
+  },
+  "level_2": {
+    "module_id": "level_2",
+    "module_title": "Module 2 — Grow Your Money",
+    "stage": "Start Investing",
+    "questions": [
+      {
+        "id": "l2_q1",
+        "question": "1. Using the \"Rule of 72\", approximately how many years will it take for an investment to double at a 12% annual compounding return?",
+        "options": [
+          "6 years",
+          "8.5 years",
+          "10 years",
+          "12 years"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "6 years",
+        "explanation": "Rule of 72 formula: 72 / Annual Interest Rate = Years to double (72 / 12 = 6 years)."
+      },
+      {
+        "id": "l2_q2",
+        "question": "2. What is the primary advantage of investing via Systematic Investment Plan (SIP) over Lump-sum during volatile markets?",
+        "options": [
+          "Rupee Cost Averaging — purchasing more units when prices fall and fewer when prices rise",
+          "Guaranteed positive returns regardless of underlying asset performance",
+          "Zero expense ratio charged by asset management companies",
+          "Exemption from all capital gains taxes forever"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Rupee Cost Averaging — purchasing more units when prices fall and fewer when prices rise",
+        "explanation": "SIPs automate regular investing, averaging out purchase costs over market cycles and eliminating the need to time market tops and bottoms."
+      },
+      {
+        "id": "l2_q3",
+        "question": "3. Why is Inflation considered the \"silent wealth destroyer\" of cash stored in traditional savings accounts?",
+        "options": [
+          "Because when inflation exceeds the interest rate, the real purchasing power of the money declines over time",
+          "Because banks deduct direct cash penalties whenever inflation rises",
+          "Because physical currency notes expire after 5 years",
+          "Because inflation only affects foreign currencies"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Because when inflation exceeds the interest rate, the real purchasing power of the money declines over time",
+        "explanation": "Real Return = Nominal Interest Rate minus Inflation. If savings yield 3.5% and inflation is 6%, your purchasing power shrinks by 2.5% every year."
+      },
+      {
+        "id": "l2_q4",
+        "question": "4. Why is building an Emergency Fund essential before committing capital to long-term equity?",
+        "options": [
+          "To prevent having to distress-sell depressed equity investments during unexpected personal emergencies",
+          "Because SEBI requires ₹50,000 liquid collateral for equity delivery",
+          "To speculate on intraday market drops",
+          "To pay mandatory annual depository fees"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "To prevent having to distress-sell depressed equity investments during unexpected personal emergencies",
+        "explanation": "An emergency fund (3-6 months expenses) acts as a safety buffer protecting long-term investments from premature liquidations."
+      },
+      {
+        "id": "l2_q5",
+        "question": "5. In compounding mathematics, which factor creates the greatest impact on final accumulated wealth?",
+        "options": [
+          "Time duration in the market (starting early and staying invested)",
+          "Finding the highest penny stock flyer",
+          "Trading frequently every hour of the trading day",
+          "Using high leverage borrowed capital"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Time duration in the market (starting early and staying invested)",
+        "explanation": "In the compound interest formula A = P(1+r)^t, time (t) sits in the exponent, generating exponential compounding in the later years."
+      }
+    ]
+  },
+  "level_3": {
+    "module_id": "level_3",
+    "module_title": "Module 3 — Reach Your Goal",
+    "stage": "Start Investing",
+    "questions": [
+      {
+        "id": "l3_q1",
+        "question": "1. In Goal-Based Financial Planning, how should investments for a goal 2 years away differ from a goal 20 years away?",
+        "options": [
+          "Short-term goals prioritize capital preservation (debt/liquid funds); long-term goals allocate to equity for compounding growth",
+          "Short-term goals should use 100% small-cap equity; long-term goals should be kept in cash",
+          "Both goals should use identical speculative crypto strategies",
+          "Short-term goals should never be planned in advance"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Short-term goals prioritize capital preservation (debt/liquid funds); long-term goals allocate to equity for compounding growth",
+        "explanation": "Time horizon dictates asset risk. Short horizons cannot tolerate equity volatility, while long horizons allow equity to overcome short-term cycles."
+      },
+      {
+        "id": "l3_q2",
+        "question": "2. What does a \"Sinking Fund\" mean in personal financial management?",
+        "options": [
+          "Setting aside small monthly sums specifically to fund a planned future capital expense (like insurance premium or vacation)",
+          "A company stock heading towards total insolvency",
+          "A mutual fund that constantly loses money",
+          "A tax penalty levied by the Income Tax Department"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Setting aside small monthly sums specifically to fund a planned future capital expense (like insurance premium or vacation)",
+        "explanation": "Sinking funds prevent budget shocks by systematically accumulating cash for known upcoming annual or large expenses."
+      },
+      {
+        "id": "l3_q3",
+        "question": "3. What does SMART goals stand for in modern financial planning frameworks?",
+        "options": [
+          "Specific, Measurable, Achievable, Relevant, Time-bound",
+          "Stock Market Assets Generating Revenue Today",
+          "Secured Money Accumulated for Retirement Trading",
+          "Systematic Monthly Allocation of Real Treasury"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Specific, Measurable, Achievable, Relevant, Time-bound",
+        "explanation": "SMART financial goals provide precise quantitative targets (e.g. accumulate ₹25 Lakhs for higher education in 5 years)."
+      },
+      {
+        "id": "l3_q4",
+        "question": "4. What is the impact of starting retirement planning at age 25 versus age 35 with identical monthly SIP amounts?",
+        "options": [
+          "The 25-year-old accumulates nearly 2.5x to 3x more corpus due to an extra decade of compounding",
+          "The 35-year-old catches up automatically without any difference",
+          "Starting at 25 results in less money due to management fees",
+          "Age has zero mathematical bearing on final retirement wealth"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "The 25-year-old accumulates nearly 2.5x to 3x more corpus due to an extra decade of compounding",
+        "explanation": "The cost of waiting 10 years is devastating because the last 10 years of compounding produce the largest absolute rupee growth."
+      },
+      {
+        "id": "l3_q5",
+        "question": "5. In reverse-engineering a financial goal, what is the first step an investor must calculate?",
+        "options": [
+          "The future inflated target value of the goal based on the timeline and inflation rate",
+          "The highest margin broker available",
+          "The current day intraday stock movers",
+          "The dividend yield of public sector enterprises"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "The future inflated target value of the goal based on the timeline and inflation rate",
+        "explanation": "You must first adjust today cost for future inflation (FV = PV * (1+i)^n) before calculating the required monthly SIP."
+      }
+    ]
+  },
+  "level_4": {
+    "module_id": "level_4",
+    "module_title": "Module 4 — What's Your Style?",
+    "stage": "Build Your Portfolio",
+    "questions": [
+      {
+        "id": "l4_q1",
+        "question": "1. What is the key characteristic of an Active Investing approach compared to Passive Indexing?",
+        "options": [
+          "Active aims to outperform market benchmarks via stock selection; Passive tracks broad index returns at minimal cost",
+          "Active investing guarantees 0% risk of capital loss",
+          "Passive investing involves buying and selling stocks every minute",
+          "Active investing is prohibited for Indian retail investors"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Active aims to outperform market benchmarks via stock selection; Passive tracks broad index returns at minimal cost",
+        "explanation": "Active funds rely on fund managers to beat the benchmark (generating Alpha), while Passive funds mirror indices (like NIFTY 50) with low expense ratios (Beta)."
+      },
+      {
+        "id": "l4_q2",
+        "question": "2. In behavioral finance, what does \"Loss Aversion Bias\" describe?",
+        "options": [
+          "The psychological pain of losing ₹1,000 feels twice as intense as the joy of winning ₹1,000",
+          "An investor inability to read financial statements",
+          "A regulatory mandate forcing stop-loss orders on all trades",
+          "The habit of always taking profits within one trading hour"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "The psychological pain of losing ₹1,000 feels twice as intense as the joy of winning ₹1,000",
+        "explanation": "Prospect Theory shows that humans feel losses far more acutely than equal gains, often leading to irrational panic selling at market bottoms."
+      },
+      {
+        "id": "l4_q3",
+        "question": "3. What distinguishes Value Investing from Growth Investing?",
+        "options": [
+          "Value seeks undervalued stocks trading below intrinsic value; Growth focuses on high future revenue/earnings expansion",
+          "Value only buys government bonds; Growth only buys foreign gold",
+          "Growth investing guarantees quarterly dividend payments",
+          "Value investing is exclusively for day traders"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Value seeks undervalued stocks trading below intrinsic value; Growth focuses on high future revenue/earnings expansion",
+        "explanation": "Value investors look for bargains (low P/E, P/B with margin of safety), while Growth investors pay higher multiples for rapid business scaling."
+      },
+      {
+        "id": "l4_q4",
+        "question": "4. What is a key indicator of an aggressive investor risk profile?",
+        "options": [
+          "High capacity and willingness to endure short-term portfolio drawdowns in exchange for long-term equity growth",
+          "Keeping 100% of wealth in bank fixed deposits",
+          "Selling all equity positions after a 2% index drop",
+          "Having zero financial goals and infinite debt"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "High capacity and willingness to endure short-term portfolio drawdowns in exchange for long-term equity growth",
+        "explanation": "Risk profiling balances psychological tolerance (ability to sleep at night) with financial capacity (age, income stability, horizon)."
+      },
+      {
+        "id": "l4_q5",
+        "question": "5. What is the fundamental difference between a Trader and an Investor?",
+        "options": [
+          "Traders capitalize on short-term price momentum and liquidity; Investors focus on underlying business fundamentals and compounding",
+          "Investors only buy options; Traders only buy government bonds",
+          "Traders never pay taxes; Investors pay 100% tax",
+          "There is no conceptual difference between them"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Traders capitalize on short-term price momentum and liquidity; Investors focus on underlying business fundamentals and compounding",
+        "explanation": "Traders focus on charts, technical setups, and risk/reward ratios over hours/days. Investors focus on earnings, balance sheets, and competitive moats over years."
+      }
+    ]
+  },
+  "level_5": {
+    "module_id": "level_5",
+    "module_title": "Module 5 — Build Your Portfolio",
+    "stage": "Build Your Portfolio",
+    "questions": [
+      {
+        "id": "l5_q1",
+        "question": "1. Why is Asset Allocation considered the primary determinant of long-term portfolio risk and return?",
+        "options": [
+          "Because the mix between Equity, Debt, and Gold explains over 90% of portfolio variance, far more than individual stock picking",
+          "Because SEBI penalizes portfolios holding only one asset class",
+          "Because asset allocation guarantees you will never experience negative months",
+          "Because asset allocation eliminates all fund management costs"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Because the mix between Equity, Debt, and Gold explains over 90% of portfolio variance, far more than individual stock picking",
+        "explanation": "Academic studies (Brinson, Hood, Beebower) show that strategic asset allocation drives long-term returns and volatility far more than security timing."
+      },
+      {
+        "id": "l5_q2",
+        "question": "2. What is the Core-Satellite portfolio strategy?",
+        "options": [
+          "Allocating the majority (60-80%) to stable index/large-cap core, and 20-40% to high-growth satellite bets (mid/small caps, themes)",
+          "Investing only in space aerospace tech companies",
+          "Keeping 50% in physical gold and 50% in crypto",
+          "Rotating 100% of the portfolio into daily top gainers"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Allocating the majority (60-80%) to stable index/large-cap core, and 20-40% to high-growth satellite bets (mid/small caps, themes)",
+        "explanation": "Core-Satellite provides stability and low fees via passive large-cap index funds while allowing alpha generation through satellite high-conviction picks."
+      },
+      {
+        "id": "l5_q3",
+        "question": "3. What does Portfolio Rebalancing achieve for an investor?",
+        "options": [
+          "Systematically takes profits from outperforming asset classes to buy undervalued ones, resetting target risk levels",
+          "Increases overall portfolio risk to maximize speculative bets",
+          "Eliminates all capital gains tax liabilities automatically",
+          "Guarantees the portfolio beats the market every single year"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Systematically takes profits from outperforming asset classes to buy undervalued ones, resetting target risk levels",
+        "explanation": "Rebalancing enforces buying low and selling high by trimming bloated assets and replenishing lagging assets back to their target allocation."
+      },
+      {
+        "id": "l5_q4",
+        "question": "4. In Indian equity classification, what defines Large Cap companies as per SEBI regulations?",
+        "options": [
+          "Top 100 companies by full market capitalization listed on Indian exchanges",
+          "Companies ranking between 101st and 250th in market cap",
+          "Any company with a stock price exceeding ₹10,000 per share",
+          "Companies owned entirely by public sector institutions"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Top 100 companies by full market capitalization listed on Indian exchanges",
+        "explanation": "SEBI mandates: Top 1–100 are Large Cap; 101–250 are Mid Cap; 251 and beyond are Small Cap."
+      },
+      {
+        "id": "l5_q5",
+        "question": "5. What is the primary benefit of adding Gold to an equity-heavy investment portfolio?",
+        "options": [
+          "Low or negative correlation to equities during geopolitical crises and currency devaluation periods",
+          "High quarterly dividend yield and bonus shares",
+          "Guaranteed higher compounding growth than technology stocks",
+          "Complete exemption from all wealth and storage taxes"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Low or negative correlation to equities during geopolitical crises and currency devaluation periods",
+        "explanation": "Gold serves as a safe-haven crisis hedge. When equities experience severe shocks, gold often holds value or rallies, smoothing portfolio drawdowns."
+      }
+    ]
+  },
+  "level_6": {
+    "module_id": "level_6",
+    "module_title": "Module 6 — What Happens If...?",
+    "stage": "Build Your Portfolio",
+    "questions": [
+      {
+        "id": "l6_q1",
+        "question": "1. What is the fundamental difference between Pure Term Insurance and Investment-linked Insurance (ULIP/Endowment)?",
+        "options": [
+          "Term Insurance provides pure high-cover death benefit at low premiums without mixing investments; ULIPs offer lower cover and high fees",
+          "ULIPs guarantee 100% annual profits while Term Insurance is illegal",
+          "Term insurance can only be bought by senior citizens",
+          "There is no financial difference between them"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Term Insurance provides pure high-cover death benefit at low premiums without mixing investments; ULIPs offer lower cover and high fees",
+        "explanation": "Never mix insurance with investments. Pure term insurance provides massive risk cover (e.g. ₹1-2 Crore) for low annual cost, freeing capital for pure equity investments."
+      },
+      {
+        "id": "l6_q2",
+        "question": "2. In trading and risk management, what is the role of a \"Stop Loss\" order?",
+        "options": [
+          "An automated order placed with a broker to sell an asset when it reaches a specific price limit to cap maximum potential loss",
+          "A guarantee from the stock exchange to refund all trading losses",
+          "A tax credit claimed at the end of the financial year",
+          "An order to buy double the shares when prices fall"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "An automated order placed with a broker to sell an asset when it reaches a specific price limit to cap maximum potential loss",
+        "explanation": "Stop-loss orders enforce disciplined risk management by pre-defining the maximum acceptable capital loss before entering a position."
+      },
+      {
+        "id": "l6_q3",
+        "question": "3. What does \"Sequence of Returns Risk\" mean for an individual approaching or entering retirement?",
+        "options": [
+          "Experiencing market crashes during early withdrawal years significantly accelerates portfolio depletion compared to later crashes",
+          "The order in which mutual funds pay out dividends",
+          "The mandatory sequence of paying income tax installments",
+          "The mathematical sequence of calculating compound interest"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Experiencing market crashes during early withdrawal years significantly accelerates portfolio depletion compared to later crashes",
+        "explanation": "Selling assets to fund living expenses when markets crash early in retirement permanently locks in capital destruction, risking early corpus depletion."
+      },
+      {
+        "id": "l6_q4",
+        "question": "4. In legal estate planning in India, what is the difference between a Nominee and a Legal Heir?",
+        "options": [
+          "A nominee is a custodian/trustee holding assets until they are legally distributed to the rightful legal heirs as per succession laws or a Will",
+          "A nominee automatically becomes the sole absolute legal owner superseding all legal heirs and Wills",
+          "Legal heirs have zero rights to demat accounts with registered nominees",
+          "Nominees and legal heirs are identical terms under Indian law"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "A nominee is a custodian/trustee holding assets until they are legally distributed to the rightful legal heirs as per succession laws or a Will",
+        "explanation": "Supreme Court of India rulings affirm that nominees are trustees who receive assets on death for administrative ease, but true ownership vests with legal heirs."
+      },
+      {
+        "id": "l6_q5",
+        "question": "5. What is a \"Black Swan\" event in financial markets?",
+        "options": [
+          "An extremely rare, unpredictable event with severe market-wide consequences that is often rationalized only with hindsight",
+          "A planned government economic release scheduled every month",
+          "A routine seasonal drop in consumer demand during monsoons",
+          "A profitable high-frequency arbitrage algorithm"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "An extremely rare, unpredictable event with severe market-wide consequences that is often rationalized only with hindsight",
+        "explanation": "Popularized by Nassim Taleb, Black Swan events (like 2008 Lehman collapse or 2020 Covid crash) cannot be predicted by standard statistical models."
+      }
+    ]
+  },
+  "level_7": {
+    "module_id": "level_7",
+    "module_title": "Module 7 — News Detective",
+    "stage": "Market Detective",
+    "questions": [
+      {
+        "id": "l7_q1",
+        "question": "1. When the Reserve Bank of India (RBI) raises the Repo Rate, what is the typical immediate impact on the economy and stock markets?",
+        "options": [
+          "Borrowing costs increase, slowing inflation and corporate credit expansion, which often compresses equity valuation multiples",
+          "Stock market indices immediately double overnight",
+          "Home loan EMIs automatically become zero",
+          "Companies are exempted from publishing quarterly earnings"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Borrowing costs increase, slowing inflation and corporate credit expansion, which often compresses equity valuation multiples",
+        "explanation": "Higher policy rates make capital more expensive for corporations and consumers, cooling economic growth and discounting future corporate earnings."
+      },
+      {
+        "id": "l7_q2",
+        "question": "2. What is the classic hallmark of a \"Pump and Dump\" scheme in small-cap / penny stocks?",
+        "options": [
+          "Coordinated fake news, social media hype, and artificial volume to spike prices, followed by promoters/insiders dumping shares on retail buyers",
+          "A legitimate share buyback program conducted by blue-chip companies",
+          "An algorithmic rebalancing of the NIFTY 50 index",
+          "A transparent rights issue approved by SEBI"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Coordinated fake news, social media hype, and artificial volume to spike prices, followed by promoters/insiders dumping shares on retail buyers",
+        "explanation": "Fraudulent operators use Telegram/social media tips to lure retail buyers into illiquid stocks, driving up prices before selling off their holdings."
+      },
+      {
+        "id": "l7_q3",
+        "question": "3. Why are Corporate Quarterly Earnings results (Q1, Q2, Q3, Q4) scrutinized by market analysts?",
+        "options": [
+          "To compare actual revenue, net profit, and management guidance against consensus market expectations",
+          "Because stock exchanges close trading during earnings season",
+          "To verify employee attendance records",
+          "Because companies pay 100% of their net worth in dividends every quarter"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "To compare actual revenue, net profit, and management guidance against consensus market expectations",
+        "explanation": "Stock prices move based on whether reported financial results beat or miss pre-existing market expectations and management future revenue guidance."
+      },
+      {
+        "id": "l7_q4",
+        "question": "4. How do Foreign Institutional Investor (FII) capital inflows and outflows typically influence the Indian Rupee and Nifty 50?",
+        "options": [
+          "Heavy FII buying strengthens the INR and drives Indian stock indices higher; aggressive FII selling exerts downward pressure",
+          "FII flows have zero correlation with Indian equity markets",
+          "FII selling causes the Indian Rupee to appreciate against the US Dollar",
+          "FIIs are prohibited from investing in Indian equities"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Heavy FII buying strengthens the INR and drives Indian stock indices higher; aggressive FII selling exerts downward pressure",
+        "explanation": "Foreign institutional flows represent major liquidity drivers in emerging markets like India, impacting currency exchange rates and large-cap equity valuations."
+      },
+      {
+        "id": "l7_q5",
+        "question": "5. When evaluating financial news, what is the best practice to distinguish signal from noise?",
+        "options": [
+          "Focus on long-term business fundamentals, audited filings on BSE/NSE, and structural industry tailwinds rather than sensational daily headlines",
+          "Trade aggressively on WhatsApp forward tips",
+          "Sell all investments whenever a negative headline appears in the morning paper",
+          "Rely exclusively on unverified anonymous trading forums"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Focus on long-term business fundamentals, audited filings on BSE/NSE, and structural industry tailwinds rather than sensational daily headlines",
+        "explanation": "Daily news headlines create emotional noise. Rational investors verify regulatory filings on stock exchange portals and evaluate multi-year cash flow trends."
+      }
+    ]
+  },
+  "level_8": {
+    "module_id": "level_8",
+    "module_title": "Module 8 — Read the Market",
+    "stage": "Market Detective",
+    "questions": [
+      {
+        "id": "l8_q1",
+        "question": "1. In Fundamental Analysis, what does the Price-to-Earnings (P/E) ratio indicate about a stock?",
+        "options": [
+          "How much investors are willing to pay per rupee of current net earnings generated by the company",
+          "The exact cash dividend paid per share",
+          "The total market capitalization divided by employee count",
+          "The historical daily trading volume on NSE"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "How much investors are willing to pay per rupee of current net earnings generated by the company",
+        "explanation": "P/E = Market Price per Share / Earnings per Share (EPS). It reflects valuation multiples and market growth expectations relative to profitability."
+      },
+      {
+        "id": "l8_q2",
+        "question": "2. In Technical Candlestick charts, what do the \"Body\" and the \"Wick/Shadow\" represent?",
+        "options": [
+          "The body shows Open and Close prices; the wicks show the High and Low prices reached during the time period",
+          "The body shows dividend yield; the wicks show trade volume",
+          "The body shows broker commission; the wicks show exchange fees",
+          "Candlesticks are random graphics with no quantitative data"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "The body shows Open and Close prices; the wicks show the High and Low prices reached during the time period",
+        "explanation": "Candlesticks summarize four key price points (OHLC: Open, High, Low, Close) over any chosen timeframe (daily, hourly, weekly)."
+      },
+      {
+        "id": "l8_q3",
+        "question": "3. What does a Support level represent in technical price action analysis?",
+        "options": [
+          "A price zone where buying interest is historically strong enough to overcome selling pressure, halting a price decline",
+          "The price ceiling where heavy selling halts an upward rally",
+          "The fee paid to an investment advisor",
+          "The guaranteed minimum buyback price mandated by SEBI"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "A price zone where buying interest is historically strong enough to overcome selling pressure, halting a price decline",
+        "explanation": "Support acts as a demand floor where buyers step in. Resistance acts as a supply ceiling where sellers take profits."
+      },
+      {
+        "id": "l8_q4",
+        "question": "4. What does Return on Equity (ROE) measure regarding a company management efficiency?",
+        "options": [
+          "How effectively management generates net profit from shareholder equity capital invested in the business",
+          "The total debt owed to public sector banks",
+          "The daily percentage price change on the stock exchange",
+          "The salary ratio of the executive board"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "How effectively management generates net profit from shareholder equity capital invested in the business",
+        "explanation": "ROE = Net Income / Shareholder Equity. High consistent ROE (e.g. >15-20%) indicates a strong competitive advantage and efficient capital allocation."
+      },
+      {
+        "id": "l8_q5",
+        "question": "5. What is the significance of Trading Volume accompanying a stock breakout above a major resistance level?",
+        "options": [
+          "High volume confirms strong institutional participation and conviction behind the price breakout",
+          "High volume proves that the breakout is fake and guaranteed to collapse",
+          "Volume has zero relevance to price action dynamics",
+          "High volume indicates that the company is filing for bankruptcy"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "High volume confirms strong institutional participation and conviction behind the price breakout",
+        "explanation": "Volume validates price action. A breakout on massive volume indicates institutional buying, while low volume breakouts are prone to failure."
+      }
+    ]
+  },
+  "level_9": {
+    "module_id": "level_9",
+    "module_title": "Module 9 — Market Storm",
+    "stage": "Market Detective",
+    "questions": [
+      {
+        "id": "l9_q1",
+        "question": "1. What is the India VIX index commonly referred to as in market terminology?",
+        "options": [
+          "The \"Fear Gauge\" — measuring expected near-term volatility and market uncertainty over the next 30 days",
+          "The official index of top Indian pharmaceutical companies",
+          "The government annual tax collection index",
+          "The index tracking daily gold bullion import duties"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "The \"Fear Gauge\" — measuring expected near-term volatility and market uncertainty over the next 30 days",
+        "explanation": "India VIX computes expected volatility from NIFTY option prices. Spikes in VIX reflect heightened investor fear and hedging activity."
+      },
+      {
+        "id": "l9_q2",
+        "question": "2. What is the primary function of Stock Market \"Circuit Breakers\" implemented by SEBI on Indian exchanges?",
+        "options": [
+          "To temporarily halt trading market-wide during extreme panic selloffs or frenzied rallies to allow market participants to cool down and absorb news",
+          "To permanently delete investor demat accounts during crashes",
+          "To guarantee that stock prices never fall more than 1% in a year",
+          "To freeze bank accounts of all retail traders"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "To temporarily halt trading market-wide during extreme panic selloffs or frenzied rallies to allow market participants to cool down and absorb news",
+        "explanation": "Circuit breakers trigger 45-minute or full-day trading halts at 10%, 15%, and 20% index swings to curb panic-driven flash crashes."
+      },
+      {
+        "id": "l9_q3",
+        "question": "3. Historical analysis of Indian stock market crashes (2000 Dot-com, 2008 GFC, 2020 Covid) demonstrates which consistent long-term pattern?",
+        "options": [
+          "Broad market indices eventually recover and surpass previous all-time highs driven by India underlying economic GDP growth",
+          "Equities never recover and lose all remaining value permanently",
+          "Crashes happen randomly every week with zero recovery",
+          "Fixed deposits consistently beat equities over rolling 20-year periods"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Broad market indices eventually recover and surpass previous all-time highs driven by India underlying economic GDP growth",
+        "explanation": "Market panics create temporary drawdowns, but growing economies with corporate earnings expansion eventually drive equity indices to new record highs over multi-year horizons."
+      },
+      {
+        "id": "l9_q4",
+        "question": "4. During a severe 30-40% market drawdown, what is the most mathematically sound action for a disciplined SIP investor with a 15-year horizon?",
+        "options": [
+          "Continue regular SIPs (or tactically step up allocations) to accumulate high-quality assets at deep valuation discounts",
+          "Panic-sell all mutual fund units at the market bottom to hoard physical cash",
+          "Borrow maximum personal loans to gamble on high-risk penny stocks",
+          "Stop all savings and delete trading applications"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Continue regular SIPs (or tactically step up allocations) to accumulate high-quality assets at deep valuation discounts",
+        "explanation": "Market downturns are the periods when SIPs accumulate the maximum units at bargain prices, generating explosive returns when markets rebound."
+      },
+      {
+        "id": "l9_q5",
+        "question": "5. What key lesson emerged from historical corporate governance failures in India (like Yes Bank, IL&FS, DHFL)?",
+        "options": [
+          "Heavy reliance on debt, aggressive accounting practices, and promoter pledging signal severe insolvency risk regardless of brand size",
+          "Large companies can never default on their bond obligations",
+          "Credit rating agencies always predict defaults 5 years in advance",
+          "Audited balance sheets are 100% immune from governance issues"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Heavy reliance on debt, aggressive accounting practices, and promoter pledging signal severe insolvency risk regardless of brand size",
+        "explanation": "Asset-liability mismatches, high promoter pledge ratios, and questionable related-party loans are red flags requiring strict portfolio diversification."
+      }
+    ]
+  },
+  "level_tax": {
+    "module_id": "level_tax",
+    "module_title": "Module 10 — Tax Detective",
+    "stage": "Standalone Challenge",
+    "questions": [
+      {
+        "id": "ltax_q1",
+        "question": "1. In Indian taxation (post-Budget 2024 revisions), how are Long-Term Capital Gains (LTCG) on listed equity shares taxed?",
+        "options": [
+          "Gains exceeding ₹1.25 Lakh in a financial year are taxed at 12.5% without indexation benefit",
+          "LTCG is taxed at 30% flat on the entire gain",
+          "LTCG on listed shares is 100% tax-free forever without any limit",
+          "LTCG is taxed at standard income slab rates with 50% surcharge"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Gains exceeding ₹1.25 Lakh in a financial year are taxed at 12.5% without indexation benefit",
+        "explanation": "Under revised Income Tax rules, listed equity held for >12 months qualifies as LTCG, with an annual exemption up to ₹1.25 Lakh, and gains above taxed at 12.5%."
+      },
+      {
+        "id": "ltax_q2",
+        "question": "2. What is the tax rate applied to Short-Term Capital Gains (STCG) on listed equity shares sold within 12 months of purchase?",
+        "options": [
+          "20% flat under Section 111A",
+          "10% flat",
+          "35% plus educational cess",
+          "Zero tax if invested in small-cap stocks"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "20% flat under Section 111A",
+        "explanation": "STCG on equity shares and equity mutual funds sold within 12 months is taxed at a flat rate of 20% (updated from 15% in recent budget provisions)."
+      },
+      {
+        "id": "ltax_q3",
+        "question": "3. What does \"Tax-Loss Harvesting\" involve in equity portfolio management?",
+        "options": [
+          "Selling loss-making stocks before the financial year-end to offset realized capital gains and reduce overall tax liability",
+          "Hiding investment profits in offshore shell corporations",
+          "Refusing to file Income Tax Returns (ITR)",
+          "Donating entire portfolio holdings to charitable trusts"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "Selling loss-making stocks before the financial year-end to offset realized capital gains and reduce overall tax liability",
+        "explanation": "Tax loss harvesting utilizes unrealized capital losses to offset taxable short-term or long-term gains, legally minimizing net tax outflows."
+      },
+      {
+        "id": "ltax_q4",
+        "question": "4. Which Income Tax Return (ITR) form is typically required for individual retail investors who trade capital market shares and mutual funds?",
+        "options": [
+          "ITR-2 (for capital gains without business income) or ITR-3 (for intraday/F&O business income)",
+          "ITR-1 (Sahaj - strictly for salary and one house property without capital gains)",
+          "ITR-7 (strictly for political parties and trusts)",
+          "Form 16 alone is sufficient without filing any ITR form"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "ITR-2 (for capital gains without business income) or ITR-3 (for intraday/F&O business income)",
+        "explanation": "ITR-1 cannot report capital gains. Delivery equity gains require ITR-2, while speculative intraday or F&O trading is treated as business income requiring ITR-3."
+      },
+      {
+        "id": "ltax_q5",
+        "question": "5. What is the lock-in period and tax benefit associated with Equity Linked Savings Schemes (ELSS) mutual funds under Section 80C?",
+        "options": [
+          "3-year mandatory lock-in period with tax deduction up to ₹1.5 Lakh under the Old Tax Regime",
+          "10-year lock-in period with zero equity exposure",
+          "1-day lock-in with 100% tax rebate under New Tax Regime",
+          "ELSS funds do not offer any tax deductions under any regime"
+        ],
+        "correct_idx": 0,
+        "correct_answer": "3-year mandatory lock-in period with tax deduction up to ₹1.5 Lakh under the Old Tax Regime",
+        "explanation": "ELSS has the shortest lock-in period (3 years) among all Section 80C tax-saving instruments (like PPF 15-yr, NPS 60-age) while offering equity compounding growth."
+      }
+    ]
+  }
+}

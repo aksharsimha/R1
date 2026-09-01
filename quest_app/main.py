@@ -271,14 +271,14 @@ if _workspace == "professional":
     _sidebar_title = "Workspace"
     _default_page = "Overview"
 else:
-    _valid_pages = ["Library", "Learning Path", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Settings"]
+    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Settings"]
     _page_labels = {
-        "Library": "📚  Knowledge Library", "Learning Path": "🎓  Learning Path",
+        "Learning Path": "🎓  Learning Path", "Library": "📚  Knowledge Library",
         "Virtual Trading": "📈  Virtual Trading", "Leaderboard": "🏆  Leaderboard",
         "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
-    _default_page = "Library"
+    _default_page = "Learning Path"
 
 _query_page = st.query_params.get("page", _default_page)
 if _query_page not in _valid_pages:
@@ -286,11 +286,31 @@ if _query_page not in _valid_pages:
 
 _nav_pages = [page for page in _valid_pages if page != "Settings"]
 _page_idx = _nav_pages.index(_query_page) if _query_page in _nav_pages else 0
+_nav_labels = [_page_labels[page] for page in _nav_pages]
+
+# Track workspace switches to reset nav state cleanly
+if "last_active_workspace" not in st.session_state:
+    st.session_state.last_active_workspace = _workspace
+
+if st.session_state.last_active_workspace != _workspace:
+    st.session_state.last_active_workspace = _workspace
+    if "nav_section" in st.session_state:
+        del st.session_state["nav_section"]
+
+# Two-way sync: only sync nav_section from query params if query param changed programmatically
+if "last_active_page" not in st.session_state:
+    st.session_state.last_active_page = _query_page
+
+if _query_page != st.session_state.last_active_page:
+    st.session_state.last_active_page = _query_page
+    target_lbl = _page_labels.get(_query_page)
+    if target_lbl in _nav_labels:
+        st.session_state.nav_section = target_lbl
 
 st.sidebar.markdown(f"<div class='quest-nav-label'>{_sidebar_title}</div>", unsafe_allow_html=True)
 _selected_label = st.sidebar.radio(
     "Navigate",
-    [_page_labels[page] for page in _nav_pages],
+    _nav_labels,
     index=_page_idx,
     key=f"nav_section_{_workspace}",
     label_visibility="collapsed",
@@ -298,8 +318,9 @@ _selected_label = st.sidebar.radio(
 section = ("Settings" if _query_page == "Settings" else
            next(page for page, label in _page_labels.items() if label == _selected_label))
 
-# Update the URL if the user clicks a different page
+# Update the URL if the user clicks a different page in sidebar
 if section != _query_page:
+    st.session_state.last_active_page = section
     st.query_params["page"] = section
     st.query_params["workspace"] = _workspace
     st.rerun()
