@@ -179,6 +179,94 @@ Regarding **"{query}"** in the context of *{v_title}* by {v_creator}:
 # ──────────────────────────────────────────────────────────────────────────────
 # Main Render Function
 # ──────────────────────────────────────────────────────────────────────────────
+
+def _render_html_table(rows):
+    if not rows:
+        return ""
+    html_out = ['<table style="width:100%;border-collapse:collapse;margin:8px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;">']
+    is_header = True
+    for r in rows:
+        cells = [c.strip() for c in r.strip('|').split('|')]
+        if all(re.match(r'^:?-+:?$', c) for c in cells):
+            is_header = False
+            continue
+        html_out.append('<tr>')
+        for c in cells:
+            tag = 'th' if is_header else 'td'
+            style = 'padding:6px 10px;border:1px solid rgba(255,255,255,0.08);font-size:0.82rem;'
+            if is_header:
+                style += 'background:rgba(139,92,246,0.18);color:#c084fc;font-weight:700;text-align:left;'
+            else:
+                style += 'color:#e2e8f0;line-height:1.4;'
+            c_fmt = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', c)
+            html_out.append(f'<{tag} style="{style}">{c_fmt}</{tag}>')
+        html_out.append('</tr>')
+        if is_header:
+            is_header = False
+    html_out.append('</table>')
+    return "".join(html_out)
+
+
+def _format_ai_response_html(raw_text: str) -> str:
+    if not raw_text:
+        return ""
+    
+    # 1. Normalize excessive newlines (collapse multi-line gaps)
+    text = raw_text.strip()
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    
+    # 2. Extract and format markdown tables
+    lines = text.split('\n')
+    out_lines = []
+    in_table = False
+    table_rows = []
+    
+    for line in lines:
+        s_line = line.strip()
+        if s_line.startswith('|') and s_line.endswith('|'):
+            if not in_table:
+                in_table = True
+                table_rows = []
+            table_rows.append(s_line)
+        else:
+            if in_table:
+                out_lines.append(_render_html_table(table_rows))
+                in_table = False
+                table_rows = []
+            out_lines.append(line)
+    if in_table:
+        out_lines.append(_render_html_table(table_rows))
+        
+    formatted = '\n'.join(out_lines)
+    
+    # 3. Format headers (### / ## / #)
+    formatted = re.sub(r'^(?:#{1,3})\s+(.+)$', r'<div style="font-weight:700;font-size:0.96rem;color:#f8fafc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    
+    # Numbered step emojis (1️⃣, 2️⃣, 3️⃣ or 1., 2.)
+    formatted = re.sub(r'^([0-9]+[️⃣\.\)]\s*.+)$', r'<div style="font-weight:700;font-size:0.95rem;color:#c084fc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    
+    # 4. Bold text
+    formatted = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:#f1f5f9;">\1</strong>', formatted)
+    
+    # 5. Bullets
+    formatted = re.sub(r'^[•\-\*]\s+(.+)$', r'<div style="margin:2px 0 2px 8px;color:#cbd5e1;display:flex;gap:6px;"><span style="color:#a855f7;">•</span><span>\1</span></div>', formatted, flags=re.MULTILINE)
+    
+    # 6. Paragraphs
+    paragraphs = formatted.split('\n\n')
+    p_html = []
+    for p in paragraphs:
+        p = p.strip()
+        if not p:
+            continue
+        if p.startswith('<div') or p.startswith('<table'):
+            p_html.append(p)
+        else:
+            p_clean = p.replace('\n', '<br>')
+            p_html.append(f'<div style="margin-bottom:6px;line-height:1.5;color:#cbd5e1;">{p_clean}</div>')
+            
+    return "".join(p_html)
+
+
 def render(user_info):
     catalog = _load_catalog()
     if not catalog:
@@ -553,15 +641,15 @@ def render(user_info):
         pub_txt = active_video.get("published", "Recently")
         takeaway_header = "Key Learning Takeaways:" if current_lang == "en" else "मुख्य निष्कर्ष (Key Takeaways):"
         
+        desc_items_html = "".join([f'<div class="yt-takeaway-item"><span style="color:#10b981;">•</span> {tkw}</div>' for tkw in active_video.get("key_takeaways", [])])
         st.markdown(f"""
         <div class="yt-desc-box">
             <div class="yt-desc-meta">{views_txt} views &bull; {pub_txt} &bull; {active_video['module_title']} &bull; {lang_badge}</div>
             <div class="yt-desc-text">{active_video['summary']}</div>
             <div style="font-weight:700;font-size:0.85rem;color:var(--q-text);margin:10px 0 6px;">{takeaway_header}</div>
+            {desc_items_html}
+        </div>
         """, unsafe_allow_html=True)
-        for tkw in active_video.get("key_takeaways", []):
-            st.markdown(f'<div class="yt-takeaway-item"><span style="color:#10b981;">•</span> {tkw}</div>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
         # ══════════════════════════════════════════════════════════════════════
         # 5. ⚡ MICHAEL AI ASSISTANT (Embedded Video Tutor & Doubt Solver)
@@ -626,21 +714,23 @@ def render(user_info):
             st.markdown("<div style='margin-top:14px;max-height:380px;overflow-y:auto;padding-right:6px;'>", unsafe_allow_html=True)
             for msg in v_history:
                 if msg["role"] == "user":
+                    clean_u_text = html.escape(msg['text']).replace('\n', '<br>')
                     st.markdown(f"""
                     <div style="display:flex;justify-content:flex-end;margin:8px 0;">
                         <div style="background:linear-gradient(135deg,#7c3aed,#9333ea);color:#ffffff;border-radius:14px 14px 2px 14px;padding:9px 14px;max-width:82%;font-size:0.88rem;box-shadow:0 4px 12px rgba(124,58,237,0.3);">
-                            {msg['text']}
+                            {clean_u_text}
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
+                    formatted_ai_text = _format_ai_response_html(msg['text'])
                     st.markdown(f"""
                     <div style="display:flex;justify-content:flex-start;margin:10px 0;">
-                        <div style="background:rgba(18,20,36,0.85);border:1px solid rgba(139,92,246,0.25);border-radius:14px 14px 14px 2px;padding:12px 16px;max-width:92%;color:#e2e8f0;font-size:0.88rem;line-height:1.6;box-shadow:0 6px 18px rgba(0,0,0,0.4);">
+                        <div style="background:rgba(18,20,36,0.85);border:1px solid rgba(139,92,246,0.25);border-radius:14px 14px 14px 2px;padding:12px 16px;max-width:92%;color:#e2e8f0;font-size:0.88rem;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,0.4);">
                             <div style="font-size:0.75rem;font-weight:700;color:#c084fc;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
                                 <span>⚡ MICHAEL AI</span> <span style="color:#64748b;font-size:0.68rem;font-weight:500;">{msg.get('ts', '')}</span>
                             </div>
-                            <div style="white-space:pre-wrap;">{msg['text']}</div>
+                            <div>{formatted_ai_text}</div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)

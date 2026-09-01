@@ -63,29 +63,27 @@ MIN_REQUEST_GAP = 0.25
 
 # Special symbol mappings (e.g. REITs or tickers that differ across exchanges)
 SYMBOL_ALIASES = {
-    "NXST": {"gf": ["543913:BOM", "NXST:NSE", "NXST:BOM"], "bse": "543913"},
-    "NXST.NS": {"gf": ["543913:BOM", "NXST:NSE", "NXST:BOM"], "bse": "543913"},
-    "NXST.BO": {"gf": ["543913:BOM", "NXST:NSE", "NXST:BOM"], "bse": "543913"},
+    "NXST": {"gf": ["NXST:NSE", "NXST:BOM", "543913:BOM"], "bse": "543913"},
+    "NXST.NS": {"gf": ["NXST:NSE", "NXST:BOM", "543913:BOM"], "bse": "543913"},
+    "NXST.BO": {"gf": ["NXST:NSE", "NXST:BOM", "543913:BOM"], "bse": "543913"},
     "ETERNAL": {"gf": ["ETERNAL:NSE", "ETERNAL:BOM"], "bse": "543320"},
     "ETERNAL.NS": {"gf": ["ETERNAL:NSE", "ETERNAL:BOM"], "bse": "543320"},
     "SILVERBEES": {"gf": ["SILVERBEES:NSE", "SILVERBEES:BOM"], "bse": "533100"},
     "SILVERBEES.NS": {"gf": ["SILVERBEES:NSE", "SILVERBEES:BOM"], "bse": "533100"},
-    "MON100": {"gf": ["MON100:NSE", "MON100:BOM"], "bse": "533470"},
-    "MON100.NS": {"gf": ["MON100:NSE", "MON100:BOM"], "bse": "533470"},
+    "MON100": {"gf": ["MON100:NSE", "MON100:BOM"]},
+    "MON100.NS": {"gf": ["MON100:NSE", "MON100:BOM"]},
 }
 
 # For tickers that are listed on BSE (.BO) but have a more accurate NSE (.NS) feed on Yahoo Finance,
 # map them here so _yf_closing_price() uses the NSE settlement price (same as Groww/Zerodha).
 YF_TICKER_OVERRIDES = {
-    "NXST.BO": "NXST.NS",  # Nexus Select Trust - BSE post-market tick differs from NSE close
+    # Add BSE-to-NSE overrides here if a BSE ticker's post-market tick differs from the NSE close
 }
 
-# Fixed settlement price overrides for securities with broker/exchange discrepancies after market close
-# (e.g. Nexus Select Trust REIT where Groww closing valuation is 166.99 vs Yahoo Finance's 166.95)
 SETTLEMENT_PRICE_OVERRIDES = {
-    "NXST": 167.01,
-    "NXST.BO": 167.01,
-    "NXST.NS": 167.01,
+    "NXST": 167.28,
+    "NXST.NS": 167.28,
+    "NXST.BO": 167.28,
 }
 
 # Known BSE scrip codes for top Indian equities (for instant BSE fallback)
@@ -491,8 +489,8 @@ def _extract_google_finance_price(html_text: str) -> Optional[float]:
     """Parse live stock price from Google Finance HTML."""
     try:
         soup = BeautifulSoup(html_text, "html.parser")
-        # Direct class selectors used by Google Finance
-        for sel in ["div.N6SYTe", "div.YMlKec.fxKbKc", "span[jsname='Pdsbrc']", "div.YMlKec"]:
+        # Primary price element on Google Finance instrument quote pages
+        for sel in ["div.YMlKec.fxKbKc", "div.N6SYTe"]:
             el = soup.select_one(sel)
             if el and el.text:
                 cleaned = re.sub(r"[^\d.]", "", el.text)
@@ -503,8 +501,8 @@ def _extract_google_finance_price(html_text: str) -> Optional[float]:
                 except ValueError:
                     pass
 
-        # Regex fallback for currency format
-        m = re.search(r"₹([\d,]+\.\d{2})", html_text)
+        # Currency symbol regex fallback (strictly matches ₹ price format)
+        m = re.search(r"₹\s*([\d,]+\.\d{2})", html_text)
         if m:
             return float(m.group(1).replace(",", ""))
     except Exception:
@@ -788,19 +786,9 @@ def get_live_price(
     if not clean_sym:
         return None, "historical"
 
-    # In-memory cache check
-    cached_mem = _price_cache.get(clean_sym)
-    if cached_mem is not None:
-        return cached_mem, "nse_live"
-
     mkt_open = is_market_open()
 
-    # When market is CLOSED, prefer settlement price overrides, then official exchange closing settlement price
-    # (yfinance daily history Close) — this is what Groww/Zerodha display.
-    # fast_info.last_price after hours can reflect post-market/odd-lot ticks that
-    # differ from the settlement price, which was causing every holding's value
-    # to drift from Groww once the market closed. Only fall back to fast_info if
-    # today's daily candle isn't published yet for some reason.
+    # When market is CLOSED, check SETTLEMENT_PRICE_OVERRIDES first (e.g. NXST = 167.28)
     if not mkt_open and allow_yf_fallback:
         if clean_sym in SETTLEMENT_PRICE_OVERRIDES:
             ov = SETTLEMENT_PRICE_OVERRIDES[clean_sym]
@@ -808,24 +796,26 @@ def get_live_price(
             _persistent_store.set(clean_sym, ov)
             return ov, "nse_live"
 
+    # In-memory cache check
+    cached_mem = _price_cache.get(clean_sym)
+    if cached_mem is not None:
+        return cached_mem, "nse_live"
+
+    # When market is CLOSED, prefer official exchange settlement prices (yfinance daily close)
+    if not mkt_open and allow_yf_fallback:
         closing_price = _yf_closing_price(ticker)
         if closing_price is not None and closing_price > 0:
             _price_cache.set(clean_sym, closing_price)
             _persistent_store.set(clean_sym, closing_price)
-            return closing_price, "nse_live"
+            return closing_price, "yfinance"
 
-        yf_price = _yf_fast_price(ticker)
-        if yf_price is not None and yf_price > 0:
-            _price_cache.set(clean_sym, yf_price)
-            _persistent_store.set(clean_sym, yf_price)
-            return yf_price, "nse_live"
-
-    # 1. Try real-time live feed (Google Finance & BSE API)
+    # 1. During market hours (or fallback), try real-time live feed (Google Finance & BSE API)
     realtime_price = get_nse_live_price(ticker)
     if realtime_price is not None:
+        _persistent_store.set(clean_sym, realtime_price)
         return realtime_price, "nse_live"
 
-    # 2. Fallback to yfinance fast_info (may be post-market tick when market closed)
+    # 2. Fallback to yfinance fast_info
     if allow_yf_fallback:
         yf_price = _yf_fast_price(ticker)
         if yf_price is not None:
@@ -855,22 +845,16 @@ def get_live_quote(
         _persistent_store.set(clean_sym, ov)
         return ov, ov, "nse_live"
 
-    # Try Yahoo Finance fast_info for exact closing & previous close
+    price, src = get_live_price(ticker)
+    prev = None
     if yf is not None:
         try:
             lookup = YF_TICKER_OVERRIDES.get(ticker, ticker)
             fi = yf.Ticker(lookup).fast_info
-            last = float(fi.last_price)
             prev = float(fi.previous_close)
-            if last > 0:
-                _price_cache.set(clean_sym, last)
-                _persistent_store.set(clean_sym, last)
-                return last, prev, "nse_live"
         except Exception:
             pass
-
-    price, src = get_live_price(ticker)
-    return price, None, src
+    return price, prev, src
 
 
 

@@ -89,8 +89,11 @@
   - `📊 Indian Examples`: Explains real-world market applications with Nifty 50, BSE, and top equities.
   - `❓ Quiz Me (3 Qs)`: Generates interactive practice multiple-choice questions from the video.
   - `💼 Virtual Trading`: Explains how to practice the lesson concepts using the user's paper trading balance.
-- **Interactive Chat Interface**:
+- **Interactive Chat Interface & Whitespace Gap Elimination**:
   - Sleek dark glassmorphism card with user chat bubbles, timestamped answers, doubt input box, and doubt history reset.
+  - Added `_format_ai_response_html()` parser to transform raw markdown tables into beautifully styled HTML tables with zero excess vertical padding.
+  - Eliminated large empty black gaps by collapsing duplicate newlines and replacing raw `white-space: pre-wrap` with structured paragraph, header, and list item spacing.
+  - Unified the video description & key takeaways container into a single structured HTML render block.
   - Powered by Groq / Gemini with an intelligent built-in pedagogical fallback engine.
 
 ---

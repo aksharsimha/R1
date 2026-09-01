@@ -13,6 +13,94 @@ from portfolio_ledger import add_asset, remove_asset, update_asset_holdings, get
 import nse_live as _nse
 
 
+
+def _render_html_table(rows):
+    if not rows:
+        return ""
+    html_out = ['<table style="width:100%;border-collapse:collapse;margin:8px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;">']
+    is_header = True
+    for r in rows:
+        cells = [c.strip() for c in r.strip('|').split('|')]
+        if all(re.match(r'^:?-+:?$', c) for c in cells):
+            is_header = False
+            continue
+        html_out.append('<tr>')
+        for c in cells:
+            tag = 'th' if is_header else 'td'
+            style = 'padding:6px 10px;border:1px solid rgba(255,255,255,0.08);font-size:0.82rem;'
+            if is_header:
+                style += 'background:rgba(139,92,246,0.18);color:#c084fc;font-weight:700;text-align:left;'
+            else:
+                style += 'color:#e2e8f0;line-height:1.4;'
+            c_fmt = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', c)
+            html_out.append(f'<{tag} style="{style}">{c_fmt}</{tag}>')
+        html_out.append('</tr>')
+        if is_header:
+            is_header = False
+    html_out.append('</table>')
+    return "".join(html_out)
+
+
+def _format_ai_response_html(raw_text: str) -> str:
+    if not raw_text:
+        return ""
+    
+    # 1. Normalize excessive newlines (collapse multi-line gaps)
+    text = raw_text.strip()
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    
+    # 2. Extract and format markdown tables
+    lines = text.split('\n')
+    out_lines = []
+    in_table = False
+    table_rows = []
+    
+    for line in lines:
+        s_line = line.strip()
+        if s_line.startswith('|') and s_line.endswith('|'):
+            if not in_table:
+                in_table = True
+                table_rows = []
+            table_rows.append(s_line)
+        else:
+            if in_table:
+                out_lines.append(_render_html_table(table_rows))
+                in_table = False
+                table_rows = []
+            out_lines.append(line)
+    if in_table:
+        out_lines.append(_render_html_table(table_rows))
+        
+    formatted = '\n'.join(out_lines)
+    
+    # 3. Format headers (### / ## / #)
+    formatted = re.sub(r'^(?:#{1,3})\s+(.+)$', r'<div style="font-weight:700;font-size:0.96rem;color:#f8fafc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    
+    # Numbered step emojis (1️⃣, 2️⃣, 3️⃣ or 1., 2.)
+    formatted = re.sub(r'^([0-9]+[️⃣\.\)]\s*.+)$', r'<div style="font-weight:700;font-size:0.95rem;color:#c084fc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    
+    # 4. Bold text
+    formatted = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:#f1f5f9;">\1</strong>', formatted)
+    
+    # 5. Bullets
+    formatted = re.sub(r'^[•\-\*]\s+(.+)$', r'<div style="margin:2px 0 2px 8px;color:#cbd5e1;display:flex;gap:6px;"><span style="color:#a855f7;">•</span><span>\1</span></div>', formatted, flags=re.MULTILINE)
+    
+    # 6. Paragraphs
+    paragraphs = formatted.split('\n\n')
+    p_html = []
+    for p in paragraphs:
+        p = p.strip()
+        if not p:
+            continue
+        if p.startswith('<div') or p.startswith('<table'):
+            p_html.append(p)
+        else:
+            p_clean = p.replace('\n', '<br>')
+            p_html.append(f'<div style="margin-bottom:6px;line-height:1.5;color:#cbd5e1;">{p_clean}</div>')
+            
+    return "".join(p_html)
+
+
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
     total_invested = df['Invested (\u20b9)'].sum() if df is not None and not df.empty else 0.0
@@ -50,7 +138,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             font-weight:500;letter-spacing:1.5px;margin-bottom:4px;padding-left:4px}
     .cm-b{background:var(--q-surface-2);border:1px solid var(--q-border);
           border-radius:4px 18px 18px 18px;padding:.85rem 1.1rem;
-          color:var(--q-text-2);font-size:.95rem;line-height:1.6;white-space:pre-wrap}
+          color:var(--q-text-2);font-size:.95rem;line-height:1.6;white-space:normal}
     .cm-ts{font-size:.68rem;color:var(--q-text-3);margin-top:4px;padding-left:4px;
            font-family:"JetBrains Mono",monospace}
     .ti{display:flex;align-items:center;gap:5px;padding:.6rem 1rem}
@@ -575,12 +663,14 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             # Render history
             for msg in history:
                 if msg["role"] == "user":
+                    clean_u_text = html.escape(msg["text"]).replace('\n', '<br>')
                     st.markdown(
-                        f'<div class="cu"><div class="cu-b">{msg["text"]}</div></div>',
+                        f'<div class="cu"><div class="cu-b">{clean_u_text}</div></div>',
                         unsafe_allow_html=True)
                 else:
+                    fmt_m_text = _format_ai_response_html(msg["text"])
                     st.markdown(
-                        f'<div class="cm"><div class="cm-w">'                        f'<div class="cm-lbl">MICHAEL</div>'                        f'<div class="cm-b">{msg["text"]}</div>'                        f'<div class="cm-ts">{msg["ts"]}</div></div></div>',
+                        f'<div class="cm"><div class="cm-w">'                        f'<div class="cm-lbl">MICHAEL</div>'                        f'<div class="cm-b">{fmt_m_text}</div>'                        f'<div class="cm-ts">{msg["ts"]}</div></div></div>',
                         unsafe_allow_html=True)
             # Typing indicator
             if st.session_state.michael_pending:
