@@ -686,7 +686,7 @@ def render(user_info):
         # Quick Starter Chips (1-Click Questions)
         st.markdown("<div style='font-size:0.78rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 6px;'>Quick Questions & Doubts:</div>", unsafe_allow_html=True)
         
-        sq1, sq2, sq3, sq4 = st.columns(4)
+        sq1, sq2 = st.columns(2)
         starter_query = None
         with sq1:
             if st.button("💡 Simple Summary", key=f"chip_sum_{v_id}", use_container_width=True):
@@ -694,12 +694,6 @@ def render(user_info):
         with sq2:
             if st.button("📊 Indian Examples", key=f"chip_ex_{v_id}", use_container_width=True):
                 starter_query = f"Give me real-world Indian stock market examples for '{active_video['title']}'."
-        with sq3:
-            if st.button("❓ Quiz Me (3 Qs)", key=f"chip_quiz_{v_id}", use_container_width=True):
-                starter_query = f"Quiz me with 3 practice questions on '{active_video['title']}'."
-        with sq4:
-            if st.button("💼 Virtual Trading", key=f"chip_vt_{v_id}", use_container_width=True):
-                starter_query = f"How can I apply '{active_video['title']}' inside my QUEST Virtual Trading portfolio?"
 
         # If user clicked starter chip
         if starter_query:

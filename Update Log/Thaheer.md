@@ -111,4 +111,5 @@
   - Added `_format_ai_response_html()` parser to convert LLM markdown tables, numbered badges, headings, and lists into compact styled HTML elements with tight margins.
   - Normalized consecutive newlines (`\n{3,}`) and replaced raw `white-space: pre-wrap` with structured styling in both `education.py` and `michael.py`.
   - Unified the video description & key takeaways container into a single structured HTML render block to prevent unclosed Streamlit DOM gaps.
+  - Streamlined MICHAEL AI quick prompt chips to the 2 primary actions: `💡 Simple Summary` and `📊 Indian Examples`.
 - Maintained synchronization across `origin/master` and `origin/main`.
