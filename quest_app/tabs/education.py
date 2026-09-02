@@ -286,6 +286,9 @@ def render(user_info):
         st.session_state.edu_video_lang = "en"
     current_lang = st.session_state.edu_video_lang
 
+    module_titles = [mod.get("module_title", f"Module {i+1}") for i, mod in enumerate(catalog)]
+    mod_selector_key = f"edu_module_selector_{current_lang}"
+
     # 2. Check for navigation from other tabs (e.g. Learning Path / Hub)
     if "active_module_id" in st.session_state and st.session_state.active_module_id:
         target_mod_id = st.session_state.active_module_id
@@ -293,10 +296,21 @@ def render(user_info):
             if mod.get("module_id") == target_mod_id or mod.get("level_id") == target_mod_id:
                 st.session_state.edu_active_module_idx = idx
                 st.session_state.edu_active_video_idx = 0
+                st.session_state[mod_selector_key] = module_titles[idx]
                 break
         del st.session_state.active_module_id
 
-    # 3. State initialization and bounds checking
+    # 3. Check if user switched module from the selectbox
+    if mod_selector_key in st.session_state:
+        selected_mod_title = st.session_state[mod_selector_key]
+        if selected_mod_title in module_titles:
+            new_m_idx = module_titles.index(selected_mod_title)
+            if new_m_idx != st.session_state.get("edu_active_module_idx", 0):
+                st.session_state.edu_active_module_idx = new_m_idx
+                # Reset to first video (index 0) of the selected module
+                st.session_state.edu_active_video_idx = 0
+
+    # 4. State initialization and bounds checking
     if "edu_active_module_idx" not in st.session_state:
         st.session_state.edu_active_module_idx = 0
     if "edu_active_video_idx" not in st.session_state:
@@ -304,6 +318,9 @@ def render(user_info):
 
     if st.session_state.edu_active_module_idx < 0 or st.session_state.edu_active_module_idx >= len(catalog):
         st.session_state.edu_active_module_idx = 0
+
+    # Keep selectbox state key in sync
+    st.session_state[mod_selector_key] = module_titles[st.session_state.edu_active_module_idx]
 
     cur_module = catalog[st.session_state.edu_active_module_idx]
     cur_topics = cur_module.get("topics", [])
@@ -530,12 +547,14 @@ def render(user_info):
             if st.button("🇬🇧  English (100 Videos)", key="btn_lang_en", type="primary" if is_en else "secondary", use_container_width=True):
                 if current_lang != "en":
                     st.session_state.edu_video_lang = "en"
+                    st.session_state["edu_module_selector_en"] = module_titles[st.session_state.edu_active_module_idx]
                     st.rerun()
         with l_btn2:
             is_hi = current_lang == "hi"
             if st.button("🇮🇳  हिन्दी / Hindi (100 Videos)", key="btn_lang_hi", type="primary" if is_hi else "secondary", use_container_width=True):
                 if current_lang != "hi":
                     st.session_state.edu_video_lang = "hi"
+                    st.session_state["edu_module_selector_hi"] = module_titles[st.session_state.edu_active_module_idx]
                     st.rerun()
 
     with bar_col2:
@@ -762,10 +781,8 @@ def render(user_info):
             st.markdown('<div style="font-size:0.78rem;color:var(--q-text-3);text-align:right;padding-top:4px;">Autoplay 🟢</div>', unsafe_allow_html=True)
 
         # Module Selector / Filter
-        module_titles = [mod.get("module_title", f"Module {i+1}") for i, mod in enumerate(catalog)]
-        
         def _on_module_filter_change():
-            selected_title = st.session_state.get(f"edu_module_selector_{current_lang}")
+            selected_title = st.session_state.get(mod_selector_key)
             if selected_title in module_titles:
                 new_m_idx = module_titles.index(selected_title)
                 if new_m_idx != st.session_state.edu_active_module_idx:
@@ -776,8 +793,7 @@ def render(user_info):
         st.selectbox(
             "Filter Module",
             module_titles,
-            index=st.session_state.edu_active_module_idx,
-            key=f"edu_module_selector_{current_lang}",
+            key=mod_selector_key,
             on_change=_on_module_filter_change,
             label_visibility="collapsed"
         )
