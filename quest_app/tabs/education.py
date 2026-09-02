@@ -281,72 +281,51 @@ def render(user_info):
     bookmarks = progress.get("bookmarks", [])
     completed_videos = progress.get("completed_articles", [])
 
-    # Current Language Selection
+    # 1. Current Language Selection ("en" or "hi")
     if "edu_video_lang" not in st.session_state:
         st.session_state.edu_video_lang = "en"
-    
     current_lang = st.session_state.edu_video_lang
 
-    # Flatten all videos for current language from catalog topics
-    all_videos = []
-    for mod in catalog:
-        m_title = mod.get("module_title", "")
-        m_id = mod.get("module_id", "")
-        cat_color = mod.get("cat_color", "#3b82f6")
-        cat_name = mod.get("category", "Basics")
-        for t_idx, topic_obj in enumerate(mod.get("topics", [])):
-            v_data = topic_obj.get(current_lang)
-            if v_data:
-                v_copy = dict(v_data)
-                v_copy["module_title"] = m_title
-                v_copy["module_id"] = m_id
-                v_copy["cat_color"] = cat_color
-                v_copy["category"] = cat_name
-                v_copy["topic_index"] = t_idx
-                v_copy["youtube_embed_id"] = v_data.get("youtube_id", "")
-                all_videos.append(v_copy)
+    # 2. Check for navigation from other tabs (e.g. Learning Path / Hub)
+    if "active_module_id" in st.session_state and st.session_state.active_module_id:
+        target_mod_id = st.session_state.active_module_id
+        for idx, mod in enumerate(catalog):
+            if mod.get("module_id") == target_mod_id or mod.get("level_id") == target_mod_id:
+                st.session_state.edu_active_module_idx = idx
+                st.session_state.edu_active_video_idx = 0
+                break
+        del st.session_state.active_module_id
 
-    # Module filter state detection
-    module_filter_key = f"yt_playlist_module_filter_{current_lang}"
-    prev_filter_key = f"_prev_mod_filter_{current_lang}"
+    # 3. State initialization and bounds checking
+    if "edu_active_module_idx" not in st.session_state:
+        st.session_state.edu_active_module_idx = 0
+    if "edu_active_video_idx" not in st.session_state:
+        st.session_state.edu_active_video_idx = 0
 
-    current_mod_filter = st.session_state.get(module_filter_key)
-    prev_mod_filter = st.session_state.get(prev_filter_key)
+    if st.session_state.edu_active_module_idx < 0 or st.session_state.edu_active_module_idx >= len(catalog):
+        st.session_state.edu_active_module_idx = 0
 
-    if current_mod_filter and current_mod_filter != prev_mod_filter:
-        st.session_state[prev_mod_filter_key] = current_mod_filter
-        # When switching module dropdown, auto-select the first video of that module
-        if current_mod_filter != "All Modules (100 Videos)":
-            mod_videos = [v for v in all_videos if v.get("module_title") == current_mod_filter]
-            if mod_videos:
-                st.session_state.active_edu_video_id = mod_videos[0]["id"]
-        elif all_videos:
-            if not st.session_state.get("active_edu_video_id"):
-                st.session_state.active_edu_video_id = all_videos[0]["id"]
+    cur_module = catalog[st.session_state.edu_active_module_idx]
+    cur_topics = cur_module.get("topics", [])
 
-    # Active Video Selection
-    if "active_edu_video_id" not in st.session_state or not st.session_state.active_edu_video_id:
-        st.session_state.active_edu_video_id = all_videos[0]["id"] if all_videos else "module_1_t1_en"
+    if st.session_state.edu_active_video_idx < 0 or st.session_state.edu_active_video_idx >= len(cur_topics):
+        st.session_state.edu_active_video_idx = 0
 
-    active_video = next((v for v in all_videos if v["id"] == st.session_state.active_edu_video_id), None)
-    if not active_video and all_videos:
-        active_video = all_videos[0]
-        st.session_state.active_edu_video_id = active_video["id"]
+    active_topic_obj = cur_topics[st.session_state.edu_active_video_idx]
+    active_video_raw = active_topic_obj.get(current_lang) or active_topic_obj.get("en", {})
 
-    if not active_video:
-        st.warning("No videos available for selected language category.")
-        return
+    active_video = dict(active_video_raw)
+    active_video["module_title"] = cur_module.get("module_title", "")
+    active_video["module_id"] = cur_module.get("module_id", "")
+    active_video["cat_color"] = cur_module.get("cat_color", "#3b82f6")
+    active_video["category"] = cur_module.get("category", "Basics")
+    active_video["topic_index"] = st.session_state.edu_active_video_idx
+    active_video["youtube_embed_id"] = active_video_raw.get("youtube_id", "")
 
-    # Find the corresponding other-language video for same topic & module
+    # Matching other-language video for same topic cross-switch
     other_lang = "hi" if current_lang == "en" else "en"
     other_lang_name = "हिन्दी / Hindi" if current_lang == "en" else "English"
-    matching_other_video = None
-    for mod in catalog:
-        if mod.get("module_id") == active_video.get("module_id"):
-            for t_idx, topic_obj in enumerate(mod.get("topics", [])):
-                if t_idx == active_video.get("topic_index"):
-                    matching_other_video = topic_obj.get(other_lang)
-                    break
+    matching_other_video = active_topic_obj.get(other_lang)
 
     # ──────────────────────────────────────────────────────────────────────────
     # Top Custom Styling
@@ -551,20 +530,12 @@ def render(user_info):
             if st.button("🇬🇧  English (100 Videos)", key="btn_lang_en", type="primary" if is_en else "secondary", use_container_width=True):
                 if current_lang != "en":
                     st.session_state.edu_video_lang = "en"
-                    if matching_other_video:
-                        st.session_state.active_edu_video_id = matching_other_video["id"]
-                    else:
-                        st.session_state.active_edu_video_id = ""
                     st.rerun()
         with l_btn2:
             is_hi = current_lang == "hi"
             if st.button("🇮🇳  हिन्दी / Hindi (100 Videos)", key="btn_lang_hi", type="primary" if is_hi else "secondary", use_container_width=True):
                 if current_lang != "hi":
                     st.session_state.edu_video_lang = "hi"
-                    if matching_other_video:
-                        st.session_state.active_edu_video_id = matching_other_video["id"]
-                    else:
-                        st.session_state.active_edu_video_id = ""
                     st.rerun()
 
     with bar_col2:
@@ -581,8 +552,8 @@ def render(user_info):
     # Left Column: Video Player, Metadata, Actions, & MICHAEL AI Tutor
     # ══════════════════════════════════════════════════════════════════════════
     with col_player:
-        v_id = active_video["id"]
-        yt_embed_id = active_video.get("youtube_embed_id", "Xn7KWR9EOGQ")
+        v_id = active_video.get("id", f"vid_{st.session_state.edu_active_module_idx}_{st.session_state.edu_active_video_idx}")
+        yt_embed_id = active_video.get("youtube_embed_id", "GcZW24SkbHM")
         lang_badge = "English" if current_lang == "en" else "हिन्दी"
 
         # 1. YouTube Embedded Video Player
@@ -590,7 +561,7 @@ def render(user_info):
         <div class="yt-video-frame-container">
             <iframe 
                 src="https://www.youtube-nocookie.com/embed/{yt_embed_id}?autoplay=0&rel=0&modestbranding=1" 
-                title="{active_video['title']}" 
+                title="{active_video.get('title', 'Video Lesson')}" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowfullscreen>
             </iframe>
@@ -600,16 +571,15 @@ def render(user_info):
         # 2. Title & In-Player Language Cross-Switch
         st.markdown(f"""
         <div class="yt-title-row">
-            <div class="yt-main-title">{active_video['title']}</div>
+            <div class="yt-main-title">{active_video.get('title', '')}</div>
         </div>
         """, unsafe_allow_html=True)
 
         # Quick Switch to alternate language for same topic
         if matching_other_video:
             switch_lbl = f"🔄 Switch to {other_lang_name} version for this exact topic"
-            if st.button(switch_lbl, key=f"btn_cross_lang_{v_id}", use_container_width=True):
+            if st.button(switch_lbl, key=f"btn_cross_lang_{v_id}_{current_lang}", use_container_width=True):
                 st.session_state.edu_video_lang = other_lang
-                st.session_state.active_edu_video_id = matching_other_video["id"]
                 st.rerun()
 
         # 3. Creator Bar & Actions
@@ -792,87 +762,103 @@ def render(user_info):
             st.markdown('<div style="font-size:0.78rem;color:var(--q-text-3);text-align:right;padding-top:4px;">Autoplay 🟢</div>', unsafe_allow_html=True)
 
         # Module Selector / Filter
-        module_options = ["All Modules (100 Videos)"] + [mod.get("module_title", f"Module {i+1}") for i, mod in enumerate(catalog)]
+        module_titles = [mod.get("module_title", f"Module {i+1}") for i, mod in enumerate(catalog)]
         
         def _on_module_filter_change():
-            sel = st.session_state.get(module_filter_key)
-            if sel and sel != "All Modules (100 Videos)":
-                mvids = [v for v in all_videos if v.get("module_title") == sel]
-                if mvids:
-                    st.session_state.active_edu_video_id = mvids[0]["id"]
-            elif all_videos:
-                st.session_state.active_edu_video_id = all_videos[0]["id"]
+            selected_title = st.session_state.get(f"edu_module_selector_{current_lang}")
+            if selected_title in module_titles:
+                new_m_idx = module_titles.index(selected_title)
+                if new_m_idx != st.session_state.edu_active_module_idx:
+                    st.session_state.edu_active_module_idx = new_m_idx
+                    # When switching modules, reset to index 0 (first video of that module)
+                    st.session_state.edu_active_video_idx = 0
 
-        # Calculate default index based on current state or active video's module
-        default_mod_idx = 0
-        if module_filter_key in st.session_state and st.session_state[module_filter_key] in module_options:
-            default_mod_idx = module_options.index(st.session_state[module_filter_key])
-        elif active_video and active_video.get("module_title") in module_options:
-            default_mod_idx = module_options.index(active_video["module_title"])
-
-        selected_module = st.selectbox(
+        st.selectbox(
             "Filter Module",
-            module_options,
-            index=default_mod_idx,
-            key=module_filter_key,
+            module_titles,
+            index=st.session_state.edu_active_module_idx,
+            key=f"edu_module_selector_{current_lang}",
             on_change=_on_module_filter_change,
             label_visibility="collapsed"
         )
 
-        # Filtered playlist videos
-        if selected_module == "All Modules (100 Videos)":
-            playlist_videos = all_videos
-        else:
-            playlist_videos = [v for v in all_videos if v.get("module_title") == selected_module]
-
         # Search filter if user typed keywords
         if search_kw and search_kw.strip():
             skw = search_kw.strip().lower()
-            playlist_videos = [
-                v for v in playlist_videos
-                if skw in v["title"].lower() 
-                or skw in v["creator"].lower() 
-                or skw in v["category"].lower() 
-                or skw in v["module_title"].lower()
-            ]
+            search_results = []
+            for m_i, mod in enumerate(catalog):
+                for t_i, top in enumerate(mod.get("topics", [])):
+                    v = top.get(current_lang) or top.get("en", {})
+                    if (skw in v.get("title", "").lower() 
+                        or skw in v.get("creator", "").lower() 
+                        or skw in mod.get("category", "").lower() 
+                        or skw in mod.get("module_title", "").lower()):
+                        search_results.append((m_i, t_i, v, mod))
 
-        # Render list of videos
-        limit = st.session_state.get("playlist_limit", 8)
-        displayed_videos = playlist_videos[:limit]
-
-        for p_idx, vid in enumerate(displayed_videos):
-            is_active = vid["id"] == active_video["id"]
-            cat_clr = vid.get("cat_color", "#3b82f6")
-            
-            with st.container():
-                c1, c2 = st.columns([1.1, 1.9], gap="small")
-                with c1:
-                    st.markdown(f"""
-                    <div class="yt-card-thumb" style="border-left: 3px solid {cat_clr};">
-                        <div style="font-size:1.3rem;opacity:0.8;">▶</div>
-                        <div class="yt-card-duration">{vid.get('duration', '8:30')}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                with c2:
-                    st.markdown(f"""
-                    <div class="yt-card-details">
-                        <div class="yt-card-title" style="{'color:#60a5fa;' if is_active else ''}">{vid['title']}</div>
-                        <div class="yt-card-creator">
-                            <span>{vid['creator']}</span>
-                            <span style="color:#3b82f6;font-size:0.65rem;">✔</span>
-                        </div>
-                        <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {vid['category']}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+            if not search_results:
+                st.info("No matching topics found.")
+            else:
+                for s_idx, (m_i, t_i, vid, mod) in enumerate(search_results[:10]):
+                    is_active = (m_i == st.session_state.edu_active_module_idx and t_i == st.session_state.edu_active_video_idx)
+                    cat_clr = mod.get("cat_color", "#3b82f6")
+                    with st.container():
+                        c1, c2 = st.columns([1.1, 1.9], gap="small")
+                        with c1:
+                            st.markdown(f"""
+                            <div class="yt-card-thumb" style="border-left: 3px solid {cat_clr};">
+                                <div style="font-size:1.3rem;opacity:0.8;">▶</div>
+                                <div class="yt-card-duration">{vid.get('duration', '8:30')}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        with c2:
+                            st.markdown(f"""
+                            <div class="yt-card-details">
+                                <div class="yt-card-title" style="{'color:#60a5fa;' if is_active else ''}">{vid.get('title', '')}</div>
+                                <div class="yt-card-creator">
+                                    <span>{vid.get('creator', '')}</span>
+                                    <span style="color:#3b82f6;font-size:0.65rem;">✔</span>
+                                </div>
+                                <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {mod.get('category', 'Basics')}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+                        
+                        btn_txt = "▶ Playing Now" if is_active else "Play Video"
+                        if st.button(btn_txt, key=f"search_play_btn_{m_i}_{t_i}_{s_idx}", disabled=is_active, use_container_width=True):
+                            st.session_state.edu_active_module_idx = m_i
+                            st.session_state.edu_active_video_idx = t_i
+                            st.rerun()
+                        st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
+        else:
+            # Standard Module Playlist (all topics belonging to current module)
+            for p_idx, top in enumerate(cur_topics):
+                vid = top.get(current_lang) or top.get("en", {})
+                is_active = (p_idx == st.session_state.edu_active_video_idx)
+                cat_clr = cur_module.get("cat_color", "#3b82f6")
                 
-                # Click to play button
-                btn_txt = "▶ Playing Now" if is_active else "Play Video"
-                if st.button(btn_txt, key=f"yt_play_btn_{vid['id']}_{p_idx}", disabled=is_active, use_container_width=True):
-                    st.session_state.active_edu_video_id = vid["id"]
-                    st.rerun()
-                st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
-
-        if len(playlist_videos) > limit:
-            if st.button("Load More Videos 🔽", key=f"btn_load_more_yt_{current_lang}", use_container_width=True):
-                st.session_state.playlist_limit = limit + 8
-                st.rerun()
+                with st.container():
+                    c1, c2 = st.columns([1.1, 1.9], gap="small")
+                    with c1:
+                        st.markdown(f"""
+                        <div class="yt-card-thumb" style="border-left: 3px solid {cat_clr};">
+                            <div style="font-size:1.3rem;opacity:0.8;">▶</div>
+                            <div class="yt-card-duration">{vid.get('duration', '8:30')}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    with c2:
+                        st.markdown(f"""
+                        <div class="yt-card-details">
+                            <div class="yt-card-title" style="{'color:#60a5fa;' if is_active else ''}">{vid.get('title', '')}</div>
+                            <div class="yt-card-creator">
+                                <span>{vid.get('creator', '')}</span>
+                                <span style="color:#3b82f6;font-size:0.65rem;">✔</span>
+                            </div>
+                            <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {cur_module.get('category', 'Basics')}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # Click to play button
+                    btn_txt = "▶ Playing Now" if is_active else "Play Video"
+                    if st.button(btn_txt, key=f"yt_play_btn_{cur_module.get('module_id')}_{p_idx}_{current_lang}", disabled=is_active, use_container_width=True):
+                        st.session_state.edu_active_video_idx = p_idx
+                        st.rerun()
+                    st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
