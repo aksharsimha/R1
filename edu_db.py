@@ -177,6 +177,12 @@ def save_progress(data: dict) -> None:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
 
+    if _username:
+        try:
+            firebase_sync.trigger_sync(_username, filepath)
+        except Exception as e:
+            print(f"Warning: Failed to sync edu progress to Firebase: {e}")
+
 def get_last_education_section() -> str:
     """Returns the user's last visited Education sub-page, defaulting to 'Learning Path'."""
     try:
@@ -225,3 +231,11 @@ def set_last_portfolio_section(section: str) -> None:
         except Exception:
             pass
 
+def add_virtual_balance(amount: float) -> float:
+    """Adds to the virtual balance and returns the new total."""
+    prog = load_progress()
+    current = prog.get("virtual_balance", 0.0)
+    new_balance = current + amount
+    prog["virtual_balance"] = new_balance
+    save_progress(prog)
+    return new_balance

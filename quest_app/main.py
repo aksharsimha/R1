@@ -73,6 +73,9 @@ news_sentiment.set_data_dir(_user_data_dir)
 import edu_db
 edu_db.set_data_dir(_user_data_dir, username=_username)
 
+import tax_detective_db
+tax_detective_db.set_data_dir(_user_data_dir, username=_username)
+
 # Store username and data dir in session for sync functions
 st.session_state._quest_username = _username
 st.session_state._quest_data_dir = _user_data_dir
@@ -699,6 +702,9 @@ elif section == "Library":
 elif section == "Badges":
     import quest_app.tabs.badges as tb
     tb.render(_user_info)
-elif section in ["Virtual Trading", "Leaderboard", "Tax Detective"]:
+elif section == "Tax Detective":
+    import quest_app.tabs.tax_detective as tb
+    tb.render(_user_info)
+elif section in ["Virtual Trading", "Leaderboard"]:
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
