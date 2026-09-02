@@ -15,7 +15,38 @@ Friends, DMs, group chats, portfolio sharing — all stored in Firestore.
 """
 
 
+def _get_smtp_credentials() -> tuple[str, str]:
+    sender_email = ""
+    sender_password = ""
+    try:
+        sender_email = str(st.secrets.get("SMTP_EMAIL", "")).strip()
+        sender_password = str(st.secrets.get("SMTP_PASSWORD", "")).replace(" ", "").strip()
+    except Exception:
+        pass
+
+    if not sender_email or not sender_password:
+        import os
+        import toml
+        here = os.path.dirname(os.path.abspath(__file__))
+        secrets_file = os.path.join(here, ".streamlit", "secrets.toml")
+        if os.path.exists(secrets_file):
+            try:
+                data = toml.load(secrets_file)
+                sender_email = sender_email or str(data.get("SMTP_EMAIL", "")).strip()
+                sender_password = sender_password or str(data.get("SMTP_PASSWORD", "")).replace(" ", "").strip()
+            except Exception:
+                pass
+
+    if not sender_email or not sender_password:
+        import os
+        sender_email = sender_email or os.environ.get("SMTP_EMAIL", "").strip()
+        sender_password = sender_password or os.environ.get("SMTP_PASSWORD", "").replace(" ", "").strip()
+
+    return sender_email, sender_password
+
+
 def _send_email_notification(sender_email: str, sender_password: str, sender_name: str, receiver_email: str, msg_text: str) -> bool:
+    import ssl
     server = None
     try:
         msg = MIMEMultipart()
@@ -25,13 +56,22 @@ def _send_email_notification(sender_email: str, sender_password: str, sender_nam
         body = f"You have a new message from {sender_name} on QUEST:\n\n\"{msg_text}\"\n\nLog in to reply!"
         msg.attach(MIMEText(body, 'plain'))
 
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=20)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
-        return True
+        # Try Port 587 STARTTLS with explicit local_hostname to prevent invalid FQDN EHLO rejection
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587, local_hostname='localhost', timeout=20)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(msg)
+            return True
+        except Exception as e587:
+            # Fallback to Port 465 SSL
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context, local_hostname='localhost', timeout=20) as ssl_server:
+                ssl_server.login(sender_email, sender_password)
+                ssl_server.send_message(msg)
+                return True
     except Exception as e:
-        print(f"Failed to send email notification: {e}")
+        print(f"Failed to send email notification to {receiver_email}: {e}")
         return False
     finally:
         if server is not None:
@@ -40,10 +80,10 @@ def _send_email_notification(sender_email: str, sender_password: str, sender_nam
             except Exception:
                 pass
 
+
 def _trigger_email_bg(sender_name: str, receiver_username: str, msg_text: str) -> bool:
     try:
-        sender_email = st.secrets.get("SMTP_EMAIL", "").strip()
-        sender_password = st.secrets.get("SMTP_PASSWORD", "").replace(" ", "").strip()
+        sender_email, sender_password = _get_smtp_credentials()
         if not sender_email or not sender_password:
             print("Gmail notification skipped: SMTP_EMAIL or SMTP_PASSWORD is not configured.")
             return False
@@ -371,10 +411,14 @@ def send_message(chat_id: str, from_user: str, text: str,
         from firebase_db import get_user_display_name
         sender_display = get_user_display_name(from_user) or from_user
         
-        # Fire off an email notification to everyone else in the chat
+        # Fire off an email notification to everyone else in the chat asynchronously
         for participant in chat["participants"]:
             if participant != from_user:
-                _trigger_email_bg(sender_display, participant, msg["text"])
+                threading.Thread(
+                    target=_trigger_email_bg,
+                    args=(sender_display, participant, msg.get("text", "")),
+                    daemon=True,
+                ).start()
                 
     return success, "Message sent."
 

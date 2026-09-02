@@ -597,17 +597,29 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
     reports = []
     price_history: Dict[str, pd.Series] = {}
 
-    for a in assets:
+    def _analyze_single_asset(a):
         try:
             if verbose:
                 print(f"  Analyzing {a.name}...")
             r = analyze_asset(a, period=period, market_df=market_df,
                               prefetched_prices=prefetched)
-            reports.append(r)
             df_h = fetch_history(a, period=period)
-            price_history[a.name] = df_h["Close"]
+            close_s = df_h["Close"].squeeze() if hasattr(df_h["Close"], "squeeze") else df_h["Close"]
+            return a.name, r, close_s
         except Exception as e:
-            print(f"  [Warning] Failed: {a.name} ({a.identifier}) -> {e}")
+            if verbose:
+                print(f"  [Warning] Failed: {a.name} ({a.identifier}) -> {e}")
+            return a.name, None, None
+
+    if assets:
+        max_workers = min(8, len(assets))
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = [pool.submit(_analyze_single_asset, a) for a in assets]
+            for fut in as_completed(futures):
+                name, r, close_s = fut.result()
+                if r is not None and close_s is not None:
+                    reports.append(r)
+                    price_history[name] = close_s
 
     rows = []
     for r in reports:

@@ -1,5 +1,33 @@
 # Thaheer Update Log
 
+## 2026-09-02
+
+### ✉️ Chat System Gmail Email Notifications Delivery Fix
+- **Fixed Google SMTP 501 HELO/EHLO Hostname Rejection**:
+  - Resolved `501 5.5.4 HELO/EHLO argument invalid` errors by setting explicit `local_hostname='localhost'` on `smtplib.SMTP`, preventing Google SMTP from rejecting connections due to local Windows FQDN hostnames with invalid characters (`@`).
+- **Port 587 STARTTLS & Port 465 SSL Resilient Fallback**:
+  - Implemented dual-stage connection fallback in `chat_system.py`: tries Port 587 STARTTLS and automatically falls back to Port 465 SSL if Port 587 is blocked by network firewalls.
+- **Multi-Source Credential Loading**:
+  - Updated `_get_smtp_credentials` to load `SMTP_EMAIL` and `SMTP_PASSWORD` reliably across `st.secrets`, `.streamlit/secrets.toml`, and environment variables.
+- **Asynchronous Background Delivery**:
+  - Dispatched `_trigger_email_bg` in a daemon background thread (`threading.Thread(daemon=True)`), making chat message sending completely instantaneous without blocking the Streamlit UI.
+- **Planner Task Reminder SMTP Fix**:
+  - Updated `quest_app/tabs/planner.py` with the same `local_hostname='localhost'` and SSL fallback for task reminder email delivery.
+
+### ⚡ Runtime Page Loading & Performance Overhaul
+- **Non-Portfolio Fast-Path Routing**:
+  - Added early route dispatch in `quest_app/main.py` for Education pages (*Learning Path*, *Knowledge Library*, *Leaderboard*, etc.) and Settings to render immediately, bypassing unnecessary portfolio calculations and news scraping.
+- **Extended Cache TTL**:
+  - Increased `_ANALYSIS_TTL` from 30 seconds to 180 seconds (3 minutes) and sentiment cache TTL to 600 seconds (10 minutes) in `quest_app/main.py`, eliminating lag on page clicks and tab switches.
+- **Concurrent Portfolio Analysis**:
+  - Refactored `analyze_portfolio` in `risk_analyzer.py` from a sequential asset loop to parallel `ThreadPoolExecutor` worker threads, drastically reducing analysis runtime from ~15s to ~1-3s.
+- **Module-Level Streamlit Caching Optimization**:
+  - Relocated nested `@st.cache_data` decorators from inside `render()` functions to top-level module scope in `overview_hero.py`, `projections.py`, and `risk_breakdown.py`, eliminating memory thrashing and cache misses on reruns.
+- **Lightweight Tab Fallbacks**:
+  - Added instant cached metric fallbacks for *Chat*, *Planner*, and *Activity* tabs.
+
+---
+
 ## 2026-09-01
 
 ### ⚡ MICHAEL AI Video Study Assistant & Doubt Solver

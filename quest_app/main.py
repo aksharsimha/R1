@@ -349,9 +349,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if section == "Settings":
-        import quest_app.settings as settings
-        settings.render(_user_info)
-        st.stop()
+    import quest_app.settings as settings
+    settings.render(_user_info)
+    st.stop()
+
+if section == "Learning Path":
+    import quest_app.tabs.edu_overview as tb
+    tb.render(_user_info)
+    st.stop()
+
+if section == "Library":
+    import quest_app.tabs.education as tb
+    tb.render(_user_info)
+    st.stop()
+
+if section == "Leaderboard":
+    import quest_app.tabs.leaderboard as tb
+    tb.render(_user_info)
+    st.stop()
+
+if section in ["Virtual Trading", "Badges", "Tax Detective"]:
+    st.markdown(f"## {section} (Under Construction)")
+    st.markdown("This tab is assigned to a team member and is currently being built.")
+    st.stop()
 
 # --- Sidebar: Interactive Controls ---
 # NOTE: holdings.json is NEVER seeded here — it must exist on disk.
@@ -377,14 +397,25 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Analyze Data — cached in session_state so a full re-fetch + re-analysis
-# only happens once every 30s, not on every widget interaction.
-_ANALYSIS_TTL = 30  # seconds
+# only happens once every 180s (3m), not on every navigation or widget interaction.
+_ANALYSIS_TTL = 180  # seconds
 _now_ts_analysis = time.time()
 _analysis_stale = (
     "_analysis_df" not in st.session_state
     or "_analysis_summary" not in st.session_state
     or (_now_ts_analysis - st.session_state.get("_analysis_ts", 0)) > _ANALYSIS_TTL
 )
+
+# If navigating to lightweight non-portfolio tab and cache is not ready, avoid blocking on fresh scrape
+if section in ["Planner", "Chat", "Activity"] and "_analysis_df" not in st.session_state:
+    st.session_state["_analysis_df"] = pd.DataFrame()
+    st.session_state["_analysis_summary"] = {
+        "total_value": 0.0, "portfolio_risk_score": 0.0,
+        "portfolio_risk_bucket": "LOW", "n_assets": len(current_assets),
+        "market_status": "Active", "market_open": True, "dominant_source": "cached"
+    }
+    st.session_state["_analysis_ts"] = _now_ts_analysis
+    _analysis_stale = False
 
 # ── Debug timing (visible only when ?debug=1 is in the URL) ──────────────────
 _DEBUG = st.query_params.get("debug") == "1"
@@ -458,9 +489,9 @@ with st.spinner("Analyzing portfolio data..."):
         st.error(f"Error fetching market data: {e}")
         st.stop()
 
-# ── Portfolio Sentiment Score (cached 5 min so news isn’t re-fetched every 60s refresh) ──
+# ── Portfolio Sentiment Score (cached 10 min so news isn’t re-fetched constantly) ──
 # Compute once and store in session_state with a timestamp.
-_SENT_TTL = 300  # seconds
+_SENT_TTL = 600  # seconds
 _now_ts = __import__('time').time()
 if (
     "_sentiment_score" not in st.session_state
@@ -648,15 +679,3 @@ elif _active("tab_michael"):
 elif section == "Planner":
     import quest_app.tabs.planner as tb
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
-elif section == "Learning Path":
-    import quest_app.tabs.edu_overview as tb
-    tb.render(_user_info)
-elif section == "Library":
-    import quest_app.tabs.education as tb
-    tb.render(_user_info)
-elif section == "Leaderboard":
-    import quest_app.tabs.leaderboard as tb
-    tb.render(_user_info)
-elif section in ["Virtual Trading", "Badges", "Tax Detective"]:
-    st.markdown(f"## {section} (Under Construction)")
-    st.markdown("This tab is assigned to a team member and is currently being built.")

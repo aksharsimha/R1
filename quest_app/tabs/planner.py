@@ -95,8 +95,28 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         return due - delta if "before" in reminder or "prior" in reminder or "ahead" in reminder else due
 
     def _send_task_reminder(task, recipient):
-        sender = str(st.secrets.get("SMTP_EMAIL", "")).strip()
-        password = str(st.secrets.get("SMTP_PASSWORD", "")).replace(" ", "").strip()
+        import ssl
+        sender = ""
+        password = ""
+        try:
+            sender = str(st.secrets.get("SMTP_EMAIL", "")).strip()
+            password = str(st.secrets.get("SMTP_PASSWORD", "")).replace(" ", "").strip()
+        except Exception:
+            pass
+
+        if not sender or not password:
+            import os
+            import toml
+            here = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            secrets_file = os.path.join(here, ".streamlit", "secrets.toml")
+            if os.path.exists(secrets_file):
+                try:
+                    data = toml.load(secrets_file)
+                    sender = sender or str(data.get("SMTP_EMAIL", "")).strip()
+                    password = password or str(data.get("SMTP_PASSWORD", "")).replace(" ", "").strip()
+                except Exception:
+                    pass
+
         if not sender or not password or not recipient:
             return False
         message = _MIMEText(
@@ -109,13 +129,20 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         message["Subject"] = f"QUEST reminder: {task['title']}"
         server = None
         try:
-            server = _smtplib.SMTP("smtp.gmail.com", 587, timeout=20)
-            server.starttls()
-            server.login(sender, password)
-            server.send_message(message)
-            return True
+            try:
+                server = _smtplib.SMTP("smtp.gmail.com", 587, local_hostname="localhost", timeout=20)
+                server.starttls()
+                server.login(sender, password)
+                server.send_message(message)
+                return True
+            except Exception as e587:
+                context = ssl.create_default_context()
+                with _smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context, local_hostname="localhost", timeout=20) as ssl_server:
+                    ssl_server.login(sender, password)
+                    ssl_server.send_message(message)
+                    return True
         except Exception as error:
-            print(f"Failed to send task reminder: {error}")
+            print(f"Failed to send task reminder to {recipient}: {error}")
             return False
         finally:
             if server is not None:

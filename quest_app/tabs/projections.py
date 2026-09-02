@@ -11,6 +11,15 @@ from portfolio_ledger import add_asset, remove_asset, update_asset_holdings
 import nse_live as _nse
 
 
+@st.cache_data(ttl=86400, show_spinner="Training the forecast model on 5 years of data…")
+def _v2_forecast(holdings, day, bias, sent):
+    try:
+        import prediction_engine as _pe
+        return _pe.live_forecast(list(holdings), bias=bias, sentiment=sent)
+    except Exception as e:
+        return {"error": str(e)}
+
+
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
     total_invested = df['Invested (\u20b9)'].sum() if df is not None and not df.empty else 0.0
@@ -68,11 +77,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             _bias = sum(_recent_err) / len(_recent_err)
             _cap = 0.005 * _cur_val
             _bias = max(-_cap, min(_cap, _bias))
-
-        # Forecast LOCKED per trading day (keyed by date) → one stable number everywhere
-        @st.cache_data(ttl=86400, show_spinner="Training the forecast model on 5 years of data…")
-        def _v2_forecast(holdings, day, bias, sent):
-            return _pe.live_forecast(list(holdings), bias=bias, sentiment=sent)
 
         _fc = _v2_forecast(tuple(_holdings), _today_str,
                            round(float(_bias), 2),
