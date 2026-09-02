@@ -37,6 +37,17 @@
 - **Module 1 Topic 1 Video ID Alignment**:
   - Aligned Zerodha Varsity English masterclass (`GcZW24SkbHM`) and CA Rachana Ranade's Hindi masterclass (`Xn7KWR9EOGQ`) in `education_catalog.json`.
 
+### 🧭 Environment Navigation State & Sub-Page Persistence
+- **First Login / Initial Visit Default**:
+  - Configured Environment → Education to strictly default to **Learning Path** on first login/visit (never hardcoded to Knowledge Library).
+- **Per-User Sub-Page Memory Across Environment Switches**:
+  - Implemented persistent user-scoped state tracking via `edu_db.get_last_education_section()` / `set_last_education_section()` and `edu_db.get_last_portfolio_section()` / `set_last_portfolio_section()`.
+  - Switching between **Portfolio ↔ Education** seamlessly preserves and reopens the user's last selected sub-page (e.g. *Virtual Trading*, *Knowledge Library*, *Leaderboard*, *Badges*, *Tax Detective*, or *Learning Path*).
+- **User-Scoped Isolation**:
+  - Radio navigation keys and disk storage are scoped to the active `_username`, preventing cross-account state leakage when logging in as different users.
+- **Hub & Settings Return Synchronization**:
+  - Updated "Resume Learning →" in Main Hub and "← Dashboard" in Settings to automatically navigate to the user's last remembered active section.
+
 ---
 
 ## 2026-09-01

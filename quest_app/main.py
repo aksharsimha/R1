@@ -121,7 +121,7 @@ if _early_page == "Settings":
     st.sidebar.markdown("<div class='quest-settings-sidebar-title'>Settings</div>", unsafe_allow_html=True)
     if st.sidebar.button("← Dashboard", key="settings_dashboard_sidebar", use_container_width=True):
         _ws = st.query_params.get("workspace", "professional")
-        st.query_params["page"] = "Library" if _ws == "education" else "Overview"
+        st.query_params["page"] = edu_db.get_last_education_section() if _ws == "education" else edu_db.get_last_portfolio_section()
         st.rerun()
     st.sidebar.markdown("<div class='quest-nav-label'>Account</div>", unsafe_allow_html=True)
     _settings_section = st.sidebar.radio(
@@ -250,15 +250,17 @@ with _ws_col1:
     _is_prof = (_workspace == "professional")
     if st.button("💼 Portfolio", key="sidebar_switch_prof", type="primary" if _is_prof else "secondary", use_container_width=True):
         if not _is_prof:
+            _last_prof = edu_db.get_last_portfolio_section()
             st.query_params["workspace"] = "professional"
-            st.query_params["page"] = "Overview"
+            st.query_params["page"] = _last_prof
             st.rerun()
 with _ws_col2:
     _is_edu = (_workspace == "education")
     if st.button("🎓 Education", key="sidebar_switch_edu", type="primary" if _is_edu else "secondary", use_container_width=True):
         if not _is_edu:
+            _last_edu = edu_db.get_last_education_section()
             st.query_params["workspace"] = "education"
-            st.query_params["page"] = "Library"
+            st.query_params["page"] = _last_edu
             st.rerun()
 
 if _workspace == "professional":
@@ -269,7 +271,7 @@ if _workspace == "professional":
         "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Workspace"
-    _default_page = "Overview"
+    _default_page = edu_db.get_last_portfolio_section()
 else:
     _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Settings"]
     _page_labels = {
@@ -278,7 +280,7 @@ else:
         "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
-    _default_page = "Learning Path"
+    _default_page = edu_db.get_last_education_section()
 
 _query_page = st.query_params.get("page", _default_page)
 if _query_page not in _valid_pages:
@@ -312,11 +314,18 @@ _selected_label = st.sidebar.radio(
     "Navigate",
     _nav_labels,
     index=_page_idx,
-    key=f"nav_section_{_workspace}",
+    key=f"nav_section_{_workspace}_{_username}",
     label_visibility="collapsed",
 )
 section = ("Settings" if _query_page == "Settings" else
            next(page for page, label in _page_labels.items() if label == _selected_label))
+
+# Persist last selected section for current user
+if section != "Settings":
+    if _workspace == "education":
+        edu_db.set_last_education_section(section)
+    elif _workspace == "professional":
+        edu_db.set_last_portfolio_section(section)
 
 # Update the URL if the user clicks a different page in sidebar
 if section != _query_page:

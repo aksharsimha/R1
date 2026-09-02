@@ -264,7 +264,7 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
         
         if st.button("Go to Portfolio →", key="hub_btn_go_portfolio", type="primary", use_container_width=True):
             st.query_params["workspace"] = "professional"
-            st.query_params["page"] = "Overview"
+            st.query_params["page"] = edu_db.get_last_portfolio_section()
             st.rerun()
 
     # ── Right Card: Games & Education ─────────────────────────────────────────
@@ -329,5 +329,5 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 
         if st.button("Resume Learning →", key="hub_btn_go_education", type="primary", use_container_width=True):
             st.query_params["workspace"] = "education"
-            st.query_params["page"] = "Learning Path"
+            st.query_params["page"] = edu_db.get_last_education_section()
             st.rerun()
