@@ -51,6 +51,21 @@
 - **Hub & Settings Return Synchronization**:
   - Updated "Resume Learning →" in Main Hub and "← Dashboard" in Settings to automatically navigate to the user's last remembered active section.
 
+### 🤖 ChatGPT-Style MICHAEL AI Agent UI & Multi-Session Architecture
+- **Left Chat-History Sidebar**:
+  - Added a ChatGPT-style left sidebar featuring **`➕ New Chat`**, search filter input, and chronologically grouped conversations (📌 *Pinned*, 📅 *Today*, 🗓️ *Yesterday*, 🗓️ *Previous 7 Days*, 🗓️ *Previous 30 Days*, 🗄️ *Older*).
+  - Integrated interactive session controls with options for **📌 Pin/Unpin**, **✏️ Rename title**, and **🗑️ Delete chat**.
+- **Per-User Multi-Session Persistence**:
+  - Engineered persistent session storage in `quest_app/users/<username>/michael_sessions.json` storing conversation UUIDs, dynamic titles, timestamps, and complete message histories.
+  - Automatic title generation on initial user prompt and automatic migration of legacy single-session chat files.
+  - Active conversation is completely preserved across tab switching, workspace changes, and page refreshes.
+- **Polished ChatGPT Conversational Experience**:
+  - Designed an empty state hero with glowing avatar and 4 quick financial starter cards (*Daily Briefing*, *Risk & Moats*, *Planner & Tasks*, *Underperformers*).
+  - Clean message bubbles with assistant markdown tables, bullet styling, and animated typing indicator.
+  - Form-based bottom input bar with financial disclaimer footer.
+- **Live Financial Context & Tool Continuity**:
+  - Unbroken integration with live portfolio metrics, EWMA state, prediction accuracy, news sentiment, NSE market schedule, planner calendar/tasks, and Groq live tool-calling (`get_quote` / `get_index`).
+
 ---
 
 ## 2026-09-01
