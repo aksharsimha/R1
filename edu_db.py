@@ -53,7 +53,9 @@ DEFAULT_PROGRESS = {
     "completed_articles": [],
     "bookmarks": [],
     "liked_videos": [],
-    "current_level": "Level 1 — First ₹1,000"
+    "current_level": "Level 1 — First ₹1,000",
+    "last_education_section": "Learning Path",
+    "last_portfolio_section": "Overview"
 }
 
 def set_data_dir(data_dir: str, username: str = None):
@@ -174,9 +176,52 @@ def save_progress(data: dict) -> None:
     with _lock:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-            
-    if _username:
+
+def get_last_education_section() -> str:
+    """Returns the user's last visited Education sub-page, defaulting to 'Learning Path'."""
+    try:
+        prog = load_progress()
+        sec = prog.get("last_education_section")
+        valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective"]
+        if sec in valid_edu:
+            return sec
+    except Exception:
+        pass
+    return "Learning Path"
+
+def set_last_education_section(section: str) -> None:
+    """Persists the user's last visited Education sub-page."""
+    valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective"]
+    if section in valid_edu:
         try:
-            firebase_sync.trigger_sync(_username, filepath)
-        except Exception as e:
-            print(f"Warning: Failed to sync edu progress to Firebase: {e}")
+            prog = load_progress()
+            if prog.get("last_education_section") != section:
+                prog["last_education_section"] = section
+                save_progress(prog)
+        except Exception:
+            pass
+
+def get_last_portfolio_section() -> str:
+    """Returns the user's last visited Portfolio sub-page, defaulting to 'Overview'."""
+    try:
+        prog = load_progress()
+        sec = prog.get("last_portfolio_section")
+        valid_prof = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"]
+        if sec in valid_prof:
+            return sec
+    except Exception:
+        pass
+    return "Overview"
+
+def set_last_portfolio_section(section: str) -> None:
+    """Persists the user's last visited Portfolio sub-page."""
+    valid_prof = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"]
+    if section in valid_prof:
+        try:
+            prog = load_progress()
+            if prog.get("last_portfolio_section") != section:
+                prog["last_portfolio_section"] = section
+                save_progress(prog)
+        except Exception:
+            pass
+

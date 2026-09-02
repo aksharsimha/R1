@@ -90,7 +90,7 @@ def render_login_page():
             # Preserve current URL page and workspace on refresh; fallback only if empty
             if "page" not in st.query_params or not st.query_params.get("page"):
                 _existing_ws = st.query_params.get("workspace", "professional")
-                st.query_params["page"] = "Library" if _existing_ws == "education" else "Overview"
+                st.query_params["page"] = "Learning Path" if _existing_ws == "education" else "Overview"
                 st.query_params["workspace"] = _existing_ws
             st.query_params.pop("return_to", None)
             st.query_params.pop("logged_out", None)
