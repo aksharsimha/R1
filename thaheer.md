@@ -23,8 +23,14 @@
   - Refactored `analyze_portfolio` in `risk_analyzer.py` from a sequential asset loop to parallel `ThreadPoolExecutor` worker threads, drastically reducing analysis runtime from ~15s to ~1-3s.
 - **Module-Level Streamlit Caching Optimization**:
   - Relocated nested `@st.cache_data` decorators from inside `render()` functions to top-level module scope in `overview_hero.py`, `projections.py`, and `risk_breakdown.py`, eliminating memory thrashing and cache misses on reruns.
-- **Lightweight Tab Fallbacks**:
-  - Added instant cached metric fallbacks for *Chat*, *Planner*, and *Activity* tabs.
+### 🎥 Knowledge Library Module Video Auto-Selection & Sync
+- **Module Dropdown First-Video Auto-Playback**:
+  - Fixed issue where selecting a new module from the "Filter Module" dropdown in the Up Next sidebar kept playing the previous module's video.
+  - Implemented `on_change` state listener and module filter detection to immediately switch the video player, metadata, takeaways, and MICHAEL AI assistant to the **first video of the newly selected module** upon dropdown selection.
+- **Cross-Language Topic Synchronization**:
+  - Updated top language selector buttons (`🇬🇧 English` / `🇮🇳 हिन्दी`) to preserve the active topic slot when switching languages instead of resetting back to Module 1 Topic 1.
+- **Module 1 Topic 1 Video ID Correction**:
+  - Corrected YouTube embed ID for Zerodha Varsity English masterclass in `quest_app/education_catalog.json` (`GcZW24SkbHM`) and assigned CA Rachana Ranade's Hindi masterclass (`Xn7KWR9EOGQ`) to the Hindi lane.
 
 ---
 

@@ -26,6 +26,15 @@
 - **Lightweight Tab Fallbacks**:
   - Added instant cached metric fallbacks for *Chat*, *Planner*, and *Activity* tabs.
 
+### 🎥 Knowledge Library Module Video Auto-Selection & Sync
+- **Module Dropdown First-Video Auto-Playback**:
+  - Fixed issue where selecting a new module from the "Filter Module" dropdown in the Up Next sidebar kept playing the previous module's video.
+  - Implemented `on_change` state listener and module filter detection to immediately switch the video player, metadata, takeaways, and MICHAEL AI assistant to the **first video of the newly selected module** upon dropdown selection.
+- **Cross-Language Topic Synchronization**:
+  - Updated top language selector buttons (`🇬🇧 English` / `🇮🇳 हिन्दी`) to preserve the active topic slot when switching languages instead of resetting back to Module 1 Topic 1.
+- **Module 1 Topic 1 Video ID Correction**:
+  - Corrected YouTube embed ID for Zerodha Varsity English masterclass in `quest_app/education_catalog.json` (`GcZW24SkbHM`) and assigned CA Rachana Ranade's Hindi masterclass (`Xn7KWR9EOGQ`) to the Hindi lane.
+
 ---
 
 ## 2026-09-01
