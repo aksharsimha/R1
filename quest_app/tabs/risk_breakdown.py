@@ -11,6 +11,98 @@ from portfolio_ledger import add_asset, remove_asset, update_asset_holdings
 import nse_live as _nse
 
 
+import yfinance as _yf
+import urllib.request as _ur, urllib.parse as _up, json as _json
+
+_PMAP = {
+    "1D": ("1d", "15m"), "1M": ("1mo", "1d"), "3M": ("3mo", "1d"),
+    "6M": ("6mo", "1d"), "1Y": ("1y", "1d"), "3Y": ("3y", "1wk"), "5Y": ("5y", "1wk")
+}
+
+def _cmp_lookup(name):
+    try:
+        u = "https://query2.finance.yahoo.com/v1/finance/search?q=" + _up.quote(name.strip())
+        rq = _ur.Request(u, headers={"User-Agent": "Mozilla/5.0"})
+        with _ur.urlopen(rq, timeout=4) as r:
+            d = _json.load(r)
+        qs = d.get("quotes", [])
+        for suf in (".NS", ".BO"):
+            for q in qs:
+                if str(q.get("symbol", "")).endswith(suf):
+                    return q["symbol"]
+        return qs[0].get("symbol") if qs else None
+    except Exception:
+        return None
+
+@st.cache_data(ttl=900, show_spinner=False)
+def _cmp_series(ticker, period="6mo"):
+    try:
+        h = _yf.Ticker(ticker).history(period=period)["Close"].dropna()
+        return h if len(h) > 5 else None
+    except Exception:
+        return None
+
+def _cmp_rsi(s, n=14):
+    d = s.diff()
+    up = d.clip(lower=0).rolling(n).mean()
+    dn = (-d.clip(upper=0)).rolling(n).mean()
+    rs = up / dn.replace(0, float('nan'))
+    return float((100 - 100 / (1 + rs)).iloc[-1])
+
+@st.cache_data(ttl=900, show_spinner=False)
+def _idx_ret(tk):
+    s = _cmp_series(tk, "1y")
+    if s is None or len(s) < 2:
+        return None
+    return float((s.iloc[-1] / s.iloc[0] - 1) * 100)
+
+@st.cache_data(ttl=900, show_spinner=False)
+def _cmp_fetch(ticker, plbl, start, end):
+    try:
+        if plbl == "Custom":
+            h = _yf.Ticker(ticker).history(start=str(start), end=str(end))
+        else:
+            _per, _iv = _PMAP.get(plbl, ("6mo", "1d"))
+            h = _yf.Ticker(ticker).history(period=_per, interval=_iv)
+        h = h.dropna()
+        return h if len(h) > 2 else None
+    except Exception:
+        return None
+
+@st.cache_data(ttl=900, show_spinner=False)
+def _cmp_indic(ticker):
+    """1-year-based indicators: RSI, 50/200 cross, MACD, 52-week position."""
+    out = {}
+    try:
+        s = _yf.Ticker(ticker).history(period="1y")["Close"].dropna()
+        if len(s) < 30:
+            return out
+        out["rsi"] = _cmp_rsi(s)
+        if len(s) >= 200:
+            _m50, _m200 = s.rolling(50).mean().iloc[-1], s.rolling(200).mean().iloc[-1]
+            out["trend"] = "🟢 Golden" if _m50 > _m200 else "🔴 Death"
+        else:
+            out["trend"] = "—"
+        _e12, _e26 = s.ewm(span=12).mean(), s.ewm(span=26).mean()
+        _macd = _e12 - _e26
+        _sigl = _macd.ewm(span=9).mean()
+        out["macd"] = "🟢 Bull" if _macd.iloc[-1] > _sigl.iloc[-1] else "🔴 Bear"
+        _hi, _lo = s.max(), s.min()
+        out["pos52"] = round((s.iloc[-1] - _lo) / (_hi - _lo) * 100) if _hi > _lo else None
+    except Exception:
+        pass
+    return out
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def _cmp_fund(ticker):
+    try:
+        info = _yf.Ticker(ticker).info
+        return {"pe": info.get("trailingPE"), "mcap": info.get("marketCap"),
+                "dy": info.get("dividendYield"), "beta": info.get("beta")}
+    except Exception:
+        return {}
+
+
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
     total_invested = df['Invested (₹)'].sum() if df is not None and not df.empty else 0.0
@@ -160,38 +252,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     # ── Compare & Analyze ────────────────────────────────────────────
                     st.markdown("---")
                     st.markdown("### 🔬 Compare & Analyze")
-                    import yfinance as _yf
-                    import urllib.request as _ur, urllib.parse as _up, json as _json
-
-                    def _cmp_lookup(name):
-                        try:
-                            u = "https://query2.finance.yahoo.com/v1/finance/search?q=" + _up.quote(name.strip())
-                            rq = _ur.Request(u, headers={"User-Agent": "Mozilla/5.0"})
-                            with _ur.urlopen(rq, timeout=4) as r:
-                                d = _json.load(r)
-                            qs = d.get("quotes", [])
-                            for suf in (".NS", ".BO"):
-                                for q in qs:
-                                    if str(q.get("symbol", "")).endswith(suf):
-                                        return q["symbol"]
-                            return qs[0].get("symbol") if qs else None
-                        except Exception:
-                            return None
-
-                    @st.cache_data(ttl=900, show_spinner=False)
-                    def _cmp_series(ticker, period="6mo"):
-                        try:
-                            h = _yf.Ticker(ticker).history(period=period)["Close"].dropna()
-                            return h if len(h) > 5 else None
-                        except Exception:
-                            return None
-
-                    def _cmp_rsi(s, n=14):
-                        d = s.diff()
-                        up = d.clip(lower=0).rolling(n).mean()
-                        dn = (-d.clip(upper=0)).rolling(n).mean()
-                        rs = up / dn.replace(0, float('nan'))
-                        return float((100 - 100 / (1 + rs)).iloc[-1])
 
                     _ct1, _ct2 = st.tabs(["📈 Portfolio vs Market", "🔍 Compare stocks"])
 
@@ -201,12 +261,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         except Exception:
                             _pw = float('nan')
 
-                        @st.cache_data(ttl=900, show_spinner=False)
-                        def _idx_ret(tk):
-                            s = _cmp_series(tk, "1y")
-                            if s is None or len(s) < 2:
-                                return None
-                            return float((s.iloc[-1] / s.iloc[0] - 1) * 100)
                         _nret, _sret = _idx_ret("^NSEI"), _idx_ret("^BSESN")
                         _bx = ["Your portfolio", "NIFTY 50", "SENSEX"]
                         _by = [_pw, _nret if _nret is not None else 0.0, _sret if _sret is not None else 0.0]
@@ -230,60 +284,12 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         _plbl = _cc1.selectbox("Period", ["1D", "1M", "3M", "6M", "1Y", "3Y", "5Y", "Custom"],
                                                index=3, key="cmp_period")
                         _ctype = _cc2.selectbox("Chart type", ["Line", "Area", "Bar", "Candlestick"], key="cmp_ctype")
-                        _pmap = {"1D": ("1d", "15m"), "1M": ("1mo", "1d"), "3M": ("3mo", "1d"),
-                                 "6M": ("6mo", "1d"), "1Y": ("1y", "1d"), "3Y": ("3y", "1wk"), "5Y": ("5y", "1wk")}
                         _start = _end = None
                         if _plbl == "Custom":
                             import datetime as _cdt
                             _dc1, _dc2 = st.columns(2)
                             _start = _dc1.date_input("From", value=_cdt.date.today() - _cdt.timedelta(days=180), key="cmp_from")
                             _end = _dc2.date_input("To", value=_cdt.date.today(), key="cmp_to")
-
-                        @st.cache_data(ttl=900, show_spinner=False)
-                        def _cmp_fetch(ticker, plbl, start, end):
-                            try:
-                                if plbl == "Custom":
-                                    h = _yf.Ticker(ticker).history(start=str(start), end=str(end))
-                                else:
-                                    _per, _iv = _pmap[plbl]
-                                    h = _yf.Ticker(ticker).history(period=_per, interval=_iv)
-                                h = h.dropna()
-                                return h if len(h) > 2 else None
-                            except Exception:
-                                return None
-
-                        @st.cache_data(ttl=900, show_spinner=False)
-                        def _cmp_indic(ticker):
-                            """1-year-based indicators: RSI, 50/200 cross, MACD, 52-week position."""
-                            out = {}
-                            try:
-                                s = _yf.Ticker(ticker).history(period="1y")["Close"].dropna()
-                                if len(s) < 30:
-                                    return out
-                                out["rsi"] = _cmp_rsi(s)
-                                if len(s) >= 200:
-                                    _m50, _m200 = s.rolling(50).mean().iloc[-1], s.rolling(200).mean().iloc[-1]
-                                    out["trend"] = "🟢 Golden" if _m50 > _m200 else "🔴 Death"
-                                else:
-                                    out["trend"] = "—"
-                                _e12, _e26 = s.ewm(span=12).mean(), s.ewm(span=26).mean()
-                                _macd = _e12 - _e26
-                                _sigl = _macd.ewm(span=9).mean()
-                                out["macd"] = "🟢 Bull" if _macd.iloc[-1] > _sigl.iloc[-1] else "🔴 Bear"
-                                _hi, _lo = s.max(), s.min()
-                                out["pos52"] = round((s.iloc[-1] - _lo) / (_hi - _lo) * 100) if _hi > _lo else None
-                            except Exception:
-                                pass
-                            return out
-
-                        @st.cache_data(ttl=3600, show_spinner=False)
-                        def _cmp_fund(ticker):
-                            try:
-                                info = _yf.Ticker(ticker).info
-                                return {"pe": info.get("trailingPE"), "mcap": info.get("marketCap"),
-                                        "dy": info.get("dividendYield"), "beta": info.get("beta")}
-                            except Exception:
-                                return {}
 
                         if st.button("Compare", key="cmp_go") and _names.strip():
                             _resolved = []

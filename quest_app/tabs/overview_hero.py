@@ -11,6 +11,33 @@ from portfolio_ledger import add_asset, remove_asset, update_asset_holdings
 import nse_live as _nse
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def _fetch_index_quotes():
+    out = {}
+    try:
+        import yfinance as yf
+        for _k, _tk in (('NIFTY 50', '^NSEI'), ('SENSEX', '^BSESN')):
+            try:
+                _fi = yf.Ticker(_tk).fast_info
+                _last = float(_fi.last_price)
+                _prev = float(_fi.previous_close)
+                out[_k] = {'last': _last, 'chg': ((_last - _prev) / _prev * 100) if _prev else 0.0}
+            except Exception:
+                pass
+    except Exception:
+        pass
+    return out
+
+
+@st.cache_data(ttl=604800, show_spinner=False)  # refresh weekly
+def _load_market_holidays():
+    try:
+        _nse.refresh_holiday_calendar()
+    except Exception:
+        pass
+    return _nse.get_holiday_calendar()
+
+
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
     total_invested = df['Invested (\u20b9)'].sum() if df is not None and not df.empty else 0.0
@@ -66,22 +93,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     _cur_val = float(summary['total_value'])
     st.session_state['_hero_prev_val'] = _cur_val
 
-    @st.cache_data(ttl=300, show_spinner=False)
-    def _fetch_index_quotes():
-        out = {}
-        try:
-            import yfinance as yf
-            for _k, _tk in (('NIFTY 50', '^NSEI'), ('SENSEX', '^BSESN')):
-                try:
-                    _fi = yf.Ticker(_tk).fast_info
-                    _last = float(_fi.last_price)
-                    _prev = float(_fi.previous_close)
-                    out[_k] = {'last': _last, 'chg': ((_last - _prev) / _prev * 100) if _prev else 0.0}
-                except Exception:
-                    pass
-        except Exception:
-            pass
-        return out
     _idx = _fetch_index_quotes()
 
     def _idx_card(label, data):
@@ -151,14 +162,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     import calendar as _calmod
     import datetime as _dt
     import nse_live as _nse
-
-    @st.cache_data(ttl=604800, show_spinner=False)  # refresh weekly
-    def _load_market_holidays():
-        try:
-            _nse.refresh_holiday_calendar()
-        except Exception:
-            pass
-        return _nse.get_holiday_calendar()
 
     _holidays_map = _load_market_holidays()
     _today = _dt.date.today()
