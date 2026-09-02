@@ -306,6 +306,24 @@ def render(user_info):
                 v_copy["youtube_embed_id"] = v_data.get("youtube_id", "")
                 all_videos.append(v_copy)
 
+    # Module filter state detection
+    module_filter_key = f"yt_playlist_module_filter_{current_lang}"
+    prev_filter_key = f"_prev_mod_filter_{current_lang}"
+
+    current_mod_filter = st.session_state.get(module_filter_key)
+    prev_mod_filter = st.session_state.get(prev_filter_key)
+
+    if current_mod_filter and current_mod_filter != prev_mod_filter:
+        st.session_state[prev_mod_filter_key] = current_mod_filter
+        # When switching module dropdown, auto-select the first video of that module
+        if current_mod_filter != "All Modules (100 Videos)":
+            mod_videos = [v for v in all_videos if v.get("module_title") == current_mod_filter]
+            if mod_videos:
+                st.session_state.active_edu_video_id = mod_videos[0]["id"]
+        elif all_videos:
+            if not st.session_state.get("active_edu_video_id"):
+                st.session_state.active_edu_video_id = all_videos[0]["id"]
+
     # Active Video Selection
     if "active_edu_video_id" not in st.session_state or not st.session_state.active_edu_video_id:
         st.session_state.active_edu_video_id = all_videos[0]["id"] if all_videos else "module_1_t1_en"
@@ -531,15 +549,23 @@ def render(user_info):
         with l_btn1:
             is_en = current_lang == "en"
             if st.button("🇬🇧  English (100 Videos)", key="btn_lang_en", type="primary" if is_en else "secondary", use_container_width=True):
-                st.session_state.edu_video_lang = "en"
-                st.session_state.active_edu_video_id = ""
-                st.rerun()
+                if current_lang != "en":
+                    st.session_state.edu_video_lang = "en"
+                    if matching_other_video:
+                        st.session_state.active_edu_video_id = matching_other_video["id"]
+                    else:
+                        st.session_state.active_edu_video_id = ""
+                    st.rerun()
         with l_btn2:
             is_hi = current_lang == "hi"
             if st.button("🇮🇳  हिन्दी / Hindi (100 Videos)", key="btn_lang_hi", type="primary" if is_hi else "secondary", use_container_width=True):
-                st.session_state.edu_video_lang = "hi"
-                st.session_state.active_edu_video_id = ""
-                st.rerun()
+                if current_lang != "hi":
+                    st.session_state.edu_video_lang = "hi"
+                    if matching_other_video:
+                        st.session_state.active_edu_video_id = matching_other_video["id"]
+                    else:
+                        st.session_state.active_edu_video_id = ""
+                    st.rerun()
 
     with bar_col2:
         search_kw = st.text_input("🔍 Search 100 Topics", placeholder="Search topics, creators...", label_visibility="collapsed", key="search_topics_input")
@@ -767,10 +793,29 @@ def render(user_info):
 
         # Module Selector / Filter
         module_options = ["All Modules (100 Videos)"] + [mod.get("module_title", f"Module {i+1}") for i, mod in enumerate(catalog)]
+        
+        def _on_module_filter_change():
+            sel = st.session_state.get(module_filter_key)
+            if sel and sel != "All Modules (100 Videos)":
+                mvids = [v for v in all_videos if v.get("module_title") == sel]
+                if mvids:
+                    st.session_state.active_edu_video_id = mvids[0]["id"]
+            elif all_videos:
+                st.session_state.active_edu_video_id = all_videos[0]["id"]
+
+        # Calculate default index based on current state or active video's module
+        default_mod_idx = 0
+        if module_filter_key in st.session_state and st.session_state[module_filter_key] in module_options:
+            default_mod_idx = module_options.index(st.session_state[module_filter_key])
+        elif active_video and active_video.get("module_title") in module_options:
+            default_mod_idx = module_options.index(active_video["module_title"])
+
         selected_module = st.selectbox(
             "Filter Module",
             module_options,
-            key=f"yt_playlist_module_filter_{current_lang}",
+            index=default_mod_idx,
+            key=module_filter_key,
+            on_change=_on_module_filter_change,
             label_visibility="collapsed"
         )
 
