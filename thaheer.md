@@ -60,6 +60,9 @@
   - Designed an empty state hero with glowing avatar and 4 quick financial starter cards (*Daily Briefing*, *Risk & Moats*, *Planner & Tasks*, *Underperformers*).
   - Clean message bubbles with assistant markdown tables, bullet styling, and animated typing indicator.
   - Form-based bottom input bar with financial disclaimer footer.
+- **Sticky Fixed Sidebar & Isolated Messages Scroll Viewport**:
+  - Anchored the left sidebar (`+ New Chat`, `Search conversations...`) with `position: sticky; top: 0.8rem` and an independent inner scroll container for conversations.
+  - Isolated the message stream to a dedicated `height=520, autoscroll=True` viewport, eliminating whole-page layout shifts and anchoring the message composer cleanly at the bottom.
 - **Live Financial Context & Tool Continuity**:
   - Unbroken integration with live portfolio metrics, EWMA state, prediction accuracy, news sentiment, NSE market schedule, planner calendar/tasks, and Groq live tool-calling (`get_quote` / `get_index`).
 
