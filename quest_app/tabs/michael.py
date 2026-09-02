@@ -321,6 +321,33 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     # ── Custom CSS for ChatGPT-Style Layout ──────────────────────────────────
     st.markdown("""
     <style>
+    /* Sticky Left Sidebar Layout */
+    div[data-testid="stHorizontalBlock"]:has(> div[data-testid="column"]) {
+        align-items: flex-start !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:first-child {
+        position: sticky !important;
+        top: 0.8rem !important;
+        align-self: flex-start !important;
+        z-index: 10 !important;
+    }
+
+    /* Clean custom scrollbar for containers */
+    [data-testid="stContainer"], [data-testid="stVerticalBlock"] {
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(139, 92, 246, 0.3) transparent !important;
+    }
+    [data-testid="stContainer"]::-webkit-scrollbar, [data-testid="stVerticalBlock"]::-webkit-scrollbar {
+        width: 5px !important;
+    }
+    [data-testid="stContainer"]::-webkit-scrollbar-thumb, [data-testid="stVerticalBlock"]::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.3) !important;
+        border-radius: 4px !important;
+    }
+    [data-testid="stContainer"]::-webkit-scrollbar-thumb:hover, [data-testid="stVerticalBlock"]::-webkit-scrollbar-thumb:hover {
+        background: rgba(168, 85, 247, 0.6) !important;
+    }
+
     /* ChatGPT Layout Styles */
     .gpt-sidebar {
         background: rgba(13, 15, 28, 0.7);
@@ -940,64 +967,66 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     col_sidebar, col_main = st.columns([1.1, 3.2], gap="medium")
 
     # ══════════════════════════════════════════════════════════════════════════
-    # Left Column: Chat History Sidebar
+    # Left Column: Chat History Sidebar (Fixed in place)
     # ══════════════════════════════════════════════════════════════════════════
     with col_sidebar:
-        # + New Chat Button
+        # + New Chat Button (Fixed at top of sidebar)
         if st.button("➕  New Chat", key="btn_new_chat", type="primary", use_container_width=True):
             new_sid = _create_new_session(user_data_dir)
             st.rerun()
 
-        st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='margin-bottom: 0.35rem;'></div>", unsafe_allow_html=True)
+        # Search Bar (Fixed at top of sidebar)
         search_query = st.text_input("Search chats", placeholder="🔍 Search conversations...",
                                      label_visibility="collapsed", key="search_chat_input")
 
-        # Group sessions by date
-        grouped = _group_sessions_by_date(all_sessions_data.get("sessions", []), search_query)
+        # Scrollable conversation list container (sidebar itself stays fixed)
+        with st.container(height=520, border=False):
+            grouped = _group_sessions_by_date(all_sessions_data.get("sessions", []), search_query)
 
-        if not grouped:
-            st.markdown("<div style='font-size:0.8rem;color:#64748b;text-align:center;padding:1.5rem 0;'>No conversations found.</div>", unsafe_allow_html=True)
-        else:
-            for grp_name, s_list in grouped.items():
-                st.markdown(f'<div class="gpt-group-header">{grp_name}</div>', unsafe_allow_html=True)
-                for s in s_list:
-                    s_id = s["id"]
-                    is_active = (s_id == active_session_id)
-                    s_title = s.get("title", "Untitled Chat")
-                    is_pin = s.get("is_pinned", False)
+            if not grouped:
+                st.markdown("<div style='font-size:0.8rem;color:#64748b;text-align:center;padding:1.5rem 0;'>No conversations found.</div>", unsafe_allow_html=True)
+            else:
+                for grp_name, s_list in grouped.items():
+                    st.markdown(f'<div class="gpt-group-header">{grp_name}</div>', unsafe_allow_html=True)
+                    for s in s_list:
+                        s_id = s["id"]
+                        is_active = (s_id == active_session_id)
+                        s_title = s.get("title", "Untitled Chat")
+                        is_pin = s.get("is_pinned", False)
 
-                    # Chat card button row
-                    c_btn, c_opt = st.columns([4, 1])
-                    with c_btn:
-                        btn_label = f"{'📌 ' if is_pin and grp_name != 'Pinned' else ''}{s_title}"
-                        if st.button(btn_label, key=f"sel_chat_{s_id}",
-                                     type="primary" if is_active else "secondary",
-                                     use_container_width=True):
-                            all_sessions_data["active_session_id"] = s_id
-                            _save_all_sessions(user_data_dir, all_sessions_data)
-                            st.rerun()
-
-                    with c_opt:
-                        with st.popover("⚙", use_container_width=True):
-                            st.markdown(f"**{s_title}**")
-                            # Pin / Unpin
-                            pin_txt = "📌 Unpin chat" if is_pin else "📌 Pin chat to top"
-                            if st.button(pin_txt, key=f"pin_btn_{s_id}", use_container_width=True):
-                                _toggle_pin_session(user_data_dir, s_id)
+                        # Chat card button row
+                        c_btn, c_opt = st.columns([4, 1])
+                        with c_btn:
+                            btn_label = f"{'📌 ' if is_pin and grp_name != 'Pinned' else ''}{s_title}"
+                            if st.button(btn_label, key=f"sel_chat_{s_id}",
+                                         type="primary" if is_active else "secondary",
+                                         use_container_width=True):
+                                all_sessions_data["active_session_id"] = s_id
+                                _save_all_sessions(user_data_dir, all_sessions_data)
                                 st.rerun()
 
-                            # Rename Form
-                            with st.form(key=f"rename_form_{s_id}"):
-                                new_t = st.text_input("Rename title", value=s_title, key=f"rename_input_{s_id}")
-                                if st.form_submit_button("Save Title", use_container_width=True):
-                                    if new_t.strip():
-                                        _rename_session(user_data_dir, s_id, new_t)
-                                        st.rerun()
+                        with c_opt:
+                            with st.popover("⚙", use_container_width=True):
+                                st.markdown(f"**{s_title}**")
+                                # Pin / Unpin
+                                pin_txt = "📌 Unpin chat" if is_pin else "📌 Pin chat to top"
+                                if st.button(pin_txt, key=f"pin_btn_{s_id}", use_container_width=True):
+                                    _toggle_pin_session(user_data_dir, s_id)
+                                    st.rerun()
 
-                            # Delete Chat
-                            if st.button("🗑️ Delete Chat", key=f"del_btn_{s_id}", type="secondary", use_container_width=True):
-                                _delete_session(user_data_dir, s_id)
-                                st.rerun()
+                                # Rename Form
+                                with st.form(key=f"rename_form_{s_id}"):
+                                    new_t = st.text_input("Rename title", value=s_title, key=f"rename_input_{s_id}")
+                                    if st.form_submit_button("Save Title", use_container_width=True):
+                                        if new_t.strip():
+                                            _rename_session(user_data_dir, s_id, new_t)
+                                            st.rerun()
+
+                                # Delete Chat
+                                if st.button("🗑️ Delete Chat", key=f"del_btn_{s_id}", type="secondary", use_container_width=True):
+                                    _delete_session(user_data_dir, s_id)
+                                    st.rerun()
 
     # ══════════════════════════════════════════════════════════════════════════
     # Right Column: ChatGPT Main Conversational Panel
@@ -1015,111 +1044,113 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         with h_col2:
             st.markdown(f'<div style="text-align:right;"><span class="gpt-header-badge">{provider_badge}</span></div>', unsafe_allow_html=True)
 
-        st.markdown("<hr style='margin: 0.5rem 0 1rem 0; border-color: rgba(255,255,255,0.08);'>", unsafe_allow_html=True)
+        st.markdown("<hr style='margin: 0.35rem 0 0.8rem 0; border-color: rgba(255,255,255,0.08);'>", unsafe_allow_html=True)
 
-        # ── Empty State vs Message Stream ────────────────────────────────────
-        if not messages:
-            # Polished ChatGPT-Style Empty State with 4 Financial Cards
-            st.markdown("""
-            <div class="gpt-hero">
-                <div class="gpt-hero-icon">⚡</div>
-                <div class="gpt-hero-title">How can I help with your portfolio today?</div>
-                <div class="gpt-hero-subtitle">I have real-time access to your holdings, risk analytics, news sentiment, EWMA predictions, and planner.</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            card_col1, card_col2 = st.columns(2, gap="medium")
-            with card_col1:
+        # ── Dedicated Scrollable Message Viewport ─────────────────────────────
+        msg_container = st.container(height=520, border=False, autoscroll=True)
+        with msg_container:
+            if not messages:
+                # Polished Empty State Hero & 4 Financial Starter Cards
                 st.markdown("""
-                <div class="gpt-prompt-card">
-                    <div class="gpt-card-title">📊 Daily Briefing</div>
-                    <div class="gpt-card-desc">Comprehensive morning market summary and portfolio P&L review.</div>
+                <div class="gpt-hero">
+                    <div class="gpt-hero-icon">⚡</div>
+                    <div class="gpt-hero-title">How can I help with your portfolio today?</div>
+                    <div class="gpt-hero-subtitle">I have real-time access to your holdings, risk analytics, news sentiment, EWMA predictions, and planner.</div>
                 </div>
                 """, unsafe_allow_html=True)
-                if st.button("Ask: Give me my daily briefing", key="chip_briefing", use_container_width=True):
-                    _m_send("Give me my daily briefing")
-                    st.rerun()
 
-                st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+                card_col1, card_col2 = st.columns(2, gap="medium")
+                with card_col1:
+                    st.markdown("""
+                    <div class="gpt-prompt-card">
+                        <div class="gpt-card-title">📊 Daily Briefing</div>
+                        <div class="gpt-card-desc">Comprehensive morning market summary and portfolio P&L review.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ask: Give me my daily briefing", key="chip_briefing", use_container_width=True):
+                        _m_send("Give me my daily briefing")
+                        st.rerun()
 
-                st.markdown("""
-                <div class="gpt-prompt-card">
-                    <div class="gpt-card-title">📅 Planner & Tasks</div>
-                    <div class="gpt-card-desc">Check upcoming corporate results, holidays, and open to-do items.</div>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("Ask: What's on my plate today?", key="chip_planner", use_container_width=True):
-                    _m_send("What's on my plate today?")
-                    st.rerun()
+                    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
-            with card_col2:
-                st.markdown("""
-                <div class="gpt-prompt-card">
-                    <div class="gpt-card-title">🛡️ Risk & Moats</div>
-                    <div class="gpt-card-desc">Analyze portfolio concentration, volatility, and downside risk score.</div>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("Ask: Analyze my portfolio risk", key="chip_risk", use_container_width=True):
-                    _m_send("Analyze my portfolio risk & asset allocation")
-                    st.rerun()
+                    st.markdown("""
+                    <div class="gpt-prompt-card">
+                        <div class="gpt-card-title">📅 Planner & Tasks</div>
+                        <div class="gpt-card-desc">Check upcoming corporate results, holidays, and open to-do items.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ask: What's on my plate today?", key="chip_planner", use_container_width=True):
+                        _m_send("What's on my plate today?")
+                        st.rerun()
 
-                st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
+                with card_col2:
+                    st.markdown("""
+                    <div class="gpt-prompt-card">
+                        <div class="gpt-card-title">🛡️ Risk & Moats</div>
+                        <div class="gpt-card-desc">Analyze portfolio concentration, volatility, and downside risk score.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ask: Analyze my portfolio risk", key="chip_risk", use_container_width=True):
+                        _m_send("Analyze my portfolio risk & asset allocation")
+                        st.rerun()
 
-                st.markdown("""
-                <div class="gpt-prompt-card">
-                    <div class="gpt-card-title">🔍 Underperformers</div>
-                    <div class="gpt-card-desc">Identify which assets are dragging down returns and check news catalysts.</div>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("Ask: Which stock is dragging returns?", key="chip_draggers", use_container_width=True):
-                    _m_send("Which stock is dragging down my returns?")
-                    st.rerun()
+                    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
-        else:
-            # Render message stream
-            for msg in messages:
-                if msg["role"] == "user":
-                    clean_u_text = html.escape(msg["text"]).replace('\n', '<br>')
-                    st.markdown(
-                        f'<div class="gpt-msg-user-row">'
-                        f'<div class="gpt-msg-user-bubble">{clean_u_text}</div>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
-                else:
-                    fmt_m_text = _format_ai_response_html(msg["text"])
-                    ts_val = msg.get("ts", "")
-                    st.markdown(
-                        f'<div class="gpt-msg-assistant-row">'
-                        f'<div class="gpt-msg-assistant-bubble">'
-                        f'<div style="font-weight:700;color:#c084fc;font-size:0.8rem;margin-bottom:6px;letter-spacing:0.5px;">⚡ MICHAEL</div>'
-                        f'{fmt_m_text}'
-                        f'<div class="gpt-msg-meta">{ts_val}</div>'
-                        f'</div>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
+                    st.markdown("""
+                    <div class="gpt-prompt-card">
+                        <div class="gpt-card-title">🔍 Underperformers</div>
+                        <div class="gpt-card-desc">Identify which assets are dragging down returns and check news catalysts.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ask: Which stock is dragging returns?", key="chip_draggers", use_container_width=True):
+                        _m_send("Which stock is dragging down my returns?")
+                        st.rerun()
 
-            # Typing / Generating indicator
-            if st.session_state.michael_pending:
-                st.markdown("""
-                <div class="gpt-msg-assistant-row">
-                    <div class="gpt-msg-assistant-bubble">
-                        <div style="font-weight:700;color:#c084fc;font-size:0.8rem;margin-bottom:6px;">⚡ MICHAEL</div>
-                        <div class="ti">
-                            <div class="td"></div><div class="td"></div><div class="td"></div>
+            else:
+                # Render message stream
+                for msg in messages:
+                    if msg["role"] == "user":
+                        clean_u_text = html.escape(msg["text"]).replace('\n', '<br>')
+                        st.markdown(
+                            f'<div class="gpt-msg-user-row">'
+                            f'<div class="gpt-msg-user-bubble">{clean_u_text}</div>'
+                            f'</div>',
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        fmt_m_text = _format_ai_response_html(msg["text"])
+                        ts_val = msg.get("ts", "")
+                        st.markdown(
+                            f'<div class="gpt-msg-assistant-row">'
+                            f'<div class="gpt-msg-assistant-bubble">'
+                            f'<div style="font-weight:700;color:#c084fc;font-size:0.8rem;margin-bottom:6px;letter-spacing:0.5px;">⚡ MICHAEL</div>'
+                            f'{fmt_m_text}'
+                            f'<div class="gpt-msg-meta">{ts_val}</div>'
+                            f'</div>'
+                            f'</div>',
+                            unsafe_allow_html=True
+                        )
+
+                # Typing / Generating indicator
+                if st.session_state.michael_pending:
+                    st.markdown("""
+                    <div class="gpt-msg-assistant-row">
+                        <div class="gpt-msg-assistant-bubble">
+                            <div style="font-weight:700;color:#c084fc;font-size:0.8rem;margin-bottom:6px;">⚡ MICHAEL</div>
+                            <div class="ti">
+                                <div class="td"></div><div class="td"></div><div class="td"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
 
         # Process pending AI query
         if st.session_state.michael_pending:
             _m_process()
             st.rerun()
 
-        # ── ChatGPT Bottom Input Bar ─────────────────────────────────────────
-        st.markdown("<div style='margin-top: 1.5rem;'></div>", unsafe_allow_html=True)
+        # ── ChatGPT Fixed Bottom Input Bar ────────────────────────────────────
+        st.markdown("<div style='margin-top: 0.8rem;'></div>", unsafe_allow_html=True)
         with st.form("gpt_input_form", clear_on_submit=True):
             input_c1, input_c2 = st.columns([5.2, 1])
             with input_c1:
