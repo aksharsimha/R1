@@ -380,7 +380,7 @@ if section == "Leaderboard":
     tb.render(_user_info)
     st.stop()
 
-if section in ["Virtual Trading", "Badges", "Tax Detective"]:
+if section in ["Virtual Trading", "Tax Detective"]:
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
     st.stop()
