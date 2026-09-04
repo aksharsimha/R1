@@ -270,7 +270,17 @@ def render_login_page():
             min-height: 0 !important;
             max-height: none !important;
             padding: 0 !important;
-            display: block !important;
+        }
+        /* Those action buttons carry long labels ("Create free account"). Let them
+           wrap onto a second line instead of truncating to an ellipsis. */
+        div[data-testid="stHorizontalBlock"] div[data-testid="stHorizontalBlock"] button,
+        div[data-testid="stHorizontalBlock"] div[data-testid="stHorizontalBlock"] button p {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+            line-height: 1.25 !important;
+            height: auto !important;
+            min-height: 38px !important;
         }
 
         /* Right column inner container — balanced vertical center */
