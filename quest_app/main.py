@@ -380,7 +380,17 @@ if section == "Leaderboard":
     tb.render(_user_info)
     st.stop()
 
-if section in ["Virtual Trading", "Badges", "Tax Detective"]:
+if section == "Badges":
+    import quest_app.tabs.badges as tb
+    tb.render(_user_info)
+    st.stop()
+
+if section == "Tax Detective":
+    import quest_app.tabs.tax_detective as tb
+    tb.render(_user_info)
+    st.stop()
+
+if section in ["Virtual Trading"]:
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
     st.stop()
