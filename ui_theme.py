@@ -377,16 +377,113 @@ def css(theme: str = None) -> str:
 
     /* ── Mobile Responsiveness ── */
     @media (max-width: 768px) {{
-        .block-container {{ padding: 1rem 0.5rem !important; }}
-        .dashboard-header h1 {{ font-size: 1.5rem !important; }}
-        .dashboard-header p {{ font-size: 0.8rem !important; }}
+        /* Streamlit already slides the sidebar in as an overlay on small screens
+           using its own transform. Do NOT override position/top/left here — doing
+           so cancels that transform and renders the panel partly off-screen with
+           the nav labels clipped. Only lift it above the hamburger. */
+        section[data-testid="stSidebar"] {{
+            z-index: 99999 !important;
+        }}
+
+        /* Main content: add top padding so content isn't behind hamburger */
+        .block-container {{
+            padding: 3.5rem 0.75rem 1.5rem !important;
+            max-width: 100vw !important;
+        }}
+
+        /* Dashboard header */
+        .dashboard-header h1 {{ font-size: 1.4rem !important; }}
+        .dashboard-header p {{ font-size: 0.78rem !important; }}
+
+        /* Cards & metrics */
         .q-card {{ padding: 12px 14px !important; }}
         .q-metric {{ padding: 10px 12px !important; }}
-        .q-metric .val {{ font-size: 1rem !important; }}
-        /* Let columns stack instead of squeezing */
-        div[data-testid="stColumn"] {{ min-width: 100% !important; }}
-        /* Shrink the massive portfolio value font on phones */
+        .q-metric .val {{ font-size: 0.95rem !important; }}
+
+        /* Portfolio value hero */
         #qv {{ font-size: 1.8rem !important; }}
+
+        /* Stack ALL Streamlit columns vertically */
+        div[data-testid="stHorizontalBlock"] {{
+            flex-direction: column !important;
+            gap: 10px !important;
+        }}
+        div[data-testid="stColumn"] {{
+            width: 100% !important;
+            flex: none !important;
+            min-width: 100% !important;
+        }}
+
+        /* Tables scroll horizontally instead of overflowing */
+        div[data-testid="stDataFrame"],
+        div[data-testid="stTable"],
+        .stTable {{
+            overflow-x: auto !important;
+            max-width: calc(100vw - 1.5rem) !important;
+            display: block !important;
+        }}
+
+        /* Plotly charts stay within viewport */
+        div[data-testid="stPlotlyChart"] {{
+            max-width: 100% !important;
+            overflow-x: auto !important;
+        }}
+        div[data-testid="stPlotlyChart"] > div {{
+            max-width: 100% !important;
+        }}
+
+        /* Inputs full-width */
+        div[data-testid="stTextInput"],
+        div[data-testid="stSelectbox"],
+        div[data-testid="stNumberInput"],
+        div[data-testid="stMultiSelect"] {{
+            width: 100% !important;
+        }}
+
+        /* Bigger touch targets on buttons */
+        .stButton > button {{
+            min-height: 48px !important;
+            font-size: 0.97rem !important;
+        }}
+        section[data-testid="stSidebar"] .stButton > button {{
+            min-height: 44px !important;
+        }}
+
+        /* Sidebar nav items bigger tap area */
+        section[data-testid="stSidebar"] [role="radiogroup"] > label {{
+            padding: 13px 12px !important;
+        }}
+
+        /* Profile card compact */
+        .quest-profile-card {{
+            padding: 20px 12px 12px !important;
+        }}
+
+        /* Expanders full width */
+        .streamlit-expanderHeader {{
+            font-size: 0.9rem !important;
+        }}
+
+        /* Plotly modebar shrink */
+        .modebar {{ transform: scale(0.8); transform-origin: top right; }}
+
+        /* q-row items line-wrap gracefully */
+        .q-row {{
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+        }}
+    }}
+
+    /* ── Phone-specific (≤480px) ── */
+    @media (max-width: 480px) {{
+        .dashboard-header h1 {{ font-size: 1.2rem !important; }}
+        .q-metric .val {{ font-size: 0.88rem !important; }}
+        #qv {{ font-size: 1.5rem !important; }}
+        .block-container {{ padding: 3.5rem 0.5rem 1rem !important; }}
+        .q-card {{ padding: 10px 12px !important; border-radius: 10px !important; }}
+        section[data-testid="stSidebar"] [role="radiogroup"] label p {{
+            font-size: 0.88rem !important;
+        }}
     }}
 
     @media (prefers-reduced-motion: reduce) {{

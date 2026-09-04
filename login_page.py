@@ -257,6 +257,22 @@ def render_login_page():
             justify-content: center !important;
         }
 
+        /* The two rules above are unscoped, so they also hit NESTED column blocks
+           (the Create-account / Try-demo button pair), painting the brand gradient
+           behind them and forcing 100vh. Reset any horizontal block inside another. */
+        div[data-testid="stHorizontalBlock"] div[data-testid="stHorizontalBlock"] > div:first-child,
+        div[data-testid="stHorizontalBlock"] div[data-testid="stHorizontalBlock"] > div:last-child {
+            background: transparent !important;
+            background-image: none !important;
+            border-left: none !important;
+            border-top: none !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            padding: 0 !important;
+            display: block !important;
+        }
+
         /* Right column inner container — balanced vertical center */
         div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stVerticalBlock"] {
             height: auto !important;
@@ -509,30 +525,156 @@ def render_login_page():
 
         /* ▓▓▓▓▓ MOBILE RESPONSIVENESS ▓▓▓▓▓ */
         @media (max-width: 860px) {
+            /* Allow scroll on mobile — the fixed-height / overflow:hidden desktop
+               layout breaks on narrow screens where the form is taller than viewport */
+            html, body, .stApp {
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                height: auto !important;
+                min-height: 100dvh !important;
+                max-height: none !important;
+                position: static !important;
+            }
+            /* Inner containers: auto height, NO min-height — stacking 100dvh on each
+               nested wrapper is what creates a huge blank gap under the form. The
+               desktop layout also pins these with position:absolute + inset 0, which
+               kills scrolling; reset that to static flow. */
+            div[data-testid="stAppViewContainer"],
+            div[data-testid="stAppViewBlockContainer"],
+            div[data-testid="stMainBlockContainer"],
+            div[data-testid="stAppViewBlockContainer"] > div[data-testid="stVerticalBlock"],
+            div[data-testid="stMainBlockContainer"] > div[data-testid="stVerticalBlock"],
+            .block-container > div[data-testid="stVerticalBlock"],
+            .block-container, .main .block-container,
+            section.main > div, section.main,
+            div[data-testid="stAppViewContainer"] > section.main,
+            div[data-testid="stAppViewContainer"] > section.main > div.block-container {
+                overflow-y: visible !important;
+                overflow-x: hidden !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                position: static !important;
+                inset: auto !important;
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+
+            /* Stack columns: branding on top, form below */
             div[data-testid="stHorizontalBlock"] {
                 flex-wrap: wrap !important;
                 flex-direction: column !important;
                 min-height: auto !important;
                 max-height: none !important;
                 height: auto !important;
-                overflow-y: auto !important;
+                overflow: visible !important;
+                width: 100% !important;
             }
-            div[data-testid="stColumn"] {
+            /* Each column must be full width and auto height */
+            div[data-testid="stColumn"],
+            div[data-testid="stHorizontalBlock"] > div {
                 min-width: 100% !important;
                 max-width: 100% !important;
                 width: 100% !important;
+                flex: 0 0 100% !important;
                 height: auto !important;
+                min-height: auto !important;
                 max-height: none !important;
+                overflow: visible !important;
             }
+
+            /* Left branding column: compact top strip */
             div[data-testid="stHorizontalBlock"] > div:first-child {
                 min-height: auto !important;
                 height: auto !important;
-                padding: 1.25rem 1rem !important;
+                padding: 0 !important;
+                overflow: visible !important;
             }
+            /* The brand container is 100vh on desktop — collapse it on mobile */
+            .q-brand-container {
+                height: auto !important;
+                max-height: none !important;
+                padding: 1.75rem 1.25rem 1.25rem !important;
+                align-items: flex-start !important;
+            }
+            .q-login-brand { max-width: 100% !important; }
+            .q-login-features { gap: 6px !important; }
+
+            /* Right auth column: scrollable, centred, full width */
             div[data-testid="stHorizontalBlock"] > div:last-child {
                 height: auto !important;
                 max-height: none !important;
-                padding: 1.5rem 1.2rem !important;
+                overflow: visible !important;
+                padding: 0.5rem 0 2rem !important;
+                border-left: none !important;
+                border-top: 1px solid rgba(255,255,255,0.05) !important;
+            }
+
+            /* Inner form container — full width on phones */
+            div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stVerticalBlock"] {
+                max-width: 100% !important;
+                padding: 0 1.25rem !important;
+            }
+
+            /* Bigger touch-target inputs on mobile */
+            .stTextInput div[data-baseweb="input"],
+            .stTextInput div[data-baseweb="base-input"] {
+                height: 46px !important;
+                min-height: 46px !important;
+                max-height: 46px !important;
+            }
+
+            /* The global margin-zeroing on element containers makes the rotating
+               headline collide with the EMAIL label. Restore breathing room. */
+            .q-login-header {
+                margin-bottom: 0.9rem !important;
+                padding-bottom: 2px !important;
+            }
+            div[data-testid="stHorizontalBlock"] > div:last-child
+                div[data-testid="stElementContainer"]:has(.q-login-header) {
+                margin-bottom: 0.5rem !important;
+            }
+            /* Give stacked action buttons real separation */
+            div[data-testid="stHorizontalBlock"] > div:last-child
+                div[data-testid="stHorizontalBlock"] {
+                gap: 8px !important;
+            }
+        }
+
+        /* Phone-only: compact brand header, form immediately below the fold-line */
+        @media (max-width: 540px) {
+            /* Drop the feature cards + footer — they push the form off-screen */
+            .q-login-features,
+            .q-login-footer {
+                display: none !important;
+            }
+            /* Shrink the brand block into a slim header */
+            .q-brand-container {
+                padding: 1.25rem 1.25rem 0.85rem !important;
+            }
+            .q-login-bolt {
+                font-size: 1.6rem !important;
+                margin-bottom: 0.1rem !important;
+            }
+            .q-login-title {
+                font-size: 1.9rem !important;
+                margin-bottom: 0.15rem !important;
+            }
+            .q-login-tagline {
+                font-size: 0.6rem !important;
+                letter-spacing: 1.8px !important;
+                margin-bottom: 0 !important;
+            }
+            /* Kill the decorative blur circles — they cost paint time on phones */
+            .q-brand-container > div[style*="border-radius:50%"] {
+                display: none !important;
+            }
+            div[data-testid="stHorizontalBlock"] > div:last-child {
+                border-top: none !important;
+                padding-top: 0.5rem !important;
+            }
+            div[data-testid="stHorizontalBlock"] > div:last-child div[data-testid="stVerticalBlock"] {
+                padding: 0 1.1rem 1.5rem !important;
             }
         }
     </style>
@@ -630,9 +772,9 @@ def render_login_page():
             <div style="position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.15),transparent 70%);top:-80px;left:-100px;filter:blur(80px);"></div>
             <div style="position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 70%);bottom:-60px;right:-80px;filter:blur(80px);"></div>
 
-            <div style="position:relative;z-index:2;max-width:400px;">
-                <div style="font-size:2.2rem;margin-bottom:0.2rem;line-height:1;">⚡</div>
-                <h1 style="
+            <div class="q-login-brand" style="position:relative;z-index:2;max-width:400px;">
+                <div class="q-login-bolt" style="font-size:2.2rem;margin-bottom:0.2rem;line-height:1;">⚡</div>
+                <h1 class="q-login-title" style="
                     font-size:2.6rem;
                     font-weight:900;
                     letter-spacing:-1.5px;
@@ -643,7 +785,7 @@ def render_login_page():
                     -webkit-text-fill-color:transparent;
                     font-family: 'Inter', sans-serif;
                 ">QUEST</h1>
-                <p style="
+                <p class="q-login-tagline" style="
                     font-size:0.68rem;
                     color:#475569;
                     letter-spacing:2.5px;
@@ -653,7 +795,7 @@ def render_login_page():
                     line-height:1.5;
                 ">Quantitative Unified<br>Equity Surveillance Tracker</p>
 
-                <div class="qfade-1" style="display:flex;flex-direction:column;gap:8px;">
+                <div class="qfade-1 q-login-features" style="display:flex;flex-direction:column;gap:8px;">
                     <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;">
                         <div style="width:32px;height:32px;border-radius:8px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">📊</div>
                         <div>
@@ -677,7 +819,7 @@ def render_login_page():
                     </div>
                 </div>
 
-                <div style="margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.04);">
+                <div class="q-login-footer" style="margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.04);">
                     <div style="font-size:0.65rem;color:#334155;letter-spacing:1px;text-transform:uppercase;font-weight:500;">Built for Indian markets · NSE &amp; BSE</div>
                 </div>
             </div>
@@ -774,11 +916,11 @@ def _render_login(login_user, save_remember_me):
     # Header (rotating copy)
     _hl, _sub = random.choice(_HEADLINES)
     st.markdown(f"""
-    <div class="qfade" style="margin-bottom:0.5rem;">
-        <h2 style="font-size:1.30rem;font-weight:700;color:#f1f5f9;margin:0 0 2px 0;letter-spacing:-0.5px;">
+    <div class="qfade q-login-header" style="margin-bottom:0.75rem;">
+        <h2 style="font-size:1.30rem;font-weight:700;color:#f1f5f9;margin:0 0 2px 0;letter-spacing:-0.5px;line-height:1.25;">
             {_hl}
         </h2>
-        <p style="font-size:0.75rem;color:#64748b;margin:0;font-weight:400;">
+        <p style="font-size:0.75rem;color:#64748b;margin:0;font-weight:400;line-height:1.4;">
             {_sub}
         </p>
     </div>
@@ -819,11 +961,9 @@ def _render_login(login_user, save_remember_me):
                 st.error(message)
 
     # Forgot password (styled with comfortable width)
-    st.markdown('<div style="text-align:left;margin:3px 0 5px 0;width:auto;display:inline-block;">', unsafe_allow_html=True)
     if st.button("Forgot password?", key="forgot_pw", use_container_width=False):
         st.session_state.show_reset = True
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # Divider
     st.markdown("""
