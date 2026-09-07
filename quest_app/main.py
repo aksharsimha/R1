@@ -170,6 +170,34 @@ st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 _profile_placeholder = st.sidebar.empty()
 
+# FEATURE A: Update Profile Card with Growth Stat early (so it shows on all tabs)
+try:
+    if "_analysis_df" in st.session_state and "_analysis_summary" in st.session_state:
+        _tmp_df = st.session_state["_analysis_df"]
+        _tmp_sum = st.session_state["_analysis_summary"]
+    else:
+        _tmp_df = __import__("pandas").DataFrame()
+        _tmp_sum = {"total_value": 0.0}
+    
+    p_growth = get_portfolio_growth(_tmp_df, _tmp_sum)
+    g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
+    g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
+    _profile_placeholder.markdown(f"""
+    <div class="quest-profile-card">
+        <div class="quest-profile-avatar">{_avatar_markup}</div>
+        <div class="quest-profile-copy" style="flex:1;">
+            <div class="quest-profile-name">{_user_info['display_name']}</div>
+            <div class="quest-profile-user">@{_user_info['username']}</div>
+        </div>
+        <div style="text-align: right; line-height: 1.2;">
+            <div style="font-size: 0.65rem; color: var(--q-text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Growth</div>
+            <div style="color: {g_color}; font-size: 0.85rem; font-weight: 600;">{g_sign}₹{p_growth["growth_abs"]:,.0f}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+except Exception:
+    pass
+
 try:
     _accounts = get_remembered_accounts()
 except Exception:
@@ -390,9 +418,9 @@ if section == "Tax Detective":
     tb.render(_user_info)
     st.stop()
 
-if section in ["Virtual Trading"]:
-    st.markdown(f"## {section} (Under Construction)")
-    st.markdown("This tab is assigned to a team member and is currently being built.")
+if section == "Virtual Trading":
+    import quest_app.tabs.virtual_trading as virtual_trading
+    virtual_trading.render(_user_info, _user_data_dir)
     st.stop()
 
 # --- Sidebar: Interactive Controls ---
@@ -715,6 +743,9 @@ elif section == "Badges":
 elif section == "Tax Detective":
     import quest_app.tabs.tax_detective as tb
     tb.render(_user_info)
-elif section in ["Virtual Trading", "Leaderboard"]:
+elif section == "Virtual Trading":
+    import quest_app.tabs.virtual_trading as virtual_trading
+    virtual_trading.render(_user_info, _user_data_dir)
+elif section == "Leaderboard":
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
