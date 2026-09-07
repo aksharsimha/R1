@@ -711,16 +711,34 @@ def _inject_badges_css():
 .qb-card.unlocked {
     border-color: rgba(168, 85, 247, 0.35);
     box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5), 0 0 16px -4px rgba(168, 85, 247, 0.12);
+    animation: qb-badge-float 3.4s ease-in-out infinite;
+    will-change: transform;
 }
 .qb-card.unlocked:hover {
-    transform: translateY(-3px);
+    animation-play-state: paused;
+    transform: translateY(-5px) scale(1.035);
     border-color: rgba(168, 85, 247, 0.65);
     box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.65), 0 0 24px rgba(168, 85, 247, 0.25);
+    transition: transform 0.28s cubic-bezier(.22,.61,.36,1), border-color 0.22s ease, box-shadow 0.22s ease;
+}
+@keyframes qb-badge-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .qb-card.unlocked {
+        animation: none;
+    }
 }
 .qb-card.locked {
     border-color: rgba(255, 255, 255, 0.05);
     background: rgba(18, 17, 26, 0.6);
     opacity: 0.88;
+    animation: none;
 }
 .qb-card.locked:hover {
     border-color: rgba(255, 255, 255, 0.12);
@@ -736,6 +754,38 @@ def _inject_badges_css():
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.qb-card-icon-wrap.just-unlocked {
+    border-radius: 50%;
+    animation: qb-icon-unlock-spin 0.7s cubic-bezier(.34,1.56,.64,1) 1 both,
+               qb-icon-unlock-pulse 0.7s ease-out 1;
+}
+@keyframes qb-icon-unlock-spin {
+    0% {
+        transform: rotate(0deg) scale(0.82);
+    }
+    55% {
+        transform: rotate(360deg) scale(1.15);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+@keyframes qb-icon-unlock-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(192, 132, 252, 0);
+    }
+    35% {
+        box-shadow: 0 0 22px 6px rgba(192, 132, 252, 0.55);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(192, 132, 252, 0);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .qb-card-icon-wrap.just-unlocked {
+        animation: none;
+    }
 }
 .qb-status-tag {
     font-size: 0.7rem;
@@ -1108,13 +1158,15 @@ def render_recently_unlocked(unlocked_badges: list[dict]):
     _render_html(full_recent_html)
 
 
-def render_badge_grid(badges: list[dict]):
+def render_badge_grid(badges: list[dict], newly_unlocked_ids: set[str] | None = None):
     """
     Renders the responsive badge grid with interactive selection buttons.
     """
     if not badges:
         st.info("No achievements match the selected category filter.")
         return
+
+    newly_unlocked_ids = newly_unlocked_ids or set()
 
     # Render in Streamlit columns for full interactivity
     cols_per_row = 3
@@ -1126,6 +1178,7 @@ def render_badge_grid(badges: list[dict]):
                 unlocked = b["unlocked"]
                 card_cls = "unlocked" if unlocked else "locked"
                 svg_icon = _get_badge_svg(b["id"], unlocked=unlocked, size=64)
+                icon_wrap_cls = "qb-card-icon-wrap just-unlocked" if b["id"] in newly_unlocked_ids else "qb-card-icon-wrap"
                 
                 status_tag = ('<span class="qb-status-tag unlocked">✓ Unlocked</span>' 
                               if unlocked 
@@ -1136,7 +1189,7 @@ def render_badge_grid(badges: list[dict]):
                 card_html = f"""
 <div class="qb-card {card_cls}">
     <div class="qb-card-top">
-        <div class="qb-card-icon-wrap">{svg_icon}</div>
+        <div class="{icon_wrap_cls}">{svg_icon}</div>
         {status_tag}
     </div>
     <div>
@@ -1189,6 +1242,13 @@ def render(user_info: dict | None = None):
     if sync_and_award_badge_xp(evaluated_badges, user_data):
         # Refresh progress data after syncing
         user_data = get_user_progress_data(user_info)
+
+    # 4b. Badges unlocked for the first time on this run get a one-time icon
+    #     animation. Uses the existing is_persisted flag from evaluate_badge
+    #     (set before syncing) — no change to badge detection/storage/XP logic.
+    #     Once persisted, is_persisted is True on the next rerun, so the
+    #     animation naturally never replays.
+    newly_unlocked_ids = {b["id"] for b in evaluated_badges if b["unlocked"] and not b["is_persisted"]}
 
     # 5. Calculate summary metrics
     unlocked_list = [b for b in evaluated_badges if b["unlocked"]]
@@ -1274,7 +1334,7 @@ def render(user_info: dict | None = None):
         filtered_badges = sorted(filtered_badges, key=lambda x: x["reward_xp"], reverse=True)
 
     # 11. Render Badge Grid
-    render_badge_grid(filtered_badges)
+    render_badge_grid(filtered_badges, newly_unlocked_ids=newly_unlocked_ids)
 
     # 12. Render Recently Unlocked Section
     render_recently_unlocked(unlocked_list)
