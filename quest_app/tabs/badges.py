@@ -190,22 +190,29 @@ def get_badge_definitions() -> list[dict]:
             "rule_type": "quest_master_all",
         },
         # ── Virtual Trading badges ──
-        {"id": "first_trade", "name": "First Trade", "icon": "📈", "description": "Execute your first virtual trade", "xp_reward": 50,
+        {"id": "first_trade", "name": "First Trade", "description": "Execute your first virtual trade", 
+         "category": "Virtual Trading", "reward_xp": 50, "target": 1,
          "condition": lambda p: p.get('total_trades', 0) >= 1},
-        {"id": "active_trader", "name": "Active Trader", "icon": "📊", "description": "Execute 10 virtual trades", "xp_reward": 100,
+        {"id": "active_trader", "name": "Active Trader", "description": "Execute 10 virtual trades", 
+         "category": "Virtual Trading", "reward_xp": 100, "target": 10,
          "condition": lambda p: p.get('total_trades', 0) >= 10},
-        {"id": "portfolio_builder", "name": "Portfolio Builder", "icon": "💼", "description": "Hold 5 different stocks in your virtual portfolio", "xp_reward": 75,
+        {"id": "portfolio_builder", "name": "Portfolio Builder", "description": "Hold 5 different stocks in your virtual portfolio", 
+         "category": "Virtual Trading", "reward_xp": 75, "target": 5,
          "condition": lambda p: p.get('holdings_count', 0) >= 5},
         # ── Tax Detective badges ──
-        {"id": "tax_sleuth", "name": "Tax Sleuth", "icon": "🕵️", "description": "Solve your first tax detective case", "xp_reward": 50,
+        {"id": "tax_sleuth", "name": "Tax Sleuth", "description": "Solve your first tax detective case", 
+         "category": "Tax Detective", "reward_xp": 50, "target": 1,
          "condition": lambda p: p.get('tax_cases_solved', 0) >= 1},
-        {"id": "tax_expert", "name": "Tax Expert", "icon": "🧠", "description": "Solve 3 tax detective cases", "xp_reward": 100,
+        {"id": "tax_expert", "name": "Tax Expert", "description": "Solve 3 tax detective cases", 
+         "category": "Tax Detective", "reward_xp": 100, "target": 3,
          "condition": lambda p: p.get('tax_cases_solved', 0) >= 3},
         # ── Knowledge Library badge ──
-        {"id": "bookworm", "name": "Bookworm", "icon": "📚", "description": "Watch 10 educational videos", "xp_reward": 75,
+        {"id": "bookworm", "name": "Bookworm", "description": "Watch 10 educational videos", 
+         "category": "Learning", "reward_xp": 75, "target": 10,
          "condition": lambda p: len(p.get('completed_articles', [])) >= 10},
         # ── Extended streak badge ──
-        {"id": "streak_14", "name": "14-Day Streak", "icon": "🔥", "description": "Maintain a 14-day learning streak", "xp_reward": 150,
+        {"id": "streak_14", "name": "14-Day Streak", "description": "Maintain a 14-day learning streak", 
+         "category": "Streaks", "reward_xp": 150, "target": 14,
          "condition": lambda p: p.get('streak', 0) >= 14},
     ]
 
