@@ -1,5 +1,15 @@
 # Thaheer Update Log
 
+## 2026-09-08
+
+### ⚡ Portfolio MICHAEL AI Chatbot in Education Workspace
+- **Added MICHAEL to Games & Education Sidebar**:
+  - Integrated **`⚡ MICHAEL`** into the Games & Education sidebar navigation (`quest_app/main.py`), positioned directly below *Tax Detective*.
+  - Configured state persistence in `edu_db.py` (`valid_edu` in `get_last_education_section` and `set_last_education_section`) to seamlessly save and restore the user's active sub-page across sessions.
+  - Enabled full portfolio intelligence, stock query resolution, risk analytics, and financial reasoning from anywhere within the Education environment.
+
+---
+
 ## 2026-09-02
 
 ### ✉️ Chat System Gmail Email Notifications Delivery Fix

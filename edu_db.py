@@ -219,7 +219,7 @@ def get_last_education_section() -> str:
     try:
         prog = load_progress()
         sec = prog.get("last_education_section")
-        valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective"]
+        valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL"]
         if sec in valid_edu:
             return sec
     except Exception:
@@ -228,7 +228,7 @@ def get_last_education_section() -> str:
 
 def set_last_education_section(section: str) -> None:
     """Persists the user's last visited Education sub-page."""
-    valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective"]
+    valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL"]
     if section in valid_edu:
         try:
             prog = load_progress()
