@@ -624,3 +624,32 @@ def create_chat(chat_id: str, chat: dict):
     """Create a new chat document in Firestore."""
     db = get_db()
     db.collection("chats").document(chat_id).set(chat)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Education Progress
+# ──────────────────────────────────────────────────────────────────────────────
+
+def get_edu_progress(username: str) -> dict:
+    """Read education progress (XP, badges, level) from Firestore."""
+    db = get_db()
+    doc = db.collection("users").document(username).collection("data").document("edu_progress").get()
+    if doc.exists:
+        return doc.to_dict()
+    return {}
+
+
+def save_edu_progress(username: str, progress: dict):
+    """Save education progress to Firestore and update user profile with XP summary."""
+    db = get_db()
+    db.collection("users").document(username).collection("data").document("edu_progress").set(progress)
+    # Also update the top-level user profile with key metrics for leaderboard queries
+    try:
+        db.collection("users").document(username).update({
+            "total_xp": progress.get("total_xp", 0),
+            "edu_level": progress.get("current_level", ""),
+            "badges_count": len(progress.get("badges", [])),
+            "virtual_balance": progress.get("virtual_balance", 15000.0),
+        })
+    except Exception:
+        pass

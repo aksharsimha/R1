@@ -167,9 +167,40 @@ def complete_article(article_id: str, xp_award: int = 50) -> int:
     if article_id not in comp:
         comp.append(article_id)
         prog["completed_articles"] = comp
-        prog["total_xp"] = prog.get("total_xp", 0) + xp_award
         save_progress(prog)
+        # Route XP through centralized award_xp for streak + level tracking
+        return award_xp(xp_award, "video_watched")
     return prog.get("total_xp", 0)
+
+
+def award_xp(amount: int, source: str = "general") -> int:
+    """Centralized XP award — updates total_xp, level, activity_dates, and syncs.
+    
+    Sources: 'quiz_pass', 'video_watched', 'trade_executed', 'tax_case_solved',
+             'badge_earned', 'first_trade_bonus', 'perfect_score_bonus'
+    Returns the new total XP.
+    """
+    from datetime import date
+    prog = load_progress()
+    prog["total_xp"] = prog.get("total_xp", 0) + amount
+    # Update level
+    level_info = get_level_info(prog["total_xp"])
+    prog["current_level"] = level_info["level_name"]
+    # Track activity dates for streak calculation
+    today = date.today().isoformat()
+    activity_dates = prog.get("activity_dates", [])
+    if today not in activity_dates:
+        activity_dates.append(today)
+        # Keep last 90 days only
+        activity_dates = sorted(activity_dates)[-90:]
+    prog["activity_dates"] = activity_dates
+    # Track XP sources for auditing
+    xp_log = prog.get("xp_log", [])
+    xp_log.append({"amount": amount, "source": source, "date": today})
+    prog["xp_log"] = xp_log[-200:]  # Keep last 200 entries
+    save_progress(prog)
+    return prog["total_xp"]
+
 
 def save_progress(data: dict) -> None:
     filepath = _get_filepath()

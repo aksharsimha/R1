@@ -73,6 +73,14 @@ def hydrate(username: str, user_data_dir: str):
         _write_json(news_path, fb_news)
         print(f"[Sync] Hydrated news archive", file=sys.stderr)
 
+    # ── Education Progress ────────────────────────────────────────────────
+    from firebase_db import get_edu_progress
+    edu_path = os.path.join(user_data_dir, "edu_progress.json")
+    fb_edu = get_edu_progress(username)
+    if fb_edu:
+        _write_json(edu_path, fb_edu)
+        print(f"[Sync] Hydrated edu progress (XP: {fb_edu.get('total_xp', 0)})", file=sys.stderr)
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Sync functions — called after local saves to push to Firestore
@@ -142,6 +150,26 @@ def sync_news_archive(username: str, news_file: str):
             save_news_archive(username, data)
     except Exception as e:
         print(f"[Sync] News sync failed: {e}", file=sys.stderr)
+
+
+def sync_edu_progress(username: str, edu_file: str):
+    """Push local edu_progress.json to Firestore."""
+    try:
+        data = _read_json(edu_file)
+        if data:
+            from firebase_db import save_edu_progress
+            save_edu_progress(username, data)
+    except Exception as e:
+        print(f"[Sync] Edu progress sync failed: {e}", file=sys.stderr)
+
+
+def trigger_sync(username: str, filepath: str):
+    """Route-based sync trigger — called by edu_db after saving edu_progress.json."""
+    if not username:
+        return
+    basename = os.path.basename(filepath)
+    if basename == "edu_progress.json":
+        sync_edu_progress(username, filepath)
 
 
 # ──────────────────────────────────────────────────────────────────────────────

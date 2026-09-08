@@ -189,6 +189,24 @@ def get_badge_definitions() -> list[dict]:
             "requirement_text": "Master and complete all 10 educational modules in the QUEST curriculum.",
             "rule_type": "quest_master_all",
         },
+        # ── Virtual Trading badges ──
+        {"id": "first_trade", "name": "First Trade", "icon": "📈", "description": "Execute your first virtual trade", "xp_reward": 50,
+         "condition": lambda p: p.get('total_trades', 0) >= 1},
+        {"id": "active_trader", "name": "Active Trader", "icon": "📊", "description": "Execute 10 virtual trades", "xp_reward": 100,
+         "condition": lambda p: p.get('total_trades', 0) >= 10},
+        {"id": "portfolio_builder", "name": "Portfolio Builder", "icon": "💼", "description": "Hold 5 different stocks in your virtual portfolio", "xp_reward": 75,
+         "condition": lambda p: p.get('holdings_count', 0) >= 5},
+        # ── Tax Detective badges ──
+        {"id": "tax_sleuth", "name": "Tax Sleuth", "icon": "🕵️", "description": "Solve your first tax detective case", "xp_reward": 50,
+         "condition": lambda p: p.get('tax_cases_solved', 0) >= 1},
+        {"id": "tax_expert", "name": "Tax Expert", "icon": "🧠", "description": "Solve 3 tax detective cases", "xp_reward": 100,
+         "condition": lambda p: p.get('tax_cases_solved', 0) >= 3},
+        # ── Knowledge Library badge ──
+        {"id": "bookworm", "name": "Bookworm", "icon": "📚", "description": "Watch 10 educational videos", "xp_reward": 75,
+         "condition": lambda p: len(p.get('completed_articles', [])) >= 10},
+        # ── Extended streak badge ──
+        {"id": "streak_14", "name": "14-Day Streak", "icon": "🔥", "description": "Maintain a 14-day learning streak", "xp_reward": 150,
+         "condition": lambda p: p.get('streak', 0) >= 14},
     ]
 
 
@@ -307,6 +325,20 @@ def get_user_progress_data(user_info: dict | None = None) -> dict:
     """
     _ensure_edu_dir(user_info)
     prog = edu_db.load_progress()
+    
+    uname = None
+    if user_info and user_info.get("username"):
+        uname = user_info["username"]
+    elif hasattr(st, "session_state") and st.session_state.get("_quest_username"):
+        uname = st.session_state.get("_quest_username")
+    elif hasattr(st, "session_state") and st.session_state.get("user_info"):
+        uname = st.session_state.user_info.get("username")
+    if not uname:
+        uname = "default_user"
+
+    _here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    base_dir = os.path.join(_here, "users")
+
     try:
         tx_list = get_transactions()
     except Exception:
@@ -319,6 +351,25 @@ def get_user_progress_data(user_info: dict | None = None) -> dict:
 
     active_dates = _extract_activity_dates(prog, tx_list)
     streak_count, week_days = calculate_streak(active_dates)
+    prog['streak'] = streak_count
+    
+    # Pull Virtual Trading stats
+    try:
+        import virtual_trading
+        vt_account = virtual_trading.load_account(uname, base_dir)
+        prog['total_trades'] = vt_account.get('metrics', {}).get('total_trades', 0)
+        prog['holdings_count'] = len(vt_account.get('holdings', {}))
+    except Exception:
+        prog.setdefault('total_trades', 0)
+        prog.setdefault('holdings_count', 0)
+    
+    # Pull Tax Detective stats
+    try:
+        import tax_detective_db
+        tax_data = tax_detective_db.load_progress()
+        prog['tax_cases_solved'] = len(tax_data.get('completed_cases', []))
+    except Exception:
+        prog.setdefault('tax_cases_solved', 0)
 
     # Save today's activity date into prog if not present
     today_str = _dt.date.today().isoformat()
@@ -347,8 +398,8 @@ def evaluate_badge(badge_def: dict, user_data: dict) -> dict:
     Evaluates current progress, target, unlock status, and unlock date for a single badge.
     """
     bid = badge_def["id"]
-    rule = badge_def["rule_type"]
-    target = badge_def["target"]
+    rule = badge_def.get("rule_type")
+    target = badge_def.get("target", 1)
     prog = user_data["prog"]
     saved_badges = user_data["saved_badges"]
 
@@ -371,7 +422,10 @@ def evaluate_badge(badge_def: dict, user_data: dict) -> dict:
     current_progress = 0
     is_unlocked = False
 
-    if rule == "levels_count":
+    if "condition" in badge_def:
+        is_unlocked = badge_def["condition"](prog)
+        current_progress = target if is_unlocked else 0
+    elif rule == "levels_count":
         current_progress = len(completed_levels)
         is_unlocked = current_progress >= target
 
@@ -477,12 +531,13 @@ def sync_and_award_badge_xp(evaluated_badges: list[dict], user_data: dict) -> bo
             # Newly unlocked achievement!
             awarded_ids.add(bid)
             now_iso = _dt.datetime.now().isoformat()
+            reward = eb.get("reward_xp", eb.get("xp_reward", 0))
             formatted_saved_badges.append({
                 "id": bid,
                 "unlocked_at": now_iso,
-                "xp_awarded": eb["reward_xp"],
+                "xp_awarded": reward,
             })
-            xp_to_add += eb["reward_xp"]
+            xp_to_add += reward
             state_changed = True
             eb["unlock_date_iso"] = now_iso
             eb["unlock_date_str"] = _dt.date.today().strftime("%b %d, %Y")
