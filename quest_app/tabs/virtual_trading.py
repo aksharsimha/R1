@@ -230,6 +230,15 @@ def _render_trade(account, username, base_dir, symbol, quote):
                 (engine.buy if side == "BUY" else engine.sell)(account, symbol, quantity, price)
                 _save_shared_balance(account, previous_cash)
                 engine.save_account(account, username, base_dir)
+                # Award XP for trading activity
+                total_trades = account.get("metrics", {}).get("total_trades", 0)
+                if total_trades == 1:
+                    edu_db.award_xp(100, "first_trade_bonus")
+                edu_db.award_xp(15, "trade_executed")
+                # Portfolio diversity milestone
+                holdings_count = len(account.get("holdings", {}))
+                if holdings_count == 5:
+                    edu_db.award_xp(50, "portfolio_milestone")
                 # Pass fresh account across the rerun boundary so the page
                 # immediately reflects the trade without a stale disk read.
                 st.session_state["vt_fresh_account"] = account

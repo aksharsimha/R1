@@ -745,7 +745,6 @@ def render_taking_test(user_info):
         if score_pct >= 85.0:
             # Passed!
             progress = edu_db.load_progress()
-            progress["total_xp"] = progress.get("total_xp", 0) + xp_reward
             progress["virtual_balance"] = progress.get("virtual_balance", 15000.0) + float(cash_reward)
 
             comp_lvls = progress.get("completed_levels", [])
@@ -754,9 +753,9 @@ def render_taking_test(user_info):
                 comp_lvls.append(vid_title)
             progress["completed_levels"] = comp_lvls
 
-            lvl_info = edu_db.get_level_info(progress["total_xp"])
-            progress["current_level"] = lvl_info["level_name"]
             edu_db.save_progress(progress)
+            # Route XP through centralized award_xp for streak + level + Firebase sync
+            edu_db.award_xp(xp_reward, "quiz_pass")
 
             st.session_state.edu_test_state = "test_passed"
             st.rerun()

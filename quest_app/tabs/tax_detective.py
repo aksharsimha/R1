@@ -1,5 +1,6 @@
 import streamlit as st
 import tax_detective_db
+import edu_db
 from edu_db import load_progress
 
 # ── Shared layout helpers ────────────────────────────────────────────────────
@@ -426,6 +427,12 @@ def render(user_info: dict):
         if st.button("Submit Final Report & Claim Reward", type="primary", use_container_width=True):
             try:
                 res = tax_detective_db.finish_attempt()
+                if not _practice_active():
+                    if res["correct_count"] >= 3:
+                        for _ in range(res["correct_count"]):
+                            edu_db.award_xp(75, 'tax_case_solved')
+                    if res["correct_count"] == 4:
+                        edu_db.award_xp(25, 'perfect_score_bonus')
                 st.session_state.td_attempt = res
                 st.session_state.td_result = None
                 st.rerun()
@@ -468,6 +475,12 @@ def render(user_info: dict):
             if st.button(label, type="primary", use_container_width=True):
                 if current_case_idx == total - 1:
                     finished = tax_detective_db.finish_attempt()
+                    if not _practice_active():
+                        if finished["correct_count"] >= 3:
+                            for _ in range(finished["correct_count"]):
+                                edu_db.award_xp(75, 'tax_case_solved')
+                        if finished["correct_count"] == 4:
+                            edu_db.award_xp(25, 'perfect_score_bonus')
                     st.session_state.td_attempt = finished
                 st.session_state.td_result = None
                 st.rerun()

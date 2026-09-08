@@ -92,6 +92,15 @@ def get_leaderboard_players():
 
     players = []
     for idx, (uname, data) in enumerate(users_dict.items(), start=1):
+        try:
+            profile = firebase_db.get_user_profile(uname) or {}
+            if profile:
+                data["xp"] = profile.get("total_xp", data.get("xp", 0))
+                if "virtual_balance" in profile:
+                    data["netWorth"] = profile.get("virtual_balance", data.get("netWorth", 0))
+        except Exception:
+            pass
+
         players.append({
             "id": idx,
             "username": data["username"],
