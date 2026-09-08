@@ -6,7 +6,9 @@
 - **Added MICHAEL to Games & Education Sidebar**:
   - Integrated **`⚡ MICHAEL`** into the Games & Education sidebar navigation (`quest_app/main.py`), positioned directly below *Tax Detective*.
   - Configured state persistence in `edu_db.py` (`valid_edu` in `get_last_education_section` and `set_last_education_section`) to seamlessly save and restore the user's active sub-page across sessions.
-  - Enabled full portfolio intelligence, stock query resolution, risk analytics, and financial reasoning from anywhere within the Education environment.
+- **Unified Two-Way Chat Synchronization**:
+  - Both environments share the exact same underlying user conversation store (`michael_sessions.json`), ensuring all chats, message histories, active threads, pinned sessions, and custom titles stay 100% synchronized whether accessed from **Portfolio** (`?workspace=professional&page=MICHAEL`) or **Games & Education** (`?workspace=education&page=MICHAEL`).
+  - Enabled full portfolio intelligence, stock query resolution, risk analytics, and financial reasoning from anywhere within either workspace.
 
 ---
 
