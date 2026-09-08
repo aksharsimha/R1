@@ -304,11 +304,12 @@ if _workspace == "professional":
     _sidebar_title = "Workspace"
     _default_page = edu_db.get_last_portfolio_section()
 else:
-    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "Settings"]
+    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Settings"]
     _page_labels = {
         "Learning Path": "🎓  Learning Path", "Library": "📚  Knowledge Library",
         "Virtual Trading": "📈  Virtual Trading", "Leaderboard": "🏆  Leaderboard",
-        "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective", "Settings": "⚙  Settings",
+        "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective",
+        "MICHAEL": "⚡  MICHAEL", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
     _default_page = edu_db.get_last_education_section()
