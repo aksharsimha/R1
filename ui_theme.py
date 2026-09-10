@@ -12,7 +12,6 @@ Usage (in app.py):
     import ui_theme
     ui_theme.init_theme()          # once, near the top, after auth
     st.markdown(ui_theme.css(), unsafe_allow_html=True)
-    ui_theme.theme_toggle()        # renders the sidebar switch
     st.markdown(ui_theme.metric_card("Invested", "₹40,576"), unsafe_allow_html=True)
 
 Nothing here touches portfolio logic — it is pure presentation.
@@ -27,80 +26,248 @@ except ImportError:  # allows import in tests without Streamlit runtime
 
 
 # =====================================================================
-# Design tokens — two palettes sharing the same variable names
+# Design tokens — palettes sharing the same variable names
 # =====================================================================
-DARK = {
-    "bg":          "#0F1115",
-    "surface":     "#16181D",
-    "surface_2":   "#1C1F25",
-    "border":      "#262A31",
-    "border_2":    "#2E333B",
-    "text":        "#F1F3F5",
-    "text_2":      "#B7BCC4",
-    "text_3":      "#7E8590",
-    "accent":      "#5DCAA5",   # brand teal
-    "accent_weak": "#1D3A33",
-    "pos":         "#5DCAA5",   # gains
-    "neg":         "#F0997B",   # losses (calm coral, not alarm-red)
-    "warn":        "#EF9F27",
-    "warn_weak":   "#2A1F0E",
-    "neg_weak":    "#2A1A1A",
-    "pos_weak":    "#16271F",
+DARK_VARIANTS = {
+    "classic": {
+        "bg":          "#0F1115",
+        "surface":     "#16181D",
+        "surface_2":   "#1C1F25",
+        "border":      "#262A31",
+        "border_2":    "#2E333B",
+        "text":        "#F1F3F5",
+        "text_2":      "#B7BCC4",
+        "text_3":      "#7E8590",
+        "accent":      "#5DCAA5",   # brand teal
+        "accent_weak": "#1D3A33",
+        "pos":         "#5DCAA5",   # gains
+        "neg":         "#F0997B",   # losses (calm coral, not alarm-red)
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2A1F0E",
+        "neg_weak":    "#2A1A1A",
+        "pos_weak":    "#16271F",
+    },
+    "midnight": {
+        "bg":          "#000000",
+        "surface":     "#0D0E11",
+        "surface_2":   "#15161A",
+        "border":      "#1E2025",
+        "border_2":    "#282B33",
+        "text":        "#F1F3F5",
+        "text_2":      "#B0B5BF",
+        "text_3":      "#717682",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#142923",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#231A0B",
+        "neg_weak":    "#241515",
+        "pos_weak":    "#112019",
+    },
+    "void": {
+        "bg":          "#10121A",
+        "surface":     "#181A21",
+        "surface_2":   "#1D212E",
+        "border":      "#272C3D",
+        "border_2":    "#32384D",
+        "text":        "#F0F2F8",
+        "text_2":      "#B2B9CB",
+        "text_3":      "#778097",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#183636",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#271F10",
+        "neg_weak":    "#281B20",
+        "pos_weak":    "#132824",
+    },
+    "graphite": {
+        "bg":          "#0E0E0E",
+        "surface":     "#161616",
+        "surface_2":   "#1E1E1E",
+        "border":      "#2A2A2A",
+        "border_2":    "#363636",
+        "text":        "#F2F2F2",
+        "text_2":      "#B8B8B8",
+        "text_3":      "#7D7D7D",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#1C3730",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#271E0E",
+        "neg_weak":    "#281A1A",
+        "pos_weak":    "#15261F",
+    },
+    "plum": {
+        "bg":          "#120E13",
+        "surface":     "#1C181D",
+        "surface_2":   "#252128",
+        "border":      "#332A37",
+        "border_2":    "#413646",
+        "text":        "#F5F1F6",
+        "text_2":      "#C1B6C4",
+        "text_3":      "#86798A",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#233433",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B1D12",
+        "neg_weak":    "#2D1820",
+        "pos_weak":    "#172622",
+    },
+    "ash": {
+        "bg":          "#11100E",
+        "surface":     "#1A1816",
+        "surface_2":   "#22201D",
+        "border":      "#302D29",
+        "border_2":    "#3D3934",
+        "text":        "#F4F2F0",
+        "text_2":      "#C0BCB6",
+        "text_3":      "#87827B",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#22352F",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B200E",
+        "neg_weak":    "#2B1A17",
+        "pos_weak":    "#17271F",
+    },
+    "jade": {
+        "bg":          "#0F1312",
+        "surface":     "#1B1E1D",
+        "surface_2":   "#1E2422",
+        "border":      "#2A3330",
+        "border_2":    "#36413D",
+        "text":        "#F0F4F2",
+        "text_2":      "#B4BEBA",
+        "text_3":      "#7B8782",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#1C3B34",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#28200F",
+        "neg_weak":    "#291B1B",
+        "pos_weak":    "#152921",
+    },
+    "autumn": {
+        "bg":          "#14100D",
+        "surface":     "#1D1612",
+        "surface_2":   "#281F1A",
+        "border":      "#3A2D25",
+        "border_2":    "#4C3A30",
+        "text":        "#F7F2EE",
+        "text_2":      "#C8BCB3",
+        "text_3":      "#8D8075",
+        "accent":      "#D97742",   # crisp burnt orange
+        "accent_weak": "#331B0E",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B1D0E",
+        "neg_weak":    "#2B1814",
+        "pos_weak":    "#15271E",
+    },
+    "winter": {
+        "bg":          "#0C1017",
+        "surface":     "#121822",
+        "surface_2":   "#18202D",
+        "border":      "#232E40",
+        "border_2":    "#303E54",
+        "text":        "#F0F4F8",
+        "text_2":      "#B0BFCF",
+        "text_3":      "#76869B",
+        "accent":      "#70B6F6",   # icy pale blue
+        "accent_weak": "#12283D",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#271F10",
+        "neg_weak":    "#281B20",
+        "pos_weak":    "#132824",
+    },
+    "spring": {
+        "bg":          "#0D130E",
+        "surface":     "#141C15",
+        "surface_2":   "#1A241B",
+        "border":      "#273629",
+        "border_2":    "#344737",
+        "text":        "#F0F5F1",
+        "text_2":      "#B2C2B5",
+        "text_3":      "#788A7C",
+        "accent":      "#48C774",   # fresh spring green
+        "accent_weak": "#122E19",
+        "pos":         "#48C774",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#28200F",
+        "neg_weak":    "#291B1B",
+        "pos_weak":    "#132819",
+    },
+    "summer": {
+        "bg":          "#14110A",
+        "surface":     "#1D170D",
+        "surface_2":   "#292013",
+        "border":      "#3C2F1C",
+        "border_2":    "#4F3E25",
+        "text":        "#F7F4EB",
+        "text_2":      "#C9C3AF",
+        "text_3":      "#8F8870",
+        "accent":      "#F2B33D",   # vivid warm golden amber
+        "accent_weak": "#382708",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B200E",
+        "neg_weak":    "#2B1A17",
+        "pos_weak":    "#16271D",
+    },
 }
 
-LIGHT = {
-    "bg":          "#F7F6F2",
-    "surface":     "#FFFFFF",
-    "surface_2":   "#ECEAE2",
-    "border":      "#D6D3C9",
-    "border_2":    "#B9B6AB",
-    "text":        "#20201E",
-    "text_2":      "#454440",
-    "text_3":      "#62615B",
-    "accent":      "#0F6E56",
-    "accent_weak": "#CDEFE4",
-    "pos":         "#0F6E56",
-    "neg":         "#993C1D",
-    "warn":        "#854F0B",
-    "warn_weak":   "#FAEEDA",
-    "neg_weak":    "#FAECE7",
-    "pos_weak":    "#E1F5EE",
-}
+DARK = DARK_VARIANTS["classic"]
 
-THEMES = {"dark": DARK, "light": LIGHT}
-DEFAULT_THEME = "dark"
+DEFAULT_VARIANT = "classic"
+
+# Ordered list of all available theme variants for UI pickers.
+# Each entry: (session_key, display_label, swatch_hex)
+VARIANT_LABELS = [
+    ("classic",   "Classic",   "#1C1F25"),   # surface_2 of classic
+    ("midnight",  "Midnight",  "#15161A"),   # surface_2 of midnight
+    ("void",      "Void",      "#1D212E"),   # surface_2 of void
+    ("graphite",  "Graphite",  "#1E1E1E"),   # surface_2 of graphite
+    ("plum",      "Plum",      "#252128"),   # surface_2 of plum
+    ("ash",       "Ash",       "#22201D"),   # surface_2 of ash
+    ("jade",      "Jade",      "#1E2422"),   # surface_2 of jade
+    ("autumn",    "Autumn",    "#281F1A"),   # surface_2 of autumn
+    ("winter",    "Winter",    "#18202D"),   # surface_2 of winter
+    ("spring",    "Spring",    "#1A241B"),   # surface_2 of spring
+    ("summer",    "Summer",    "#292013"),   # surface_2 of summer
+]
 
 
 # =====================================================================
 # Theme state
 # =====================================================================
 def init_theme():
-    """Ensure a theme is set in session_state."""
-    if st is not None and "ui_theme" not in st.session_state:
-        st.session_state.ui_theme = DEFAULT_THEME
+    """Ensure a variant is set in session_state."""
+    if st is not None:
+        if "ui_variant" not in st.session_state:
+            st.session_state.ui_variant = DEFAULT_VARIANT
 
 
-def current_theme() -> str:
+def current_theme_variant() -> str:
     if st is None:
-        return DEFAULT_THEME
-    return st.session_state.get("ui_theme", DEFAULT_THEME)
+        return DEFAULT_VARIANT
+    return st.session_state.get("ui_variant", DEFAULT_VARIANT)
 
 
 def palette(theme: str = None) -> dict:
-    return THEMES.get(theme or current_theme(), DARK)
-
-
-def theme_toggle():
-    """Render a compact light/dark switch in the sidebar."""
-    if st is None:
-        return
-    init_theme()
-    is_dark = current_theme() == "dark"
-    label = "🌙  Dark" if is_dark else "☀️  Light"
-    if st.sidebar.button(f"{label}  ·  switch theme", use_container_width=True,
-                         key="ui_theme_toggle"):
-        st.session_state.ui_theme = "light" if is_dark else "dark"
-        st.rerun()
+    return DARK_VARIANTS.get(current_theme_variant(), DARK_VARIANTS["classic"])
 
 
 # =====================================================================
@@ -275,6 +442,26 @@ def css(theme: str = None) -> str:
         color: currentColor !important; stroke: currentColor !important;
     }}
 
+    /* ── Sidebar Buttons (Environment Switcher & Actions) ── */
+    section[data-testid="stSidebar"] button,
+    [data-testid="stSidebar"] button {{
+        padding: 4px 6px !important;
+        min-height: 32px !important;
+        height: auto !important;
+    }}
+    section[data-testid="stSidebar"] button p,
+    [data-testid="stSidebar"] button p,
+    section[data-testid="stSidebar"] button div,
+    [data-testid="stSidebar"] button div,
+    section[data-testid="stSidebar"] button span,
+    [data-testid="stSidebar"] button span {{
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        text-overflow: ellipsis !important;
+        font-size: 0.76rem !important;
+        line-height: 1.2 !important;
+    }}
+
     /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 1px solid var(--q-border); }}
     .stTabs [data-baseweb="tab"] {{ color: var(--q-text-3); font-weight: 500;
@@ -285,6 +472,103 @@ def css(theme: str = None) -> str:
     /* ── Dataframe ── */
     div[data-testid="stDataFrame"] {{ border: 1px solid var(--q-border);
         border-radius: var(--q-radius); overflow: hidden; }}
+
+    /* ── Header bar ── */
+    header[data-testid="stHeader"] {{
+        background: var(--q-bg) !important;
+        border-bottom: 1px solid var(--q-border) !important;
+    }}
+
+    /* ── File uploader ── */
+    div[data-testid="stFileUploader"] {{
+        background: var(--q-surface-2) !important;
+        border-radius: var(--q-radius-sm) !important;
+    }}
+    div[data-testid="stFileUploader"] section {{
+        background: var(--q-surface-2) !important;
+        color: var(--q-text) !important;
+        border: 1px dashed var(--q-border-2) !important;
+        border-radius: var(--q-radius-sm) !important;
+    }}
+    div[data-testid="stFileUploader"] label,
+    div[data-testid="stFileUploader"] small,
+    div[data-testid="stFileUploader"] span {{
+        color: var(--q-text-2) !important;
+    }}
+
+    /* ── Primary buttons ── */
+    .stButton > button[kind="primary"],
+    button[data-testid="baseButton-primary"] {{
+        background: var(--q-accent) !important;
+        color: var(--q-bg) !important;
+        border: none !important;
+    }}
+    .stButton > button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover {{
+        filter: brightness(1.12) !important;
+    }}
+
+    /* ── Text area & text input ── */
+    div[data-testid="stTextArea"] textarea,
+    div[data-testid="stTextInput"] input {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border: 1px solid var(--q-border) !important;
+    }}
+    div[data-testid="stTextArea"] textarea::placeholder,
+    div[data-testid="stTextInput"] input::placeholder {{
+        color: var(--q-text-3) !important;
+        opacity: 1 !important;
+    }}
+
+    /* ── Multiselect ── */
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border: 1px solid var(--q-border) !important;
+    }}
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {{
+        background: var(--q-accent-weak) !important;
+        color: var(--q-text) !important;
+    }}
+
+    /* ── Selectbox ── */
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border: 1px solid var(--q-border) !important;
+    }}
+
+    /* ── Dropdown / popover menus ── */
+    div[data-baseweb="popover"] {{
+        background: var(--q-surface) !important;
+        border: 1px solid var(--q-border) !important;
+        border-radius: var(--q-radius-sm) !important;
+    }}
+    ul[data-baseweb="menu"] {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        padding: 4px !important;
+    }}
+    li[data-baseweb="menu-item"] {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border-radius: 6px !important;
+    }}
+    li[data-baseweb="menu-item"]:hover {{
+        background: var(--q-accent-weak) !important;
+    }}
+
+    /* ── Dataframe cells & headers — force theme text/bg ── */
+    div[data-testid="stDataFrame"] .dvn-scroller,
+    div[data-testid="stDataFrame"] canvas {{
+        background: var(--q-surface) !important;
+    }}
+    div[data-testid="stDataFrame"] [role="columnheader"],
+    div[data-testid="stDataFrame"] [role="gridcell"] {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+    }}
 
     /* ── Reusable component classes ── */
     .q-card {{ background: var(--q-surface); border: 1px solid var(--q-border);
@@ -316,20 +600,31 @@ def css(theme: str = None) -> str:
         font-size: .9rem; }}
     .quest-profile-card {{ background: var(--q-surface-2);
         border: 1px solid var(--q-border); border-radius: var(--q-radius);
-        padding: 28px 14px 14px; display: flex; align-items: center; gap: 10px;
-        position: relative; }}
+        padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;
+        position: relative; box-sizing: border-box; overflow: hidden; }}
+    .quest-profile-header {{ display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; }}
     .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
         display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}
     .quest-profile-avatar {{ width: 38px; height: 38px; flex: 0 0 38px;
         display: grid; place-items: center; overflow: hidden; border-radius: 50%;
         background: var(--q-accent-weak); color: var(--q-accent); font-weight: 600; }}
     .quest-profile-avatar img {{ width: 100%; height: 100%; object-fit: cover; }}
-    .quest-profile-copy {{ min-width: 0; }}
+    .quest-profile-copy {{ flex: 1 1 auto; min-width: 0; overflow: hidden; }}
     .quest-profile-label {{ font-size: .68rem; color: var(--q-text-3);
         text-transform: uppercase; letter-spacing: .6px; }}
-    .quest-profile-name {{ font-size: .95rem; color: var(--q-text);
-        font-weight: 500; margin-top: 2px; }}
-    .quest-profile-user {{ font-size: .78rem; color: var(--q-accent); }}
+    .quest-profile-name {{ font-size: .92rem; color: var(--q-text);
+        font-weight: 600; margin-top: 0; white-space: nowrap !important;
+        overflow: hidden !important; text-overflow: ellipsis !important;
+        word-break: keep-all !important; line-height: 1.25; }}
+    .quest-profile-user {{ font-size: .78rem; color: var(--q-accent);
+        white-space: nowrap !important; overflow: hidden !important;
+        text-overflow: ellipsis !important; word-break: keep-all !important; line-height: 1.2; }}
+    .quest-profile-growth {{ display: flex; justify-content: space-between; align-items: center;
+        width: 100%; padding-top: 6px; border-top: 1px solid var(--q-border); box-sizing: border-box; }}
+    .quest-profile-growth-label {{ font-size: .65rem; color: var(--q-text-3);
+        text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }}
+    .quest-profile-growth-val {{ font-size: .85rem; font-weight: 700;
+        font-family: 'JetBrains Mono', monospace; white-space: nowrap !important; }}
     .quest-nav-label {{ color: var(--q-text-3); font-size: .7rem; text-transform: uppercase;
         letter-spacing: .08em; margin: 16px 0 8px; }}
     .quest-settings-sidebar-title {{ color: var(--q-text); font-size: 1.2rem;
@@ -446,7 +741,8 @@ def css(theme: str = None) -> str:
             font-size: 0.97rem !important;
         }}
         section[data-testid="stSidebar"] .stButton > button {{
-            min-height: 44px !important;
+            min-height: 34px !important;
+            padding: 4px 6px !important;
         }}
 
         /* Sidebar nav items bigger tap area */
@@ -456,7 +752,8 @@ def css(theme: str = None) -> str:
 
         /* Profile card compact */
         .quest-profile-card {{
-            padding: 20px 12px 12px !important;
+            padding: 10px 12px !important;
+            gap: 6px !important;
         }}
 
         /* Expanders full width */

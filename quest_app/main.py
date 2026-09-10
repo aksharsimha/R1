@@ -80,6 +80,18 @@ tax_detective_db.set_data_dir(_user_data_dir, username=_username)
 st.session_state._quest_username = _username
 st.session_state._quest_data_dir = _user_data_dir
 
+# --- Auto-SIP Check ---
+# Check for any pending virtual SIP deposits on login/reload so balance is globally updated
+import virtual_trading as vt_engine
+_tmp_acc = vt_engine.load_account(_username, _user_data_dir)
+_new_sip = _tmp_acc.pop("_new_sip_added", 0.0)
+if _new_sip > 0:
+    vt_engine.save_account(_tmp_acc, _username, _user_data_dir)
+    _prog = edu_db.load_progress()
+    _prog["virtual_balance"] = float(_prog.get("virtual_balance", 15000.0)) + _new_sip
+    edu_db.save_progress(_prog)
+# ----------------------
+
 # Re-import HOLDINGS_FILE after redirection so it points to user's directory
 from portfolio_ledger import HOLDINGS_FILE
 
@@ -131,6 +143,11 @@ if _early_page == "Settings":
         "Settings sections", settings._SECTIONS, key="settings_sidebar_section",
         label_visibility="collapsed"
     )
+    
+    if st.sidebar.button("Sign out", key="settings_signout_trigger", use_container_width=True):
+        st.session_state.show_signout_dialog = True
+        st.rerun()
+        
     settings.render(_user_info, _settings_section)
     st.stop()
 
@@ -168,6 +185,27 @@ if st.sidebar.button("⚙  Settings", key="sidebar_settings_btn", help="Open set
     st.rerun()
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
+def _render_profile_card(placeholder, user_info, username, avatar_markup, p_growth):
+    _g_val = p_growth.get("growth_abs", 0) if isinstance(p_growth, dict) else 0
+    _g_color = "#34d399" if _g_val >= 0 else "#f87171"
+    _g_sign = "+" if _g_val >= 0 else ""
+    _disp_name = user_info.get("display_name", username) or username
+    placeholder.markdown(f"""
+    <div class="quest-profile-card">
+        <div class="quest-profile-header">
+            <div class="quest-profile-avatar">{avatar_markup}</div>
+            <div class="quest-profile-copy">
+                <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
+                <div class="quest-profile-user" title="@{username}">@{username}</div>
+            </div>
+        </div>
+        <div class="quest-profile-growth">
+            <span class="quest-profile-growth-label">Portfolio Growth</span>
+            <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 _profile_placeholder = st.sidebar.empty()
 
 # FEATURE A: Update Profile Card with Growth Stat early (so it shows on all tabs)
@@ -180,21 +218,7 @@ try:
         _tmp_sum = {"total_value": 0.0}
     
     p_growth = get_portfolio_growth(_tmp_df, _tmp_sum)
-    g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
-    g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
-    _profile_placeholder.markdown(f"""
-    <div class="quest-profile-card">
-        <div class="quest-profile-avatar">{_avatar_markup}</div>
-        <div class="quest-profile-copy" style="flex:1;">
-            <div class="quest-profile-name">{_user_info['display_name']}</div>
-            <div class="quest-profile-user">@{_user_info['username']}</div>
-        </div>
-        <div style="text-align: right; line-height: 1.2;">
-            <div style="font-size: 0.65rem; color: var(--q-text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Growth</div>
-            <div style="color: {g_color}; font-size: 0.85rem; font-weight: 600;">{g_sign}₹{p_growth["growth_abs"]:,.0f}</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    _render_profile_card(_profile_placeholder, _user_info, _username, _avatar_markup, p_growth)
 except Exception:
     pass
 
@@ -218,8 +242,8 @@ if _username == "demo_guest":
     st.sidebar.markdown(
         f"""
         <div style='padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;'>
-            <div style='font-size: 0.9rem; font-weight: 600; color: #f8fafc;'>{_user_info.get('display_name', 'Demo User')}</div>
-            <div style='font-size: 0.75rem; color: #94a3b8;'>@{_username}</div>
+            <div style='font-size: 0.9rem; font-weight: 600; color: var(--q-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>{_user_info.get('display_name', 'Demo User')}</div>
+            <div style='font-size: 0.75rem; color: var(--q-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>@{_username}</div>
         </div>
         """, unsafe_allow_html=True
     )
@@ -295,21 +319,21 @@ with _ws_col2:
             st.rerun()
 
 if _workspace == "professional":
-    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
+    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings", "Wallet"]
     _page_labels = {
         "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
         "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
-        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Settings": "⚙  Settings",
+        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Workspace"
     _default_page = edu_db.get_last_portfolio_section()
 else:
-    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Settings"]
+    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Wallet", "Settings"]
     _page_labels = {
         "Learning Path": "🎓  Learning Path", "Library": "📚  Knowledge Library",
         "Virtual Trading": "📈  Virtual Trading", "Leaderboard": "🏆  Leaderboard",
         "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective",
-        "MICHAEL": "⚡  MICHAEL", "Settings": "⚙  Settings",
+        "MICHAEL": "⚡  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
     _default_page = edu_db.get_last_education_section()
@@ -322,6 +346,8 @@ _nav_pages = [page for page in _valid_pages if page != "Settings"]
 _page_idx = _nav_pages.index(_query_page) if _query_page in _nav_pages else 0
 _nav_labels = [_page_labels[page] for page in _nav_pages]
 
+_nav_radio_key = f"nav_section_{_workspace}_{_username}"
+
 # Track workspace switches to reset nav state cleanly
 if "last_active_workspace" not in st.session_state:
     st.session_state.last_active_workspace = _workspace
@@ -330,23 +356,29 @@ if st.session_state.last_active_workspace != _workspace:
     st.session_state.last_active_workspace = _workspace
     if "nav_section" in st.session_state:
         del st.session_state["nav_section"]
+    if _nav_radio_key in st.session_state:
+        del st.session_state[_nav_radio_key]
 
-# Two-way sync: only sync nav_section from query params if query param changed programmatically
+# Two-way sync: keep nav state and sidebar radio widget synced with query page
+target_lbl = _page_labels.get(_query_page)
 if "last_active_page" not in st.session_state:
     st.session_state.last_active_page = _query_page
+    if target_lbl in _nav_labels:
+        st.session_state.nav_section = target_lbl
+        st.session_state[_nav_radio_key] = target_lbl
 
 if _query_page != st.session_state.last_active_page:
     st.session_state.last_active_page = _query_page
-    target_lbl = _page_labels.get(_query_page)
     if target_lbl in _nav_labels:
         st.session_state.nav_section = target_lbl
+        st.session_state[_nav_radio_key] = target_lbl
 
 st.sidebar.markdown(f"<div class='quest-nav-label'>{_sidebar_title}</div>", unsafe_allow_html=True)
 _selected_label = st.sidebar.radio(
     "Navigate",
     _nav_labels,
     index=_page_idx,
-    key=f"nav_section_{_workspace}_{_username}",
+    key=_nav_radio_key,
     label_visibility="collapsed",
 )
 section = ("Settings" if _query_page == "Settings" else
@@ -395,7 +427,9 @@ if section == "Settings":
     st.stop()
 
 if section == "Learning Path":
+    import importlib
     import quest_app.tabs.edu_overview as tb
+    importlib.reload(tb)
     tb.render(_user_info)
     st.stop()
 
@@ -520,21 +554,7 @@ with st.spinner("Analyzing portfolio data..."):
 
         # FEATURE A: Update Profile Card with Growth Stat (runs every rerun — cheap)
         p_growth = get_portfolio_growth(df, summary)
-        g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
-        g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
-        _profile_placeholder.markdown(f"""
-        <div class="quest-profile-card">
-            <div class="quest-profile-avatar">{_avatar_markup}</div>
-            <div class="quest-profile-copy" style="flex:1;">
-                <div class="quest-profile-name">{_user_info['display_name']}</div>
-                <div class="quest-profile-user">@{_user_info['username']}</div>
-            </div>
-            <div style="text-align: right; line-height: 1.2;">
-                <div style="font-size: 0.65rem; color: var(--q-text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Growth</div>
-                <div style="color: {g_color}; font-size: 0.85rem; font-weight: 600;">{g_sign}₹{p_growth["growth_abs"]:,.0f}</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        _render_profile_card(_profile_placeholder, _user_info, _username, _avatar_markup, p_growth)
 
     except Exception as e:
         st.error(f"Error fetching market data: {e}")
@@ -733,7 +753,9 @@ elif section == "Planner":
     import quest_app.tabs.planner as tb
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
 elif section == "Learning Path":
+    import importlib
     import quest_app.tabs.edu_overview as tb
+    importlib.reload(tb)
     tb.render(_user_info)
 elif section == "Library":
     import quest_app.tabs.education as tb
@@ -750,3 +772,7 @@ elif section == "Virtual Trading":
 elif section == "Leaderboard":
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
+elif section == "Wallet":
+    import quest_app.tabs.wallet as tb
+    tb.render(_user_info)
+

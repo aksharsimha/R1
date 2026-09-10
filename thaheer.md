@@ -1,5 +1,58 @@
 # Thaheer Update Log
 
+## 2026-09-11
+
+### 🎨 Discord Nitro-Style Cyberpunk Profile System & Chat Modal Architecture
+- **Discord-Style Cyberpunk Profile Card Modal in Chat (`quest_app/tabs/chat.py` & `quest_app/settings.py`)**:
+  - Implemented modular `build_discord_profile_card_html()` in `quest_app/settings.py` for shared rendering between Settings and Chat dialogs.
+  - Clicking on a user's avatar or display name in the Chat Header or on any message bubble seamlessly launches their full Cyberpunk Profile Card modal (`@st.dialog`) directly within the chat view.
+  - Eliminated the visible `__chat_profile_trigger__` button, switching to a completely off-screen, zero-layout headless trigger slot (`.st-key-chat_hdr_prof_slot`).
+  - Added direct click event interception (`onclick`) with safe fallback navigation to keep users in the conversation while opening the profile modal.
+- **Unified Single Theme Color Wheel & Intensity System**:
+  - Added a central color picker that dynamically customizes the entire card palette at once: neon accent borders, glow effects, circuit board traces, and ambient highlights.
+  - Added selectable intensity level control to scale neon bloom and holographic radiation.
+- **Basic vs. Premium Member Tier Architecture**:
+  - Added clear tier indicators: `Basic Member` badge vs. `PREMIUM PRO` crown pill badge.
+  - Premium-exclusive animated effects: Neon Border Pulse, Holographic Scanline, Circuit Power Surge, RGB Chroma Orbit, and Glitch Aura.
+  - Cleaned up mock labels, watermarks, and redundant action icons for an authentic, high-finish UI.
+- **Two-Way Routing & Navigation State Synchronization (`quest_app/main.py`)**:
+  - Resolved sidebar radio synchronization issue where query parameter page routing (e.g. `?page=Chat`) could get overridden by cached radio state and kick users back to Overview.
+  - Added dynamic sync between `_query_page`, `st.session_state.last_active_page`, and `nav_section_{workspace}_{username}`.
+
+---
+
+## 2026-09-10
+
+### 💎 Premium Profile Customization System (Discord Nitro-Inspired for Fintech)
+- **Unified Profile Customization Section in Settings (`quest_app/settings.py`)**:
+  - Re-architected Account Settings to feature an integrated **Profile Customization** hub with seamless live preview sync.
+  - Implemented an interactive two-column layout with real-time controls on the left and a sticky live-updating profile preview card on the right.
+  - Added session state reactive preview (`_customize_preview`) updating immediately as options are adjusted.
+- **Free vs. PRO Subscription Tier Architecture**:
+  - **Free Tier**: Complete control over display name, bio/summary, avatar image upload/replacement/deletion, and 6 instant accent color presets (Teal, Indigo, Violet, Amber, Coral, Slate).
+  - **PRO Tier (`🔒 PRO`)**:
+    - Custom Profile Banner upload (up to 300KB) with instant preview, linear gradients, and curated financial presets (Fintech Matrix, Gold Vault, Aurora Market, Institutional Dark).
+    - 5 Premium Avatar Frames: Sovereign Gold, Platinum Edge, Emerald Prism, Sapphire Frost, and Obsidian Shadow with customized box-shadows and border glows.
+    - Custom Accent Color picker with full hex spectrum support.
+    - Profile Effects: Subtle Glow, Gradient Border, and Pulse Ring animation.
+    - Profile Themes: Default Obsidian, Midnight Capital, Aurora Equity, Charcoal Terminal, and Royal Vault gradient backgrounds.
+    - Custom Investor Status line (e.g. "📈 Bullish on NIFTY", max 50 chars).
+    - Premium Typography options (Inter, JetBrains Mono, Space Grotesk, DM Sans).
+    - Toggleable **`⚡ PRO`** badge rendered alongside display name.
+- **Subtle Fintech Aesthetic, Non-Intrusive Gating & Live Demo Mode**:
+  - Locked features feature clear, elegant `🔒 PRO` badges.
+  - Non-PRO user interactions trigger lightweight toast prompts (`🔒 This feature requires QUEST PRO`) and an inline "⚡ Unlock QUEST PRO" card with plan details (₹199/month, cancel anytime).
+  - Built-in **👑 Test Drive PRO Features** toggle allowing evaluators and users to test-drive all PRO customizations with one click.
+- **Persistent Cloud Data Layer (`firebase_db.py`)**:
+  - Added `get_profile_customization(username)` with comprehensive fallback defaults.
+  - Added `save_profile_customization(username, customization_dict)` to persist customization settings safely to the `users/{username}` Firestore document.
+  - Added `set_pro_status(username, is_pro)` administrative toggle.
+- **Universal Sidebar & Global Design Integration (`quest_app/main.py` & `ui_theme.py`)**:
+  - Updated sidebar profile card to reflect the user's active avatar frame, PRO badge, custom status line, and custom accent color.
+  - Injected `profile_customization_css()` into `ui_theme.py` and `quest_app/main.py` for global access to frame glows, animation keyframes, badge pills, and theme backgrounds with reduced-motion accessibility support.
+
+---
+
 ## 2026-09-08
 
 ### ⚡ Portfolio MICHAEL AI Chatbot in Education Workspace

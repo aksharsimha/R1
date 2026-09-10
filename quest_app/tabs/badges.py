@@ -584,13 +584,11 @@ def _inject_badges_css():
     font-size: 2.1rem;
     font-weight: 700;
     letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #c084fc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--q-text);
     margin: 0 0 4px 0;
 }
 .qb-header p {
-    color: #94a3b8;
+    color: var(--q-text-2);
     font-size: 0.95rem;
     margin: 0;
 }
@@ -603,8 +601,8 @@ def _inject_badges_css():
     margin-bottom: 1rem;
 }
 .qb-stat-card {
-    background: linear-gradient(180deg, rgba(30, 27, 50, 0.75) 0%, rgba(18, 16, 32, 0.9) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.22);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 14px;
     padding: 16px 18px;
     display: flex;
@@ -615,15 +613,14 @@ def _inject_badges_css():
 }
 .qb-stat-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(168, 85, 247, 0.45);
-    box-shadow: 0 12px 28px -4px rgba(168, 85, 247, 0.15);
+    border-color: var(--q-border-2);
 }
 .qb-stat-label {
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    color: #a78bfa;
+    color: var(--q-accent);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -632,35 +629,25 @@ def _inject_badges_css():
     font-size: 1.65rem;
     font-weight: 700;
     font-family: 'JetBrains Mono', monospace;
-    color: #f8fafc;
+    color: var(--q-text);
     margin-top: 6px;
 }
 .qb-stat-sub {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--q-text-3);
     margin-top: 2px;
 }
 
 /* ── Learning Streak Card ── */
 .qb-streak-card {
-    background: linear-gradient(135deg, rgba(30, 20, 50, 0.8) 0%, rgba(15, 12, 28, 0.95) 100%);
-    border: 1px solid rgba(192, 132, 252, 0.3);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 16px;
     padding: 20px 24px;
     box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.6);
     margin-bottom: 1.5rem;
     position: relative;
     overflow: hidden;
-}
-.qb-streak-card::before {
-    content: '';
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 160px;
-    height: 160px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
-    pointer-events: none;
 }
 .qb-streak-top {
     display: flex;
@@ -673,19 +660,19 @@ def _inject_badges_css():
 .qb-streak-title {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--q-text);
     display: flex;
     align-items: center;
     gap: 8px;
 }
 .qb-streak-count-pill {
-    background: rgba(168, 85, 247, 0.18);
-    border: 1px solid rgba(168, 85, 247, 0.4);
+    background: var(--q-accent-weak);
+    border: 1px solid var(--q-border-2);
     padding: 4px 12px;
     border-radius: 999px;
     font-size: 0.82rem;
     font-weight: 600;
-    color: #e9d5ff;
+    color: var(--q-accent);
     font-family: 'JetBrains Mono', monospace;
 }
 .qb-days-row {
@@ -696,8 +683,8 @@ def _inject_badges_css():
 }
 .qb-day-bubble {
     flex: 1;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 12px;
     padding: 10px 4px;
     text-align: center;
@@ -708,45 +695,44 @@ def _inject_badges_css():
     transition: all 0.2s ease;
 }
 .qb-day-bubble.active {
-    background: linear-gradient(180deg, rgba(168, 85, 247, 0.25) 0%, rgba(139, 92, 246, 0.1) 100%);
-    border-color: rgba(168, 85, 247, 0.6);
-    box-shadow: 0 0 14px rgba(168, 85, 247, 0.2);
+    background: var(--q-accent-weak);
+    border-color: var(--q-accent);
 }
 .qb-day-bubble.today {
-    border-color: #c084fc;
-    outline: 2px solid rgba(192, 132, 252, 0.4);
+    border-color: var(--q-accent);
+    outline: 2px solid var(--q-accent-weak);
 }
 .qb-day-letter {
     font-size: 0.75rem;
     font-weight: 700;
-    color: #94a3b8;
+    color: var(--q-text-3);
     text-transform: uppercase;
 }
 .qb-day-bubble.active .qb-day-letter {
-    color: #e9d5ff;
+    color: var(--q-accent);
 }
 .qb-day-icon {
     font-size: 0.95rem;
 }
 .qb-day-date {
     font-size: 0.7rem;
-    color: #64748b;
+    color: var(--q-text-3);
     font-family: 'JetBrains Mono', monospace;
 }
 .qb-day-bubble.active .qb-day-date {
-    color: #c084fc;
+    color: var(--q-accent);
 }
 .qb-streak-bar-bg {
     width: 100%;
     height: 7px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--q-border);
     border-radius: 999px;
     overflow: hidden;
     margin-top: 6px;
 }
 .qb-streak-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
+    background: var(--q-accent);
     border-radius: 999px;
     transition: width 0.6s ease;
 }
@@ -759,8 +745,8 @@ def _inject_badges_css():
     margin-bottom: 2rem;
 }
 .qb-card {
-    background: linear-gradient(180deg, rgba(24, 22, 38, 0.9) 0%, rgba(15, 14, 25, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 16px;
     padding: 20px;
     display: flex;
@@ -771,16 +757,16 @@ def _inject_badges_css():
     transition: all 0.22s cubic-bezier(.22,.61,.36,1);
 }
 .qb-card.unlocked {
-    border-color: rgba(168, 85, 247, 0.35);
-    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5), 0 0 16px -4px rgba(168, 85, 247, 0.12);
+    border-color: var(--q-border-2);
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5);
     animation: qb-badge-float 3.4s ease-in-out infinite;
     will-change: transform;
 }
 .qb-card.unlocked:hover {
     animation-play-state: paused;
     transform: translateY(-5px) scale(1.035);
-    border-color: rgba(168, 85, 247, 0.65);
-    box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.65), 0 0 24px rgba(168, 85, 247, 0.25);
+    border-color: var(--q-accent);
+    box-shadow: 0 14px 32px -4px rgba(0, 0, 0, 0.65);
     transition: transform 0.28s cubic-bezier(.22,.61,.36,1), border-color 0.22s ease, box-shadow 0.22s ease;
 }
 @keyframes qb-badge-float {
@@ -797,13 +783,13 @@ def _inject_badges_css():
     }
 }
 .qb-card.locked {
-    border-color: rgba(255, 255, 255, 0.05);
-    background: rgba(18, 17, 26, 0.6);
+    border-color: var(--q-border);
+    background: var(--q-surface-2);
     opacity: 0.88;
     animation: none;
 }
 .qb-card.locked:hover {
-    border-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--q-border-2);
     opacity: 1;
 }
 .qb-card-top {
@@ -858,38 +844,38 @@ def _inject_badges_css():
     letter-spacing: 0.5px;
 }
 .qb-status-tag.unlocked {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: var(--q-pos-weak);
+    color: var(--q-pos);
+    border: 1px solid var(--q-pos);
 }
 .qb-status-tag.locked {
-    background: rgba(255, 255, 255, 0.06);
-    color: #94a3b8;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--q-surface-2);
+    color: var(--q-text-3);
+    border: 1px solid var(--q-border);
 }
 .qb-card-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--q-text);
     margin: 0 0 4px 0;
 }
 .qb-card-cat {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #a78bfa;
+    color: var(--q-accent);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
 }
 .qb-card-desc {
     font-size: 0.83rem;
-    color: #94a3b8;
+    color: var(--q-text-2);
     line-height: 1.4;
     margin-bottom: 14px;
     min-height: 2.4rem;
 }
 .qb-card-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--q-border);
     padding-top: 12px;
     display: flex;
     flex-direction: column;
@@ -899,45 +885,45 @@ def _inject_badges_css():
     display: flex;
     justify-content: space-between;
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--q-text-3);
     font-family: 'JetBrains Mono', monospace;
 }
 .qb-progress-bar {
     width: 100%;
     height: 5px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--q-border);
     border-radius: 999px;
     overflow: hidden;
 }
 .qb-progress-fill {
     height: 100%;
-    background: #34d399;
+    background: var(--q-pos);
     border-radius: 999px;
 }
 .qb-progress-fill.locked {
-    background: #8b5cf6;
+    background: var(--q-accent);
 }
 .qb-card-reward {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 0.78rem;
-    color: #facc15;
+    color: var(--q-warn);
     font-weight: 600;
 }
 .qb-unlock-date {
     font-size: 0.72rem;
-    color: #64748b;
+    color: var(--q-text-3);
     font-style: italic;
 }
 
 /* ── Details Card / Modal ── */
 .qb-detail-modal {
-    background: linear-gradient(135deg, rgba(28, 22, 45, 0.98) 0%, rgba(16, 14, 26, 0.98) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.4);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border-2);
     border-radius: 18px;
     padding: 24px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(168, 85, 247, 0.2);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
     margin-bottom: 2rem;
     animation: q-fade 0.25s ease-out;
 }
@@ -954,14 +940,14 @@ def _inject_badges_css():
 .qb-detail-title {
     font-size: 1.6rem;
     font-weight: 800;
-    color: #f8fafc;
+    color: var(--q-text);
     margin: 0 0 6px 0;
 }
 
 /* ── Recently Unlocked Feed ── */
 .qb-recent-section {
-    background: linear-gradient(180deg, rgba(22, 19, 36, 0.7) 0%, rgba(14, 13, 22, 0.85) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 2rem;
@@ -969,7 +955,7 @@ def _inject_badges_css():
 .qb-recent-title {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--q-text);
     margin-bottom: 14px;
     display: flex;
     align-items: center;
@@ -981,8 +967,8 @@ def _inject_badges_css():
     gap: 12px;
 }
 .qb-recent-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(168, 85, 247, 0.2);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 12px;
     padding: 12px 14px;
     display: flex;
@@ -992,22 +978,22 @@ def _inject_badges_css():
 }
 .qb-recent-item:hover {
     transform: translateY(-2px);
-    background: rgba(168, 85, 247, 0.08);
+    background: var(--q-accent-weak);
 }
 .qb-recent-name {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #f8fafc;
+    color: var(--q-text);
 }
 .qb-recent-date {
     font-size: 0.72rem;
-    color: #94a3b8;
+    color: var(--q-text-3);
 }
 .qb-recent-xp {
     margin-left: auto;
     font-size: 0.8rem;
     font-weight: 700;
-    color: #34d399;
+    color: var(--q-pos);
     font-family: 'JetBrains Mono', monospace;
 }
 
@@ -1015,7 +1001,7 @@ def _inject_badges_css():
 .qb-empty-state {
     text-align: center;
     padding: 32px 20px;
-    color: #94a3b8;
+    color: var(--q-text-3);
 }
 .qb-empty-icon {
     font-size: 2.5rem;
@@ -1064,22 +1050,22 @@ def render_statistics(total_xp: int, unlocked_count: int, total_badges: int,
 <div class="qb-stats-grid">
     <div class="qb-stat-card">
         <div class="qb-stat-label">⭐ Total XP</div>
-        <div class="qb-stat-val" style="color: #facc15;">{total_xp:,}</div>
+        <div class="qb-stat-val" style="color: var(--q-warn);">{total_xp:,}</div>
         <div class="qb-stat-sub">Lifetime Earned</div>
     </div>
     <div class="qb-stat-card">
         <div class="qb-stat-label">🏆 Badges</div>
-        <div class="qb-stat-val" style="color: #38bdf8;">{unlocked_count} <span style="font-size: 1rem; color: #64748b;">/ {total_badges}</span></div>
+        <div class="qb-stat-val" style="color: var(--q-accent);">{unlocked_count} <span style="font-size: 1rem; color: var(--q-text-3);">/ {total_badges}</span></div>
         <div class="qb-stat-sub">{unlocked_pct}% Unlocked</div>
     </div>
     <div class="qb-stat-card">
         <div class="qb-stat-label">🎓 Levels</div>
-        <div class="qb-stat-val" style="color: #a78bfa;">{completed_levels_count} <span style="font-size: 1rem; color: #64748b;">/ {total_levels}</span></div>
+        <div class="qb-stat-val" style="color: var(--q-accent);">{completed_levels_count} <span style="font-size: 1rem; color: var(--q-text-3);">/ {total_levels}</span></div>
         <div class="qb-stat-sub">Curriculum Progress</div>
     </div>
     <div class="qb-stat-card">
         <div class="qb-stat-label">🔥 Learning Streak</div>
-        <div class="qb-stat-val" style="color: #fb923c;">{streak_count} <span style="font-size: 1rem; color: #64748b;">Days</span></div>
+        <div class="qb-stat-val" style="color: var(--q-warn);">{streak_count} <span style="font-size: 1rem; color: var(--q-text-3);">Days</span></div>
         <div class="qb-stat-sub">Active Routine</div>
     </div>
 </div>
@@ -1118,9 +1104,9 @@ def render_streak(streak_count: int, week_days: list[dict]):
     <div class="qb-days-row">
         {day_bubbles_html}
     </div>
-    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8;">
+    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--q-text-3);">
         <span>Current Routine Progress</span>
-        <span style="font-weight:600; color:#c084fc;">{streak_count} Days Consecutive</span>
+        <span style="font-weight:600; color:var(--q-accent);">{streak_count} Days Consecutive</span>
     </div>
     <div class="qb-streak-bar-bg">
         <div class="qb-streak-bar-fill" style="width: {streak_pct}%;"></div>
@@ -1142,9 +1128,9 @@ def render_interactive_details(selected_badge: dict):
                          if unlocked 
                          else '<span class="qb-status-tag locked">🔒 Badge Locked</span>')
 
-    unlock_info_html = (f'<div style="color: #34d399; font-size: 0.85rem; margin-top: 8px;">🎉 Unlocked on <strong>{selected_badge["unlock_date_str"]}</strong> • Earned +{selected_badge["reward_xp"]} XP</div>'
+    unlock_info_html = (f'<div style="color: var(--q-pos); font-size: 0.85rem; margin-top: 8px;">🎉 Unlocked on <strong>{selected_badge["unlock_date_str"]}</strong> • Earned +{selected_badge["reward_xp"]} XP</div>'
                         if unlocked
-                        else f'<div style="color: #94a3b8; font-size: 0.85rem; margin-top: 8px;">🎯 Target: <strong>{selected_badge["progress"]} / {selected_badge["target"]}</strong> ({selected_badge["progress_pct"]}%) • Reward: +{selected_badge["reward_xp"]} XP</div>')
+                        else f'<div style="color: var(--q-text-2); font-size: 0.85rem; margin-top: 8px;">🎯 Target: <strong>{selected_badge["progress"]} / {selected_badge["target"]}</strong> ({selected_badge["progress_pct"]}%) • Reward: +{selected_badge["reward_xp"]} XP</div>')
 
     details_html = f"""
 <div class="qb-detail-modal">
@@ -1155,11 +1141,11 @@ def render_interactive_details(selected_badge: dict):
         <div class="qb-detail-info">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
                 {status_badge_html}
-                <span style="color:#a78bfa; font-size:0.75rem; text-transform:uppercase; font-weight:600;">{selected_badge['category']}</span>
+                <span style="color:var(--q-accent); font-size:0.75rem; text-transform:uppercase; font-weight:600;">{selected_badge['category']}</span>
             </div>
             <div class="qb-detail-title">{selected_badge['name']}</div>
-            <div style="color:#e2e8f0; font-size:0.95rem; margin-bottom:8px;">{selected_badge['description']}</div>
-            <div style="color:#94a3b8; font-size:0.85rem; background:rgba(255,255,255,0.04); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+            <div style="color:var(--q-text); font-size:0.95rem; margin-bottom:8px;">{selected_badge['description']}</div>
+            <div style="color:var(--q-text-2); font-size:0.85rem; background:var(--q-surface-2); padding:10px 14px; border-radius:10px; border:1px solid var(--q-border);">
                 <strong>Requirement:</strong> {selected_badge['requirement_text']}
             </div>
             {unlock_info_html}
@@ -1184,7 +1170,7 @@ def render_recently_unlocked(unlocked_badges: list[dict]):
         inner_content = """
 <div class="qb-empty-state">
     <div class="qb-empty-icon">🎖️</div>
-    <div style="font-weight:600; color:#e2e8f0; margin-bottom:4px;">No Badges Unlocked Yet</div>
+    <div style="font-weight:600; color:var(--q-text); margin-bottom:4px;">No Badges Unlocked Yet</div>
     <div style="font-size:0.85rem;">Start completing educational lessons in the Library or Learning Path to earn achievements!</div>
 </div>
 """

@@ -431,7 +431,9 @@ def update_username(username: str, password: str, new_username: str) -> tuple[bo
 
 def save_avatar(username: str, avatar_data: str | None) -> None:
     """Store or remove a small base64 avatar in the profile document."""
-    get_db().collection("users").document(username).update({"avatar": avatar_data})
+    if not username:
+        return
+    get_db().collection("users").document(username).set({"avatar": avatar_data}, merge=True)
 
 
 def get_all_users() -> list[str]:
@@ -653,3 +655,178 @@ def save_edu_progress(username: str, progress: dict):
         })
     except Exception:
         pass
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
+# OAuth Connections
+# ──────────────────────────────────────────────────────────────────────────────
+# Firestore path:  users/{username}/connections/{provider}
+#
+# Required Firestore security rule (add alongside existing rules):
+#
+#   match /users/{username}/connections/{provider} {
+#     // Any authenticated QUEST user may read connections (public display).
+#     allow read: if request.auth != null;
+#     // Only the account owner may write or delete their own connections.
+#     allow write, delete: if request.auth != null
+#                          && request.auth.token.username == username;
+#   }
+# ──────────────────────────────────────────────────────────────────────────────
+
+def save_oauth_connection(username: str, provider: str, profile_data: dict) -> None:
+    """
+    Write (or overwrite) an OAuth connection document for a user.
+
+    Firestore path: users/{username}/connections/{provider}
+
+    The document is guaranteed to contain the canonical contract fields:
+      provider, provider_user_id, display_name, profile_url, avatar_url,
+      verified, connected_at.
+
+    Access tokens are never written — the caller is responsible for ensuring
+    none are present in profile_data.
+
+    Args:
+        username:     QUEST username (document owner).
+        provider:     "discord" | "google" | "linkedin".
+        profile_data: Normalised dict produced by oauth_connections._normalise().
+    """
+    db = get_db()
+    try:
+        db.collection("users").document(username) \
+          .collection("connections").document(provider) \
+          .set(profile_data)
+    except Exception as exc:
+        # Surface the error without crashing — caller may log or display it
+        raise RuntimeError(f"Failed to save OAuth connection ({provider}): {exc}") from exc
+
+
+def get_oauth_connections(username: str) -> dict:
+    """
+    Return all OAuth connection documents for any QUEST user.
+
+    This is a public read operation intended for profile display — it fetches
+    data for *any* username, not just the currently authenticated user.
+    Firestore security rules restrict writes to the owner.
+
+    Args:
+        username:  Any valid QUEST username.
+
+    Returns:
+        Dict[provider_name, connection_dict].
+        Empty dict if the user has no connections or on any read error.
+    """
+    db = get_db()
+    try:
+        docs = db.collection("users").document(username) \
+                 .collection("connections").stream()
+        return {doc.id: doc.to_dict() for doc in docs}
+    except Exception:
+        return {}
+
+
+def remove_oauth_connection(username: str, provider: str) -> None:
+    """
+    Delete a single OAuth connection document.
+
+    Firestore path: users/{username}/connections/{provider}
+
+    Args:
+        username:  QUEST username (must be the authenticated user; enforced
+                   by Firestore security rules at the database level).
+        provider:  "discord" | "google" | "linkedin".
+    """
+    db = get_db()
+    try:
+        db.collection("users").document(username) \
+          .collection("connections").document(provider) \
+          .delete()
+    except Exception as exc:
+        raise RuntimeError(f"Failed to remove OAuth connection ({provider}): {exc}") from exc
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Discord-Style Banner & Profile Customization Schema
+# ──────────────────────────────────────────────────────────────────────────────
+
+_DEFAULT_BANNER_CONFIG = {
+    "bannerType": "color",          # 'color' | 'image'
+    "bannerValue": "#5865F2",       # Discord Blurple default or hex / data URL
+    "themeColor": "#5865F2",        # primary / accent hex
+    "cardBackground": "#111214",    # Discord dark default
+    "isPremium": False,             # Free/Basic vs Pro/Premium tier
+    "animationEffect": "none",      # 'none' | 'neon_border' | 'holo_scanline' | 'circuit_surge' | 'rgb_orbit' | 'glitch_aura'
+    "animationIntensity": 2,        # 1 (Subtle), 2 (Balanced), 3 (High Voltage)
+}
+
+
+
+def is_user_pro(username: str) -> bool:
+    """Check if a user has an active Pro subscription."""
+    if not username:
+        return False
+    try:
+        profile = get_user_profile(username)
+        return bool(
+            profile.get("is_pro")
+            or profile.get("is_premium")
+            or profile.get("profile_customization", {}).get("is_pro")
+            or profile.get("banner_customization", {}).get("isPremium")
+        )
+    except Exception:
+        return False
+
+
+def set_pro_status(username: str, is_pro: bool = True) -> bool:
+    """Set Pro subscription status in Firestore."""
+    if not username:
+        return False
+    try:
+        db = get_db()
+        db.collection("users").document(username).set({
+            "is_pro": is_pro,
+            "profile_customization": {"is_pro": is_pro}
+        }, merge=True)
+        return True
+    except Exception as e:
+        print(f"[firebase_db] Failed to set pro status: {e}")
+        return False
+
+
+def get_banner_customization(username: str) -> dict:
+    """Read Discord-style banner & profile customization from Firestore."""
+    if not username or not username.strip():
+        return dict(_DEFAULT_BANNER_CONFIG)
+    try:
+        profile = get_user_profile(username)
+        stored = profile.get("banner_customization", {})
+        if not isinstance(stored, dict):
+            stored = {}
+        res = dict(_DEFAULT_BANNER_CONFIG)
+        res.update(stored)
+        if profile.get("profile_customization", {}).get("is_pro") or profile.get("is_pro") or profile.get("is_premium"):
+            res["isPremium"] = True
+        return res
+    except Exception:
+        return dict(_DEFAULT_BANNER_CONFIG)
+
+
+def save_banner_customization(username: str, data: dict) -> bool:
+    """Save banner customization dict to Firestore user document."""
+    if not username or not username.strip():
+        return False
+    try:
+        db = get_db()
+        clean = {}
+        for k in _DEFAULT_BANNER_CONFIG:
+            if k in data:
+                clean[k] = data[k]
+        db.collection("users").document(username).set({
+            "banner_customization": clean
+        }, merge=True)
+        return True
+    except Exception as e:
+        print(f"[firebase_db] Failed to save banner customization: {e}")
+        return False
+

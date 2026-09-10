@@ -25,38 +25,38 @@ def _render_css():
     <style>
     .vt-wrap { max-width: 1480px; margin: 0 auto; }
     .vt-hero { padding: 22px 0 18px; }
-    .vt-eyebrow { color: #7dd3a7; font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-    .vt-hero h1 { margin: 5px 0 3px; color: #f8fafc; font-size: 2.2rem; letter-spacing: -.04em; }
-    .vt-hero p { margin: 0; color: #94a3b8; font-size: 1rem; }
-    .vt-card { background: linear-gradient(145deg, rgba(25, 31, 45, .98), rgba(14, 18, 28, .98)); border: 1px solid rgba(148, 163, 184, .2); border-radius: 10px; padding: 20px; box-shadow: 0 14px 32px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255,255,255,.04); }
-    .vt-wallet { border-color: rgba(74, 222, 128, .3); background: linear-gradient(135deg, rgba(24, 65, 53, .92), rgba(19, 31, 37, .98)); }
-    .vt-label { color: #aebaca; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-    .vt-big { color: #f8fafc; font-size: 2.2rem; font-weight: 800; margin: 7px 0; }
-    .vt-muted { color: #aebaca; font-size: .84rem; }
+    .vt-eyebrow { color: var(--q-pos); font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .vt-hero h1 { margin: 5px 0 3px; color: var(--q-text); font-size: 2.2rem; letter-spacing: -.04em; }
+    .vt-hero p { margin: 0; color: var(--q-text-3); font-size: 1rem; }
+    .vt-card { background: var(--q-surface); border: 1px solid var(--q-border); border-radius: 10px; padding: 20px; box-shadow: 0 14px 32px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255,255,255,.04); }
+    .vt-wallet { border-color: var(--q-pos); background: var(--q-surface-2); }
+    .vt-label { color: var(--q-text-2); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .vt-big { color: var(--q-text); font-size: 2.2rem; font-weight: 800; margin: 7px 0; }
+    .vt-muted { color: var(--q-text-3); font-size: .84rem; }
     .vt-kpi { min-height: 105px; }
-    .vt-kpi-value { color: #f8fafc; font-size: 1.28rem; font-weight: 750; margin-top: 9px; }
-    .vt-section { color: #f8fafc; font-size: 1.2rem; font-weight: 750; margin: 25px 0 11px; }
-    .vt-stock { background: linear-gradient(145deg, rgba(24, 29, 42, .96), rgba(15, 19, 29, .98)); border: 1px solid rgba(148,163,184,.18); border-radius: 10px; padding: 13px; min-height: 90px; box-shadow: inset 0 1px 0 rgba(255,255,255,.035); }
-    .vt-stock strong { color: #f8fafc; display: block; font-size: 1rem; }
-    .vt-stock span { color: #aebaca; font-size: .8rem; }
+    .vt-kpi-value { color: var(--q-text); font-size: 1.28rem; font-weight: 750; margin-top: 9px; }
+    .vt-section { color: var(--q-text); font-size: 1.2rem; font-weight: 750; margin: 25px 0 11px; }
+    .vt-stock { background: var(--q-surface-2); border: 1px solid var(--q-border); border-radius: 10px; padding: 13px; min-height: 90px; box-shadow: inset 0 1px 0 rgba(255,255,255,.035); }
+    .vt-stock strong { color: var(--q-text); display: block; font-size: 1rem; }
+    .vt-stock span { color: var(--q-text-2); font-size: .8rem; }
     .vt-logo { width: 32px; height: 32px; border-radius: 50%; object-fit: contain; background: #ffffff; vertical-align: middle; margin-right: 8px; padding: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.25); }
-    .vt-logo-fallback { display: none; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; margin-right: 8px; color: #fff; background: linear-gradient(135deg, #6366f1, #10b981); font-size: .75rem; font-weight: 800; vertical-align: middle; }
-    .vt-sentiment { margin-top: 18px; padding: 15px 4px 2px; border-top: 1px solid rgba(148,163,184,.12); }
+    .vt-logo-fallback { display: none; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; margin-right: 8px; color: #fff; background: linear-gradient(135deg, #6366f1, var(--q-pos)); font-size: .75rem; font-weight: 800; vertical-align: middle; }
+    .vt-sentiment { margin-top: 18px; padding: 15px 4px 2px; border-top: 1px solid var(--q-border); }
     .vt-sentiment strong { display: block; font-size: 1.18rem; margin: 5px 0 10px; }
     .vt-sentiment-track { position: relative; display: flex; gap: 4px; align-items: center; height: 34px; border-radius: 5px; background: linear-gradient(90deg, #ef4444 0%, #fb7185 30%, #fbbf24 50%, #34d399 70%, #16a34a 100%); }
     .vt-sentiment-track i { display: block; flex: 1; height: 27px; border-radius: 5px; background: transparent; }
-    .vt-sentiment-track b { position: absolute; bottom: -6px; width: 0; height: 0; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid #f8fafc; filter: drop-shadow(0 0 4px rgba(255,255,255,.35)); }
-    .vt-sentiment-legend { display: flex; justify-content: space-between; color: #94a3b8; font-size: .72rem; margin-top: 8px; }
-    .vt-event { display: grid; grid-template-columns: 78px 26px 1fr auto; align-items: center; gap: 8px; padding: 7px 10px; margin-bottom: 5px; background: rgba(15,23,42,.64); border: 1px solid rgba(148,163,184,.12); border-radius: 11px; }
-    .vt-event-date { color: #94a3b8; font-size: .68rem; }
-    .vt-event-icon { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; background: rgba(139,92,246,.18); font-size: .8rem; }
-    .vt-event-copy strong { display: block; color: #f8fafc; font-size: .78rem; }
-    .vt-event-copy span { color: #94a3b8; font-size: .67rem; }
-    .vt-event-copy a { color: #f8fafc; text-decoration: none; }
-    .vt-event-detail { color: #cbd5e1; font-size: .77rem; text-align: right; }
-    .vt-positive { color: #6ee7a0 !important; }
-    .vt-negative { color: #fb7185 !important; }
-    .vt-divider { border-top: 1px solid rgba(148,163,184,.13); margin: 16px 0; }
+    .vt-sentiment-track b { position: absolute; bottom: -6px; width: 0; height: 0; transform: translateX(-50%); border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid var(--q-text); filter: drop-shadow(0 0 4px rgba(255,255,255,.35)); }
+    .vt-sentiment-legend { display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .72rem; margin-top: 8px; }
+    .vt-event { display: grid; grid-template-columns: 78px 26px 1fr auto; align-items: center; gap: 8px; padding: 7px 10px; margin-bottom: 5px; background: var(--q-surface-2); border: 1px solid var(--q-border); border-radius: 11px; }
+    .vt-event-date { color: var(--q-text-3); font-size: .68rem; }
+    .vt-event-icon { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; background: var(--q-accent-weak); font-size: .8rem; }
+    .vt-event-copy strong { display: block; color: var(--q-text); font-size: .78rem; }
+    .vt-event-copy span { color: var(--q-text-3); font-size: .67rem; }
+    .vt-event-copy a { color: var(--q-text); text-decoration: none; }
+    .vt-event-detail { color: var(--q-text-2); font-size: .77rem; text-align: right; }
+    .vt-positive { color: var(--q-pos) !important; }
+    .vt-negative { color: var(--q-neg) !important; }
+    .vt-divider { border-top: 1px solid var(--q-border); margin: 16px 0; }
     div[data-testid="stForm"] { border: 0; padding: 0; }
     .vt-card, .vt-stock, div[data-testid="stVerticalBlockBorderWrapper"], div[data-testid="stDataFrame"] { border-radius: 18px !important; overflow: hidden; }
     .stButton > button, .stTextInput input, .stSelectbox [data-baseweb="select"], .stNumberInput input { border-radius: 8px !important; }
@@ -201,7 +201,7 @@ def _render_sentiment(points):
     change_pct = ((last - first) / first * 100) if first else 0.0
     position = max(0.0, min(100.0, 50.0 + change_pct * 8.0))
     label = "Bullish" if position >= 62 else "Bearish" if position <= 38 else "Neutral"
-    label_color = "#34d399" if label == "Bullish" else "#fb7185" if label == "Bearish" else "#fbbf24"
+    label_color = "var(--q-pos)" if label == "Bullish" else "var(--q-neg)" if label == "Bearish" else "var(--q-warn)"
     bars = "".join("<i></i>" for _ in range(25))
     st.markdown(
         f"<div class='vt-sentiment'><div class='vt-label'>📈 Technical mood · based on selected range</div><strong style='color:{label_color}'>{label}</strong><div class='vt-sentiment-track'>{bars}<b style='left:{position}%;'></b></div><div class='vt-sentiment-legend'><span>Bearish</span><span>Neutral</span><span>Bullish</span></div></div>",

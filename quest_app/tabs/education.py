@@ -185,7 +185,7 @@ Regarding **"{query}"** in the context of *{v_title}* by {v_creator}:
 def _render_html_table(rows):
     if not rows:
         return ""
-    html_out = ['<table style="width:100%;border-collapse:collapse;margin:8px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;">']
+    html_out = ['<table style="width:100%;border-collapse:collapse;margin:8px 0;background:var(--q-surface-2);border:1px solid var(--q-border);border-radius:8px;overflow:hidden;">']
     is_header = True
     for r in rows:
         cells = [c.strip() for c in r.strip('|').split('|')]
@@ -195,11 +195,11 @@ def _render_html_table(rows):
         html_out.append('<tr>')
         for c in cells:
             tag = 'th' if is_header else 'td'
-            style = 'padding:6px 10px;border:1px solid rgba(255,255,255,0.08);font-size:0.82rem;'
+            style = 'padding:6px 10px;border:1px solid var(--q-border);font-size:0.82rem;'
             if is_header:
-                style += 'background:rgba(139,92,246,0.18);color:#c084fc;font-weight:700;text-align:left;'
+                style += 'background:var(--q-accent-weak);color:var(--q-accent);font-weight:700;text-align:left;'
             else:
-                style += 'color:#e2e8f0;line-height:1.4;'
+                style += 'color:var(--q-text);line-height:1.4;'
             c_fmt = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', c)
             html_out.append(f'<{tag} style="{style}">{c_fmt}</{tag}>')
         html_out.append('</tr>')
@@ -242,16 +242,16 @@ def _format_ai_response_html(raw_text: str) -> str:
     formatted = '\n'.join(out_lines)
     
     # 3. Format headers (### / ## / #)
-    formatted = re.sub(r'^(?:#{1,3})\s+(.+)$', r'<div style="font-weight:700;font-size:0.96rem;color:#f8fafc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    formatted = re.sub(r'^(?:#{1,3})\s+(.+)$', r'<div style="font-weight:700;font-size:0.96rem;color:var(--q-text);margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
     
     # Numbered step emojis (1️⃣, 2️⃣, 3️⃣ or 1., 2.)
-    formatted = re.sub(r'^([0-9]+[️⃣\.\)]\s*.+)$', r'<div style="font-weight:700;font-size:0.95rem;color:#c084fc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    formatted = re.sub(r'^([0-9]+[️⃣\.\)]\s*.+)$', r'<div style="font-weight:700;font-size:0.95rem;color:var(--q-accent);margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
     
     # 4. Bold text
-    formatted = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:#f1f5f9;">\1</strong>', formatted)
+    formatted = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:var(--q-text);">\1</strong>', formatted)
     
     # 5. Bullets
-    formatted = re.sub(r'^[•\-\*]\s+(.+)$', r'<div style="margin:2px 0 2px 8px;color:#cbd5e1;display:flex;gap:6px;"><span style="color:#a855f7;">•</span><span>\1</span></div>', formatted, flags=re.MULTILINE)
+    formatted = re.sub(r'^[•\-\*]\s+(.+)$', r'<div style="margin:2px 0 2px 8px;color:var(--q-text-2);display:flex;gap:6px;"><span style="color:var(--q-accent);">•</span><span>\1</span></div>', formatted, flags=re.MULTILINE)
     
     # 6. Paragraphs
     paragraphs = formatted.split('\n\n')
@@ -264,7 +264,7 @@ def _format_ai_response_html(raw_text: str) -> str:
             p_html.append(p)
         else:
             p_clean = p.replace('\n', '<br>')
-            p_html.append(f'<div style="margin-bottom:6px;line-height:1.5;color:#cbd5e1;">{p_clean}</div>')
+            p_html.append(f'<div style="margin-bottom:6px;line-height:1.5;color:var(--q-text-2);">{p_clean}</div>')
             
     return "".join(p_html)
 
@@ -416,7 +416,7 @@ def render(user_info):
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        background: linear-gradient(135deg, var(--q-accent), #8b5cf6);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -462,13 +462,13 @@ def render(user_info):
         width: 100%;
         height: 72px;
         border-radius: 10px;
-        background: #0f172a;
+        background: var(--q-surface-2);
         position: relative;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid rgba(255,255,255,0.06);
+        border: 1px solid var(--q-border);
     }
     .yt-card-duration {
         position: absolute;
@@ -505,9 +505,9 @@ def render(user_info):
 
     /* MICHAEL AI Assistant Container */
     .m-ai-box {
-        background: rgba(13, 15, 28, 0.85);
+        background: var(--q-surface);
         backdrop-filter: blur(14px);
-        border: 1px solid rgba(139, 92, 246, 0.35);
+        border: 1px solid var(--q-border);
         border-radius: 16px;
         padding: 1.3rem;
         margin-top: 1.4rem;
@@ -519,18 +519,18 @@ def render(user_info):
         align-items: center;
         margin-bottom: 0.9rem;
         padding-bottom: 0.6rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        border-bottom: 1px solid var(--q-border);
     }
     .m-ai-avatar {
         width: 36px;
         height: 36px;
         border-radius: 10px;
-        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        background: linear-gradient(135deg, #7c3aed, var(--q-accent));
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.1rem;
-        box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+        box-shadow: 0 0 12px var(--q-accent-weak);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -612,7 +612,7 @@ def render(user_info):
                 <div>
                     <div class="yt-creator-name">
                         <span>{creator_name}</span>
-                        <span style="color:#3b82f6;font-size:0.8rem;" title="Verified Channel">✔</span>
+                        <span style="color:var(--q-accent);font-size:0.8rem;" title="Verified Channel">✔</span>
                     </div>
                 </div>
             </div>
@@ -658,7 +658,7 @@ def render(user_info):
         pub_txt = active_video.get("published", "Recently")
         takeaway_header = "Key Learning Takeaways:" if current_lang == "en" else "मुख्य निष्कर्ष (Key Takeaways):"
         
-        desc_items_html = "".join([f'<div class="yt-takeaway-item"><span style="color:#10b981;">•</span> {tkw}</div>' for tkw in active_video.get("key_takeaways", [])])
+        desc_items_html = "".join([f'<div class="yt-takeaway-item"><span style="color:var(--q-pos);">•</span> {tkw}</div>' for tkw in active_video.get("key_takeaways", [])])
         st.markdown(f"""
         <div class="yt-desc-box">
             <div class="yt-desc-meta">{views_txt} views &bull; {pub_txt} &bull; {active_video['module_title']} &bull; {lang_badge}</div>
@@ -683,23 +683,23 @@ def render(user_info):
                 <div style="display:flex;align-items:center;gap:10px;">
                     <div class="m-ai-avatar">⚡</div>
                     <div>
-                        <div style="font-weight:700;font-size:1.15rem;color:#ffffff;letter-spacing:-0.2px;">MICHAEL AI Assistant</div>
-                        <div style="font-size:0.78rem;color:#c084fc;">Video Tutor & Doubt Solver &bull; Connected to: <em>{active_video['title'][:40]}...</em></div>
+                        <div style="font-weight:700;font-size:1.15rem;color:var(--q-text);letter-spacing:-0.2px;">MICHAEL AI Assistant</div>
+                        <div style="font-size:0.78rem;color:var(--q-accent);">Video Tutor & Doubt Solver &bull; Connected to: <em>{active_video['title'][:40]}...</em></div>
                     </div>
                 </div>
-                <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:999px;padding:3px 10px;">
-                    <div style="width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;"></div>
-                    <span style="font-size:0.72rem;font-weight:600;color:#34d399;">Context Active</span>
+                <div style="display:inline-flex;align-items:center;gap:6px;background:var(--q-pos-weak);border:1px solid rgba(16,185,129,0.3);border-radius:999px;padding:3px 10px;">
+                    <div style="width:6px;height:6px;border-radius:50%;background:var(--q-pos);box-shadow:0 0 6px var(--q-pos);"></div>
+                    <span style="font-size:0.72rem;font-weight:600;color:var(--q-pos);">Context Active</span>
                 </div>
             </div>
-            <div style="font-size:0.86rem;color:#94a3b8;margin-bottom:12px;">
+            <div style="font-size:0.86rem;color:var(--q-text-2);margin-bottom:12px;">
                 Have a doubt or want a concept explained simply? Ask MICHAEL anything about this lesson or Indian investing.
             </div>
         </div>
         """, unsafe_allow_html=True)
 
         # Quick Starter Chips (1-Click Questions)
-        st.markdown("<div style='font-size:0.78rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 6px;'>Quick Questions & Doubts:</div>", unsafe_allow_html=True)
+        st.markdown("<div style='font-size:0.78rem;color:var(--q-text-2);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 6px;'>Quick Questions & Doubts:</div>", unsafe_allow_html=True)
         
         sq1, sq2 = st.columns(2)
         starter_query = None
@@ -728,7 +728,7 @@ def render(user_info):
                     clean_u_text = html.escape(msg['text']).replace('\n', '<br>')
                     st.markdown(f"""
                     <div style="display:flex;justify-content:flex-end;margin:8px 0;">
-                        <div style="background:linear-gradient(135deg,#7c3aed,#9333ea);color:#ffffff;border-radius:14px 14px 2px 14px;padding:9px 14px;max-width:82%;font-size:0.88rem;box-shadow:0 4px 12px rgba(124,58,237,0.3);">
+                        <div style="background:linear-gradient(135deg,var(--q-accent),#9333ea);color:#ffffff;border-radius:14px 14px 2px 14px;padding:9px 14px;max-width:82%;font-size:0.88rem;box-shadow:0 4px 12px rgba(124,58,237,0.3);">
                             {clean_u_text}
                         </div>
                     </div>
@@ -737,9 +737,9 @@ def render(user_info):
                     formatted_ai_text = _format_ai_response_html(msg['text'])
                     st.markdown(f"""
                     <div style="display:flex;justify-content:flex-start;margin:10px 0;">
-                        <div style="background:rgba(18,20,36,0.85);border:1px solid rgba(139,92,246,0.25);border-radius:14px 14px 14px 2px;padding:12px 16px;max-width:92%;color:#e2e8f0;font-size:0.88rem;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,0.4);">
-                            <div style="font-size:0.75rem;font-weight:700;color:#c084fc;margin-bottom:6px;display:flex;align-items:center;gap:6px;">
-                                <span>⚡ MICHAEL AI</span> <span style="color:#64748b;font-size:0.68rem;font-weight:500;">{msg.get('ts', '')}</span>
+                        <div style="background:var(--q-surface);border:1px solid var(--q-border);border-radius:14px 14px 14px 2px;padding:12px 16px;max-width:92%;color:var(--q-text);font-size:0.88rem;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,0.4);">
+                            <div style="font-size:0.75rem;font-weight:700;color:var(--q-accent);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+                                <span>⚡ MICHAEL AI</span> <span style="color:var(--q-text-3);font-size:0.68rem;font-weight:500;">{msg.get('ts', '')}</span>
                             </div>
                             <div>{formatted_ai_text}</div>
                         </div>
@@ -829,10 +829,10 @@ def render(user_info):
                         with c2:
                             st.markdown(f"""
                             <div class="yt-card-details">
-                                <div class="yt-card-title" style="{'color:#60a5fa;' if is_active else ''}">{vid.get('title', '')}</div>
+                                <div class="yt-card-title" style="{'color:var(--q-accent);' if is_active else ''}">{vid.get('title', '')}</div>
                                 <div class="yt-card-creator">
                                     <span>{vid.get('creator', '')}</span>
-                                    <span style="color:#3b82f6;font-size:0.65rem;">✔</span>
+                                    <span style="color:var(--q-accent);font-size:0.65rem;">✔</span>
                                 </div>
                                 <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {mod.get('category', 'Basics')}</div>
                             </div>
@@ -863,10 +863,10 @@ def render(user_info):
                     with c2:
                         st.markdown(f"""
                         <div class="yt-card-details">
-                            <div class="yt-card-title" style="{'color:#60a5fa;' if is_active else ''}">{vid.get('title', '')}</div>
+                            <div class="yt-card-title" style="{'color:var(--q-accent);' if is_active else ''}">{vid.get('title', '')}</div>
                             <div class="yt-card-creator">
                                 <span>{vid.get('creator', '')}</span>
-                                <span style="color:#3b82f6;font-size:0.65rem;">✔</span>
+                                <span style="color:var(--q-accent);font-size:0.65rem;">✔</span>
                             </div>
                             <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {cur_module.get('category', 'Basics')}</div>
                         </div>

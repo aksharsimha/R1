@@ -119,9 +119,6 @@ def _get_logo_url(ticker: str) -> str:
     base_symbol = ticker.rsplit(".", 1)[0].upper().replace(" ", "")
     fixed_logo_url = _COMPANY_LOGO_URLS.get(base_symbol)
     if fixed_logo_url:
-        downloaded = _download_image_data(fixed_logo_url)
-        if downloaded:
-            return downloaded
         return fixed_logo_url
 
     domain = _COMPANY_DOMAINS.get(base_symbol, "")
@@ -138,23 +135,7 @@ def _get_logo_url(ticker: str) -> str:
             pass
 
     if domain:
-        # High quality Google Favicon v2
-        v2_url = f"https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://{domain}&size=128"
-        image = _download_image_data(v2_url)
-        if image:
-            return image
-
-        # Fallback to Google S2
-        s2_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
-        image = _download_image_data(s2_url)
-        if image:
-            return image
-
-        # Fallback to DuckDuckGo
-        ddg_url = f"https://icons.duckduckgo.com/ip3/{domain}.ico"
-        image = _download_image_data(ddg_url)
-        if image:
-            return image
+        return f"https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://{domain}&size=128"
 
     return _monogram_logo(base_symbol, "#4f46e5", "#ffffff")
 
@@ -214,15 +195,57 @@ def _account_path(username: str, base_dir: Optional[str] = None) -> str:
     return os.path.join(folder, "virtual_trading.json")
 
 
+def _process_auto_sip(account: dict) -> None:
+    sim_state = account.get("sim_state", {})
+    next_sip_date_str = sim_state.get("next_sip_date")
+    if not next_sip_date_str:
+        return
+        
+    now = datetime.now(IST)
+    today_str = now.strftime("%Y-%m-%d")
+    
+    new_sip_added = 0.0
+    while next_sip_date_str <= today_str:
+        amount = float(MONTHLY_SIP)
+        account["cash"] = float(account.get("cash", 0.0)) + amount
+        new_sip_added += amount
+        
+        metrics = account.setdefault("metrics", {})
+        metrics["total_sip_contributions"] = float(metrics.get("total_sip_contributions", 0.0)) + amount
+        metrics["months_completed"] = int(metrics.get("months_completed", 0)) + 1
+        
+        sim_state["last_sip_date"] = next_sip_date_str
+        
+        account.setdefault("transactions", []).append({
+            "timestamp": f"{next_sip_date_str}T09:15:00",
+            "type": "SIP",
+            "symbol": "Virtual SIP",
+            "quantity": 0,
+            "price": amount,
+            "value": amount
+        })
+        
+        sip_date = datetime.strptime(next_sip_date_str, "%Y-%m-%d")
+        next_month = (sip_date.replace(day=1) + timedelta(days=32)).replace(day=1)
+        next_sip_date_str = next_month.strftime("%Y-%m-%d")
+        sim_state["next_sip_date"] = next_sip_date_str
+        
+    if new_sip_added > 0:
+        account["_new_sip_added"] = float(account.get("_new_sip_added", 0.0)) + new_sip_added
+
 def load_account(username: str, base_dir: Optional[str] = None) -> dict:
     path = _account_path(username, base_dir)
     if not os.path.exists(path):
-        return _default_account()
+        default = _default_account()
+        _process_auto_sip(default)
+        return default
     try:
         with open(path, "r", encoding="utf-8") as account_file:
             data = json.load(account_file)
     except (OSError, json.JSONDecodeError):
-        return _default_account()
+        default = _default_account()
+        _process_auto_sip(default)
+        return default
     default = _default_account()
     default.update({key: value for key, value in data.items() if key in default})
     default["sim_state"] = {**_default_account()["sim_state"], **data.get("sim_state", {})}
@@ -230,6 +253,8 @@ def load_account(username: str, base_dir: Optional[str] = None) -> dict:
     default["holdings"] = data.get("holdings", {}) or {}
     default["transactions"] = data.get("transactions", []) or []
     default["watchlist"] = data.get("watchlist", []) or []
+    
+    _process_auto_sip(default)
     return default
 
 
