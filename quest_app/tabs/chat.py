@@ -97,38 +97,38 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     st.markdown("""
     <style>
         .chat-shell {
-            background: linear-gradient(145deg, rgba(28,32,45,.96), rgba(8,11,18,.98));
-            border: 1px solid rgba(112,126,171,.28);
+            background: var(--q-surface);
+            border: 1px solid var(--q-border);
             border-radius: 14px;
             padding: 14px;
             min-height: 610px;
             box-shadow: 0 18px 45px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.04);
         }
         .chat-rail {
-            background: linear-gradient(180deg, rgba(31,35,48,.95), rgba(11,14,22,.98));
-            border-right: 1px solid rgba(112,126,171,.2);
+            background: var(--q-surface-2);
+            border-right: 1px solid var(--q-border);
             border-radius: 12px 0 0 12px;
             min-height: 580px;
             padding: 12px 10px;
         }
         .chat-title { color: var(--q-text); font-size: 1.25rem; font-weight: 600; margin: 4px 0 18px; }
-        .chat-title-icon { color: #8b6cff; margin-right: 7px; }
-        .chat-header { display:flex; align-items:center; gap:14px; border-bottom:1px solid rgba(112,126,171,.16); padding:2px 4px 16px; }
+        .chat-title-icon { color: var(--q-accent); margin-right: 7px; }
+        .chat-header { display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--q-border); padding:2px 4px 16px; }
         .chat-avatar-wrap { position:relative; display:inline-flex; flex-shrink:0; width:54px; height:54px; }
-        .chat-avatar { width:54px; height:54px; border-radius:50%; object-fit:cover; display:grid; place-items:center; background:linear-gradient(145deg,#323b52,#111621); border:2px solid #697591; color:#aeb8ce; font-size:1.55rem; box-shadow:0 0 0 4px rgba(69,78,106,.18); flex-shrink:0; }
-        .chat-online { width:14px; height:14px; border-radius:50%; background:#26c281; border:2px solid #101520; position:absolute; bottom:0; right:0; z-index:2; }
+        .chat-avatar { width:54px; height:54px; border-radius:50%; object-fit:cover; display:grid; place-items:center; background:var(--q-surface-2); border:2px solid var(--q-border); color:var(--q-text-2); font-size:1.55rem; box-shadow:0 0 0 4px rgba(69,78,106,.18); flex-shrink:0; }
+        .chat-online { width:14px; height:14px; border-radius:50%; background:var(--q-pos); border:2px solid var(--q-surface); position:absolute; bottom:0; right:0; z-index:2; }
         .chat-header-name { color:var(--q-text); font-size:1.25rem; font-weight:600; }
         .chat-header-status { color:var(--q-text-3); font-size:.78rem; margin-top:2px; }
-        .chat-header-status span { color:#26c281; }
+        .chat-header-status span { color:var(--q-pos); }
         .chat-empty { min-height:470px; display:grid; place-items:center; color:var(--q-text-3); text-align:center; }
-        .chat-rail .stButton > button { border-color:rgba(112,126,171,.22); background:rgba(25,29,42,.7); }
-        .chat-rail .stButton > button:hover { border-color:#7e62ff; background:rgba(102,76,214,.15); }
-        .chat-action { border:1px solid rgba(126,98,255,.6); border-radius:10px; padding:11px 12px; color:var(--q-text-2); background:rgba(18,20,30,.7); margin:10px 0; }
+        .chat-rail .stButton > button { border-color:var(--q-border); background:var(--q-surface); }
+        .chat-rail .stButton > button:hover { border-color:var(--q-accent); background:var(--q-accent-weak); }
+        .chat-action { border:1px solid var(--q-accent); border-radius:10px; padding:11px 12px; color:var(--q-text-2); background:var(--q-surface-2); margin:10px 0; }
         .chat-action strong { color:var(--q-text); font-size:.86rem; }
         .chat-action small { display:block; color:var(--q-text-3); margin-top:2px; }
         @media (max-width: 760px) {
             .chat-shell { padding:8px; min-height:0; }
-            .chat-rail { min-height:0; border-right:0; border-bottom:1px solid rgba(112,126,171,.2); border-radius:10px; }
+            .chat-rail { min-height:0; border-right:0; border-bottom:1px solid var(--q-border); border-radius:10px; }
             .chat-header-name { font-size:1.05rem; }
         }
         .chat-msg-row { display: flex; margin-bottom: 12px; align-items: flex-end; }
@@ -140,12 +140,12 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1.5px solid rgba(112,126,171,.35);
+            border: 1.5px solid var(--q-border);
             flex-shrink: 0;
             display: grid;
             place-items: center;
-            background: linear-gradient(145deg,#323b52,#111621);
-            color: #aeb8ce;
+            background: var(--q-surface-2);
+            color: var(--q-text-2);
             font-size: 0.85rem;
             font-weight: 600;
         }
@@ -321,7 +321,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
         if not active_id:
             st.markdown("""
-            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:#334155;">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:var(--q-text-3);">
                 <div style="font-size:3rem;margin-bottom:1rem;">💬</div>
                 <div style="font-size:1.1rem;font-weight:500;">Select a conversation</div>
                 <div style="font-size:0.85rem;margin-top:4px;">Or add a friend to start chatting</div>
@@ -356,7 +356,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         _avatar_markup = "<div class='chat-avatar' style='font-size:1.5rem;'>👥</div>"
 
                     _presence_label = "Online" if _is_online else "Offline"
-                    _presence_color = "#26c281" if _is_online else "var(--q-text-3)"
+                    _presence_color = "var(--q-pos)" if _is_online else "var(--q-text-3)"
                     _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
                     st.markdown(f"<div class='chat-header'><div class='chat-avatar-wrap'>{_avatar_markup}{_presence_dot}</div><div><div class='chat-header-name'>{title}</div><div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div></div></div>", unsafe_allow_html=True)
                     if chat_info["type"] == "group":
@@ -388,7 +388,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     st.rerun(scope="fragment")
                 _share_hint.caption("Share a portfolio snapshot with this conversation.")
 
-                st.markdown("<div style='height:1px;background:rgba(112,126,171,.14);margin:0 0 12px;'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='height:1px;background:var(--q-border);margin:0 0 12px;'></div>", unsafe_allow_html=True)
 
                 # ── Messages ─────────────────────────────────────────────────
                 messages = chat_system.get_messages(active_id, limit=100)
@@ -418,7 +418,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             bubble = f'<div class="chat-bubble sent">{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
-                                pnl_color = "#34d399" if pd_data.get("total_pnl", 0) >= 0 else "#f87171"
+                                pnl_color = "var(--q-pos)" if pd_data.get("total_pnl", 0) >= 0 else "var(--q-neg)"
                                 bubble += f"""
                                 <div class="portfolio-card">
                                     <h4>📊 {pd_data.get('username', 'User')}'s Portfolio</h4>
@@ -440,7 +440,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             bubble = f'<div class="chat-bubble received"><div class="chat-sender"><a href="?page=Chat&view_profile={sender}" target="_self" style="text-decoration:none;color:inherit;">{sender_disp} (@{sender})</a></div>{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
-                                pnl_color = "#34d399" if pd_data.get("total_pnl", 0) >= 0 else "#f87171"
+                                pnl_color = "var(--q-pos)" if pd_data.get("total_pnl", 0) >= 0 else "var(--q-neg)"
                                 bubble += f"""
                                 <div class="portfolio-card">
                                     <h4>📊 {pd_data.get('username', 'User')}'s Portfolio</h4>

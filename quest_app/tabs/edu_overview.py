@@ -229,8 +229,8 @@ def render_dashboard(user_info):
 .dash-header-sub { font-size: 1rem; color: var(--q-text-3); margin: 0; }
 
 .edu-hero-card {
-    background: linear-gradient(135deg, rgba(24, 28, 42, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-    border: 1px solid rgba(112, 126, 171, 0.28);
+    background: linear-gradient(135deg, var(--q-surface-2) 0%, var(--q-surface) 100%);
+    border: 1px solid var(--q-border);
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 24px;
@@ -242,11 +242,11 @@ def render_dashboard(user_info):
     content: '';
     position: absolute;
     top: 0; left: 0; width: 4px; height: 100%;
-    background: linear-gradient(180deg, #3b82f6 0%, #6366f1 100%);
+    background: linear-gradient(180deg, var(--q-accent) 0%, #6366f1 100%);
 }
 .edu-hero-badge {
-    background: rgba(59, 130, 246, 0.18);
-    color: #60a5fa;
+    background: var(--q-accent-weak);
+    color: var(--q-accent);
     border: 1px solid rgba(59, 130, 246, 0.3);
     padding: 3px 10px;
     border-radius: 6px;
@@ -261,8 +261,8 @@ def render_dashboard(user_info):
 .edu-hero-meta { font-size: 0.9rem; color: var(--q-text-3); display: flex; align-items: center; gap: 12px; }
 
 .edu-port-card {
-    background: linear-gradient(145deg, rgba(20,24,36,0.96), rgba(11,14,22,0.98));
-    border: 1px solid rgba(112,126,171,0.24);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 16px;
     padding: 22px;
     box-shadow: 0 16px 36px rgba(0,0,0,0.25);
@@ -272,49 +272,49 @@ def render_dashboard(user_info):
 .edu-port-title { font-size: 0.95rem; font-weight: 700; color: var(--q-text-2); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
 .edu-port-val { font-size: 2.3rem; font-weight: 800; color: var(--q-text); font-family: 'JetBrains Mono', monospace; line-height: 1.1; margin-bottom: 4px; }
 .edu-port-pnl { font-size: 0.92rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; margin-bottom: 18px; }
-.edu-metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); }
-.edu-metric-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(112,126,171,0.15); border-radius: 10px; padding: 12px; }
+.edu-metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-top: 16px; border-top: 1px solid var(--q-border); }
+.edu-metric-item { background: var(--q-surface-2); border: 1px solid var(--q-border); border-radius: 10px; padding: 12px; }
 .edu-metric-lbl { font-size: 0.72rem; color: var(--q-text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.4px; margin-bottom: 4px; }
 .edu-metric-num { font-size: 1.15rem; font-weight: 700; color: var(--q-text); font-family: 'JetBrains Mono', monospace; }
 
 .q-section-title { font-size: 1.25rem; font-weight: 800; color: var(--q-text); margin: 0 0 16px 0; display: flex; align-items: center; justify-content: space-between; }
-.q-news-card { display: flex; gap: 16px; background: rgba(20,24,36,0.95); border: 1px solid rgba(112,126,171,0.2); border-radius: 14px; padding: 14px; margin-bottom: 14px; transition: all 0.2s ease; }
-.q-news-card:hover { border-color: rgba(129,140,248,0.45); transform: translateY(-1px); }
+.q-news-card { display: flex; gap: 16px; background: var(--q-surface); border: 1px solid var(--q-border); border-radius: 14px; padding: 14px; margin-bottom: 14px; transition: all 0.2s ease; }
+.q-news-card:hover { border-color: var(--q-accent); transform: translateY(-1px); }
 .q-news-img { width: 120px; height: 90px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
 .q-news-body { flex: 1; min-width: 0; }
-.q-news-pill { font-size: 0.65rem; font-weight: 700; color: #a5b4fc; background: rgba(99,102,241,0.15); padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px; display: inline-block; margin-bottom: 5px; }
+.q-news-pill { font-size: 0.65rem; font-weight: 700; color: var(--q-accent); background: var(--q-accent-weak); padding: 2px 7px; border-radius: 4px; letter-spacing: 0.5px; display: inline-block; margin-bottom: 5px; }
 .q-news-link { font-size: 0.95rem; font-weight: 700; color: var(--q-text); line-height: 1.35; margin: 0 0 5px; text-decoration: none; display: block; }
-.q-news-link:hover { color: #818cf8; }
+.q-news-link:hover { color: var(--q-accent); }
 .q-news-snippet { font-size: 0.8rem; color: var(--q-text-2); line-height: 1.4; margin: 0 0 6px; }
 .q-news-footer { display: flex; align-items: center; gap: 12px; font-size: 0.72rem; color: var(--q-text-3); }
 
-.q-side-panel { background: linear-gradient(145deg, rgba(20,24,36,0.96), rgba(11,14,22,0.98)); border: 1px solid rgba(112,126,171,0.24); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+.q-side-panel { background: var(--q-surface); border: 1px solid var(--q-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
 .q-mini-index-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.q-mini-index-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(112,126,171,0.16); border-radius: 10px; padding: 10px; }
-.q-trending-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(112,126,171,0.2); border-radius: 8px; padding: 6px 10px; font-size: 0.78rem; font-weight: 600; color: var(--q-text); margin: 3px; }
+.q-mini-index-box { background: var(--q-surface-2); border: 1px solid var(--q-border); border-radius: 10px; padding: 10px; }
+.q-trending-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--q-surface-2); border: 1px solid var(--q-border); border-radius: 8px; padding: 6px 10px; font-size: 0.78rem; font-weight: 600; color: var(--q-text); margin: 3px; }
 
 /* Module Cards Grid */
 .mod-card {
-    background: linear-gradient(145deg, rgba(20,24,36,0.96), rgba(11,14,22,0.98));
-    border: 1px solid rgba(112,126,171,0.24);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 14px;
     padding: 16px;
     margin-bottom: 6px;
     transition: all 0.2s ease;
 }
-.mod-card:hover { border-color: rgba(129,140,248,0.4); transform: translateY(-2px); }
+.mod-card:hover { border-color: var(--q-accent); transform: translateY(-2px); }
 .mod-card-complete {
-    background: linear-gradient(145deg, rgba(16,185,129,0.08), rgba(5,150,105,0.06));
-    border-color: rgba(16,185,129,0.35);
+    background: var(--q-pos-weak);
+    border-color: var(--q-pos);
 }
 .mod-card-icon { font-size: 1.6rem; margin-bottom: 6px; }
 .mod-card-title { font-size: 0.95rem; font-weight: 700; color: var(--q-text); margin-bottom: 4px; line-height: 1.3; }
 .mod-card-progress { font-size: 0.78rem; color: var(--q-text-3); font-weight: 600; margin-bottom: 8px; }
-.mod-card-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+.mod-card-bar-bg { width: 100%; height: 5px; background: var(--q-border); border-radius: 3px; overflow: hidden; }
 .mod-card-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
 
-.edu-progress-bar-bg { width: 100%; height: 7px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
-.edu-progress-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #a855f7 100%); border-radius: 4px; }
+.edu-progress-bar-bg { width: 100%; height: 7px; background: var(--q-border); border-radius: 4px; overflow: hidden; margin-bottom: 14px; }
+.edu-progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--q-accent) 0%, #a855f7 100%); border-radius: 4px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -336,7 +336,7 @@ def render_dashboard(user_info):
 <h2 class="edu-hero-heading">{hero_title}</h2>
 <div class="edu-hero-meta">
 <span>📋 {hero_mod_title}</span>
-<span style="color:#facc15;font-weight:700;">⭐ +10 XP per Quiz</span>
+<span style="color:var(--q-warn);font-weight:700;">⭐ +10 XP per Quiz</span>
 </div>
 </div>
 """), unsafe_allow_html=True)
@@ -353,34 +353,34 @@ def render_dashboard(user_info):
         st.caption("Pass video quizzes to earn XP and unlock trading cash.")
 
     # ── Portfolio Snapshot ────────────────────────────────────────
-    pnl_color = "#10b981" if day_pnl >= 0 else "#ef4444"
+    pnl_color = "var(--q-pos)" if day_pnl >= 0 else "var(--q-neg)"
     pnl_sign = "+" if day_pnl >= 0 else ""
 
     st.markdown(textwrap.dedent(f"""
 <div class="edu-port-card">
 <div class="edu-port-header">
 <div class="edu-port-title">📈 Virtual Trading Sandbox &bull; Net Worth</div>
-<span style="color:#10b981;font-size:0.75rem;font-weight:700;background:rgba(16,185,129,0.12);padding:3px 8px;border-radius:6px;">● Active Simulation</span>
+<span style="color:var(--q-pos);font-size:0.75rem;font-weight:700;background:var(--q-pos-weak);padding:3px 8px;border-radius:6px;">● Active Simulation</span>
 </div>
 <div class="edu-port-val">₹ {total_nw:,.2f}</div>
 <div class="edu-port-pnl" style="color:{pnl_color};">{pnl_sign}₹{abs(day_pnl):,.2f} ({pnl_sign}{day_pct:.2f}%) Today</div>
 <div class="edu-metrics-grid">
 <div class="edu-metric-item">
 <div class="edu-metric-lbl">Buying Power (Cash)</div>
-<div class="edu-metric-num" style="color:#34d399;">₹ {bal:,.2f}</div>
+<div class="edu-metric-num" style="color:var(--q-pos);">₹ {bal:,.2f}</div>
 </div>
 <div class="edu-metric-item">
 <div class="edu-metric-lbl">Videos Watched</div>
-<div class="edu-metric-num" style="color:#60a5fa;">🎬 {videos_watched} / 100</div>
+<div class="edu-metric-num" style="color:var(--q-accent);">🎬 {videos_watched} / 100</div>
 </div>
 <div class="edu-metric-item">
 <div class="edu-metric-lbl">Quizzes Passed</div>
-<div class="edu-metric-num" style="color:#a855f7;">🏅 {quizzes_passed} / 100</div>
+<div class="edu-metric-num" style="color:var(--q-accent);">🏅 {quizzes_passed} / 100</div>
 </div>
 </div>
-<div style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--q-text-3);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.08);">
-<span>Total XP: <strong style="color:#facc15;">⭐ {xp:,} XP</strong></span>
-<span>Modules Cleared: <strong style="color:#a855f7;">{modules_cleared} / 10</strong></span>
+<div style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--q-text-3);margin-top:16px;padding-top:12px;border-top:1px solid var(--q-border);">
+<span>Total XP: <strong style="color:var(--q-warn);">⭐ {xp:,} XP</strong></span>
+<span>Modules Cleared: <strong style="color:var(--q-accent);">{modules_cleared} / 10</strong></span>
 <span>Level: <strong style="color:var(--q-text);">{lvl_info['level_name']}</strong></span>
 </div>
 </div>
@@ -398,9 +398,9 @@ def render_dashboard(user_info):
         mod_num = _extract_module_num(grp["prefix"])
         icon = _MODULE_ICONS.get(mod_num, "📚")
         pct = (passed / total * 100) if total > 0 else 0
-        bar_color = "linear-gradient(90deg, #10b981 0%, #34d399 100%)" if is_complete else "linear-gradient(90deg, #3b82f6 0%, #a855f7 100%)"
+        bar_color = "linear-gradient(90deg, var(--q-pos) 0%, #34d399 100%)" if is_complete else "linear-gradient(90deg, var(--q-accent) 0%, #a855f7 100%)"
         card_cls = "mod-card mod-card-complete" if is_complete else "mod-card"
-        complete_badge = "<span style='color:#10b981;font-size:0.7rem;font-weight:800;'>✅ COMPLETE</span>" if is_complete else ""
+        complete_badge = "<span style='color:var(--q-pos);font-size:0.7rem;font-weight:800;'>✅ COMPLETE</span>" if is_complete else ""
 
         with cols[i % 2]:
             st.markdown(textwrap.dedent(f"""
@@ -471,26 +471,26 @@ def render_dashboard(user_info):
 <div class="q-mini-index-box">
 <div style="font-size:0.72rem;color:var(--q-text-3);font-weight:600;">NIFTY 50</div>
 <div style="font-size:1.15rem;font-weight:800;color:var(--q-text);font-family:'JetBrains Mono',monospace;">24,080.40</div>
-<div style="font-size:0.75rem;color:#ef4444;font-weight:700;">-95.25 (-0.39%) ↘</div>
+<div style="font-size:0.75rem;color:var(--q-neg);font-weight:700;">-95.25 (-0.39%) ↘</div>
 </div>
 <div class="q-mini-index-box">
 <div style="font-size:0.72rem;color:var(--q-text-3);font-weight:600;">SENSEX</div>
 <div style="font-size:1.15rem;font-weight:800;color:var(--q-text);font-family:'JetBrains Mono',monospace;">76,957.27</div>
-<div style="font-size:0.75rem;color:#ef4444;font-weight:700;">-307.23 (-0.40%) ↘</div>
+<div style="font-size:0.75rem;color:var(--q-neg);font-weight:700;">-307.23 (-0.40%) ↘</div>
 </div>
 </div>
-<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(112,126,171,0.16);border-radius:10px;padding:10px;display:flex;justify-content:space-around;text-align:center;">
+<div style="background:var(--q-surface-2);border:1px solid var(--q-border);border-radius:10px;padding:10px;display:flex;justify-content:space-around;text-align:center;">
 <div>
 <div style="font-size:0.68rem;color:var(--q-text-3);text-transform:uppercase;">Advances</div>
-<div style="font-size:0.95rem;font-weight:800;color:#10b981;">1,243</div>
+<div style="font-size:0.95rem;font-weight:800;color:var(--q-pos);">1,243</div>
 </div>
 <div>
 <div style="font-size:0.68rem;color:var(--q-text-3);text-transform:uppercase;">Declines</div>
-<div style="font-size:0.95rem;font-weight:800;color:#ef4444;">678</div>
+<div style="font-size:0.95rem;font-weight:800;color:var(--q-neg);">678</div>
 </div>
 <div>
 <div style="font-size:0.68rem;color:var(--q-text-3);text-transform:uppercase;">Status</div>
-<div style="font-size:0.8rem;font-weight:700;color:#10b981;">● Open</div>
+<div style="font-size:0.8rem;font-weight:700;color:var(--q-pos);">● Open</div>
 </div>
 </div>
 </div>
@@ -553,26 +553,26 @@ def render_module_hub(user_info):
     st.markdown("""
 <style>
 .hub-card {
-    background: linear-gradient(145deg, rgba(20,24,36,0.96), rgba(11,14,22,0.98));
-    border: 1px solid rgba(112,126,171,0.24);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 14px;
     padding: 18px;
     margin-bottom: 8px;
     transition: all 0.2s ease;
 }
-.hub-card:hover { border-color: rgba(129,140,248,0.4); }
+.hub-card:hover { border-color: var(--q-accent); }
 .hub-card-locked {
-    background: rgba(20,24,36,0.6);
-    border-color: rgba(112,126,171,0.12);
+    background: var(--q-surface-2);
+    border-color: var(--q-border);
     opacity: 0.6;
 }
 .hub-card-passed {
-    background: linear-gradient(145deg, rgba(16,185,129,0.08), rgba(5,150,105,0.06));
-    border-color: rgba(16,185,129,0.35);
+    background: var(--q-pos-weak);
+    border-color: var(--q-pos);
 }
 .hub-card-available {
-    border-color: rgba(168,85,247,0.45);
-    box-shadow: 0 0 16px rgba(168,85,247,0.12);
+    border-color: var(--q-accent);
+    box-shadow: 0 0 16px var(--q-accent-weak);
 }
 .hub-status-pill {
     font-size: 0.72rem;
@@ -591,7 +591,7 @@ def render_module_hub(user_info):
         st.rerun()
 
     # Header
-    complete_badge = " &nbsp;<span style='color:#10b981;font-size:0.9rem;'>✅ All Complete!</span>" if all_complete else ""
+    complete_badge = " &nbsp;<span style='color:var(--q-pos);font-size:0.9rem;'>✅ All Complete!</span>" if all_complete else ""
     st.markdown(textwrap.dedent(f"""
 <div style="margin-bottom: 24px;">
 <div style="font-size:2.5rem;margin-bottom:6px;">{icon}</div>
@@ -599,13 +599,13 @@ def render_module_hub(user_info):
 <p style="color:var(--q-text-3);font-size:1rem;margin:0 0 12px 0;">Complete each video quiz sequentially. Pass with <strong>85%</strong> to unlock the next.</p>
 <div style="display:flex;gap:16px;align-items:center;">
 <span style="font-size:0.85rem;font-weight:700;color:var(--q-text-2);">{passed}/{total} Quizzes Passed</span>
-<div style="flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;max-width:300px;">
+<div style="flex:1;height:6px;background:var(--q-border);border-radius:3px;overflow:hidden;max-width:300px;">
 <div style="width:{pct:.0f}%;height:100%;background:linear-gradient(90deg,#3b82f6,#a855f7);border-radius:3px;"></div>
 </div>
 <span style="font-size:0.78rem;color:var(--q-text-3);">{pct:.0f}%</span>
 </div>
 </div>
-<hr style="border-color:rgba(255,255,255,0.08);margin-bottom:20px;">
+<hr style="border-color:var(--q-border);margin-bottom:20px;">
 """), unsafe_allow_html=True)
 
     # Quiz Cards
@@ -621,13 +621,13 @@ def render_module_hub(user_info):
 
         if status == "passed":
             card_cls = "hub-card hub-card-passed"
-            status_html = "<span class='hub-status-pill' style='background:rgba(16,185,129,0.15);color:#10b981;'>✅ Passed</span>"
+            status_html = "<span class='hub-status-pill' style='background:var(--q-pos-weak);color:var(--q-pos);'>✅ Passed</span>"
         elif status == "available":
             card_cls = "hub-card hub-card-available"
-            status_html = "<span class='hub-status-pill' style='background:rgba(168,85,247,0.15);color:#c084fc;'>🔓 Available</span>"
+            status_html = "<span class='hub-status-pill' style='background:var(--q-accent-weak);color:var(--q-accent);'>🔓 Available</span>"
         else:
             card_cls = "hub-card hub-card-locked"
-            status_html = "<span class='hub-status-pill' style='background:rgba(255,255,255,0.05);color:var(--q-text-3);'>🔒 Locked</span>"
+            status_html = "<span class='hub-status-pill' style='background:var(--q-surface-2);color:var(--q-text-3);'>🔒 Locked</span>"
 
         st.markdown(textwrap.dedent(f"""
 <div class="{card_cls}">
@@ -641,8 +641,8 @@ def render_module_hub(user_info):
 <div style="display:flex;gap:16px;font-size:0.78rem;color:var(--q-text-3);">
 <span>🎯 {q_count} Questions</span>
 <span>⚡ 85% to Pass</span>
-<span style="color:#facc15;font-weight:600;">⭐ +{xp_reward} XP</span>
-<span style="color:#34d399;font-weight:600;">💰 +₹{cash_reward:,}</span>
+<span style="color:var(--q-warn);font-weight:600;">⭐ +{xp_reward} XP</span>
+<span style="color:var(--q-pos);font-weight:600;">💰 +₹{cash_reward:,}</span>
 </div>
 </div>
 """), unsafe_allow_html=True)
@@ -671,11 +671,11 @@ def render_taking_test(user_info):
 
     st.markdown(textwrap.dedent(f"""
     <div style="margin-bottom: 20px;">
-        <div style="font-size: 0.85rem; color: #a855f7; font-weight: 700; text-transform: uppercase;">{quiz_data.get('module_title', 'Education')} Challenge</div>
+        <div style="font-size: 0.85rem; color: var(--q-accent); font-weight: 700; text-transform: uppercase;">{quiz_data.get('module_title', 'Education')} Challenge</div>
         <h1 style="font-size: 2rem; font-weight: 800; color: var(--q-text); margin: 0 0 6px 0;">📝 {quiz_data.get('video_title', 'Video')} Assessment</h1>
         <p style="color: var(--q-text-3); font-size: 1rem; margin: 0;">Answer all {q_count} questions. You must score <strong>at least 85%</strong> to earn <strong>+{xp_reward} XP</strong> and unlock <strong>₹{cash_reward:,} Virtual Trading Cash</strong>.</p>
     </div>
-    <hr style="border-color: rgba(255,255,255,0.08); margin-bottom: 24px;">
+    <hr style="border-color: var(--q-border); margin-bottom: 24px;">
     """), unsafe_allow_html=True)
 
     user_answers = {}
@@ -695,7 +695,7 @@ def render_taking_test(user_info):
             user_answers[idx] = ans
             st.markdown("<div style='margin-bottom: 24px;'></div>", unsafe_allow_html=True)
 
-        st.markdown("<hr style='border-color: rgba(255,255,255,0.08); margin: 20px 0;'>", unsafe_allow_html=True)
+        st.markdown("<hr style='border-color: var(--q-border); margin: 20px 0;'>", unsafe_allow_html=True)
         col_sub, col_cancel = st.columns([1.5, 1])
         with col_sub:
             submitted = st.form_submit_button("Submit Assessment & Grade", type="primary", use_container_width=True)
@@ -814,22 +814,22 @@ def render_test_passed(user_info):
 """, unsafe_allow_html=True)
 
     st.markdown(textwrap.dedent(f"""
-<div style="background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(5,150,105,0.2) 100%); border: 2px solid rgba(16,185,129,0.5); border-radius: 24px; padding: 40px; text-align: center; margin: 20px 0; animation: glow-pulse 2s ease-in-out infinite;">
+<div style="background: var(--q-pos-weak); border: 2px solid var(--q-pos); border-radius: 24px; padding: 40px; text-align: center; margin: 20px 0; animation: glow-pulse 2s ease-in-out infinite;">
     <div style="font-size: 5rem; margin-bottom: 14px; animation: trophy-bounce 1s ease-out forwards;">🏆</div>
-    <h1 style="font-size: 2.5rem; font-weight: 900; color: #10b981; margin: 0 0 8px 0; animation: slide-up 0.6s ease-out 0.3s both;">Assessment Mastered!</h1>
+    <h1 style="font-size: 2.5rem; font-weight: 900; color: var(--q-pos); margin: 0 0 8px 0; animation: slide-up 0.6s ease-out 0.3s both;">Assessment Mastered!</h1>
     <p style="font-size: 1.15rem; color: var(--q-text-2); margin-bottom: 8px; animation: slide-up 0.6s ease-out 0.5s both;">{vid_title}</p>
-    <p style="font-size: 1.3rem; color: var(--q-text); margin-bottom: 24px; animation: slide-up 0.6s ease-out 0.7s both;">You scored <strong style="color:#10b981;">{score:.0f}%</strong> ({count}/{total} correct) — well above the 85% passing threshold!</p>
+    <p style="font-size: 1.3rem; color: var(--q-text); margin-bottom: 24px; animation: slide-up 0.6s ease-out 0.7s both;">You scored <strong style="color:var(--q-pos);">{score:.0f}%</strong> ({count}/{total} correct) — well above the 85% passing threshold!</p>
     <div style="display: inline-flex; gap: 16px; flex-wrap: wrap; justify-content: center; animation: slide-up 0.8s ease-out 0.9s both;">
-        <div style="background: rgba(250,204,21,0.12); border: 1px solid rgba(250,204,21,0.35); padding: 12px 20px; border-radius: 12px;">
-            <div style="font-size: 1.3rem; font-weight: 800; color: #facc15;">⭐ +{xp_reward} XP</div>
+        <div style="background: var(--q-warn-weak); border: 1px solid var(--q-warn); padding: 12px 20px; border-radius: 12px;">
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--q-warn);">⭐ +{xp_reward} XP</div>
             <div style="font-size: 0.72rem; color: var(--q-text-3); margin-top: 2px;">Experience Earned</div>
         </div>
-        <div style="background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.35); padding: 12px 20px; border-radius: 12px;">
-            <div style="font-size: 1.3rem; font-weight: 800; color: #34d399;">💰 +₹{cash_reward:,}</div>
+        <div style="background: var(--q-pos-weak); border: 1px solid var(--q-pos); padding: 12px 20px; border-radius: 12px;">
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--q-pos);">💰 +₹{cash_reward:,}</div>
             <div style="font-size: 0.72rem; color: var(--q-text-3); margin-top: 2px;">Cash Deposited</div>
         </div>
-        <div style="background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.35); padding: 12px 20px; border-radius: 12px;">
-            <div style="font-size: 1.3rem; font-weight: 800; color: #60a5fa;">🎖️ {lvl_info['level_name']}</div>
+        <div style="background: var(--q-accent-weak); border: 1px solid var(--q-accent); padding: 12px 20px; border-radius: 12px;">
+            <div style="font-size: 1.3rem; font-weight: 800; color: var(--q-accent);">🎖️ {lvl_info['level_name']}</div>
             <div style="font-size: 0.72rem; color: var(--q-text-3); margin-top: 2px;">Current Rank</div>
         </div>
     </div>
@@ -869,19 +869,19 @@ def render_test_failed(user_info):
 }
 @keyframes fade-in-up {
     0% { transform: translateY(20px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
+    100% {{ transform: translateY(0); opacity: 1; }}
 }
 </style>
 """, unsafe_allow_html=True)
 
     st.markdown(textwrap.dedent(f"""
-<div style="background: linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(185,28,28,0.2) 100%); border: 2px solid rgba(239,68,68,0.5); border-radius: 24px; padding: 36px; text-align: center; margin: 20px 0; animation: shake-card 0.6s ease-in-out;">
+<div style="background: var(--q-neg-weak); border: 2px solid var(--q-neg); border-radius: 24px; padding: 36px; text-align: center; margin: 20px 0; animation: shake-card 0.6s ease-in-out;">
     <div style="font-size: 4.5rem; margin-bottom: 14px;">😔</div>
     <h1 style="font-size: 2.3rem; font-weight: 900; color: var(--q-text); margin: 0 0 8px 0;">Not Quite There Yet</h1>
     <p style="font-size: 1.15rem; color: var(--q-text-2); margin-bottom: 6px;">{vid_title}</p>
     <div style="display: inline-flex; gap: 12px; align-items: center; margin-bottom: 16px;">
-        <span style="background: #ef4444; color: white; padding: 6px 14px; border-radius: 8px; font-size: 1.2rem; font-weight: 900;">{score:.0f}%</span>
-        <span style="color: var(--q-text-3); font-size: 1rem;">You needed <strong style="color:#facc15;">85%</strong> to pass</span>
+        <span style="background: var(--q-neg); color: white; padding: 6px 14px; border-radius: 8px; font-size: 1.2rem; font-weight: 900;">{score:.0f}%</span>
+        <span style="color: var(--q-text-3); font-size: 1rem;">You needed <strong style="color:var(--q-warn);">85%</strong> to pass</span>
     </div>
     <p style="font-size: 1rem; color: var(--q-text-2); margin: 0;">You answered {count} out of {total} correctly. Review your mistakes below and try again — you've got this! 💪</p>
 </div>
@@ -914,7 +914,7 @@ def render_review(user_info):
     vid_title = st.session_state.get("quiz_video_title", "Assessment")
     passed = score >= 85.0
 
-    result_color = "#10b981" if passed else "#ef4444"
+    result_color = "var(--q-pos)" if passed else "var(--q-neg)"
     result_label = "PASSED" if passed else "NOT PASSED"
 
     st.markdown(textwrap.dedent(f"""
@@ -926,17 +926,17 @@ def render_review(user_info):
 <h1 style="font-size:2rem;font-weight:800;color:var(--q-text);margin:0 0 6px 0;">📖 {vid_title} — Answer Review</h1>
 <p style="color:var(--q-text-3);font-size:1rem;margin:0;">Review each question, your answer, the correct answer, and the concept explanation.</p>
 </div>
-<hr style="border-color:rgba(255,255,255,0.08);margin-bottom:24px;">
+<hr style="border-color:var(--q-border);margin-bottom:24px;">
 """), unsafe_allow_html=True)
 
     for idx, r in enumerate(results):
         status_badge = "✅ Correct" if r["is_correct"] else "❌ Incorrect"
-        badge_bg = "rgba(16,185,129,0.15)" if r["is_correct"] else "rgba(239,68,68,0.15)"
-        badge_color = "#10b981" if r["is_correct"] else "#ef4444"
-        card_border = "rgba(16,185,129,0.3)" if r["is_correct"] else "rgba(239,68,68,0.3)"
+        badge_bg = "var(--q-pos-weak)" if r["is_correct"] else "var(--q-neg-weak)"
+        badge_color = "var(--q-pos)" if r["is_correct"] else "var(--q-neg)"
+        card_border = "var(--q-pos)" if r["is_correct"] else "var(--q-neg)"
 
         st.markdown(textwrap.dedent(f"""
-<div style="background: rgba(20,24,36,0.95); border: 1px solid {card_border}; border-radius: 14px; padding: 18px 20px; margin-bottom: 18px;">
+<div style="background: var(--q-surface); border: 1px solid {card_border}; border-radius: 14px; padding: 18px 20px; margin-bottom: 18px;">
 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
 <span style="font-size:0.85rem; font-weight:700; color:var(--q-text-2);">Question {idx+1}</span>
 <span style="font-size:0.75rem; font-weight:800; background:{badge_bg}; color:{badge_color}; padding:3px 8px; border-radius:6px;">{status_badge}</span>
@@ -946,16 +946,16 @@ def render_review(user_info):
 <span style="color:var(--q-text-3);">Your Selection:</span> <strong style="color:{badge_color};">{r['selected']}</strong>
 </div>
 <div style="margin-bottom:12px; font-size:0.9rem;">
-<span style="color:var(--q-text-3);">Correct Answer:</span> <strong style="color:#10b981;">{r['correct_answer']}</strong>
+<span style="color:var(--q-text-3);">Correct Answer:</span> <strong style="color:var(--q-pos);">{r['correct_answer']}</strong>
 </div>
-<div style="background:rgba(255,255,255,0.03); border-left:3px solid #3b82f6; border-radius:4px; padding:10px 14px;">
-<div style="font-size:0.75rem; font-weight:700; color:#60a5fa; text-transform:uppercase; margin-bottom:4px;">💡 Concept Deep Dive</div>
+<div style="background:var(--q-surface-2); border-left:3px solid var(--q-accent); border-radius:4px; padding:10px 14px;">
+<div style="font-size:0.75rem; font-weight:700; color:var(--q-accent); text-transform:uppercase; margin-bottom:4px;">💡 Concept Deep Dive</div>
 <div style="font-size:0.85rem; color:var(--q-text-2); line-height:1.45;">{r['explanation']}</div>
 </div>
 </div>
 """), unsafe_allow_html=True)
 
-    st.markdown("<hr style='border-color: rgba(255,255,255,0.08); margin: 24px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-color: var(--q-border); margin: 24px 0;'>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:

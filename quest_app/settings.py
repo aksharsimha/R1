@@ -106,18 +106,47 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     st.error(f"Could not update profile: {exc}")
 
     elif selected == "Theme":
-        _card_start("Theme", "Choose the look that feels right for your workspace.")
-        dark = st.radio("Colour mode", ["Dark", "Light"], index=0 if ui_theme.current_theme() == "dark" else 1,
-                        horizontal=True, key="theme_choice")
-        if (dark == "Dark") != (ui_theme.current_theme() == "dark"):
-            st.session_state.ui_theme = "dark" if dark == "Dark" else "light"
-            st.rerun()
+        _card_start("Theme", "Choose the variant that feels right for your workspace.")
 
-        if dark == "Dark":
-            variants = ["Classic", "Midnight", "Void", "Graphite", "Plum", "Ash", "Jade"]
-            curr_variant = ui_theme.current_dark_variant().title()
-            idx = variants.index(curr_variant) if curr_variant in variants else 0
-            dark_variant = st.selectbox("Dark theme", variants, index=idx, key="dark_variant_choice")
-            if dark_variant.lower() != ui_theme.current_dark_variant():
-                st.session_state.ui_dark_variant = dark_variant.lower()
-                st.rerun()
+        # Build per-label swatch CSS from VARIANT_LABELS (no hardcoded hex values).
+        nth_rules = "\n".join(
+            f"        div[data-testid=\"stRadio\"] [role=\"radiogroup\"]"
+            f" > label:nth-of-type({i + 1})::before {{ background: {swatch}; }}"
+            for i, (_, _, swatch) in enumerate(ui_theme.VARIANT_LABELS)
+        )
+        st.markdown(
+            f"""<style>
+        /* Shared swatch base */
+        div[data-testid="stRadio"] [role="radiogroup"] > label::before {{
+            content: "";
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid var(--q-border-2);
+            margin-right: 10px;
+            flex-shrink: 0;
+            vertical-align: middle;
+        }}
+        /* Per-variant swatch colours */
+{nth_rules}
+</style>""",
+            unsafe_allow_html=True,
+        )
+
+        keys     = [key   for key, _,     _ in ui_theme.VARIANT_LABELS]
+        labels   = {key: label for key, label, _ in ui_theme.VARIANT_LABELS}
+        curr_key = ui_theme.current_theme_variant()
+        curr_idx = keys.index(curr_key) if curr_key in keys else 0
+
+        chosen_key = st.radio(
+            "Theme variant",
+            options=keys,
+            index=curr_idx,
+            format_func=lambda k: labels[k],
+            key="theme_variant_choice",
+            label_visibility="collapsed",
+        )
+        if chosen_key != curr_key:
+            st.session_state.ui_variant = chosen_key
+            st.rerun()

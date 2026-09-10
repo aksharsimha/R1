@@ -197,7 +197,7 @@ try:
         _tmp_sum = {"total_value": 0.0}
     
     p_growth = get_portfolio_growth(_tmp_df, _tmp_sum)
-    g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
+    g_color = "var(--q-pos)" if p_growth["growth_abs"] >= 0 else "var(--q-neg)"
     g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
     _profile_placeholder.markdown(f"""
     <div class="quest-profile-card">
@@ -235,8 +235,8 @@ if _username == "demo_guest":
     st.sidebar.markdown(
         f"""
         <div style='padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;'>
-            <div style='font-size: 0.9rem; font-weight: 600; color: #f8fafc;'>{_user_info.get('display_name', 'Demo User')}</div>
-            <div style='font-size: 0.75rem; color: #94a3b8;'>@{_username}</div>
+            <div style='font-size: 0.9rem; font-weight: 600; color: var(--q-text);'>{_user_info.get('display_name', 'Demo User')}</div>
+            <div style='font-size: 0.75rem; color: var(--q-text-2);'>@{_username}</div>
         </div>
         """, unsafe_allow_html=True
     )
@@ -537,7 +537,7 @@ with st.spinner("Analyzing portfolio data..."):
 
         # FEATURE A: Update Profile Card with Growth Stat (runs every rerun — cheap)
         p_growth = get_portfolio_growth(df, summary)
-        g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
+        g_color = "var(--q-pos)" if p_growth["growth_abs"] >= 0 else "var(--q-neg)"
         g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
         _profile_placeholder.markdown(f"""
         <div class="quest-profile-card">

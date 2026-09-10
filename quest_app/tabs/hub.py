@@ -77,40 +77,33 @@ def render(user_info):
     st.markdown("""<style>
 [data-testid="stSidebar"] { display: none !important; }
 .stApp {
-    background-color: #070712 !important;
-    background-image: 
-        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.14) 0%, transparent 40%),
-        radial-gradient(circle at 85% 20%, rgba(168, 85, 247, 0.16) 0%, transparent 45%),
-        radial-gradient(circle at 50% 85%, rgba(59, 130, 246, 0.10) 0%, transparent 50%) !important;
-    background-attachment: fixed !important;
-    color: #f8fafc !important;
+    background-color: var(--q-bg) !important;
+    color: var(--q-text) !important;
 }
 .hub-hero { text-align: center; padding-top: 1.8rem; padding-bottom: 1.2rem; }
-.hub-hero-welcome { font-size: 1.25rem; font-weight: 500; color: #cbd5e1; margin-bottom: 0.25rem; letter-spacing: -0.2px; }
+.hub-hero-welcome { font-size: 1.25rem; font-weight: 500; color: var(--q-text-2); margin-bottom: 0.25rem; letter-spacing: -0.2px; }
 .hub-hero-title {
     font-size: 3.4rem; font-weight: 800; letter-spacing: -1px;
     background: linear-gradient(135deg, #a5f3fc 0%, #93c5fd 30%, #c084fc 70%, #f472b6 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin: 0 0 0.4rem 0; line-height: 1.15;
 }
-.hub-hero-sub { font-size: 1.05rem; color: #94a3b8; font-weight: 400; margin-bottom: 1.5rem; }
+.hub-hero-sub { font-size: 1.05rem; color: var(--q-text-3); font-weight: 400; margin-bottom: 1.5rem; }
 .hub-card-box {
-    background: rgba(13, 15, 28, 0.75); backdrop-filter: blur(16px);
-    border: 1px solid rgba(139, 92, 246, 0.22); border-radius: 20px;
+    background: var(--q-surface);
+    border: 1px solid var(--q-border); border-radius: 20px;
     padding: 1.6rem 1.6rem 1.4rem 1.6rem;
-    box-shadow: 0 12px 35px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    box-shadow: 0 12px 35px -8px rgba(0, 0, 0, 0.45);
     transition: all 0.28s ease; position: relative; height: 100%;
     display: flex; flex-direction: column; justify-content: space-between;
 }
 .hub-card-box:hover {
-    border-color: rgba(168, 85, 247, 0.45);
-    box-shadow: 0 16px 45px -8px rgba(124, 58, 237, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: var(--q-border-2);
     transform: translateY(-2px);
 }
-.hub-card-box.edu-theme { border-color: rgba(59, 130, 246, 0.22); }
+.hub-card-box.edu-theme { border-color: var(--q-border); }
 .hub-card-box.edu-theme:hover {
-    border-color: rgba(59, 130, 246, 0.45);
-    box-shadow: 0 16px 45px -8px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-color: var(--q-border-2);
 }
 .hub-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
 .hub-card-header-left { display: flex; align-items: center; gap: 14px; }
@@ -119,50 +112,50 @@ def render(user_info):
     display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
 }
 .hub-card-icon.prof {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.4));
-    border: 1px solid rgba(168, 85, 247, 0.35); box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+    background: var(--q-accent-weak);
+    border: 1px solid var(--q-border-2);
 }
 .hub-card-icon.edu {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.4));
-    border: 1px solid rgba(96, 165, 250, 0.35); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    background: var(--q-accent-weak);
+    border: 1px solid var(--q-border-2);
 }
-.hub-card-title { font-size: 1.25rem; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; letter-spacing: -0.3px; }
-.hub-card-subtitle { font-size: 0.82rem; color: #94a3b8; margin: 0; }
+.hub-card-title { font-size: 1.25rem; font-weight: 700; color: var(--q-text); margin: 0 0 2px 0; letter-spacing: -0.3px; }
+.hub-card-subtitle { font-size: 0.82rem; color: var(--q-text-2); margin: 0; }
 .hub-card-arrow-btn {
     width: 32px; height: 32px; border-radius: 8px;
-    background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.9rem;
+    background: var(--q-surface-2); border: 1px solid var(--q-border);
+    display: flex; align-items: center; justify-content: center; color: var(--q-text-2); font-size: 0.9rem;
 }
 .hub-featured-box {
-    background: rgba(8, 10, 20, 0.65); border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--q-surface-2); border: 1px solid var(--q-border);
     border-radius: 14px; padding: 1.2rem; margin-bottom: 1.2rem;
     display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden;
 }
 .hub-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.2rem; }
 .hub-stat-grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; margin-bottom: 1.2rem; }
 .hub-mini-stat {
-    background: rgba(18, 20, 36, 0.6); border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--q-surface-2); border: 1px solid var(--q-border);
     border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;
 }
-.hub-mini-stat-label { font-size: 0.68rem; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
-.hub-mini-stat-val { font-size: 1rem; font-weight: 700; color: #ffffff; }
+.hub-mini-stat-label { font-size: 0.68rem; color: var(--q-text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+.hub-mini-stat-val { font-size: 1rem; font-weight: 700; color: var(--q-text); }
 div[data-testid="stColumn"]:nth-of-type(1) div.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a855f7 100%) !important;
-    color: #ffffff !important; border: none !important; border-radius: 12px !important;
+    background: var(--q-accent) !important;
+    color: var(--q-surface) !important; border: none !important; border-radius: 12px !important;
     font-weight: 600 !important; font-size: 1rem !important; height: 48px !important;
-    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45) !important; transition: all 0.25s ease !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important; transition: all 0.25s ease !important;
 }
 div[data-testid="stColumn"]:nth-of-type(1) div.stButton > button[kind="primary"]:hover {
-    box-shadow: 0 6px 25px rgba(168, 85, 247, 0.65) !important; transform: translateY(-1px) !important;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35) !important; transform: translateY(-1px) !important;
 }
 div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%) !important;
-    color: #ffffff !important; border: none !important; border-radius: 12px !important;
+    background: var(--q-accent) !important;
+    color: var(--q-surface) !important; border: none !important; border-radius: 12px !important;
     font-weight: 600 !important; font-size: 1rem !important; height: 48px !important;
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.45) !important; transition: all 0.25s ease !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important; transition: all 0.25s ease !important;
 }
 div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]:hover {
-    box-shadow: 0 6px 25px rgba(59, 130, 246, 0.65) !important; transform: translateY(-1px) !important;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35) !important; transform: translateY(-1px) !important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -219,39 +212,39 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 </div>
 <div class="hub-featured-box">
 <div>
-<div style="font-size:0.75rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">STATUS</div>
-<div style="font-size:1.35rem;font-weight:700;color:#38bdf8;margin-bottom:8px;">Active Environment</div>
-<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:999px;padding:3px 10px;">
-<div style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;"></div>
-<span style="font-size:0.75rem;font-weight:600;color:#34d399;">All systems operational</span>
+<div style="font-size:0.75rem;color:var(--q-text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">STATUS</div>
+<div style="font-size:1.35rem;font-weight:700;color:var(--q-accent);margin-bottom:8px;">Active Environment</div>
+<div style="display:inline-flex;align-items:center;gap:6px;background:var(--q-pos-weak);border:1px solid var(--q-pos);border-radius:999px;padding:3px 10px;">
+<div style="width:7px;height:7px;border-radius:50%;background:var(--q-pos);box-shadow:0 0 8px var(--q-pos);"></div>
+<span style="font-size:0.75rem;font-weight:600;color:var(--q-pos);">All systems operational</span>
 </div>
 </div>
 <div>{svg_growth_chart}</div>
 </div>
 <div class="hub-stat-grid">
 <div class="hub-mini-stat">
-<span style="font-size:1.1rem;color:#a855f7;">📊</span>
+<span style="font-size:1.1rem;color:var(--q-accent);">📊</span>
 <div>
 <div class="hub-mini-stat-label">Markets Tracked</div>
 <div class="hub-mini-stat-val">{markets_count}</div>
 </div>
 </div>
 <div class="hub-mini-stat">
-<span style="font-size:1.1rem;color:#818cf8;">⭐</span>
+<span style="font-size:1.1rem;color:var(--q-accent);">⭐</span>
 <div>
 <div class="hub-mini-stat-label">Watchlist</div>
 <div class="hub-mini-stat-val">{watchlist_count}</div>
 </div>
 </div>
 <div class="hub-mini-stat">
-<span style="font-size:1.1rem;color:#f43f5e;">🔔</span>
+<span style="font-size:1.1rem;color:var(--q-neg);">🔔</span>
 <div>
 <div class="hub-mini-stat-label">Alerts</div>
 <div class="hub-mini-stat-val">{alerts_count}</div>
 </div>
 </div>
 <div class="hub-mini-stat">
-<span style="font-size:1.1rem;color:#38bdf8;">⏱</span>
+<span style="font-size:1.1rem;color:var(--q-accent);">⏱</span>
 <div>
 <div class="hub-mini-stat-label">Last Updated</div>
 <div class="hub-mini-stat-val" style="font-size:0.88rem;">{last_updated_txt}</div>
@@ -285,38 +278,38 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 <div style="flex:1;">
 <div style="display:flex;justify-content:space-between;align-items:flex-start;">
 <div>
-<div style="font-size:0.75rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">YOUR PROGRESS</div>
-<div style="font-size:1.35rem;font-weight:700;color:#fbbf24;margin-bottom:6px;">⭐ {total_xp} XP</div>
+<div style="font-size:0.75rem;color:var(--q-text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">YOUR PROGRESS</div>
+<div style="font-size:1.35rem;font-weight:700;color:var(--q-warn);margin-bottom:6px;">⭐ {total_xp} XP</div>
 </div>
 <div style="text-align:right;">
-<div style="font-size:0.75rem;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">UP NEXT</div>
-<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);border-radius:8px;padding:4px 10px;">
-<span style="color:#60a5fa;font-size:0.75rem;">▶</span>
-<span style="font-size:0.85rem;font-weight:700;color:#ffffff;">Level {cur_lvl_num}</span>
+<div style="font-size:0.75rem;color:var(--q-text-3);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">UP NEXT</div>
+<div style="display:inline-flex;align-items:center;gap:6px;background:var(--q-accent-weak);border:1px solid var(--q-accent);border-radius:8px;padding:4px 10px;">
+<span style="color:var(--q-accent);font-size:0.75rem;">▶</span>
+<span style="font-size:0.85rem;font-weight:700;color:var(--q-text);">Level {cur_lvl_num}</span>
 </div>
 </div>
 </div>
 <div style="margin-top:12px;">
-<div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#94a3b8;font-weight:600;margin-bottom:4px;">
+<div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--q-text-3);font-weight:600;margin-bottom:4px;">
 <span>Progress</span>
 <span>{total_xp} / {next_xp} XP</span>
 </div>
-<div style="width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;">
-<div style="width:{min(100.0, max(5.0, progress_pct))}%;height:100%;background:linear-gradient(90deg, #f59e0b, #fbbf24);border-radius:999px;"></div>
+<div style="width:100%;height:6px;background:var(--q-border);border-radius:999px;overflow:hidden;">
+<div style="width:{min(100.0, max(5.0, progress_pct))}%;height:100%;background:var(--q-warn);border-radius:999px;"></div>
 </div>
 </div>
 </div>
 </div>
 <div class="hub-stat-grid-2">
 <div class="hub-mini-stat">
-<span style="font-size:1.3rem;color:#34d399;">💳</span>
+<span style="font-size:1.3rem;color:var(--q-pos);">💳</span>
 <div>
 <div class="hub-mini-stat-label">Virtual Trading Balance</div>
-<div class="hub-mini-stat-val" style="color:#34d399;">₹ {virtual_balance:,.0f}</div>
+<div class="hub-mini-stat-val" style="color:var(--q-pos);">₹ {virtual_balance:,.0f}</div>
 </div>
 </div>
 <div class="hub-mini-stat">
-<span style="font-size:1.3rem;color:#c084fc;">🏆</span>
+<span style="font-size:1.3rem;color:var(--q-accent);">🏆</span>
 <div>
 <div class="hub-mini-stat-label">Achievements</div>
 <div class="hub-mini-stat-val">{achievements_count}</div>

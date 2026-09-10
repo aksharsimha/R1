@@ -12,7 +12,6 @@ Usage (in app.py):
     import ui_theme
     ui_theme.init_theme()          # once, near the top, after auth
     st.markdown(ui_theme.css(), unsafe_allow_html=True)
-    ui_theme.theme_toggle()        # renders the sidebar switch
     st.markdown(ui_theme.metric_card("Invested", "₹40,576"), unsafe_allow_html=True)
 
 Nothing here touches portfolio logic — it is pure presentation.
@@ -160,72 +159,39 @@ DARK_VARIANTS = {
 
 DARK = DARK_VARIANTS["classic"]
 
-LIGHT = {
-    "bg":          "#F7F6F2",
-    "surface":     "#FFFFFF",
-    "surface_2":   "#ECEAE2",
-    "border":      "#D6D3C9",
-    "border_2":    "#B9B6AB",
-    "text":        "#20201E",
-    "text_2":      "#454440",
-    "text_3":      "#62615B",
-    "accent":      "#0F6E56",
-    "accent_weak": "#CDEFE4",
-    "pos":         "#0F6E56",
-    "neg":         "#993C1D",
-    "warn":        "#854F0B",
-    "warn_weak":   "#FAEEDA",
-    "neg_weak":    "#FAECE7",
-    "pos_weak":    "#E1F5EE",
-}
+DEFAULT_VARIANT = "classic"
 
-THEMES = {"dark": DARK, "light": LIGHT}
-DEFAULT_THEME = "dark"
-DEFAULT_DARK_VARIANT = "classic"
+# Ordered list of all available theme variants for UI pickers.
+# Each entry: (session_key, display_label, swatch_hex)
+VARIANT_LABELS = [
+    ("classic",   "Classic",   "#0F1115"),
+    ("midnight",  "Midnight",  "#000000"),
+    ("void",      "Void",      "#10121A"),
+    ("graphite",  "Graphite",  "#0E0E0E"),
+    ("plum",      "Plum",      "#120E13"),
+    ("ash",       "Ash",       "#11100E"),
+    ("jade",      "Jade",      "#0F1312"),
+]
 
 
 # =====================================================================
 # Theme state
 # =====================================================================
 def init_theme():
-    """Ensure a theme and dark variant are set in session_state."""
+    """Ensure a variant is set in session_state."""
     if st is not None:
-        if "ui_theme" not in st.session_state:
-            st.session_state.ui_theme = DEFAULT_THEME
-        if "ui_dark_variant" not in st.session_state:
-            st.session_state.ui_dark_variant = DEFAULT_DARK_VARIANT
+        if "ui_variant" not in st.session_state:
+            st.session_state.ui_variant = DEFAULT_VARIANT
 
 
-def current_theme() -> str:
+def current_theme_variant() -> str:
     if st is None:
-        return DEFAULT_THEME
-    return st.session_state.get("ui_theme", DEFAULT_THEME)
-
-
-def current_dark_variant() -> str:
-    if st is None:
-        return DEFAULT_DARK_VARIANT
-    return st.session_state.get("ui_dark_variant", DEFAULT_DARK_VARIANT)
+        return DEFAULT_VARIANT
+    return st.session_state.get("ui_variant", DEFAULT_VARIANT)
 
 
 def palette(theme: str = None) -> dict:
-    t = theme or current_theme()
-    if t == "dark":
-        return DARK_VARIANTS.get(current_dark_variant(), DARK)
-    return THEMES.get(t, DARK)
-
-
-def theme_toggle():
-    """Render a compact light/dark switch in the sidebar."""
-    if st is None:
-        return
-    init_theme()
-    is_dark = current_theme() == "dark"
-    label = "🌙  Dark" if is_dark else "☀️  Light"
-    if st.sidebar.button(f"{label}  ·  switch theme", use_container_width=True,
-                         key="ui_theme_toggle"):
-        st.session_state.ui_theme = "light" if is_dark else "dark"
-        st.rerun()
+    return DARK_VARIANTS.get(current_theme_variant(), DARK_VARIANTS["classic"])
 
 
 # =====================================================================
@@ -410,6 +376,103 @@ def css(theme: str = None) -> str:
     /* ── Dataframe ── */
     div[data-testid="stDataFrame"] {{ border: 1px solid var(--q-border);
         border-radius: var(--q-radius); overflow: hidden; }}
+
+    /* ── Header bar ── */
+    header[data-testid="stHeader"] {{
+        background: var(--q-bg) !important;
+        border-bottom: 1px solid var(--q-border) !important;
+    }}
+
+    /* ── File uploader ── */
+    div[data-testid="stFileUploader"] {{
+        background: var(--q-surface-2) !important;
+        border-radius: var(--q-radius-sm) !important;
+    }}
+    div[data-testid="stFileUploader"] section {{
+        background: var(--q-surface-2) !important;
+        color: var(--q-text) !important;
+        border: 1px dashed var(--q-border-2) !important;
+        border-radius: var(--q-radius-sm) !important;
+    }}
+    div[data-testid="stFileUploader"] label,
+    div[data-testid="stFileUploader"] small,
+    div[data-testid="stFileUploader"] span {{
+        color: var(--q-text-2) !important;
+    }}
+
+    /* ── Primary buttons ── */
+    .stButton > button[kind="primary"],
+    button[data-testid="baseButton-primary"] {{
+        background: var(--q-accent) !important;
+        color: var(--q-bg) !important;
+        border: none !important;
+    }}
+    .stButton > button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover {{
+        filter: brightness(1.12) !important;
+    }}
+
+    /* ── Text area & text input ── */
+    div[data-testid="stTextArea"] textarea,
+    div[data-testid="stTextInput"] input {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border: 1px solid var(--q-border) !important;
+    }}
+    div[data-testid="stTextArea"] textarea::placeholder,
+    div[data-testid="stTextInput"] input::placeholder {{
+        color: var(--q-text-3) !important;
+        opacity: 1 !important;
+    }}
+
+    /* ── Multiselect ── */
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border: 1px solid var(--q-border) !important;
+    }}
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {{
+        background: var(--q-accent-weak) !important;
+        color: var(--q-text) !important;
+    }}
+
+    /* ── Selectbox ── */
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border: 1px solid var(--q-border) !important;
+    }}
+
+    /* ── Dropdown / popover menus ── */
+    div[data-baseweb="popover"] {{
+        background: var(--q-surface) !important;
+        border: 1px solid var(--q-border) !important;
+        border-radius: var(--q-radius-sm) !important;
+    }}
+    ul[data-baseweb="menu"] {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        padding: 4px !important;
+    }}
+    li[data-baseweb="menu-item"] {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+        border-radius: 6px !important;
+    }}
+    li[data-baseweb="menu-item"]:hover {{
+        background: var(--q-accent-weak) !important;
+    }}
+
+    /* ── Dataframe cells & headers — force theme text/bg ── */
+    div[data-testid="stDataFrame"] .dvn-scroller,
+    div[data-testid="stDataFrame"] canvas {{
+        background: var(--q-surface) !important;
+    }}
+    div[data-testid="stDataFrame"] [role="columnheader"],
+    div[data-testid="stDataFrame"] [role="gridcell"] {{
+        background: var(--q-surface) !important;
+        color: var(--q-text) !important;
+    }}
 
     /* ── Reusable component classes ── */
     .q-card {{ background: var(--q-surface); border: 1px solid var(--q-border);

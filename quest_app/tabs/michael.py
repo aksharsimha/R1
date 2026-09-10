@@ -21,7 +21,7 @@ import nse_live as _nse
 def _render_html_table(rows):
     if not rows:
         return ""
-    html_out = ['<table style="width:100%;border-collapse:collapse;margin:8px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;">']
+    html_out = ['<table style="width:100%;border-collapse:collapse;margin:8px 0;background:var(--q-surface-2);border:1px solid var(--q-border);border-radius:8px;overflow:hidden;">']
     is_header = True
     for r in rows:
         cells = [c.strip() for c in r.strip('|').split('|')]
@@ -31,11 +31,11 @@ def _render_html_table(rows):
         html_out.append('<tr>')
         for c in cells:
             tag = 'th' if is_header else 'td'
-            style = 'padding:6px 10px;border:1px solid rgba(255,255,255,0.08);font-size:0.82rem;'
+            style = 'padding:6px 10px;border:1px solid var(--q-border);font-size:0.82rem;'
             if is_header:
-                style += 'background:rgba(139,92,246,0.18);color:#c084fc;font-weight:700;text-align:left;'
+                style += 'background:var(--q-accent-weak);color:var(--q-accent);font-weight:700;text-align:left;'
             else:
-                style += 'color:#e2e8f0;line-height:1.4;'
+                style += 'color:var(--q-text);line-height:1.4;'
             c_fmt = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', c)
             html_out.append(f'<{tag} style="{style}">{c_fmt}</{tag}>')
         html_out.append('</tr>')
@@ -78,16 +78,16 @@ def _format_ai_response_html(raw_text: str) -> str:
     formatted = '\n'.join(out_lines)
     
     # 3. Format headers (### / ## / #)
-    formatted = re.sub(r'^(?:#{1,3})\s+(.+)$', r'<div style="font-weight:700;font-size:0.96rem;color:#f8fafc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    formatted = re.sub(r'^(?:#{1,3})\s+(.+)$', r'<div style="font-weight:700;font-size:0.96rem;color:var(--q-text);margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
     
     # Numbered step emojis (1️⃣, 2️⃣, 3️⃣ or 1., 2.)
-    formatted = re.sub(r'^([0-9]+[️⃣\.\)]\s*.+)$', r'<div style="font-weight:700;font-size:0.95rem;color:#c084fc;margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
+    formatted = re.sub(r'^([0-9]+[️⃣\.\)]\s*.+)$', r'<div style="font-weight:700;font-size:0.95rem;color:var(--q-accent);margin:8px 0 3px;">\1</div>', formatted, flags=re.MULTILINE)
     
     # 4. Bold text
-    formatted = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:#f1f5f9;">\1</strong>', formatted)
+    formatted = re.sub(r'\*\*(.+?)\*\*', r'<strong style="color:var(--q-text);">\1</strong>', formatted)
     
     # 5. Bullets
-    formatted = re.sub(r'^[•\-\*]\s+(.+)$', r'<div style="margin:2px 0 2px 8px;color:#cbd5e1;display:flex;gap:6px;"><span style="color:#a855f7;">•</span><span>\1</span></div>', formatted, flags=re.MULTILINE)
+    formatted = re.sub(r'^[•\-\*]\s+(.+)$', r'<div style="margin:2px 0 2px 8px;color:var(--q-text-2);display:flex;gap:6px;"><span style="color:var(--q-accent);">•</span><span>\1</span></div>', formatted, flags=re.MULTILINE)
     
     # 6. Paragraphs
     paragraphs = formatted.split('\n\n')
@@ -100,7 +100,7 @@ def _format_ai_response_html(raw_text: str) -> str:
             p_html.append(p)
         else:
             p_clean = p.replace('\n', '<br>')
-            p_html.append(f'<div style="margin-bottom:6px;line-height:1.5;color:#cbd5e1;">{p_clean}</div>')
+            p_html.append(f'<div style="margin-bottom:6px;line-height:1.5;color:var(--q-text-2);">{p_clean}</div>')
             
     return "".join(p_html)
 
@@ -350,8 +350,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     /* ChatGPT Layout Styles */
     .gpt-sidebar {
-        background: rgba(13, 15, 28, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
         border-radius: 16px;
         padding: 1rem;
         height: 100%;
@@ -362,7 +362,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.8px;
-        color: #64748b;
+        color: var(--q-text-3);
         margin: 1.1rem 0 0.4rem 0.3rem;
     }
     .gpt-chat-item {
@@ -371,44 +371,44 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         justify-content: space-between;
         padding: 0.6rem 0.8rem;
         border-radius: 10px;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--q-surface-2);
         border: 1px solid transparent;
         margin-bottom: 0.35rem;
         transition: all 0.2s ease;
         cursor: pointer;
     }
     .gpt-chat-item:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.1);
+        background: var(--q-surface-2);
+        border-color: var(--q-border);
     }
     .gpt-chat-item.active {
-        background: rgba(139, 92, 246, 0.16);
-        border-color: rgba(168, 85, 247, 0.4);
-        box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+        background: var(--q-accent-weak);
+        border-color: var(--q-accent);
+        box-shadow: 0 0 15px var(--q-accent-weak);
     }
     .gpt-chat-title {
         font-size: 0.85rem;
         font-weight: 500;
-        color: #f1f5f9;
+        color: var(--q-text);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         flex: 1;
     }
     .gpt-chat-item.active .gpt-chat-title {
-        color: #c084fc;
+        color: var(--q-accent);
         font-weight: 600;
     }
     .gpt-chat-time {
         font-size: 0.68rem;
-        color: #64748b;
+        color: var(--q-text-3);
         margin-left: 6px;
     }
 
     /* Main Chat Panel */
     .gpt-main-panel {
-        background: rgba(10, 12, 22, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: var(--q-surface);
+        border: 1px solid var(--q-border);
         border-radius: 18px;
         padding: 1.4rem;
         backdrop-filter: blur(20px);
@@ -422,13 +422,13 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         justify-content: space-between;
         align-items: center;
         padding-bottom: 0.9rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--q-border);
         margin-bottom: 1.2rem;
     }
     .gpt-header-title {
         font-size: 1.15rem;
         font-weight: 700;
-        color: #ffffff;
+        color: var(--q-text);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -436,10 +436,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     .gpt-header-badge {
         font-size: 0.72rem;
         padding: 3px 8px;
-        background: rgba(139, 92, 246, 0.2);
+        background: var(--q-accent-weak);
         border: 1px solid rgba(168, 85, 247, 0.35);
         border-radius: 12px;
-        color: #c084fc;
+        color: var(--q-accent);
         font-weight: 600;
     }
 
@@ -452,9 +452,9 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         width: 60px;
         height: 60px;
         border-radius: 18px;
-        background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.4));
-        border: 1px solid rgba(168, 85, 247, 0.45);
-        box-shadow: 0 0 25px rgba(139, 92, 246, 0.35);
+        background: linear-gradient(135deg, var(--q-accent-weak), rgba(59, 130, 246, 0.4));
+        border: 1px solid var(--q-accent);
+        box-shadow: 0 0 25px var(--q-accent-weak);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -465,21 +465,21 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         font-size: 1.6rem;
         font-weight: 700;
         letter-spacing: -0.5px;
-        background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 50%, #c084fc 100%);
+        background: linear-gradient(135deg, var(--q-text) 0%, var(--q-text-2) 50%, var(--q-accent) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.4rem;
     }
     .gpt-hero-subtitle {
         font-size: 0.9rem;
-        color: #94a3b8;
+        color: var(--q-text-3);
         max-width: 480px;
         margin: 0 auto 2rem auto;
         line-height: 1.5;
     }
     .gpt-prompt-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--q-surface-2);
+        border: 1px solid var(--q-border);
         border-radius: 14px;
         padding: 1rem 1.1rem;
         text-align: left;
@@ -490,19 +490,19 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         justify-content: space-between;
     }
     .gpt-prompt-card:hover {
-        background: rgba(139, 92, 246, 0.08);
-        border-color: rgba(168, 85, 247, 0.35);
+        background: var(--q-accent-weak);
+        border-color: var(--q-accent);
         transform: translateY(-2px);
     }
     .gpt-card-title {
         font-size: 0.88rem;
         font-weight: 600;
-        color: #f1f5f9;
+        color: var(--q-text);
         margin-bottom: 0.25rem;
     }
     .gpt-card-desc {
         font-size: 0.78rem;
-        color: #94a3b8;
+        color: var(--q-text-3);
         line-height: 1.4;
     }
 
@@ -513,7 +513,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         margin: 1rem 0;
     }
     .gpt-msg-user-bubble {
-        background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+        background: linear-gradient(135deg, var(--q-accent) 0%, #6366f1 100%);
         color: #ffffff;
         padding: 0.85rem 1.2rem;
         border-radius: 18px 18px 4px 18px;
@@ -528,25 +528,25 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         margin: 1rem 0;
     }
     .gpt-msg-assistant-bubble {
-        background: rgba(18, 20, 36, 0.75);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--q-surface-2);
+        border: 1px solid var(--q-border);
         border-radius: 4px 18px 18px 18px;
         padding: 1rem 1.3rem;
         max-width: 84%;
-        color: #cbd5e1;
+        color: var(--q-text-2);
         font-size: 0.93rem;
         line-height: 1.6;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
     .gpt-msg-meta {
         font-size: 0.68rem;
-        color: #64748b;
+        color: var(--q-text-3);
         margin-top: 6px;
         font-family: "JetBrains Mono", monospace;
     }
     .gpt-disclaimer {
         font-size: 0.72rem;
-        color: #475569;
+        color: var(--q-text-3);
         text-align: center;
         margin-top: 0.5rem;
     }
@@ -560,7 +560,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: #a855f7;
+        background: var(--q-accent);
         animation: tb 1.2s infinite ease-in-out;
     }
     .td:nth-child(2) { animation-delay: .2s; }
@@ -985,7 +985,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             grouped = _group_sessions_by_date(all_sessions_data.get("sessions", []), search_query)
 
             if not grouped:
-                st.markdown("<div style='font-size:0.8rem;color:#64748b;text-align:center;padding:1.5rem 0;'>No conversations found.</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:0.8rem;color:var(--q-text-3);text-align:center;padding:1.5rem 0;'>No conversations found.</div>", unsafe_allow_html=True)
             else:
                 for grp_name, s_list in grouped.items():
                     st.markdown(f'<div class="gpt-group-header">{grp_name}</div>', unsafe_allow_html=True)
@@ -1039,12 +1039,12 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
         h_col1, h_col2 = st.columns([3, 1])
         with h_col1:
-            pin_badge_html = ' <span style="font-size:0.85rem;color:#facc15;">📌</span>' if is_active_pinned else ''
+            pin_badge_html = ' <span style="font-size:0.85rem;color:var(--q-warn);">📌</span>' if is_active_pinned else ''
             st.markdown(f'<div class="gpt-header-title">{header_title}{pin_badge_html}</div>', unsafe_allow_html=True)
         with h_col2:
             st.markdown(f'<div style="text-align:right;"><span class="gpt-header-badge">{provider_badge}</span></div>', unsafe_allow_html=True)
 
-        st.markdown("<hr style='margin: 0.35rem 0 0.8rem 0; border-color: rgba(255,255,255,0.08);'>", unsafe_allow_html=True)
+        st.markdown("<hr style='margin: 0.35rem 0 0.8rem 0; border-color: var(--q-border);'>", unsafe_allow_html=True)
 
         # ── Dedicated Scrollable Message Viewport ─────────────────────────────
         msg_container = st.container(height=520, border=False, autoscroll=True)
@@ -1123,7 +1123,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         st.markdown(
                             f'<div class="gpt-msg-assistant-row">'
                             f'<div class="gpt-msg-assistant-bubble">'
-                            f'<div style="font-weight:700;color:#c084fc;font-size:0.8rem;margin-bottom:6px;letter-spacing:0.5px;">⚡ MICHAEL</div>'
+                            f'<div style="font-weight:700;color:var(--q-accent);font-size:0.8rem;margin-bottom:6px;letter-spacing:0.5px;">⚡ MICHAEL</div>'
                             f'{fmt_m_text}'
                             f'<div class="gpt-msg-meta">{ts_val}</div>'
                             f'</div>'
@@ -1136,7 +1136,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     st.markdown("""
                     <div class="gpt-msg-assistant-row">
                         <div class="gpt-msg-assistant-bubble">
-                            <div style="font-weight:700;color:#c084fc;font-size:0.8rem;margin-bottom:6px;">⚡ MICHAEL</div>
+                            <div style="font-weight:700;color:var(--q-accent);font-size:0.8rem;margin-bottom:6px;">⚡ MICHAEL</div>
                             <div class="ti">
                                 <div class="td"></div><div class="td"></div><div class="td"></div>
                             </div>

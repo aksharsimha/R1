@@ -34,7 +34,7 @@ def _show_public_profile(username: str):
     if profile:
         disp = profile.get("display_name", username)
         av = profile.get("avatar")
-        av_html = f'<img src="{av}" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--q-accent);">' if av else f'<div style="width:76px;height:76px;border-radius:50%;background:var(--q-accent);color:white;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:bold;">{disp[:1].upper()}</div>'
+        av_html = f'<img src="{av}" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--q-accent);">' if av else f'<div style="width:76px;height:76px;border-radius:50%;background:var(--q-accent);color:var(--q-text);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:bold;">{disp[:1].upper()}</div>'
         st.markdown(textwrap.dedent(f"""
 <div style="display:flex;align-items:center;gap:18px;margin-bottom:14px;">
 {av_html}
@@ -149,7 +149,7 @@ def _view_all_news_dialog(all_articles: list):
 <img src="{img}" style="width:110px;height:85px;border-radius:8px;object-fit:cover;flex-shrink:0;" alt="{cat}">
 <div style="flex:1;">
 <div style="display:gap:6px;align-items:center;margin-bottom:4px;">
-<span style="font-size:0.68rem;font-weight:700;color:#818cf8;background:rgba(99,102,241,0.12);padding:2px 6px;border-radius:4px;">{cat}</span>
+<span style="font-size:0.68rem;font-weight:700;color:var(--q-accent);background:var(--q-accent-weak);padding:2px 6px;border-radius:4px;">{cat}</span>
 <span style="font-size:0.72rem;color:var(--q-text-3);">{dt_str}</span>
 <span style="font-size:0.72rem;color:var(--q-text-3);">&bull; {read_time}</span>
 </div>
@@ -286,7 +286,7 @@ def _trending_topic_dialog(topic_key):
     st.markdown(textwrap.dedent(f"""
 <div style="background:var(--q-surface-2);border-radius:14px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--q-border);">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-<span style="font-size:0.75rem;font-weight:700;background:rgba(99,102,241,0.15);color:#818cf8;padding:3px 8px;border-radius:6px;">{tag}</span>
+<span style="font-size:0.75rem;font-weight:700;background:var(--q-accent-weak);color:var(--q-accent);padding:3px 8px;border-radius:6px;">{tag}</span>
 <span style="font-size:0.78rem;font-weight:600;color:var(--q-text);">{sentiment}</span>
 </div>
 <h3 style="margin:4px 0 6px;color:var(--q-text);font-size:1.15rem;">{title}</h3>
@@ -295,7 +295,7 @@ def _trending_topic_dialog(topic_key):
 """), unsafe_allow_html=True)
 
     st.markdown("<h4 style='font-size:0.9rem;margin:12px 0 6px;color:var(--q-text);'>🎯 Key Impacted Equities</h4>", unsafe_allow_html=True)
-    st_pills = " ".join([f"<span style='background:rgba(255,255,255,0.06);color:var(--q-text);padding:3px 8px;border-radius:6px;font-size:0.75rem;font-weight:600;display:inline-block;margin:2px 4px 2px 0;'>{s}</span>" for s in impacted])
+    st_pills = " ".join([f"<span style='background:var(--q-surface-2);color:var(--q-text);padding:3px 8px;border-radius:6px;font-size:0.75rem;font-weight:600;display:inline-block;margin:2px 4px 2px 0;'>{s}</span>" for s in impacted])
     st.markdown(f"<div style='margin-bottom:12px;'>{st_pills}</div>", unsafe_allow_html=True)
 
     st.markdown("<h4 style='font-size:0.9rem;margin:12px 0 6px;color:var(--q-text);'>💡 Core Market Catalysts</h4>", unsafe_allow_html=True)
@@ -317,7 +317,7 @@ def _trending_topic_dialog(topic_key):
             t_url = art.get("url") or art.get("link", "#")
             t_date = str(art.get("date", ""))[:10]
             st.markdown(textwrap.dedent(f"""
-<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(112,126,171,0.16);border-radius:10px;padding:10px 12px;margin-bottom:8px;">
+<div style="background:var(--q-surface-2);border:1px solid var(--q-border);border-radius:10px;padding:10px 12px;margin-bottom:8px;">
 <div style="font-size:0.72rem;color:var(--q-text-3);margin-bottom:2px;">{ticker} &bull; 📅 {t_date}</div>
 <a href="{t_url}" target="_blank" style="color:var(--q-text);font-size:0.85rem;font-weight:600;text-decoration:none;display:block;">{t_title}</a>
 </div>
@@ -409,13 +409,13 @@ def _archive_dialog():
             d_str = art["date"]
             year = art["year"]
             
-            score_color = "#10b981" if score > 0.15 else "#ef4444" if score < -0.15 else "#818cf8"
+            score_color = "var(--q-pos)" if score > 0.15 else "var(--q-neg)" if score < -0.15 else "var(--q-accent)"
             
             st.markdown(textwrap.dedent(f"""
 <div style="background:var(--q-surface-2);border-radius:12px;padding:12px 14px;margin-bottom:10px;border-left:3px solid {score_color};border-top:1px solid var(--q-border);border-right:1px solid var(--q-border);border-bottom:1px solid var(--q-border);">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
 <div style="display:flex;gap:6px;align-items:center;">
-<span style="font-size:0.68rem;font-weight:700;background:rgba(99,102,241,0.15);color:#818cf8;padding:2px 6px;border-radius:4px;">{d_str[:7]}</span>
+<span style="font-size:0.68rem;font-weight:700;background:var(--q-accent-weak);color:var(--q-accent);padding:2px 6px;border-radius:4px;">{d_str[:7]}</span>
 <span style="font-size:0.72rem;font-weight:600;color:var(--q-text);">{ticker}</span>
 <span style="font-size:0.7rem;color:var(--q-text-3);">&bull; {cat}</span>
 </div>
@@ -573,8 +573,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
 /* Top 4 KPI Cards */
 .q-kpi-card {
-    background: linear-gradient(145deg, rgba(24,28,40,0.92), rgba(13,16,25,0.96));
-    border: 1px solid rgba(112,126,171,0.22);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 14px;
     padding: 16px 18px 14px;
     position: relative;
@@ -584,7 +584,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 }
 .q-kpi-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(129,140,248,0.45);
+    border-color: var(--q-accent);
 }
 .q-kpi-val {
     font-size: 1.95rem;
@@ -612,8 +612,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
 /* Sentiment Summary Bar */
 .q-sentiment-bar {
-    background: linear-gradient(90deg, rgba(24,28,42,0.95), rgba(15,18,28,0.98));
-    border: 1px solid rgba(112,126,171,0.22);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 12px;
     padding: 12px 18px;
     display: flex;
@@ -626,8 +626,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
 /* Two Column Layout Cards */
 .q-panel-box {
-    background: linear-gradient(145deg, rgba(20,24,36,0.96), rgba(11,14,22,0.98));
-    border: 1px solid rgba(112,126,171,0.24);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 16px;
     padding: 18px 20px;
     box-shadow: 0 16px 36px rgba(0,0,0,0.22);
@@ -642,8 +642,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     margin-bottom: 16px;
 }
 .q-index-box {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(112,126,171,0.16);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 12px;
     padding: 14px;
 }
@@ -669,8 +669,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
 /* Market Breadth Card */
 .q-breadth-box {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(112,126,171,0.16);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 12px;
     padding: 16px;
     display: grid;
@@ -701,16 +701,16 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 .q-news-item {
     display: flex;
     gap: 16px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(112,126,171,0.16);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 14px;
     padding: 14px;
     margin-bottom: 14px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .q-news-item:hover {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(129,140,248,0.4);
+    background: var(--q-surface);
+    border-color: var(--q-accent);
     transform: translateY(-1px);
 }
 .q-news-thumb {
@@ -727,8 +727,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 .q-news-tag {
     font-size: 0.65rem;
     font-weight: 700;
-    color: #a5b4fc;
-    background: rgba(99,102,241,0.15);
+    color: var(--q-accent);
+    background: var(--q-accent-weak);
     padding: 2px 7px;
     border-radius: 4px;
     letter-spacing: 0.5px;
@@ -745,7 +745,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     display: block;
 }
 .q-news-headline:hover {
-    color: #818cf8;
+    color: var(--q-accent);
 }
 .q-news-desc {
     font-size: 0.8rem;
@@ -769,28 +769,28 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     margin-top: 4px;
 }
 .q-trending-pill {
-    background: rgba(99, 102, 241, 0.08);
+    background: var(--q-accent-weak);
     border: 1px solid rgba(129, 140, 248, 0.22);
     border-radius: 18px;
     padding: 5px 12px;
     font-size: 0.76rem;
     font-weight: 600;
-    color: #a5b4fc;
+    color: var(--q-accent);
     display: inline-flex;
     align-items: center;
     gap: 6px;
     transition: all 0.2s ease;
 }
 .q-trending-pill:hover {
-    background: rgba(99, 102, 241, 0.18);
-    border-color: #818cf8;
-    color: #ffffff;
+    background: var(--q-accent-weak);
+    border-color: var(--q-accent);
+    color: var(--q-text);
     transform: translateY(-1px);
 }
 .q-trending-count {
     font-size: 0.66rem;
     color: var(--q-text-3);
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--q-surface-2);
     padding: 1px 6px;
     border-radius: 10px;
 }
@@ -800,16 +800,16 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(112, 126, 171, 0.16);
+    background: var(--q-surface-2);
+    border: 1px solid var(--q-border);
     border-radius: 12px;
     padding: 10px 14px;
     margin-bottom: 8px;
     transition: all 0.2s ease;
 }
 .q-calendar-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(129, 140, 248, 0.35);
+    background: var(--q-surface);
+    border-color: var(--q-accent);
     transform: translateY(-1px);
 }
 .q-cal-ticker {
@@ -827,7 +827,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 .q-cal-date {
     font-size: 0.82rem;
     font-weight: 600;
-    color: #34d399;
+    color: var(--q-pos);
     font-family: 'JetBrains Mono', monospace;
 }
 .q-cal-sub {
@@ -837,8 +837,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
 /* Bottom News Archive Banner */
 .q-archive-banner {
-    background: linear-gradient(90deg, rgba(20,24,36,0.96), rgba(12,15,24,0.98));
-    border: 1px solid rgba(112,126,171,0.22);
+    background: var(--q-surface);
+    border: 1px solid var(--q-border);
     border-radius: 14px;
     padding: 16px 20px;
     display: flex;
@@ -874,7 +874,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     
     ps = portfolio_sentiment_score if portfolio_sentiment_score is not None else 0.0
     ps_label = "Bullish" if ps > 0.15 else "Bearish" if ps < -0.15 else "Neutral"
-    ps_color = "#10b981" if ps > 0.15 else "#ef4444" if ps < -0.15 else "#818cf8"
+    ps_color = "var(--q-pos)" if ps > 0.15 else "var(--q-neg)" if ps < -0.15 else "var(--q-accent)"
     
     # Sentinel adj display
     sent_adj = st.session_state.get("_sent_adj_display", None)
@@ -886,9 +886,9 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         st.markdown(textwrap.dedent(f"""
 <div class="q-news-header">
 <div>
-<div class="q-news-brand-title"><span style="color:#f59e0b;">⚡</span> QUEST</div>
+<div class="q-news-brand-title"><span style="color:var(--q-warn);">⚡</span> QUEST</div>
 <div class="q-news-brand-sub">Quantitative Unified Equity Surveillance Tracker</div>
-<div class="q-news-greeting">Good {greeting_time}, <span style="color:#34d399;">{_display_name}</span> 👋</div>
+<div class="q-news-greeting">Good {greeting_time}, <span style="color:var(--q-pos);">{_display_name}</span> 👋</div>
 </div>
 </div>
 """), unsafe_allow_html=True)
@@ -943,7 +943,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 <div class="q-news-meta">
 <span>📅 {dt_str}</span>
 <span>⏱️ {read_time}</span>
-<span style="color:#818cf8;font-weight:600;">🏷️ {ticker_tag}</span>
+<span style="color:var(--q-accent);font-weight:600;">🏷️ {ticker_tag}</span>
 </div>
 </div>
 </div>
@@ -967,9 +967,9 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         nifty = breadth["nifty"]
         sensex = breadth["sensex"]
         
-        nifty_chg_color = "#10b981" if nifty["chg"] >= 0 else "#ef4444"
+        nifty_chg_color = "var(--q-pos)" if nifty["chg"] >= 0 else "var(--q-neg)"
         nifty_arrow = "↗" if nifty["chg"] >= 0 else "↘"
-        sensex_chg_color = "#10b981" if sensex["chg"] >= 0 else "#ef4444"
+        sensex_chg_color = "var(--q-pos)" if sensex["chg"] >= 0 else "var(--q-neg)"
         sensex_arrow = "↗" if sensex["chg"] >= 0 else "↘"
 
         # 1. Market Overview Panel
@@ -994,22 +994,22 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 <div class="q-breadth-box" style="margin-bottom:0;">
 <div class="q-breadth-item">
 <span>Market Status</span>
-<strong style="color:#10b981;font-size:1.05rem;">● {breadth['status']}</strong>
+<strong style="color:var(--q-pos);font-size:1.05rem;">● {breadth['status']}</strong>
 <small>{breadth['status_sub']}</small>
 </div>
 <div class="q-breadth-item">
 <span>Advances</span>
-<strong style="color:#10b981;">{breadth['advances']:,}</strong>
+<strong style="color:var(--q-pos);">{breadth['advances']:,}</strong>
 <small>{breadth['advances_pct']}%</small>
 </div>
 <div class="q-breadth-item">
 <span>Declines</span>
-<strong style="color:#f87171;">{breadth['declines']:,}</strong>
+<strong style="color:var(--q-neg);">{breadth['declines']:,}</strong>
 <small>{breadth['declines_pct']}%</small>
 </div>
 <div class="q-breadth-item">
 <span>Unchanged</span>
-<strong style="color:#94a3b8;">{breadth['unchanged']:,}</strong>
+<strong style="color:var(--q-text-3);">{breadth['unchanged']:,}</strong>
 <small>{breadth['unchanged_pct']}%</small>
 </div>
 </div>
@@ -1055,8 +1055,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             d_str = ev.get("date_str", "Upcoming")
             detail = ev.get("detail", "")
             icon = ev.get("icon", "📅")
-            bg_color = ev.get("badge_bg", "rgba(99,102,241,0.15)")
-            b_color = ev.get("badge_color", "#818cf8")
+            bg_color = ev.get("badge_bg", "var(--q-accent-weak)")
+            b_color = ev.get("badge_color", "var(--q-accent)")
             link = ev.get("link", "https://finance.yahoo.com")
 
             cal_items_html.append(f"""
@@ -1086,7 +1086,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     st.markdown(textwrap.dedent("""
 <div class="q-archive-banner">
 <div style="display:flex;align-items:center;gap:14px;">
-<div style="width:40px;height:40px;border-radius:10px;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">📁</div>
+<div style="width:40px;height:40px;border-radius:10px;background:var(--q-accent-weak);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">📁</div>
 <div>
 <strong style="color:var(--q-text);font-size:0.95rem;display:block;">News Archive</strong>
 <span style="color:var(--q-text-3);font-size:0.8rem;">Browse past articles by date and stay updated with market history.</span>
