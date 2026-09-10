@@ -76,6 +76,15 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             st.session_state.ui_theme = "dark" if dark == "Dark" else "light"
             st.rerun()
 
+        if dark == "Dark":
+            variants = ["Classic", "Midnight", "Void", "Graphite", "Plum", "Ash", "Jade"]
+            curr_variant = ui_theme.current_dark_variant().title()
+            idx = variants.index(curr_variant) if curr_variant in variants else 0
+            dark_variant = st.selectbox("Dark theme", variants, index=idx, key="dark_variant_choice")
+            if dark_variant.lower() != ui_theme.current_dark_variant():
+                st.session_state.ui_dark_variant = dark_variant.lower()
+                st.rerun()
+
     else:
         _card_start("Sign out", "End this QUEST session on this device.")
         if st.button("Sign out", type="primary", use_container_width=True):

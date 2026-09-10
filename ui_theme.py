@@ -27,26 +27,138 @@ except ImportError:  # allows import in tests without Streamlit runtime
 
 
 # =====================================================================
-# Design tokens — two palettes sharing the same variable names
+# Design tokens — palettes sharing the same variable names
 # =====================================================================
-DARK = {
-    "bg":          "#0F1115",
-    "surface":     "#16181D",
-    "surface_2":   "#1C1F25",
-    "border":      "#262A31",
-    "border_2":    "#2E333B",
-    "text":        "#F1F3F5",
-    "text_2":      "#B7BCC4",
-    "text_3":      "#7E8590",
-    "accent":      "#5DCAA5",   # brand teal
-    "accent_weak": "#1D3A33",
-    "pos":         "#5DCAA5",   # gains
-    "neg":         "#F0997B",   # losses (calm coral, not alarm-red)
-    "warn":        "#EF9F27",
-    "warn_weak":   "#2A1F0E",
-    "neg_weak":    "#2A1A1A",
-    "pos_weak":    "#16271F",
+DARK_VARIANTS = {
+    "classic": {
+        "bg":          "#0F1115",
+        "surface":     "#16181D",
+        "surface_2":   "#1C1F25",
+        "border":      "#262A31",
+        "border_2":    "#2E333B",
+        "text":        "#F1F3F5",
+        "text_2":      "#B7BCC4",
+        "text_3":      "#7E8590",
+        "accent":      "#5DCAA5",   # brand teal
+        "accent_weak": "#1D3A33",
+        "pos":         "#5DCAA5",   # gains
+        "neg":         "#F0997B",   # losses (calm coral, not alarm-red)
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2A1F0E",
+        "neg_weak":    "#2A1A1A",
+        "pos_weak":    "#16271F",
+    },
+    "midnight": {
+        "bg":          "#000000",
+        "surface":     "#0D0E11",
+        "surface_2":   "#15161A",
+        "border":      "#1E2025",
+        "border_2":    "#282B33",
+        "text":        "#F1F3F5",
+        "text_2":      "#B0B5BF",
+        "text_3":      "#717682",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#142923",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#231A0B",
+        "neg_weak":    "#241515",
+        "pos_weak":    "#112019",
+    },
+    "void": {
+        "bg":          "#10121A",
+        "surface":     "#181A21",
+        "surface_2":   "#1D212E",
+        "border":      "#272C3D",
+        "border_2":    "#32384D",
+        "text":        "#F0F2F8",
+        "text_2":      "#B2B9CB",
+        "text_3":      "#778097",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#183636",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#271F10",
+        "neg_weak":    "#281B20",
+        "pos_weak":    "#132824",
+    },
+    "graphite": {
+        "bg":          "#0E0E0E",
+        "surface":     "#161616",
+        "surface_2":   "#1E1E1E",
+        "border":      "#2A2A2A",
+        "border_2":    "#363636",
+        "text":        "#F2F2F2",
+        "text_2":      "#B8B8B8",
+        "text_3":      "#7D7D7D",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#1C3730",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#271E0E",
+        "neg_weak":    "#281A1A",
+        "pos_weak":    "#15261F",
+    },
+    "plum": {
+        "bg":          "#120E13",
+        "surface":     "#1C181D",
+        "surface_2":   "#252128",
+        "border":      "#332A37",
+        "border_2":    "#413646",
+        "text":        "#F5F1F6",
+        "text_2":      "#C1B6C4",
+        "text_3":      "#86798A",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#233433",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B1D12",
+        "neg_weak":    "#2D1820",
+        "pos_weak":    "#172622",
+    },
+    "ash": {
+        "bg":          "#11100E",
+        "surface":     "#1A1816",
+        "surface_2":   "#22201D",
+        "border":      "#302D29",
+        "border_2":    "#3D3934",
+        "text":        "#F4F2F0",
+        "text_2":      "#C0BCB6",
+        "text_3":      "#87827B",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#22352F",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B200E",
+        "neg_weak":    "#2B1A17",
+        "pos_weak":    "#17271F",
+    },
+    "jade": {
+        "bg":          "#0F1312",
+        "surface":     "#1B1E1D",
+        "surface_2":   "#1E2422",
+        "border":      "#2A3330",
+        "border_2":    "#36413D",
+        "text":        "#F0F4F2",
+        "text_2":      "#B4BEBA",
+        "text_3":      "#7B8782",
+        "accent":      "#5DCAA5",
+        "accent_weak": "#1C3B34",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#28200F",
+        "neg_weak":    "#291B1B",
+        "pos_weak":    "#152921",
+    },
 }
+
+DARK = DARK_VARIANTS["classic"]
 
 LIGHT = {
     "bg":          "#F7F6F2",
@@ -69,15 +181,19 @@ LIGHT = {
 
 THEMES = {"dark": DARK, "light": LIGHT}
 DEFAULT_THEME = "dark"
+DEFAULT_DARK_VARIANT = "classic"
 
 
 # =====================================================================
 # Theme state
 # =====================================================================
 def init_theme():
-    """Ensure a theme is set in session_state."""
-    if st is not None and "ui_theme" not in st.session_state:
-        st.session_state.ui_theme = DEFAULT_THEME
+    """Ensure a theme and dark variant are set in session_state."""
+    if st is not None:
+        if "ui_theme" not in st.session_state:
+            st.session_state.ui_theme = DEFAULT_THEME
+        if "ui_dark_variant" not in st.session_state:
+            st.session_state.ui_dark_variant = DEFAULT_DARK_VARIANT
 
 
 def current_theme() -> str:
@@ -86,8 +202,17 @@ def current_theme() -> str:
     return st.session_state.get("ui_theme", DEFAULT_THEME)
 
 
+def current_dark_variant() -> str:
+    if st is None:
+        return DEFAULT_DARK_VARIANT
+    return st.session_state.get("ui_dark_variant", DEFAULT_DARK_VARIANT)
+
+
 def palette(theme: str = None) -> dict:
-    return THEMES.get(theme or current_theme(), DARK)
+    t = theme or current_theme()
+    if t == "dark":
+        return DARK_VARIANTS.get(current_dark_variant(), DARK)
+    return THEMES.get(t, DARK)
 
 
 def theme_toggle():
