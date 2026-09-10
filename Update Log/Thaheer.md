@@ -1,5 +1,36 @@
 # Thaheer Update Log
 
+## 2026-09-10
+
+### 💎 Premium Profile Customization System (Discord Nitro-Inspired for Fintech)
+- **Profile Customization Section in Settings (`quest_app/settings.py`)**:
+  - Expanded Settings navigation to include a dedicated **Customize** panel alongside Profile, Theme, and Sign out.
+  - Implemented an interactive two-column layout with real-time controls on the left and a live-updating profile preview card on the right.
+  - Added session state reactive preview (`_customize_preview`) updating immediately as options are adjusted.
+- **Free vs. PRO Subscription Tier Architecture**:
+  - **Free Tier**: Complete control over display name, bio/summary, avatar image upload/replacement/deletion, and 6 instant accent color presets (Teal, Indigo, Violet, Amber, Coral, Slate).
+  - **PRO Tier (`🔒 PRO`)**:
+    - Custom Profile Banner upload (up to 200KB) with instant preview and fallback linear gradients.
+    - 5 Premium Avatar Frames: Gold Ring, Platinum Edge, Emerald Glow, Sapphire Frost, and Obsidian Shadow with customized box-shadows and border glows.
+    - Custom Accent Color picker with full hex spectrum support.
+    - Profile Effects: Subtle Glow, Gradient Border, and Pulse Ring animation.
+    - Profile Themes: Default, Midnight, Aurora, Charcoal, and Royal gradient backgrounds.
+    - Custom Investor Status line (e.g. "📈 Bullish on NIFTY", max 50 chars).
+    - Premium Typography options (Inter, JetBrains Mono, Space Grotesk, DM Sans).
+    - Toggleable **`⚡ PRO`** badge rendered alongside display name.
+- **Subtle Fintech Aesthetic & Non-Intrusive Gating**:
+  - Locked features feature clear, elegant `🔒 PRO` badges.
+  - Non-PRO user interactions trigger lightweight toast prompts (`🔒 This feature requires QUEST PRO`) and an inline "⚡ Unlock QUEST PRO" card with plan details (₹199/month, cancel anytime).
+- **Persistent Cloud Data Layer (`firebase_db.py`)**:
+  - Added `get_profile_customization(username)` with comprehensive fallback defaults.
+  - Added `save_profile_customization(username, customization_dict)` to persist customization settings safely to the `users/{username}` Firestore document.
+  - Added `set_pro_status(username, is_pro)` administrative toggle.
+- **Universal Sidebar & Global Design Integration (`quest_app/main.py` & `ui_theme.py`)**:
+  - Updated sidebar profile card to reflect the user's active avatar frame, PRO badge, custom status line, and custom accent color.
+  - Injected `profile_customization_css()` into `ui_theme.py` and `quest_app/main.py` for global access to frame glows, animation keyframes, badge pills, and theme backgrounds with reduced-motion accessibility support.
+
+---
+
 ## 2026-09-08
 
 ### ⚡ Portfolio MICHAEL AI Chatbot in Education Workspace

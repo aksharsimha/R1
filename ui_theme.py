@@ -558,3 +558,81 @@ def value_hero(label: str, value: str, change: str, positive: bool = True) -> st
         f'<div class="q-mono {cls}" style="font-size:.95rem;font-weight:500;">{change}</div>'
         f'</div>'
     )
+
+
+# =====================================================================
+# Profile Customization CSS (PRO System)
+# =====================================================================
+def profile_customization_css() -> str:
+    """Return CSS for avatar frames, profile effects, themes, PRO badges, and the customize panel."""
+    return """
+<style>
+/* ── Avatar Frames ── */
+.q-frame-gold { border: 2.5px solid #D4A843 !important; box-shadow: 0 0 12px rgba(212,168,67,0.35) !important; }
+.q-frame-platinum { border: 2.5px solid #A8B4C0 !important; box-shadow: 0 0 12px rgba(168,180,192,0.35) !important; }
+.q-frame-emerald { border: 2.5px solid #10B981 !important; box-shadow: 0 0 12px rgba(16,185,129,0.35) !important; }
+.q-frame-sapphire { border: 2.5px solid #3B82F6 !important; box-shadow: 0 0 12px rgba(59,130,246,0.35) !important; }
+.q-frame-obsidian { border: 2.5px solid #6B7280 !important; box-shadow: 0 0 12px rgba(107,114,128,0.35), inset 0 0 6px rgba(0,0,0,0.5) !important; }
+
+/* ── Profile Effects ── */
+.q-effect-glow { box-shadow: 0 0 25px rgba(93,202,165,0.15) !important; }
+.q-effect-gradient { border: 2px solid transparent !important; background-clip: padding-box !important; outline: 2px solid; outline-offset: -2px; outline-color: var(--q-accent); }
+@keyframes q-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(93,202,165,0.2); } 50% { box-shadow: 0 0 15px 4px rgba(93,202,165,0.15); } }
+.q-effect-pulse { animation: q-pulse 2.5s ease-in-out infinite; }
+
+/* ── Profile Themes ── */
+.q-theme-midnight { background: linear-gradient(180deg, #0c0e1a 0%, #151929 100%) !important; border-color: rgba(99,102,241,0.3) !important; }
+.q-theme-aurora { background: linear-gradient(180deg, #0a1628 0%, #132a1e 100%) !important; border-color: rgba(16,185,129,0.3) !important; }
+.q-theme-charcoal { background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%) !important; border-color: rgba(255,255,255,0.1) !important; }
+.q-theme-royal { background: linear-gradient(180deg, #1a0f2e 0%, #2d1b4e 100%) !important; border-color: rgba(139,92,246,0.3) !important; }
+
+/* ── PRO Badge ── */
+.q-pro-badge {
+    font-size: 0.58rem; background: linear-gradient(135deg, #D4A843, #C0984D);
+    padding: 1px 6px; border-radius: 4px; color: #fff; font-weight: 700;
+    margin-left: 5px; vertical-align: middle; letter-spacing: 0.3px;
+    display: inline-block; line-height: 1.4;
+}
+
+/* ── Locked Overlay ── */
+.q-locked-overlay {
+    position: relative; opacity: 0.5; pointer-events: none; user-select: none;
+}
+.q-locked-label {
+    font-size: 0.68rem; font-weight: 700; color: #D4A843;
+    background: rgba(212,168,67,0.12); border: 1px solid rgba(212,168,67,0.25);
+    border-radius: 6px; padding: 1px 8px; margin-left: 8px;
+    display: inline-block; vertical-align: middle;
+}
+
+/* ── Upgrade Card ── */
+.q-upgrade-card {
+    background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(139,92,246,0.06));
+    border: 1px solid rgba(212,168,67,0.25); border-radius: var(--q-radius-lg, 16px);
+    padding: 20px 22px; margin: 16px 0;
+}
+
+/* ── Color Swatch ── */
+.q-color-swatch {
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all 0.2s var(--q-ease, ease);
+    display: inline-block; margin: 2px;
+}
+.q-color-swatch:hover { transform: scale(1.15); }
+.q-color-swatch.active { border-color: var(--q-text, #fff); box-shadow: 0 0 8px rgba(255,255,255,0.2); transform: scale(1.1); }
+
+/* ── Customize Section Label ── */
+.q-customize-section-label {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: var(--q-text-3, #7E8590);
+    margin: 18px 0 8px; display: flex; align-items: center; gap: 6px;
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .q-effect-pulse { animation: none !important; }
+    .q-color-swatch:hover { transform: none; }
+}
+</style>
+"""
+
