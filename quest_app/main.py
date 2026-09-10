@@ -131,6 +131,11 @@ if _early_page == "Settings":
         "Settings sections", settings._SECTIONS, key="settings_sidebar_section",
         label_visibility="collapsed"
     )
+    
+    if st.sidebar.button("Sign out", key="settings_signout_trigger", use_container_width=True):
+        st.session_state.show_signout_dialog = True
+        st.rerun()
+        
     settings.render(_user_info, _settings_section)
     st.stop()
 

@@ -6,7 +6,41 @@ import firebase_db
 import ui_theme
 
 
-_SECTIONS = ["Profile", "Theme", "Sign out"]
+_SECTIONS = ["Profile", "Theme"]
+
+
+@st.dialog("Log Out", dismissible=False)
+def _signout_dialog() -> None:
+    st.markdown(
+        """
+        <style>
+        [data-testid="stDialog"] button[aria-label="Close"],
+        [data-testid="stModal"] button[aria-label="Close"],
+        button[aria-label="Close"] {
+            display: none !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.write("Are you sure you want to log out?")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Cancel", use_container_width=True):
+            st.session_state.show_signout_dialog = False
+            st.rerun()
+    with c2:
+        if st.button("Log Out", type="primary", use_container_width=True):
+            # We purposely do NOT call remove_remembered_account here.
+            # This allows the account to stay in the multi-account cookie (so it appears in the Switcher).
+            _preserve_keys = {"auth_cookie_override", "cookie_controller"}
+            for key in list(st.session_state.keys()):
+                if key not in _preserve_keys:
+                    del st.session_state[key]
+            st.query_params["page"] = "Overview"
+            st.query_params.pop("return_to", None)
+            st.session_state.do_logout = True
+            st.rerun()
 
 
 def _card_start(title: str, subtitle: str = "") -> None:
@@ -14,6 +48,9 @@ def _card_start(title: str, subtitle: str = "") -> None:
 
 
 def render(user_info: dict, selected: str | None = None) -> None:
+    if st.session_state.get("show_signout_dialog"):
+        _signout_dialog()
+
     username = user_info["username"]
     try:
         profile = firebase_db.get_user_profile(username)
@@ -84,17 +121,3 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             if dark_variant.lower() != ui_theme.current_dark_variant():
                 st.session_state.ui_dark_variant = dark_variant.lower()
                 st.rerun()
-
-    else:
-        _card_start("Sign out", "End this QUEST session on this device.")
-        if st.button("Sign out", type="primary", use_container_width=True):
-            # We purposely do NOT call remove_remembered_account here.
-            # This allows the account to stay in the multi-account cookie (so it appears in the Switcher).
-            _preserve_keys = {"auth_cookie_override", "cookie_controller"}
-            for key in list(st.session_state.keys()):
-                if key not in _preserve_keys:
-                    del st.session_state[key]
-            st.query_params["page"] = "Overview"
-            st.query_params.pop("return_to", None)
-            st.session_state.do_logout = True
-            st.rerun()
