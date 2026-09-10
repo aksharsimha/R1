@@ -152,6 +152,91 @@ def _get_active_video_info(current_level_id="level_1", completed_levels=None, wa
     }
 
 
+_AD_BANNERS_PATH = os.path.join(os.path.dirname(_HERE), "ad_banners.json")
+
+
+def _render_ad_banner(slot_id: str):
+    """Render a sponsor/ad banner for the given slot_id from ad_banners.json.
+
+    Reads banner config (image_url, click_url, alt) keyed by slot_id.
+    Fails silently if the file or slot is missing — no layout shift.
+    Supports expanding to natural aspect ratio (uncropped) and collapsing back.
+    """
+    try:
+        if not os.path.exists(_AD_BANNERS_PATH):
+            return
+        with open(_AD_BANNERS_PATH, "r", encoding="utf-8-sig") as _f:
+            _banners = json.load(_f)
+        _cfg = _banners.get(slot_id)
+        if not _cfg:
+            return
+        _image_url = _cfg.get("image_url", "").strip()
+        _click_url = _cfg.get("click_url", "").strip()
+        _alt = _cfg.get("alt_text", _cfg.get("alt", "Sponsored"))
+        if not _image_url or not _click_url:
+            return
+
+        expanded_key = f"ad_expanded_{slot_id}"
+        is_expanded = st.session_state.get(expanded_key, False)
+
+        if is_expanded:
+            img_style = "width:100%;height:auto;object-fit:contain;display:block;"
+        else:
+            img_style = "width:100%;height:auto;max-height:90px;object-fit:cover;display:block;"
+
+        # Render clickable banner image
+        st.markdown(
+            f'<div style="width:100%;margin-bottom:4px;border-radius:12px;overflow:hidden;'
+            f'border:1px solid rgba(112,126,171,0.24);background:rgba(20,24,36,0.6);">'
+            f'<a href="{_click_url}" target="_blank" rel="noopener noreferrer" style="display:block;">'
+            f'<img src="{_image_url}" alt="{_alt}" style="{img_style}">'
+            f'</a></div>',
+            unsafe_allow_html=True,
+        )
+
+        # Style toggle button to look like a small subtle chevron link
+        st.markdown(
+            f"""<style>
+            button[key="ad_toggle_{slot_id}"],
+            button[aria-label="▼ View full ad"],
+            button[aria-label="▲ Collapse"] {{
+                background: transparent !important;
+                border: none !important;
+                color: var(--q-text-3, #707eab) !important;
+                font-size: 0.75rem !important;
+                padding: 0 4px !important;
+                min-height: unset !important;
+                line-height: 1.2 !important;
+                box-shadow: none !important;
+                text-align: right !important;
+                margin-left: auto !important;
+                display: block !important;
+            }}
+            button[key="ad_toggle_{slot_id}"]:hover,
+            button[aria-label="▼ View full ad"]:hover,
+            button[aria-label="▲ Collapse"]:hover {{
+                color: var(--q-text, #ffffff) !important;
+                background: transparent !important;
+                text-decoration: underline !important;
+            }}
+            </style>""",
+            unsafe_allow_html=True,
+        )
+
+        # Toggle button directly under banner (right-aligned)
+        _, col_btn = st.columns([0.80, 0.20])
+        with col_btn:
+            toggle_label = "▲ Collapse" if is_expanded else "▼ View full ad"
+            if st.button(toggle_label, key=f"ad_toggle_{slot_id}", use_container_width=True):
+                st.session_state[expanded_key] = not is_expanded
+                st.rerun()
+
+        st.markdown("<div style='margin-bottom:14px;'></div>", unsafe_allow_html=True)
+
+    except Exception:
+        pass  # Fail silently — never break the page
+
+
 # ─── State Router ─────────────────────────────────────────────────────
 
 def render(user_info):
@@ -180,6 +265,9 @@ def render(user_info):
 # ─── Dashboard ────────────────────────────────────────────────────────
 
 def render_dashboard(user_info):
+    # Sponsor / Ad slot: dashboard_top (leaderboard-style horizontal strip at top of page)
+    _render_ad_banner("dashboard_top")
+
     progress = edu_db.load_progress()
     xp = progress.get("total_xp", 0)
     bal = float(progress.get("virtual_balance", 15000.0))
@@ -531,6 +619,13 @@ def render_dashboard(user_info):
 # ─── Module Quiz Hub ──────────────────────────────────────────────────
 
 def render_module_hub(user_info):
+    prefix = st.session_state.get("active_module_id", "module_1")
+    mod_num = _extract_module_num(prefix)
+
+    # Sponsor / Ad slot: PhonePe for modules 6-10, Groww for modules 1-5
+    ad_slot = "module_hub_phonepe" if mod_num >= 6 else "module_hub_top"
+    _render_ad_banner(ad_slot)
+
     all_quizzes = _load_all_quizzes()
     module_groups = _get_module_groups(all_quizzes)
     completed_levels = edu_db.load_progress().get("completed_levels", [])
