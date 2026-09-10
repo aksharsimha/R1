@@ -412,7 +412,9 @@ if section == "Settings":
     st.stop()
 
 if section == "Learning Path":
+    import importlib
     import quest_app.tabs.edu_overview as tb
+    importlib.reload(tb)
     tb.render(_user_info)
     st.stop()
 
@@ -750,7 +752,9 @@ elif section == "Planner":
     import quest_app.tabs.planner as tb
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
 elif section == "Learning Path":
+    import importlib
     import quest_app.tabs.edu_overview as tb
+    importlib.reload(tb)
     tb.render(_user_info)
 elif section == "Library":
     import quest_app.tabs.education as tb
