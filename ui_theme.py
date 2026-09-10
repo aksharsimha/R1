@@ -568,48 +568,48 @@ def profile_customization_css() -> str:
     return """
 <style>
 /* ── Avatar Frames ── */
-.q-frame-gold { border: 2.5px solid #D4A843 !important; box-shadow: 0 0 14px rgba(212,168,67,0.45) !important; }
-.q-frame-platinum { border: 2.5px solid #CBD5E1 !important; box-shadow: 0 0 14px rgba(203,213,225,0.4) !important; }
-.q-frame-emerald { border: 2.5px solid #10B981 !important; box-shadow: 0 0 14px rgba(16,185,129,0.45) !important; }
-.q-frame-sapphire { border: 2.5px solid #3B82F6 !important; box-shadow: 0 0 14px rgba(59,130,246,0.45) !important; }
-.q-frame-obsidian { border: 2.5px solid #475569 !important; box-shadow: 0 0 14px rgba(71,85,105,0.5), inset 0 0 8px rgba(0,0,0,0.6) !important; }
+.q-frame-gold { border: 2.5px solid #D4A843 !important; box-shadow: 0 0 12px rgba(212,168,67,0.35) !important; }
+.q-frame-platinum { border: 2.5px solid #A8B4C0 !important; box-shadow: 0 0 12px rgba(168,180,192,0.35) !important; }
+.q-frame-emerald { border: 2.5px solid #10B981 !important; box-shadow: 0 0 12px rgba(16,185,129,0.35) !important; }
+.q-frame-sapphire { border: 2.5px solid #3B82F6 !important; box-shadow: 0 0 12px rgba(59,130,246,0.35) !important; }
+.q-frame-obsidian { border: 2.5px solid #6B7280 !important; box-shadow: 0 0 12px rgba(107,114,128,0.35), inset 0 0 6px rgba(0,0,0,0.5) !important; }
 
 /* ── Profile Effects ── */
-.q-effect-glow { box-shadow: 0 0 35px rgba(93,202,165,0.22) !important; }
-.q-effect-gradient { border: 2px solid transparent !important; background-clip: padding-box !important; outline: 2px solid; outline-offset: -2px; outline-color: var(--user-accent, var(--q-accent)) !important; }
-@keyframes q-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(93,202,165,0.25); } 50% { box-shadow: 0 0 22px 6px rgba(93,202,165,0.18); } }
+.q-effect-glow { box-shadow: 0 0 25px rgba(93,202,165,0.15) !important; }
+.q-effect-gradient { border: 2px solid transparent !important; background-clip: padding-box !important; outline: 2px solid; outline-offset: -2px; outline-color: var(--q-accent); }
+@keyframes q-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(93,202,165,0.2); } 50% { box-shadow: 0 0 15px 4px rgba(93,202,165,0.15); } }
 .q-effect-pulse { animation: q-pulse 2.5s ease-in-out infinite; }
 
 /* ── Profile Themes ── */
-.q-theme-midnight { background: linear-gradient(180deg, #090d16 0%, #111827 100%) !important; border-color: rgba(99,102,241,0.35) !important; }
-.q-theme-aurora { background: linear-gradient(180deg, #061412 0%, #0d2822 100%) !important; border-color: rgba(16,185,129,0.35) !important; }
-.q-theme-charcoal { background: linear-gradient(180deg, #121214 0%, #1f2024 100%) !important; border-color: rgba(255,255,255,0.12) !important; }
-.q-theme-royal { background: linear-gradient(180deg, #130a22 0%, #201138 100%) !important; border-color: rgba(139,92,246,0.35) !important; }
+.q-theme-midnight { background: linear-gradient(180deg, #0c0e1a 0%, #151929 100%) !important; border-color: rgba(99,102,241,0.3) !important; }
+.q-theme-aurora { background: linear-gradient(180deg, #0a1628 0%, #132a1e 100%) !important; border-color: rgba(16,185,129,0.3) !important; }
+.q-theme-charcoal { background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%) !important; border-color: rgba(255,255,255,0.1) !important; }
+.q-theme-royal { background: linear-gradient(180deg, #1a0f2e 0%, #2d1b4e 100%) !important; border-color: rgba(139,92,246,0.3) !important; }
 
 /* ── PRO Badge ── */
 .q-pro-badge {
-    font-size: 0.58rem; background: linear-gradient(135deg, #D4A843, #B8860B);
-    padding: 2px 7px; border-radius: 4px; color: #FFF; font-weight: 700;
-    margin-left: 6px; vertical-align: middle; letter-spacing: 0.5px;
-    display: inline-block; line-height: 1.3; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    font-size: 0.58rem; background: linear-gradient(135deg, #D4A843, #C0984D);
+    padding: 1px 6px; border-radius: 4px; color: #fff; font-weight: 700;
+    margin-left: 5px; vertical-align: middle; letter-spacing: 0.3px;
+    display: inline-block; line-height: 1.4;
 }
 
-/* ── Locked Overlay & Labels ── */
+/* ── Locked Overlay ── */
 .q-locked-overlay {
     position: relative; opacity: 0.5; pointer-events: none; user-select: none;
 }
 .q-locked-label {
     font-size: 0.68rem; font-weight: 700; color: #D4A843;
     background: rgba(212,168,67,0.12); border: 1px solid rgba(212,168,67,0.25);
-    border-radius: 5px; padding: 1px 7px; margin-left: 8px;
-    display: inline-block; vertical-align: middle; letter-spacing: 0.3px;
+    border-radius: 6px; padding: 1px 8px; margin-left: 8px;
+    display: inline-block; vertical-align: middle;
 }
 
 /* ── Upgrade Card ── */
 .q-upgrade-card {
-    background: linear-gradient(135deg, rgba(212,168,67,0.09), rgba(139,92,246,0.06));
-    border: 1px solid rgba(212,168,67,0.28); border-radius: var(--q-radius-lg, 16px);
-    padding: 20px 22px; margin: 18px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(139,92,246,0.06));
+    border: 1px solid rgba(212,168,67,0.25); border-radius: var(--q-radius-lg, 16px);
+    padding: 20px 22px; margin: 16px 0;
 }
 
 /* ── Color Swatch ── */
