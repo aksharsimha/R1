@@ -14,7 +14,13 @@ def render(user_info):
     if st.query_params.get("success") == "true":
         # Check if we already credited this session to avoid double-crediting on refresh
         if not st.session_state.get("payment_credited", False):
-            amount_paid_inr = st.session_state.get("pending_payment_amount", 500.0)
+            # Try to get the exact amount from the URL to avoid session state loss issues
+            url_amt = st.query_params.get("amt")
+            if url_amt:
+                amount_paid_inr = float(url_amt)
+            else:
+                amount_paid_inr = st.session_state.get("pending_payment_amount", 500.0)
+                
             coins_awarded = int(amount_paid_inr * 10)  # 10x Multiplier!
             
             progress["quest_coins"] = quest_coins + coins_awarded
@@ -74,7 +80,7 @@ def _create_payment_link(amount_inr, user_info):
 
         # Setup redirect URL
         # For localhost testing, we use localhost:8501
-        redirect_url = "http://localhost:8501/?workspace=education&page=Wallet&success=true"
+        redirect_url = f"http://localhost:8501/?workspace=education&page=Wallet&success=true&amt={amount_inr}"
 
         data = {
             "amount": amount_inr * 100, # Razorpay expects paise (multiply by 100)
