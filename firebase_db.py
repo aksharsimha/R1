@@ -653,3 +653,92 @@ def save_edu_progress(username: str, progress: dict):
         })
     except Exception:
         pass
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# OAuth Connections
+# ──────────────────────────────────────────────────────────────────────────────
+# Firestore path:  users/{username}/connections/{provider}
+#
+# Required Firestore security rule (add alongside existing rules):
+#
+#   match /users/{username}/connections/{provider} {
+#     // Any authenticated QUEST user may read connections (public display).
+#     allow read: if request.auth != null;
+#     // Only the account owner may write or delete their own connections.
+#     allow write, delete: if request.auth != null
+#                          && request.auth.token.username == username;
+#   }
+# ──────────────────────────────────────────────────────────────────────────────
+
+def save_oauth_connection(username: str, provider: str, profile_data: dict) -> None:
+    """
+    Write (or overwrite) an OAuth connection document for a user.
+
+    Firestore path: users/{username}/connections/{provider}
+
+    The document is guaranteed to contain the canonical contract fields:
+      provider, provider_user_id, display_name, profile_url, avatar_url,
+      verified, connected_at.
+
+    Access tokens are never written — the caller is responsible for ensuring
+    none are present in profile_data.
+
+    Args:
+        username:     QUEST username (document owner).
+        provider:     "discord" | "google" | "linkedin".
+        profile_data: Normalised dict produced by oauth_connections._normalise().
+    """
+    db = get_db()
+    try:
+        db.collection("users").document(username) \
+          .collection("connections").document(provider) \
+          .set(profile_data)
+    except Exception as exc:
+        # Surface the error without crashing — caller may log or display it
+        raise RuntimeError(f"Failed to save OAuth connection ({provider}): {exc}") from exc
+
+
+def get_oauth_connections(username: str) -> dict:
+    """
+    Return all OAuth connection documents for any QUEST user.
+
+    This is a public read operation intended for profile display — it fetches
+    data for *any* username, not just the currently authenticated user.
+    Firestore security rules restrict writes to the owner.
+
+    Args:
+        username:  Any valid QUEST username.
+
+    Returns:
+        Dict[provider_name, connection_dict].
+        Empty dict if the user has no connections or on any read error.
+    """
+    db = get_db()
+    try:
+        docs = db.collection("users").document(username) \
+                 .collection("connections").stream()
+        return {doc.id: doc.to_dict() for doc in docs}
+    except Exception:
+        return {}
+
+
+def remove_oauth_connection(username: str, provider: str) -> None:
+    """
+    Delete a single OAuth connection document.
+
+    Firestore path: users/{username}/connections/{provider}
+
+    Args:
+        username:  QUEST username (must be the authenticated user; enforced
+                   by Firestore security rules at the database level).
+        provider:  "discord" | "google" | "linkedin".
+    """
+    db = get_db()
+    try:
+        db.collection("users").document(username) \
+          .collection("connections").document(provider) \
+          .delete()
+    except Exception as exc:
+        raise RuntimeError(f"Failed to remove OAuth connection ({provider}): {exc}") from exc
+

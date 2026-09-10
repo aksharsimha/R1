@@ -155,6 +155,78 @@ DARK_VARIANTS = {
         "neg_weak":    "#291B1B",
         "pos_weak":    "#152921",
     },
+    "autumn": {
+        "bg":          "#14100D",
+        "surface":     "#1D1612",
+        "surface_2":   "#281F1A",
+        "border":      "#3A2D25",
+        "border_2":    "#4C3A30",
+        "text":        "#F7F2EE",
+        "text_2":      "#C8BCB3",
+        "text_3":      "#8D8075",
+        "accent":      "#D97742",   # crisp burnt orange
+        "accent_weak": "#331B0E",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B1D0E",
+        "neg_weak":    "#2B1814",
+        "pos_weak":    "#15271E",
+    },
+    "winter": {
+        "bg":          "#0C1017",
+        "surface":     "#121822",
+        "surface_2":   "#18202D",
+        "border":      "#232E40",
+        "border_2":    "#303E54",
+        "text":        "#F0F4F8",
+        "text_2":      "#B0BFCF",
+        "text_3":      "#76869B",
+        "accent":      "#70B6F6",   # icy pale blue
+        "accent_weak": "#12283D",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#271F10",
+        "neg_weak":    "#281B20",
+        "pos_weak":    "#132824",
+    },
+    "spring": {
+        "bg":          "#0D130E",
+        "surface":     "#141C15",
+        "surface_2":   "#1A241B",
+        "border":      "#273629",
+        "border_2":    "#344737",
+        "text":        "#F0F5F1",
+        "text_2":      "#B2C2B5",
+        "text_3":      "#788A7C",
+        "accent":      "#48C774",   # fresh spring green
+        "accent_weak": "#122E19",
+        "pos":         "#48C774",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#28200F",
+        "neg_weak":    "#291B1B",
+        "pos_weak":    "#132819",
+    },
+    "summer": {
+        "bg":          "#14110A",
+        "surface":     "#1D170D",
+        "surface_2":   "#292013",
+        "border":      "#3C2F1C",
+        "border_2":    "#4F3E25",
+        "text":        "#F7F4EB",
+        "text_2":      "#C9C3AF",
+        "text_3":      "#8F8870",
+        "accent":      "#F2B33D",   # vivid warm golden amber
+        "accent_weak": "#382708",
+        "pos":         "#5DCAA5",
+        "neg":         "#F0997B",
+        "warn":        "#EF9F27",
+        "warn_weak":   "#2B200E",
+        "neg_weak":    "#2B1A17",
+        "pos_weak":    "#16271D",
+    },
 }
 
 DARK = DARK_VARIANTS["classic"]
@@ -164,13 +236,17 @@ DEFAULT_VARIANT = "classic"
 # Ordered list of all available theme variants for UI pickers.
 # Each entry: (session_key, display_label, swatch_hex)
 VARIANT_LABELS = [
-    ("classic",   "Classic",   "#0F1115"),
-    ("midnight",  "Midnight",  "#000000"),
-    ("void",      "Void",      "#10121A"),
-    ("graphite",  "Graphite",  "#0E0E0E"),
-    ("plum",      "Plum",      "#120E13"),
-    ("ash",       "Ash",       "#11100E"),
-    ("jade",      "Jade",      "#0F1312"),
+    ("classic",   "Classic",   "#1C1F25"),   # surface_2 of classic
+    ("midnight",  "Midnight",  "#15161A"),   # surface_2 of midnight
+    ("void",      "Void",      "#1D212E"),   # surface_2 of void
+    ("graphite",  "Graphite",  "#1E1E1E"),   # surface_2 of graphite
+    ("plum",      "Plum",      "#252128"),   # surface_2 of plum
+    ("ash",       "Ash",       "#22201D"),   # surface_2 of ash
+    ("jade",      "Jade",      "#1E2422"),   # surface_2 of jade
+    ("autumn",    "Autumn",    "#281F1A"),   # surface_2 of autumn
+    ("winter",    "Winter",    "#18202D"),   # surface_2 of winter
+    ("spring",    "Spring",    "#1A241B"),   # surface_2 of spring
+    ("summer",    "Summer",    "#292013"),   # surface_2 of summer
 ]
 
 
