@@ -312,21 +312,21 @@ with _ws_col2:
             st.rerun()
 
 if _workspace == "professional":
-    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings"]
+    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings", "Wallet"]
     _page_labels = {
         "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
         "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
-        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Settings": "⚙  Settings",
+        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Workspace"
     _default_page = edu_db.get_last_portfolio_section()
 else:
-    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Settings"]
+    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Wallet", "Settings"]
     _page_labels = {
         "Learning Path": "🎓  Learning Path", "Library": "📚  Knowledge Library",
         "Virtual Trading": "📈  Virtual Trading", "Leaderboard": "🏆  Leaderboard",
         "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective",
-        "MICHAEL": "⚡  MICHAEL", "Settings": "⚙  Settings",
+        "MICHAEL": "⚡  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
     _default_page = edu_db.get_last_education_section()
@@ -767,3 +767,7 @@ elif section == "Virtual Trading":
 elif section == "Leaderboard":
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
+elif section == "Wallet":
+    import quest_app.tabs.wallet as tb
+    tb.render(_user_info)
+

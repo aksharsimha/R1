@@ -13,3 +13,4 @@ scipy>=1.11
 firebase-admin>=6.0,<7.0
 google-cloud-firestore>=2.11,<2.20
 pytz>=2024.1
+razorpay>=2.0
