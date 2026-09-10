@@ -442,6 +442,26 @@ def css(theme: str = None) -> str:
         color: currentColor !important; stroke: currentColor !important;
     }}
 
+    /* ── Sidebar Buttons (Environment Switcher & Actions) ── */
+    section[data-testid="stSidebar"] button,
+    [data-testid="stSidebar"] button {{
+        padding: 4px 6px !important;
+        min-height: 32px !important;
+        height: auto !important;
+    }}
+    section[data-testid="stSidebar"] button p,
+    [data-testid="stSidebar"] button p,
+    section[data-testid="stSidebar"] button div,
+    [data-testid="stSidebar"] button div,
+    section[data-testid="stSidebar"] button span,
+    [data-testid="stSidebar"] button span {{
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        text-overflow: ellipsis !important;
+        font-size: 0.76rem !important;
+        line-height: 1.2 !important;
+    }}
+
     /* ── Tabs ── */
     .stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 1px solid var(--q-border); }}
     .stTabs [data-baseweb="tab"] {{ color: var(--q-text-3); font-weight: 500;
@@ -580,20 +600,31 @@ def css(theme: str = None) -> str:
         font-size: .9rem; }}
     .quest-profile-card {{ background: var(--q-surface-2);
         border: 1px solid var(--q-border); border-radius: var(--q-radius);
-        padding: 28px 14px 14px; display: flex; align-items: center; gap: 10px;
-        position: relative; }}
+        padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;
+        position: relative; box-sizing: border-box; overflow: hidden; }}
+    .quest-profile-header {{ display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; }}
     .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
         display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}
     .quest-profile-avatar {{ width: 38px; height: 38px; flex: 0 0 38px;
         display: grid; place-items: center; overflow: hidden; border-radius: 50%;
         background: var(--q-accent-weak); color: var(--q-accent); font-weight: 600; }}
     .quest-profile-avatar img {{ width: 100%; height: 100%; object-fit: cover; }}
-    .quest-profile-copy {{ min-width: 0; }}
+    .quest-profile-copy {{ flex: 1 1 auto; min-width: 0; overflow: hidden; }}
     .quest-profile-label {{ font-size: .68rem; color: var(--q-text-3);
         text-transform: uppercase; letter-spacing: .6px; }}
-    .quest-profile-name {{ font-size: .95rem; color: var(--q-text);
-        font-weight: 500; margin-top: 2px; }}
-    .quest-profile-user {{ font-size: .78rem; color: var(--q-accent); }}
+    .quest-profile-name {{ font-size: .92rem; color: var(--q-text);
+        font-weight: 600; margin-top: 0; white-space: nowrap !important;
+        overflow: hidden !important; text-overflow: ellipsis !important;
+        word-break: keep-all !important; line-height: 1.25; }}
+    .quest-profile-user {{ font-size: .78rem; color: var(--q-accent);
+        white-space: nowrap !important; overflow: hidden !important;
+        text-overflow: ellipsis !important; word-break: keep-all !important; line-height: 1.2; }}
+    .quest-profile-growth {{ display: flex; justify-content: space-between; align-items: center;
+        width: 100%; padding-top: 6px; border-top: 1px solid var(--q-border); box-sizing: border-box; }}
+    .quest-profile-growth-label {{ font-size: .65rem; color: var(--q-text-3);
+        text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }}
+    .quest-profile-growth-val {{ font-size: .85rem; font-weight: 700;
+        font-family: 'JetBrains Mono', monospace; white-space: nowrap !important; }}
     .quest-nav-label {{ color: var(--q-text-3); font-size: .7rem; text-transform: uppercase;
         letter-spacing: .08em; margin: 16px 0 8px; }}
     .quest-settings-sidebar-title {{ color: var(--q-text); font-size: 1.2rem;
@@ -710,7 +741,8 @@ def css(theme: str = None) -> str:
             font-size: 0.97rem !important;
         }}
         section[data-testid="stSidebar"] .stButton > button {{
-            min-height: 44px !important;
+            min-height: 34px !important;
+            padding: 4px 6px !important;
         }}
 
         /* Sidebar nav items bigger tap area */
@@ -720,7 +752,8 @@ def css(theme: str = None) -> str:
 
         /* Profile card compact */
         .quest-profile-card {{
-            padding: 20px 12px 12px !important;
+            padding: 10px 12px !important;
+            gap: 6px !important;
         }}
 
         /* Expanders full width */

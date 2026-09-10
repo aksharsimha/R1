@@ -11,6 +11,8 @@ from risk_analyzer import AssetType
 from portfolio_ledger import add_asset, remove_asset, update_asset_holdings
 import chat_system
 import nse_live as _nse
+import html
+
 
 
 def _get_profile_cached(username: str) -> dict:
@@ -40,25 +42,24 @@ def _render_avatar_html(username: str, display_name: str = "", size: int = 54, c
         return f'<div class="{css_class}" style="width:{size}px;height:{size}px;border-radius:50%;display:grid;place-items:center;font-size:{font_size}px;font-weight:600;">{init}</div>'
 
 
-@st.dialog("Public Profile")
+@st.dialog("Profile Card", width="small")
 def _show_public_profile(username: str):
-    import firebase_db
-    profile = firebase_db.get_user_profile(username)
-    if profile:
-        disp = profile.get("display_name", username)
-        av_html = _render_avatar_html(username, disp, size=80, css_class="q-avatar-large")
-        st.markdown(f"""
-        <div style="display:flex;align-items:center;gap:20px;margin-bottom:15px;">
-            {av_html}
-            <div>
-                <h3 style="margin:0;">{disp}</h3>
-                <p style="margin:0;color:var(--q-text-3);">@{username}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.caption("This is a public profile. Private portfolio data is hidden.")
-    else:
-        st.error("User not found.")
+    st.markdown("""
+    <style>
+    div[data-testid="stDialog"] div[data-testid="stDialogHeader"] {
+        padding-bottom: 4px !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stVerticalBlock"] {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    import quest_app.settings as settings
+    profile = _get_profile_cached(username)
+    card_html = settings.build_discord_profile_card_html(username, profile)
+    st.html(card_html)
+
 
 
 @st.dialog("New conversation")
@@ -76,6 +77,9 @@ def _new_conversation_dialog(username: str):
 @st.fragment
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
+    if "chat_id" in st.query_params:
+        st.session_state.active_chat_id = st.query_params["chat_id"]
+
     if "view_profile" in st.query_params:
         target_user = st.query_params["view_profile"]
         del st.query_params["view_profile"]
@@ -114,12 +118,56 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         .chat-title { color: var(--q-text); font-size: 1.25rem; font-weight: 600; margin: 4px 0 18px; }
         .chat-title-icon { color: var(--q-accent); margin-right: 7px; }
         .chat-header { display:flex; align-items:center; gap:14px; border-bottom:1px solid var(--q-border); padding:2px 4px 16px; }
+        .chat-avatar-link {
+            text-decoration: none !important;
+            cursor: pointer !important;
+            display: inline-flex;
+            flex-shrink: 0;
+            border-radius: 50%;
+            transition: transform 0.2s cubic-bezier(.22,.61,.36,1), box-shadow 0.2s cubic-bezier(.22,.61,.36,1);
+        }
+        .chat-avatar-link:hover {
+            transform: scale(1.06);
+        }
+        .chat-avatar-link:hover .chat-avatar {
+            border-color: var(--q-accent) !important;
+            box-shadow: 0 0 14px rgba(93, 202, 165, 0.45), 0 0 0 4px rgba(93, 202, 165, 0.2) !important;
+        }
         .chat-avatar-wrap { position:relative; display:inline-flex; flex-shrink:0; width:54px; height:54px; }
-        .chat-avatar { width:54px; height:54px; border-radius:50%; object-fit:cover; display:grid; place-items:center; background:var(--q-surface-2); border:2px solid var(--q-border); color:var(--q-text-2); font-size:1.55rem; box-shadow:0 0 0 4px rgba(69,78,106,.18); flex-shrink:0; }
+        .chat-avatar { width:54px; height:54px; border-radius:50%; object-fit:cover; display:grid; place-items:center; background:var(--q-surface-2); border:2px solid var(--q-border); color:var(--q-text-2); font-size:1.55rem; box-shadow:0 0 0 4px rgba(69,78,106,.18); flex-shrink:0; transition: all 0.2s ease; }
         .chat-online { width:14px; height:14px; border-radius:50%; background:var(--q-pos); border:2px solid var(--q-surface); position:absolute; bottom:0; right:0; z-index:2; }
-        .chat-header-name { color:var(--q-text); font-size:1.25rem; font-weight:600; }
+        .chat-name-link {
+            text-decoration: none !important;
+            color: inherit !important;
+            cursor: pointer !important;
+            display: inline-block;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .chat-name-link:hover .chat-header-name {
+            color: var(--q-accent) !important;
+            text-decoration: none;
+        }
+        .chat-name-link:hover {
+            transform: translateX(1px);
+        }
+        .chat-header-name { color:var(--q-text); font-size:1.25rem; font-weight:600; transition: color 0.2s ease; }
         .chat-header-status { color:var(--q-text-3); font-size:.78rem; margin-top:2px; }
         .chat-header-status span { color:var(--q-pos); }
+        /* Hidden profile trigger slot (zero visual presence) */
+        .st-key-chat_hdr_prof_slot,
+        div[class*="st-key-chat_hdr_prof_slot"] {
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            width: 1px !important;
+            height: 1px !important;
+            min-height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
         .chat-empty { min-height:470px; display:grid; place-items:center; color:var(--q-text-3); text-align:center; }
         .chat-rail .stButton > button { border-color:var(--q-border); background:var(--q-surface); }
         .chat-rail .stButton > button:hover { border-color:var(--q-accent); background:var(--q-accent-weak); }
@@ -336,7 +384,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 chat_system.mark_as_read(active_id, _chat_user)
 
                 # ── Chat header ──────────────────────────────────────────────
-                hdr0, hdr1, hdr2, hdr3 = st.columns([1, 4, 1, 1])
+                hdr0, hdr1, hdr2 = st.columns([0.8, 6.4, 0.8])
                 with hdr0:
                     if st.button("←", key="chat_back", help="Back to conversations"):
                         st.session_state.active_chat_id = None
@@ -349,31 +397,48 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         title = other_prof.get("display_name") or other_user or "Chat"
                         _is_online = firebase_db.is_user_online(other_user) if other_user else False
                         _avatar_markup = _render_avatar_html(other_user, title, size=54, css_class="chat-avatar")
+                        _profile_target = other_user
                     else:
                         title = chat_info["name"]
                         members_str = ", ".join(chat_info["participants"])
                         _is_online = False
                         _avatar_markup = "<div class='chat-avatar' style='font-size:1.5rem;'>👥</div>"
+                        _profile_target = ""
 
                     _presence_label = "Online" if _is_online else "Offline"
                     _presence_color = "var(--q-pos)" if _is_online else "var(--q-text-3)"
                     _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
-                    st.markdown(f"<div class='chat-header'><div class='chat-avatar-wrap'>{_avatar_markup}{_presence_dot}</div><div><div class='chat-header-name'>{title}</div><div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div></div></div>", unsafe_allow_html=True)
+
+                    # Visually hidden button inside a keyed container to trigger profile modal without page reload
+                    with st.container(key="chat_hdr_prof_slot"):
+                        if st.button("OpenProfModal", key=f"chat_hdr_prof_btn_{active_id}"):
+                            if chat_info["type"] == "direct" and _profile_target:
+                                _show_public_profile(_profile_target)
+                            elif chat_info["type"] == "group":
+                                st.info(f"Members: {', '.join(chat_info['participants'])}")
+
+                    _click_js = "var b = document.querySelector('.st-key-chat_hdr_prof_slot button'); if (b) { b.click(); } return false;"
+                    _fallback_href = f"?page=Chat&chat_id={active_id}&view_profile={_profile_target}" if _profile_target else "#"
+
+                    st.markdown(f"""
+                    <div class='chat-header'>
+                        <a href='{_fallback_href}' onclick="{_click_js}" class='chat-avatar-link' title='View {html.escape(title)} profile' style='cursor:pointer;text-decoration:none;'>
+                            <div class='chat-avatar-wrap'>{_avatar_markup}{_presence_dot}</div>
+                        </a>
+                        <div>
+                            <a href='{_fallback_href}' onclick="{_click_js}" class='chat-name-link' title='View {html.escape(title)} profile' style='cursor:pointer;text-decoration:none;'>
+                                <div class='chat-header-name'>{html.escape(title)}</div>
+                            </a>
+                            <div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                     if chat_info["type"] == "group":
                         st.caption(f"Members: {members_str}")
                 with hdr2:
                     if st.button("🔄", key="chat_refresh", help="Refresh messages & avatars"):
                         st.session_state.pop("_user_profiles_cache", None)
                         st.rerun(scope="fragment")
-                with hdr3:
-                    _header_action = "👤" if chat_info["type"] == "direct" else "ⓘ"
-                    if st.button(_header_action, key="chat_details", help="Open profile or chat details"):
-                        if chat_info["type"] == "direct":
-                            other = [p for p in chat_info["participants"] if p != _chat_user]
-                            if other:
-                                _show_public_profile(other[0])
-                        else:
-                            st.info(f"Members: {', '.join(chat_info['participants'])}")
 
                 _share_col, _share_hint = st.columns([1, 5])
                 if _share_col.button("📊", key="share_portfolio", help="Share portfolio"):
@@ -415,6 +480,8 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         elif msg["from"] == _chat_user:
                             # ── Sent message ─────────────────────────────────
                             my_av_markup = _render_avatar_html(_chat_user, _chat_display, size=32, css_class="chat-msg-avatar")
+                            my_prof_href = f"?page=Chat&chat_id={active_id}&view_profile={_chat_user}"
+                            my_av_link = f'<a href="{my_prof_href}" target="_self" style="text-decoration:none;cursor:pointer;display:inline-block;" title="View your profile">{my_av_markup}</a>'
                             bubble = f'<div class="chat-bubble sent">{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
@@ -430,14 +497,19 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
-                            msgs_html += f'<div class="chat-msg-row sent">{bubble}<div style="margin-left:8px;flex-shrink:0;">{my_av_markup}</div></div>'
+                            msgs_html += f'<div class="chat-msg-row sent">{bubble}<div style="margin-left:8px;flex-shrink:0;">{my_av_link}</div></div>'
                         else:
                             # ── Received message ─────────────────────────────
                             sender = msg["from"]
                             sender_prof = _get_profile_cached(sender)
                             sender_disp = sender_prof.get("display_name", sender)
                             sender_av_markup = _render_avatar_html(sender, sender_disp, size=32, css_class="chat-msg-avatar")
-                            bubble = f'<div class="chat-bubble received"><div class="chat-sender"><a href="?page=Chat&view_profile={sender}" target="_self" style="text-decoration:none;color:inherit;">{sender_disp} (@{sender})</a></div>{msg["text"]}'
+                            _msg_click = f'onclick="{_click_js}"' if (chat_info["type"] == "direct" and sender == _profile_target) else ""
+                            _msg_prof_href = f"?page=Chat&chat_id={active_id}&view_profile={sender}"
+                            _sender_link = f'<a href="{_msg_prof_href}" {_msg_click} target="_self" style="text-decoration:none;color:inherit;cursor:pointer;" title="View {html.escape(sender_disp)} profile">{html.escape(sender_disp)} (@{html.escape(sender)})</a>'
+                            _av_link = f'<a href="{_msg_prof_href}" {_msg_click} target="_self" style="text-decoration:none;cursor:pointer;display:inline-block;" title="View {html.escape(sender_disp)} profile">{sender_av_markup}</a>'
+
+                            bubble = f'<div class="chat-bubble received"><div class="chat-sender">{_sender_link}</div>{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
                                 pnl_color = "var(--q-pos)" if pd_data.get("total_pnl", 0) >= 0 else "var(--q-neg)"
@@ -452,7 +524,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
-                            msgs_html += f'<div class="chat-msg-row received"><div style="margin-right:8px;flex-shrink:0;">{sender_av_markup}</div>{bubble}</div>'
+                            msgs_html += f'<div class="chat-msg-row received"><div style="margin-right:8px;flex-shrink:0;">{_av_link}</div>{bubble}</div>'
 
                     st.html(f'''
                     <div id="quest-chat-messages" data-chat-id="{active_id}"

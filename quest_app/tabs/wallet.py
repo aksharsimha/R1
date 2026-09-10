@@ -1,6 +1,10 @@
 import streamlit as st
 import edu_db
-import razorpay
+
+try:
+    import razorpay
+except ImportError:
+    razorpay = None
 
 def render(user_info):
     st.markdown("<h1 style='color:#f8fafc;'>💳 Top-Up Wallet</h1>", unsafe_allow_html=True)
@@ -76,6 +80,9 @@ def render(user_info):
 
 
 def _create_payment_link(amount_inr, user_info):
+    if razorpay is None:
+        st.error("Razorpay SDK is not installed. Please run: pip install razorpay")
+        return
     try:
         # Initialize Razorpay Client with provided test keys
         client = razorpay.Client(auth=("rzp_test_TaNK4SlVzf5jfB", "9vb4dFfdUSxs9sZ9PH66XMDc"))

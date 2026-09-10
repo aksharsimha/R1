@@ -431,7 +431,9 @@ def update_username(username: str, password: str, new_username: str) -> tuple[bo
 
 def save_avatar(username: str, avatar_data: str | None) -> None:
     """Store or remove a small base64 avatar in the profile document."""
-    get_db().collection("users").document(username).update({"avatar": avatar_data})
+    if not username:
+        return
+    get_db().collection("users").document(username).set({"avatar": avatar_data}, merge=True)
 
 
 def get_all_users() -> list[str]:
@@ -656,6 +658,7 @@ def save_edu_progress(username: str, progress: dict):
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────────────────
 # OAuth Connections
 # ──────────────────────────────────────────────────────────────────────────────
 # Firestore path:  users/{username}/connections/{provider}
@@ -741,4 +744,89 @@ def remove_oauth_connection(username: str, provider: str) -> None:
           .delete()
     except Exception as exc:
         raise RuntimeError(f"Failed to remove OAuth connection ({provider}): {exc}") from exc
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Discord-Style Banner & Profile Customization Schema
+# ──────────────────────────────────────────────────────────────────────────────
+
+_DEFAULT_BANNER_CONFIG = {
+    "bannerType": "color",          # 'color' | 'image'
+    "bannerValue": "#5865F2",       # Discord Blurple default or hex / data URL
+    "themeColor": "#5865F2",        # primary / accent hex
+    "cardBackground": "#111214",    # Discord dark default
+    "isPremium": False,             # Free/Basic vs Pro/Premium tier
+    "animationEffect": "none",      # 'none' | 'neon_border' | 'holo_scanline' | 'circuit_surge' | 'rgb_orbit' | 'glitch_aura'
+    "animationIntensity": 2,        # 1 (Subtle), 2 (Balanced), 3 (High Voltage)
+}
+
+
+
+def is_user_pro(username: str) -> bool:
+    """Check if a user has an active Pro subscription."""
+    if not username:
+        return False
+    try:
+        profile = get_user_profile(username)
+        return bool(
+            profile.get("is_pro")
+            or profile.get("is_premium")
+            or profile.get("profile_customization", {}).get("is_pro")
+            or profile.get("banner_customization", {}).get("isPremium")
+        )
+    except Exception:
+        return False
+
+
+def set_pro_status(username: str, is_pro: bool = True) -> bool:
+    """Set Pro subscription status in Firestore."""
+    if not username:
+        return False
+    try:
+        db = get_db()
+        db.collection("users").document(username).set({
+            "is_pro": is_pro,
+            "profile_customization": {"is_pro": is_pro}
+        }, merge=True)
+        return True
+    except Exception as e:
+        print(f"[firebase_db] Failed to set pro status: {e}")
+        return False
+
+
+def get_banner_customization(username: str) -> dict:
+    """Read Discord-style banner & profile customization from Firestore."""
+    if not username or not username.strip():
+        return dict(_DEFAULT_BANNER_CONFIG)
+    try:
+        profile = get_user_profile(username)
+        stored = profile.get("banner_customization", {})
+        if not isinstance(stored, dict):
+            stored = {}
+        res = dict(_DEFAULT_BANNER_CONFIG)
+        res.update(stored)
+        if profile.get("profile_customization", {}).get("is_pro") or profile.get("is_pro") or profile.get("is_premium"):
+            res["isPremium"] = True
+        return res
+    except Exception:
+        return dict(_DEFAULT_BANNER_CONFIG)
+
+
+def save_banner_customization(username: str, data: dict) -> bool:
+    """Save banner customization dict to Firestore user document."""
+    if not username or not username.strip():
+        return False
+    try:
+        db = get_db()
+        clean = {}
+        for k in _DEFAULT_BANNER_CONFIG:
+            if k in data:
+                clean[k] = data[k]
+        db.collection("users").document(username).set({
+            "banner_customization": clean
+        }, merge=True)
+        return True
+    except Exception as e:
+        print(f"[firebase_db] Failed to save banner customization: {e}")
+        return False
 
