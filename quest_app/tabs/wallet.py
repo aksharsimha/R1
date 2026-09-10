@@ -33,11 +33,13 @@ def render(user_info):
             st.balloons()
             st.success(f"🎉 Payment Successful! You received {coins_awarded:,} Quest Coins!")
             
-            # INSTANTLY wipe the URL parameter so hard refresh doesn't trigger this again!
+            # INSTANTLY wipe the URL parameters so hard refresh doesn't trigger this again!
             st.query_params.pop("success", None)
+            st.query_params.pop("amt", None)
         else:
             st.success("Payment already processed.")
             st.query_params.pop("success", None)
+            st.query_params.pop("amt", None)
 
     st.markdown(f"### 🪙 Quest Coins: <span style='color:#fbbf24;'>{quest_coins:,}</span>", unsafe_allow_html=True)
     st.markdown(f"<p style='font-size: 0.9rem; color:#94a3b8;'><em>(Virtual Trading Balance: ₹ {virtual_balance:,.0f})</em></p>", unsafe_allow_html=True)
