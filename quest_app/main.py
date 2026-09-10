@@ -80,6 +80,18 @@ tax_detective_db.set_data_dir(_user_data_dir, username=_username)
 st.session_state._quest_username = _username
 st.session_state._quest_data_dir = _user_data_dir
 
+# --- Auto-SIP Check ---
+# Check for any pending virtual SIP deposits on login/reload so balance is globally updated
+import virtual_trading as vt_engine
+_tmp_acc = vt_engine.load_account(_username, _user_data_dir)
+_new_sip = _tmp_acc.pop("_new_sip_added", 0.0)
+if _new_sip > 0:
+    vt_engine.save_account(_tmp_acc, _username, _user_data_dir)
+    _prog = edu_db.load_progress()
+    _prog["virtual_balance"] = float(_prog.get("virtual_balance", 15000.0)) + _new_sip
+    edu_db.save_progress(_prog)
+# ----------------------
+
 # Re-import HOLDINGS_FILE after redirection so it points to user's directory
 from portfolio_ledger import HOLDINGS_FILE
 
