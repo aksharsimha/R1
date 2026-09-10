@@ -104,7 +104,6 @@ if "show_risk_breakdown" not in st.session_state:
 import ui_theme
 ui_theme.init_theme()
 st.markdown(ui_theme.css(), unsafe_allow_html=True)
-st.markdown(ui_theme.profile_customization_css(), unsafe_allow_html=True)
 
 if st.session_state.get("just_logged_in"):
     st.session_state.just_logged_in = False
@@ -159,23 +158,6 @@ if not _avatar:
 _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
                   f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
 
-# ── Load profile customization for sidebar card ──
-try:
-    _pro_custom = firebase_db.get_profile_customization(_username)
-except Exception:
-    _pro_custom = {}
-_raw_frame = str(_pro_custom.get("avatar_frame", "none")).strip().lower()
-_frame_cls = f'q-frame-{_raw_frame}' if _raw_frame not in ("none", "", "null") else ""
-_pro_badge_html = '<span class="q-pro-badge">PRO</span>' if _pro_custom.get("is_pro") and _pro_custom.get("show_pro_badge", True) else ""
-_custom_status = _pro_custom.get("custom_status", "")
-_status_html = f'<div style="font-size:0.68rem;color:var(--q-text-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;">{_custom_status}</div>' if _custom_status else ""
-_effect_cls = ""
-_eff = str(_pro_custom.get("profile_effect", "none")).strip().lower().replace(" ", "_")
-if _eff == "subtle_glow": _effect_cls = "q-effect-glow"
-elif _eff == "gradient_border": _effect_cls = "q-effect-gradient"
-elif _eff == "pulse_ring": _effect_cls = "q-effect-pulse"
-_user_accent = _pro_custom.get("accent_color", "#5DCAA5")
-
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
@@ -201,12 +183,11 @@ try:
     g_color = "#34d399" if p_growth["growth_abs"] >= 0 else "#f87171"
     g_sign = "+" if p_growth["growth_abs"] >= 0 else ""
     _profile_placeholder.markdown(f"""
-    <div class="quest-profile-card {_effect_cls}" style="--user-accent: {_user_accent};">
-        <div class="quest-profile-avatar {_frame_cls}">{_avatar_markup}</div>
+    <div class="quest-profile-card">
+        <div class="quest-profile-avatar">{_avatar_markup}</div>
         <div class="quest-profile-copy" style="flex:1;">
-            <div class="quest-profile-name">{_user_info['display_name']}{_pro_badge_html}</div>
+            <div class="quest-profile-name">{_user_info['display_name']}</div>
             <div class="quest-profile-user">@{_user_info['username']}</div>
-            {_status_html}
         </div>
         <div style="text-align: right; line-height: 1.2;">
             <div style="font-size: 0.65rem; color: var(--q-text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Growth</div>
