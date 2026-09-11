@@ -264,19 +264,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
         }}
         """
         card_animation_style = "animation: holoCardGlow 2.6s ease-in-out infinite;"
-        extra_card_elements = f"""
-        <div style="
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent 0%, {card_accent} 20%, #ffffff 50%, #38bdf8 80%, transparent 100%);
-            box-shadow: 0 0 16px {card_accent}, 0 0 28px #38bdf8, 0 0 8px #fff;
-            pointer-events: none;
-            z-index: 25;
-            animation: holoScanlineMove 2.6s linear infinite;
-        "></div>
-        """
+        extra_card_elements = f'<div style="position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg, transparent 0%, {card_accent} 20%, #ffffff 50%, #38bdf8 80%, transparent 100%);box-shadow:0 0 16px {card_accent}, 0 0 28px #38bdf8, 0 0 8px #fff;pointer-events:none;z-index:25;animation:holoScanlineMove 2.6s linear infinite;"></div>'
 
     elif active_anim == "circuit_surge":
         anim_css = f"""
@@ -354,12 +342,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
         """
         card_animation_style = "animation: glitchAuraEffect 2.2s ease-in-out infinite;"
 
-    tier_badge_markup = f"""
-    <div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid {card_accent};background:rgba(8,10,18,0.75);backdrop-filter:blur(10px);box-shadow:0 0 16px {card_accent}55;">
-        <span style="font-size:0.75rem;">👑</span>
-        <span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:'Inter',sans-serif;">PREMIUM PRO</span>
-    </div>
-    """ if is_premium else ""
+    tier_badge_markup = f'<div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid {card_accent};background:rgba(8,10,18,0.75);backdrop-filter:blur(10px);box-shadow:0 0 16px {card_accent}55;"><span style="font-size:0.75rem;">👑</span><span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:\'Inter\',sans-serif;">PREMIUM PRO</span></div>' if is_premium else ''
 
     tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Pro Member">👑</span>' if is_premium else ''
 
