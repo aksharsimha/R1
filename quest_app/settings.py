@@ -359,11 +359,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
         <span style="font-size:0.75rem;">👑</span>
         <span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:'Inter',sans-serif;">PREMIUM PRO</span>
     </div>
-    """ if is_premium else f"""
-    <div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(8,10,18,0.6);backdrop-filter:blur(8px);">
-        <span style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:#9ca3af;text-transform:uppercase;font-family:'Inter',sans-serif;">BASIC MEMBER</span>
-    </div>
-    """
+    """ if is_premium else ""
 
     tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Pro Member">👑</span>' if is_premium else ''
 
@@ -940,7 +936,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 is_preview=True,
                 preview_dict=prev,
             )
-            st.html(discord_card_html)
+            st.markdown(discord_card_html, unsafe_allow_html=True)
 
 
     elif selected == "Connections":

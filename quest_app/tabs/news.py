@@ -39,12 +39,17 @@ def _show_public_profile(username: str):
         padding: 0 !important;
         gap: 0 !important;
     }
+    div[data-testid="stDialog"] div[data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+    }
     </style>
     """, unsafe_allow_html=True)
+    import importlib
     import quest_app.settings as settings
+    importlib.reload(settings)
     profile = firebase_db.get_user_profile(username)
     card_html = settings.build_discord_profile_card_html(username, profile)
-    st.html(card_html)
+    st.markdown(card_html, unsafe_allow_html=True)
 
 
 @st.dialog("🔍 Search News & Holdings")
