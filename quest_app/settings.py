@@ -473,6 +473,50 @@ def render(user_info: dict, selected: str | None = None) -> None:
 
     if selected is None:
         selected = st.radio("Settings sections", _SECTIONS, key="settings_section", label_visibility="collapsed")
+    _render_section(selected, username, user_info, profile)
+
+
+def _render_section(selected: str, username: str, user_info: dict, profile: dict) -> None:
+
+    if selected == "Profile":
+        _card_start("Profile", "Your public identity inside QUEST.")
+        avatar = profile.get("avatar")
+        if avatar:
+            st.markdown(f'<img class="q-avatar-large" src="{avatar}" alt="Profile avatar">', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="q-avatar-large q-avatar-placeholder">{profile.get("display_name", username)[:1].upper()}</div>', unsafe_allow_html=True)
+        upload = st.file_uploader("Avatar", type=["png", "jpg", "jpeg", "webp"], key="avatar_upload")
+        a1, a2 = st.columns(2)
+        with a1:
+            if upload and st.button("Replace avatar", key="replace_avatar", use_container_width=True):
+                encoded = base64.b64encode(upload.getvalue()).decode("ascii")
+                mime = upload.type or "image/png"
+                avatar_data = f"data:{mime};base64,{encoded}"
+                firebase_db.save_avatar(username, avatar_data)
+                st.session_state.user_info["avatar"] = avatar_data
+                st.success("Avatar updated.")
+                st.rerun()
+        with a2:
+            if avatar and st.button("Delete avatar", key="delete_avatar", use_container_width=True):
+                firebase_db.save_avatar(username, None)
+                st.session_state.user_info.pop("avatar", None)
+                st.success("Avatar removed.")
+                st.rerun()
+
+        with st.form("profile_form"):
+            display_name = st.text_input("Display name", value=profile.get("display_name", user_info.get("display_name", username)))
+            summary = st.text_area("Profile summary", value=profile.get("summary", ""), max_chars=240,
+                                   placeholder="A short line about your investing style")
+            if st.form_submit_button("Save profile", use_container_width=True):
+                try:
+                    ok, message = firebase_db.update_profile(username, display_name, summary)
+                    if ok:
+                        st.session_state.user_info["display_name"] = display_name.strip()
+                        st.success(message)
+                    else:
+                        st.error(message)
+                except Exception as exc:
+                    st.error(f"Could not update profile: {exc}")
 
     _render_section(selected, username, user_info, profile)
 
