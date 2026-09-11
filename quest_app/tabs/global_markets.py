@@ -295,6 +295,24 @@ def render(user_info, user_data_dir=None):
             has_intl = False
 
     if not has_intl:
+        module_done = edu_db.is_module_completed("module_5")
+        if not module_done:
+            st.markdown("""
+            <div style="background:var(--q-surface-2, #18191c); border:1px solid var(--q-border, #262a31); border-radius:16px; padding:3rem 1.5rem; text-align:center; max-width:620px; margin:2.5rem auto 1.5rem;">
+                <div style="font-size:3rem; margin-bottom:0.8rem;">🔒</div>
+                <h2 style="color:var(--q-text, #f1f3f5); font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">Global Markets is Locked</h2>
+                <p style="color:var(--q-text-2, #b7bcc4); font-size:0.92rem; line-height:1.5; margin-bottom:0;">
+                    Complete <strong>Module 5 — Build Your Portfolio</strong> in the Learning Path before you can unlock direct paper-trading access to NASDAQ, NYSE, and international equities.
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            col_pad1, col_btn, col_pad2 = st.columns([1, 1.2, 1])
+            with col_btn:
+                if st.button("📚 Go to Learning Path", type="primary", use_container_width=True, key="unlock_intl_go_learn"):
+                    st.query_params["page"] = "Learning Path"
+                    st.rerun()
+            return
+
         st.markdown("""
         <div style="background:var(--q-surface-2, #18191c); border:1px solid var(--q-border, #262a31); border-radius:16px; padding:3rem 1.5rem; text-align:center; max-width:620px; margin:2.5rem auto 1.5rem;">
             <div style="font-size:3rem; margin-bottom:0.8rem;">🔒</div>

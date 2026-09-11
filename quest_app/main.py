@@ -222,44 +222,35 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
             <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
         </div>
     </div>
-    <script>
-    (() => {{
-        function bindProfileCard() {{
-            const header = document.querySelector('.quest-profile-header');
-            const btn = document.querySelector('.quest-profile-hidden-trigger button') ||
-                        document.querySelector('button[key*="sidebar_profile_card_trigger"]');
-            if (header && btn && !header.dataset.bound) {{
-                header.dataset.bound = 'true';
-                header.style.cursor = 'pointer';
-                header.addEventListener('click', (e) => {{
-                    e.preventDefault();
-                    e.stopPropagation();
-                    btn.click();
-                }});
-            }}
-        }}
-        bindProfileCard();
-        if (!window._qProfileObs) {{
-            window._qProfileObs = new MutationObserver(bindProfileCard);
-            window._qProfileObs.observe(document.body, {{ childList: true, subtree: true }});
-        }}
-    }})();
-    </script>
     """, unsafe_allow_html=True)
 
-_profile_placeholder = st.sidebar.empty()
+st.sidebar.markdown("""
+<style>
+.st-key-sidebar_profile_wrap { position: relative; }
+.st-key-sidebar_profile_card_trigger {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    margin: 0 !important; z-index: 20;
+}
+.st-key-sidebar_profile_card_trigger button {
+    width: 100%; height: 100%; opacity: 0; cursor: pointer;
+    background: transparent !important; border: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# Hidden trigger button for clicking sidebar profile card (triggered via JS click on avatar/name)
-st.sidebar.markdown('<div class="quest-profile-hidden-trigger">', unsafe_allow_html=True)
-if st.sidebar.button("Open Profile Card", key=f"sidebar_profile_card_trigger_{_username}", help="Click avatar or name to view Profile Card"):
-    _show_sidebar_profile_dialog(_username)
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
+_profile_wrap = st.sidebar.container(key="sidebar_profile_wrap")
+with _profile_wrap:
+    _profile_placeholder = st.empty()
+    if st.button("Open Profile Card", key="sidebar_profile_card_trigger", use_container_width=True):
+        _show_sidebar_profile_dialog(_username)
 
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
 st.sidebar.markdown('<div class="quest-icon-btn-row">', unsafe_allow_html=True)
 if st.sidebar.button("⚙  Settings", key="sidebar_settings_btn", help="Open settings", use_container_width=True):
+    _ws = st.query_params.get("workspace", "professional")
+    st.session_state[f"nav_section_{_ws}_{_username}"] = None
     st.session_state.nav_section = "⚙  Settings"
     st.query_params["page"] = "Settings"
     st.rerun()
@@ -403,11 +394,14 @@ if _query_page == "Wallet":
 if _query_page not in _valid_pages:
     _query_page = _default_page
 
-_nav_pages = [page for page in _valid_pages if page != "Settings"]
-_page_idx = _nav_pages.index(_query_page) if _query_page in _nav_pages else 0
+_nav_pages = [page for page in _valid_pages if page not in ("Settings", "Shop")]
+_page_idx = _nav_pages.index(_query_page) if _query_page in _nav_pages else None
 _nav_labels = [_page_labels[page] for page in _nav_pages]
 
 _nav_radio_key = f"nav_section_{_workspace}_{_username}"
+
+if _query_page in ("Shop", "Settings", "Hub"):
+    st.session_state[_nav_radio_key] = None
 
 # Track workspace switches to reset nav state cleanly
 if "last_active_workspace" not in st.session_state:
@@ -427,12 +421,19 @@ if "last_active_page" not in st.session_state:
     if target_lbl in _nav_labels:
         st.session_state.nav_section = target_lbl
         st.session_state[_nav_radio_key] = target_lbl
+    else:
+        st.session_state[_nav_radio_key] = None
 
 if _query_page != st.session_state.last_active_page:
     st.session_state.last_active_page = _query_page
     if target_lbl in _nav_labels:
         st.session_state.nav_section = target_lbl
         st.session_state[_nav_radio_key] = target_lbl
+    else:
+        st.session_state[_nav_radio_key] = None
+
+def _on_nav_change():
+    st.session_state._nav_clicked = True
 
 st.sidebar.markdown(f"<div class='quest-nav-label'>{_sidebar_title}</div>", unsafe_allow_html=True)
 _selected_label = st.sidebar.radio(
@@ -440,13 +441,18 @@ _selected_label = st.sidebar.radio(
     _nav_labels,
     index=_page_idx,
     key=_nav_radio_key,
+    on_change=_on_nav_change,
     label_visibility="collapsed",
 )
-section = ("Settings" if _query_page == "Settings" else
-           next(page for page, label in _page_labels.items() if label == _selected_label))
+
+_nav_fired = st.session_state.pop("_nav_clicked", False)
+clicked_page = next((p for p, l in _page_labels.items() if l == _selected_label), None) if _selected_label else None
+section = clicked_page if (_nav_fired and clicked_page) else _query_page
+if section not in _valid_pages:
+    section = _query_page
 
 # Persist last selected section for current user
-if section != "Settings":
+if section not in ("Settings", "Shop"):
     if _workspace == "education":
         edu_db.set_last_education_section(section)
     elif _workspace == "professional":
@@ -459,8 +465,26 @@ if section != _query_page:
     st.query_params["workspace"] = _workspace
     st.rerun()
 
+st.sidebar.markdown("""
+<style>
+.st-key-sidebar_goto_shop button[kind="primary"] {
+    background: linear-gradient(135deg, rgba(93, 202, 165, 0.22), rgba(56, 189, 248, 0.22)) !important;
+    border: 1px solid var(--q-accent, #5DCAA5) !important;
+    color: var(--q-text, #f1f3f5) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(93, 202, 165, 0.2) !important;
+}
+</style>
+""", unsafe_allow_html=True)
 st.sidebar.markdown("---")
+is_shop_active = (_query_page == "Shop")
+if st.sidebar.button("🛒  Shop", key="sidebar_goto_shop", type="primary" if is_shop_active else "secondary", use_container_width=True):
+    if not is_shop_active:
+        st.session_state.last_active_page = "Shop"
+        st.query_params["page"] = "Shop"
+        st.rerun()
 if st.sidebar.button("🏠  Main Hub", key="sidebar_goto_hub", use_container_width=True):
+    st.session_state.last_active_page = "Hub"
     st.query_params["page"] = "Hub"
     st.rerun()
 st.sidebar.markdown("---")

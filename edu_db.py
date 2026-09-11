@@ -280,3 +280,59 @@ def add_virtual_balance(amount: float) -> float:
     prog["virtual_balance"] = new_balance
     save_progress(prog)
     return new_balance
+
+
+def is_module_completed(module_id: str = "module_5") -> bool:
+    """Return True if every topic in *module_id* is in completed_levels.
+
+    Two pass strategy:
+    1. Fast path: if module_id itself appears as a string in completed_levels.
+    2. Slow path: load education_catalog.json, find the matching module entry,
+       collect every topic["topic"] title, and check all are present.
+    Returns False on any exception (missing file, bad JSON, etc.).
+    """
+    try:
+        prog = load_progress()
+        completed = prog.get("completed_levels", [])
+        if not isinstance(completed, list):
+            completed = list(completed) if completed else []
+
+        # Fast path
+        if module_id in completed:
+            return True
+
+        # Slow path — read catalogue
+        import json as _json
+        import os as _os
+        # edu_db.py lives at <project_root>/edu_db.py;
+        # education_catalog.json lives at <project_root>/quest_app/education_catalog.json
+        _here = _os.path.dirname(_os.path.abspath(__file__))
+        catalog_path = _os.path.join(_here, "quest_app", "education_catalog.json")
+        if not _os.path.exists(catalog_path):
+            return False
+
+        with open(catalog_path, "r", encoding="utf-8") as _f:
+            catalog = _json.load(_f)
+
+        # Find the module entry
+        module_entry = None
+        for entry in catalog:
+            if entry.get("module_id") == module_id or entry.get("level_id") == module_id:
+                module_entry = entry
+                break
+
+        if module_entry is None:
+            return False
+
+        topics = module_entry.get("topics", [])
+        if not topics:
+            return False
+
+        topic_titles = [t.get("topic", "") for t in topics if t.get("topic")]
+        if not topic_titles:
+            return False
+
+        return all(title in completed for title in topic_titles)
+
+    except Exception:
+        return False

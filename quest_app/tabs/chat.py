@@ -413,6 +413,20 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         _presence_color = "var(--q-pos)" if _is_online else "var(--q-text-3)"
                         _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
                         _status_html = f"<span style='color:var(--q-text-3);margin-right:6px;'>@{html.escape(_profile_target)}</span> Status: <span style='color:{_presence_color};font-weight:600;'>{_presence_label}</span>"
+
+                        st.markdown("""
+                        <style>
+                        div[class*="st-key-chat_hdr_name_"] button { background:none; border:none; padding:0; font-size:1.05rem; font-weight:700; color:var(--q-text); }
+                        </style>
+                        """, unsafe_allow_html=True)
+
+                        hdr_avatar_col, hdr_name_col = st.columns([0.8, 5])
+                        with hdr_avatar_col:
+                            st.html(f"<div class='chat-avatar-wrap' style='position:relative;flex-shrink:0;'>{_avatar_markup}{_presence_dot}</div>")
+                        with hdr_name_col:
+                            if st.button(title, key=f"chat_hdr_name_{active_id}"):
+                                _show_public_profile(_profile_target)
+                            st.html(f"<div class='chat-header-status' style='font-size:0.78rem;'>{_status_html}</div>")
                     else:
                         title = chat_info["name"]
                         participants = chat_info.get("participants", [])
@@ -422,22 +436,19 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         member_preview = ", ".join(participants[:3]) + ("..." if len(participants) > 3 else "")
                         _status_html = f"<span style='color:var(--q-text-3);'>👥 {len(participants)} members: {html.escape(member_preview)}</span>"
 
-                    hdr_html = (
-                        f"<div style='display:flex;align-items:center;gap:12px;'>"
-                        f"<div class='chat-avatar-wrap' style='position:relative;flex-shrink:0;'>{_avatar_markup}{_presence_dot}</div>"
-                        f"<div style='overflow:hidden;'>"
-                        f"<div class='chat-header-name' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{html.escape(title)}</div>"
-                        f"<div class='chat-header-status' style='font-size:0.78rem;'>{_status_html}</div>"
-                        f"</div>"
-                        f"</div>"
-                    )
-                    st.html(hdr_html)
+                        hdr_html = (
+                            f"<div style='display:flex;align-items:center;gap:12px;'>"
+                            f"<div class='chat-avatar-wrap' style='position:relative;flex-shrink:0;'>{_avatar_markup}{_presence_dot}</div>"
+                            f"<div style='overflow:hidden;'>"
+                            f"<div class='chat-header-name' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{html.escape(title)}</div>"
+                            f"<div class='chat-header-status' style='font-size:0.78rem;'>{_status_html}</div>"
+                            f"</div>"
+                            f"</div>"
+                        )
+                        st.html(hdr_html)
 
                 with hdr_action:
-                    if chat_info["type"] == "direct" and _profile_target:
-                        if st.button("👤 Profile Card", key=f"chat_view_prof_btn_{active_id}", help=f"View {_profile_target}'s Profile Card", use_container_width=True):
-                            _show_public_profile(_profile_target)
-                    elif chat_info["type"] == "group":
+                    if chat_info["type"] == "group":
                         with st.popover("👥 Members", use_container_width=True):
                             st.markdown(f"**👥 {html.escape(chat_info['name'])}**")
                             st.caption(f"{len(chat_info['participants'])} members in this group")
@@ -512,6 +523,30 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                 with c_p2:
                                     if st.button("Profile", key=f"grp_prof_btn_{p}_{active_id}", use_container_width=True):
                                         _show_public_profile(p)
+
+                            st.divider()
+                            _confirm_leave_key = f"confirm_leave_{active_id}"
+                            if st.session_state.get(_confirm_leave_key):
+                                st.warning("Are you sure you want to leave this group?")
+                                c_leave_yes, c_leave_no = st.columns(2)
+                                with c_leave_yes:
+                                    if st.button("✅ Yes, Leave", key=f"btn_leave_grp_confirm_{active_id}", use_container_width=True):
+                                        ok, msg = chat_system.leave_group(active_id, _chat_user)
+                                        if ok:
+                                            st.session_state.pop(_confirm_leave_key, None)
+                                            st.session_state.active_chat_id = None
+                                            st.toast(msg)
+                                            st.rerun()
+                                        else:
+                                            st.error(msg)
+                                with c_leave_no:
+                                    if st.button("Cancel", key=f"btn_leave_grp_cancel_{active_id}", use_container_width=True):
+                                        st.session_state.pop(_confirm_leave_key, None)
+                                        st.rerun(scope="fragment")
+                            else:
+                                if st.button("🚪 Leave Group", key=f"btn_leave_grp_{active_id}", use_container_width=True):
+                                    st.session_state[_confirm_leave_key] = True
+                                    st.rerun(scope="fragment")
 
                 with hdr_refresh:
                     if st.button("🔄", key="chat_refresh", help="Refresh messages & avatars"):

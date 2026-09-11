@@ -9,6 +9,112 @@ except ImportError:
     razorpay = None
 
 
+def _cached_all_users() -> list:
+    """Cache firebase_db.get_all_users() in session_state so the gift dialog
+    does not refetch the full user list on every rerun."""
+    if "_shop_all_users_cache" not in st.session_state:
+        try:
+            import firebase_db
+            st.session_state._shop_all_users_cache = firebase_db.get_all_users()
+        except Exception:
+            st.session_state._shop_all_users_cache = []
+    return st.session_state._shop_all_users_cache
+
+
+@st.dialog("🎁 Send a Gift")
+def _gift_dialog(sender: str, sender_coins: int, key: str, title: str, cost: int, duration_days: int, icon: str):
+    st.markdown(
+        f"""
+        <div style="text-align:center;padding:4px 0 12px;">
+            <div style="font-size:2.2rem;margin-bottom:4px;">{icon}</div>
+            <h3 style="margin:0 0 6px;color:var(--q-text, #f1f3f5);font-weight:700;">Gift {title}</h3>
+            <p style="font-size:0.86rem;color:var(--q-text-2, #b7bcc4);margin:0;line-height:1.4;">
+                Send {duration_days} days of {title} to a friend, on you.
+            </p>
+        </div>
+        <div style="background:var(--q-surface-2, #18191c);border:1px solid var(--q-border, #262a31);border-radius:12px;padding:14px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:0.86rem;">
+                <span style="color:var(--q-text-2, #b7bcc4);">Cost</span>
+                <span style="font-weight:700;color:#fbbf24;">🪙 {cost:,} Quest Coins</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:0.86rem;border-top:1px solid var(--q-border, rgba(255,255,255,0.08));margin-top:6px;padding-top:6px;">
+                <span style="color:var(--q-text-2, #b7bcc4);">Your Coin Balance</span>
+                <span style="font-weight:600;color:var(--q-text, #f1f3f5);">🪙 {sender_coins:,}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if sender_coins < cost:
+        st.error("⚠️ Insufficient Quest Coins. Top up your coins to continue.")
+        if st.button("Close", use_container_width=True, key=f"dlg_gift_close_insufficient_{key}"):
+            st.rerun()
+        return
+
+    query = st.text_input("Search a username to gift", placeholder="Type a username...", key=f"gift_search_{key}").strip().lower()
+
+    import chat_system
+    friends = chat_system.get_friends(sender) or []
+    all_users = _cached_all_users()
+
+    # Friends first, then every other known user, de-duplicated, sender excluded.
+    ordered_candidates = []
+    seen = set()
+    for u in list(friends) + list(all_users):
+        if u and u != sender and u not in seen:
+            seen.add(u)
+            ordered_candidates.append(u)
+
+    if query:
+        matches = [u for u in ordered_candidates if query in u.lower()][:8]
+    else:
+        matches = ordered_candidates[:8]
+
+    recipient = None
+    if matches:
+        recipient = st.selectbox("Select recipient", matches, key=f"gift_recipient_{key}")
+    else:
+        st.caption("No matching users found.")
+
+    if query and recipient is None:
+        st.error(f"No user matching '{query}' found.")
+
+    if recipient == sender:
+        st.error("You can't gift yourself.")
+        recipient = None
+
+    col_y, col_n = st.columns(2)
+    with col_y:
+        if st.button("🎁 Send Gift", type="primary", use_container_width=True, key=f"dlg_gift_confirm_{key}"):
+            if not recipient:
+                st.error("Please select a valid recipient first.")
+            else:
+                import firebase_db
+                if not firebase_db.user_exists(recipient):
+                    st.error(f"User '@{recipient}' not found.")
+                elif recipient == sender:
+                    st.error("You can't gift yourself.")
+                else:
+                    ok, new_bal, ded_msg = firebase_db.deduct_user_quest_coins(sender, cost)
+                    if not ok:
+                        st.error(ded_msg)
+                    else:
+                        g_ok, g_msg, _ = firebase_db.grant_entitlement(recipient, key, duration_days=duration_days, cost_coins=0)
+                        if not g_ok:
+                            st.error(
+                                f"⚠️ Coins were deducted but the gift could not be granted to @{recipient}: {g_msg}. "
+                                "No automatic refund is available — please contact support."
+                            )
+                        else:
+                            st.toast(f"🎁 Gifted {title} to @{recipient}!", icon=icon)
+                            st.balloons()
+                            st.rerun()
+    with col_n:
+        if st.button("❌ Cancel", use_container_width=True, key=f"dlg_gift_cancel_{key}"):
+            st.rerun()
+
+
 @st.dialog("Confirm QUEST Nitro Purchase")
 def _confirm_nitro_dialog(username: str, user_coins: int, is_extend: bool):
     cost = 2500
@@ -291,16 +397,23 @@ def render(user_info):
             st.markdown("<p style='font-size:0.8rem;color:var(--q-text-3);line-height:1.35;min-height:48px;margin-bottom:8px;'>Custom GIF banners, glowing effects, themes & PRO badge.</p>", unsafe_allow_html=True)
             st.markdown("<div style='font-weight:700;font-size:0.95rem;color:#fbbf24;margin-bottom:12px;'>🪙 2,500 Coins <span style='font-size:0.75rem;color:var(--q-text-3);font-weight:400;'>/ 30 Days</span></div>", unsafe_allow_html=True)
 
+            nitro_act_col, nitro_gift_col = st.columns([4, 1])
             if nitro_active:
-                if st.button("➕ Extend (+30d)", key="btn_store_nitro_ext", use_container_width=True):
-                    _confirm_nitro_dialog(username, quest_coins, is_extend=True)
+                with nitro_act_col:
+                    if st.button("➕ Extend (+30d)", key="btn_store_nitro_ext", use_container_width=True):
+                        _confirm_nitro_dialog(username, quest_coins, is_extend=True)
             else:
                 if quest_coins >= 2500:
-                    if st.button("Upgrade (2,500 🪙)", type="primary", key="btn_store_nitro_buy", use_container_width=True):
-                        _confirm_nitro_dialog(username, quest_coins, is_extend=False)
+                    with nitro_act_col:
+                        if st.button("Upgrade (2,500 🪙)", type="primary", key="btn_store_nitro_buy", use_container_width=True):
+                            _confirm_nitro_dialog(username, quest_coins, is_extend=False)
                 else:
-                    st.button(f"Need {2500 - quest_coins:,} more coins", disabled=True, key="btn_store_nitro_dis", use_container_width=True)
+                    with nitro_act_col:
+                        st.button(f"Need {2500 - quest_coins:,} more coins", disabled=True, key="btn_store_nitro_dis", use_container_width=True)
                     st.markdown('<div style="text-align:center;margin-top:4px;"><a href="#top-up-coins" style="color:var(--q-accent, #5DCAA5);font-size:0.78rem;text-decoration:none;font-weight:600;">🪙 Buy Coins ↓</a></div>', unsafe_allow_html=True)
+            with nitro_gift_col:
+                if st.button("🎁", key="btn_gift_nitro", help="Gift to another user", use_container_width=True):
+                    _gift_dialog(username, quest_coins, "premium", "QUEST Nitro", 2500, 30, "👑")
 
     # 2. Ad Free Tier Card
     with c_adfree:
@@ -315,16 +428,23 @@ def render(user_info):
             st.markdown("<p style='font-size:0.8rem;color:var(--q-text-3);line-height:1.35;min-height:48px;margin-bottom:8px;'>Removes all sponsor banners & promotions across learning modules.</p>", unsafe_allow_html=True)
             st.markdown("<div style='font-weight:700;font-size:0.95rem;color:#fbbf24;margin-bottom:12px;'>🪙 1,000 Coins <span style='font-size:0.75rem;color:var(--q-text-3);font-weight:400;'>/ 30 Days</span></div>", unsafe_allow_html=True)
 
+            adfree_act_col, adfree_gift_col = st.columns([4, 1])
             if adfree_active:
-                if st.button("➕ Extend (+30d)", key="btn_store_adfree_ext", use_container_width=True):
-                    _confirm_entitlement_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️", "Removes all sponsored ad banners and promotions across modules.", is_extend=True)
+                with adfree_act_col:
+                    if st.button("➕ Extend (+30d)", key="btn_store_adfree_ext", use_container_width=True):
+                        _confirm_entitlement_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️", "Removes all sponsored ad banners and promotions across modules.", is_extend=True)
             else:
                 if quest_coins >= 1000:
-                    if st.button("Get Ad-Free (1,000 🪙)", type="primary", key="btn_store_adfree_buy", use_container_width=True):
-                        _confirm_entitlement_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️", "Removes all sponsored ad banners and promotions across modules.", is_extend=False)
+                    with adfree_act_col:
+                        if st.button("Get Ad-Free (1,000 🪙)", type="primary", key="btn_store_adfree_buy", use_container_width=True):
+                            _confirm_entitlement_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️", "Removes all sponsored ad banners and promotions across modules.", is_extend=False)
                 else:
-                    st.button(f"Need {1000 - quest_coins:,} more coins", disabled=True, key="btn_store_adfree_dis", use_container_width=True)
+                    with adfree_act_col:
+                        st.button(f"Need {1000 - quest_coins:,} more coins", disabled=True, key="btn_store_adfree_dis", use_container_width=True)
                     st.markdown('<div style="text-align:center;margin-top:4px;"><a href="#top-up-coins" style="color:var(--q-accent, #5DCAA5);font-size:0.78rem;text-decoration:none;font-weight:600;">🪙 Buy Coins ↓</a></div>', unsafe_allow_html=True)
+            with adfree_gift_col:
+                if st.button("🎁", key="btn_gift_adfree", help="Gift to another user", use_container_width=True):
+                    _gift_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️")
 
     # 3. News Section Card (Professional Workspace only)
     if is_prof and c_news is not None:
@@ -354,8 +474,12 @@ def render(user_info):
     # 4. International Stock Access Card (Global Markets)
     with c_intl:
         with st.container(border=True):
+            intl_unlocked = edu_db.is_module_completed("module_5")
+
             if intl_active:
                 badge_html = f"<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;'><span style='font-size:1.2rem;'>🌐</span><span style='font-size:0.72rem;font-weight:700;color:#22c55e;background:rgba(34,197,94,0.15);padding:2px 8px;border-radius:12px;border:1px solid #22c55e55;'>ACTIVE • {intl_rem_days}d left</span></div>"
+            elif not intl_unlocked:
+                badge_html = "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;'><span style='font-size:1.2rem;'>🌐</span><span style='font-size:0.72rem;font-weight:700;color:var(--q-text-3);background:var(--q-surface-2);padding:2px 8px;border-radius:12px;border:1px solid var(--q-border);'>LOCKED</span></div>"
             else:
                 badge_html = "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;'><span style='font-size:1.2rem;'>🌐</span><span style='font-size:0.72rem;font-weight:700;color:#a855f7;background:rgba(168,85,247,0.12);padding:2px 8px;border-radius:12px;border:1px solid #a855f744;'>NEW</span></div>"
 
@@ -367,6 +491,9 @@ def render(user_info):
             if intl_active:
                 if st.button("➕ Extend (+30d)", key="btn_store_intl_ext", use_container_width=True):
                     _confirm_entitlement_dialog(username, quest_coins, "intl_stocks", "US & Global Stocks", 3500, 30, "🌐", "Unlocks direct paper-trading access to NASDAQ, NYSE, and international equities in the Global Markets Simulator.", is_extend=True)
+            elif not intl_unlocked:
+                st.button("🔒 Complete Module 5 to unlock", disabled=True, key="btn_store_intl_locked", use_container_width=True)
+                st.markdown("<p style='font-size:0.75rem;color:var(--q-text-3);text-align:center;margin-top:6px;line-height:1.35;'>Finish Module 5 — Build Your Portfolio in the Learning Path first.</p>", unsafe_allow_html=True)
             else:
                 if quest_coins >= 3500:
                     if st.button("Unlock (3,500 🪙)", type="primary", key="btn_store_intl_buy", use_container_width=True):
