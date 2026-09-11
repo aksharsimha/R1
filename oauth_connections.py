@@ -173,6 +173,10 @@ def _exchange_code(provider: str, code: str) -> str | None:
         )
         resp.raise_for_status()
         return resp.json().get("access_token")
+    except requests.exceptions.HTTPError as exc:
+        err_detail = exc.response.text
+        st.error(f"OAuth token exchange failed for {provider}: {exc}\n\nDetails: {err_detail}")
+        return None
     except Exception as exc:
         st.error(f"OAuth token exchange failed for {provider}: {exc}")
         return None
