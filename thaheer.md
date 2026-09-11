@@ -19,6 +19,12 @@
   - Integrated `@st.dialog("Confirm Premium Extension")` and `@st.dialog("Confirm Premium Upgrade")` modals to prevent accidental coin deduction.
   - Presents a detailed breakdown of subscription duration (+30 Days), cost (🪙 1,000 Quest Coins), current expiration, current wallet balance, and balance after payment before proceeding.
   - Includes explicit `"✅ Yes, Extend (+30 Days)"` / `"✅ Yes, Upgrade (1,000 Coins)"` confirmation action buttons and `"❌ Cancel"` buttons with real-time balance safety checks.
+- **Group Chat Header UI Fix & Add Member Management (`quest_app/tabs/chat.py`)**:
+  - Fixed HTML code block leak under group chat titles by migrating the header rendering to native `st.html()` and providing group-specific subtitle summaries (`👥 X members: name1, name2...`).
+  - Enhanced the `👥 Members` popover with an integrated `➕ Add Member` expander supporting dual member addition mechanisms:
+    1. **From Friends**: One-click selectbox containing friends not yet in the conversation.
+    2. **By Username**: Direct username search with validation against Firestore database.
+  - Added visual role indicators (`👑 Admin` for group creator and `(You)` for the active user) with quick access to view member profile card modals.
 
 ---
 
