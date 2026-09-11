@@ -400,9 +400,6 @@ _nav_labels = [_page_labels[page] for page in _nav_pages]
 
 _nav_radio_key = f"nav_section_{_workspace}_{_username}"
 
-if _query_page in ("Shop", "Settings", "Hub"):
-    st.session_state[_nav_radio_key] = None
-
 # Track workspace switches to reset nav state cleanly
 if "last_active_workspace" not in st.session_state:
     st.session_state.last_active_workspace = _workspace
@@ -480,11 +477,9 @@ st.sidebar.markdown("---")
 is_shop_active = (_query_page == "Shop")
 if st.sidebar.button("🛒  Shop", key="sidebar_goto_shop", type="primary" if is_shop_active else "secondary", use_container_width=True):
     if not is_shop_active:
-        st.session_state.last_active_page = "Shop"
         st.query_params["page"] = "Shop"
         st.rerun()
 if st.sidebar.button("🏠  Main Hub", key="sidebar_goto_hub", use_container_width=True):
-    st.session_state.last_active_page = "Hub"
     st.query_params["page"] = "Hub"
     st.rerun()
 st.sidebar.markdown("---")

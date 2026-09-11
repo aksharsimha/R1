@@ -37,6 +37,8 @@ def _extract_video_num(key):
 
 def _extract_module_num(prefix):
     """module_3 -> 3, module_tax -> 10"""
+    if not isinstance(prefix, str) or not prefix:
+        return 99
     if "tax" in prefix.lower():
         return 10
     m = re.search(r'module_(\d+)', prefix)
@@ -272,6 +274,9 @@ def render(user_info):
         st.session_state.active_module_id = None
 
     state = st.session_state.edu_test_state
+    if state in {"module_hub", "taking_test", "test_passed", "test_failed", "review"} and not st.session_state.get("active_module_id"):
+        st.session_state.edu_test_state = "dashboard"
+        state = "dashboard"
     if state == "module_hub":
         render_module_hub(user_info)
     elif state == "taking_test":
@@ -643,7 +648,7 @@ def render_dashboard(user_info):
 # ─── Module Quiz Hub ──────────────────────────────────────────────────
 
 def render_module_hub(user_info):
-    prefix = st.session_state.get("active_module_id", "module_1")
+    prefix = st.session_state.get("active_module_id") or "module_1"
     mod_num = _extract_module_num(prefix)
 
     # Sponsor / Ad slot: PhonePe for modules 6-10, Groww for modules 1-5
@@ -654,7 +659,7 @@ def render_module_hub(user_info):
     module_groups = _get_module_groups(all_quizzes)
     completed_levels = edu_db.load_progress().get("completed_levels", [])
 
-    prefix = st.session_state.get("active_module_id", "module_1")
+    prefix = st.session_state.get("active_module_id") or "module_1"
     grp = next((g for g in module_groups if g["prefix"] == prefix), None)
     if not grp:
         st.session_state.edu_test_state = "dashboard"
