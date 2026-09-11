@@ -608,25 +608,13 @@ def css(theme: str = None) -> str:
     .quest-profile-header:hover {{ background: rgba(255, 255, 255, 0.06); transform: translateY(-1px); }}
     .quest-profile-header:hover .quest-profile-name {{ color: var(--q-accent) !important; }}
     .quest-profile-header:active {{ transform: translateY(0px); }}
-    /* Hidden profile trigger button - zero layout footprint, pushed offscreen */
-    [data-testid="stSidebar"] [data-testid="element-container"]:has(button[aria-label="hidden_profile_card_trigger"]),
-    [data-testid="stSidebar"] .element-container:has(button[aria-label="hidden_profile_card_trigger"]),
-    [data-testid="stSidebar"] div[data-testid="stElementContainer"]:has(button[aria-label="hidden_profile_card_trigger"]),
-    [data-testid="stSidebar"] button[aria-label="hidden_profile_card_trigger"] {{
-        position: fixed !important;
-        top: -9999px !important;
-        left: -9999px !important;
-        width: 1px !important;
-        height: 1px !important;
-        min-height: 0px !important;
-        max-height: 0px !important;
-        margin: 0px !important;
-        padding: 0px !important;
-        border: none !important;
-        opacity: 0 !important;
-        overflow: hidden !important;
-        pointer-events: none !important;
-        z-index: -9999 !important;
+    @keyframes modalPop {{
+        0% {{ transform: scale(0.92); opacity: 0; }}
+        100% {{ transform: scale(1); opacity: 1; }}
+    }}
+    #quest-profile-modal-close-btn:hover {{
+        background: rgba(255, 255, 255, 0.25) !important;
+        transform: scale(1.08);
     }}
     .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
         display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}

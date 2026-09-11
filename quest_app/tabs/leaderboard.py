@@ -62,7 +62,8 @@ def get_leaderboard_players():
         users_dir = os.path.join(os.path.dirname(here), "users")
         if os.path.exists(users_dir):
             for folder in os.listdir(users_dir):
-                if folder not in users_dict and not folder.startswith("."):
+                fpath = os.path.join(users_dir, folder)
+                if os.path.isdir(fpath) and not folder.startswith(".") and folder not in users_dict and folder != "users" and not folder.endswith(".json"):
                     users_dict[folder] = {
                         "username": folder,
                         "display_name": folder,
@@ -116,9 +117,12 @@ def get_leaderboard_players():
 
     return players
 
-def build_leaderboard_html(players, active_username):
+def build_leaderboard_html(players, active_username, profile_cards=None):
+    if profile_cards is None:
+        profile_cards = {}
     players_json = json.dumps(players)
     active_user_json = json.dumps(active_username)
+    profile_cards_json = json.dumps(profile_cards)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -828,9 +832,123 @@ def build_leaderboard_html(players, active_username):
     </div>
   </div>
 
+  <!-- Cyberpunk Discord Profile Card Modal Overlay -->
+  <div id="quest-profile-modal-overlay" style="display:none; position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,0.78); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); align-items:center; justify-content:center; padding:16px; opacity:0; transition:opacity 0.22s cubic-bezier(0.16,1,0.3,1);">
+    <div id="quest-profile-modal-dialog" style="position:relative; max-width:440px; width:100%; max-height:90vh; overflow-y:auto; border-radius:24px; box-shadow:0 24px 60px rgba(0,0,0,0.9), 0 0 35px rgba(124,47,255,0.35); border:1px solid rgba(124,47,255,0.4); background:#111214; transform:scale(0.92) translateY(12px); transition:transform 0.22s cubic-bezier(0.16,1,0.3,1); scrollbar-width:none;">
+      <button id="quest-profile-modal-close" style="position:absolute; top:14px; right:14px; z-index:1000000; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.7); border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s; backdrop-filter:blur(6px);">✕</button>
+      <div id="quest-profile-modal-content"></div>
+    </div>
+  </div>
+
   <script>
     const PLAYERS = {players_json};
     const CURRENT_USER = {active_user_json};
+    const PROFILE_CARDS = {profile_cards_json};
+
+    window.showProfileModal = function(username) {{
+      if (!username) return;
+      const overlay = document.getElementById("quest-profile-modal-overlay");
+      const dialog = document.getElementById("quest-profile-modal-dialog");
+      const content = document.getElementById("quest-profile-modal-content");
+      if (!overlay || !dialog || !content) return;
+
+      let cardHtml = (PROFILE_CARDS && PROFILE_CARDS[username]);
+
+      if (!cardHtml) {{
+        const playerList = PLAYERS || [];
+        const player = playerList.find(p => p.username && p.username.toLowerCase() === username.toLowerCase()) || {{
+          username: username,
+          avatar: username.slice(0, 2).toUpperCase(),
+          level: 1,
+          netWorth: 0,
+          xp: 0
+        }};
+        const avatarInitial = player.avatar || username.slice(0, 2).toUpperCase();
+        cardHtml = `
+          <div style="width:100%;max-width:440px;margin:0 auto;box-sizing:border-box;">
+            <div style="position:relative;width:100%;min-height:460px;background-color:#111214;background-image:linear-gradient(180deg, rgba(8,10,16,0.72) 0%, rgba(5,6,12,0.92) 100%);border-radius:20px;border:1.5px solid #8b5cf666;box-shadow:0 16px 45px rgba(0,0,0,0.65), 0 0 25px #8b5cf633, inset 0 0 25px #8b5cf615;overflow:hidden;color:#fff;font-family:'Inter', sans-serif;">
+              <div style="height:120px;position:relative;background:linear-gradient(180deg, #8b5cf633 0%, rgba(0,0,0,0.45) 100%);border-bottom:1px solid #8b5cf655;"></div>
+              <div style="padding:0 22px;margin-top:-44px;position:relative;z-index:5;">
+                <div style="position:relative;width:84px;height:84px;">
+                  <div style="width:84px;height:84px;border-radius:50%;border:4px solid #080a10;box-shadow:0 0 16px #8b5cf655, 0 6px 16px rgba(0,0,0,0.5);overflow:hidden;background:#151720;display:grid;place-items:center;font-size:2rem;font-weight:700;color:#00C9B1;">
+                    ${{avatarInitial}}
+                  </div>
+                  <div style="width:22px;height:22px;border-radius:50%;background:#23a55a;border:3.5px solid #080a10;position:absolute;bottom:2px;right:2px;box-shadow:0 0 8px #23a55a88;"></div>
+                </div>
+                <div style="margin-top:12px;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                    <span style="font-size:1.25rem;font-weight:700;color:#f3f4f6;letter-spacing:-0.2px;">${{username}}</span>
+                  </div>
+                  <div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;">@${{username}} • Level ${{player.level || 1}}</div>
+                  <div style="margin-top:14px;margin-bottom:20px;background:rgba(6,8,14,0.72);border-radius:10px;border:1px solid #8b5cf633;box-shadow:inset 0 0 15px rgba(0,0,0,0.4);padding:14px 16px;border-left:3px solid #8b5cf6;">
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#8b5cf6;letter-spacing:1px;margin-bottom:6px;">About Me</div>
+                    <div style="font-size:0.84rem;color:#e5e7eb;line-height:1.5;">Surveillance operative on QUEST network</div>
+                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;letter-spacing:1px;margin:12px 0 4px;">Net Worth & Total XP</div>
+                    <div style="font-size:0.82rem;color:#00C9B1;font-weight:700;font-family:'JetBrains Mono', monospace;">₹${{Number(player.netWorth || 0).toLocaleString('en-IN')}} • ${{player.xp || 0}} XP</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }}
+
+      content.innerHTML = cardHtml;
+      overlay.style.display = "flex";
+      
+      requestAnimationFrame(() => {{
+        overlay.style.opacity = "1";
+        dialog.style.transform = "scale(1) translateY(0)";
+      }});
+    }};
+
+    window.closeProfileModal = function() {{
+      const overlay = document.getElementById("quest-profile-modal-overlay");
+      const dialog = document.getElementById("quest-profile-modal-dialog");
+      if (!overlay || !dialog) return;
+
+      overlay.style.opacity = "0";
+      dialog.style.transform = "scale(0.92) translateY(12px)";
+      setTimeout(() => {{
+        overlay.style.display = "none";
+        const content = document.getElementById("quest-profile-modal-content");
+        if (content) content.innerHTML = "";
+      }}, 220);
+    }};
+
+    document.addEventListener("DOMContentLoaded", () => {{
+      const overlay = document.getElementById("quest-profile-modal-overlay");
+      const closeBtn = document.getElementById("quest-profile-modal-close");
+      if (closeBtn) {{
+        closeBtn.addEventListener("click", (e) => {{
+          e.stopPropagation();
+          window.closeProfileModal();
+        }});
+        closeBtn.addEventListener("mouseenter", () => {{
+          closeBtn.style.background = "rgba(255,47,107,0.85)";
+          closeBtn.style.borderColor = "rgba(255,47,107,0.9)";
+          closeBtn.style.transform = "scale(1.1)";
+        }});
+        closeBtn.addEventListener("mouseleave", () => {{
+          closeBtn.style.background = "rgba(0,0,0,0.7)";
+          closeBtn.style.borderColor = "rgba(255,255,255,0.25)";
+          closeBtn.style.transform = "scale(1)";
+        }});
+      }}
+      if (overlay) {{
+        overlay.addEventListener("click", (e) => {{
+          if (e.target === overlay) {{
+            window.closeProfileModal();
+          }}
+        }});
+      }}
+    }});
+
+    document.addEventListener("keydown", (e) => {{
+      if (e.key === "Escape") {{
+        window.closeProfileModal();
+      }}
+    }});
 
     let currentMetric = "netWorth";
     let currentPeriod = "1M";
@@ -915,7 +1033,7 @@ def build_leaderboard_html(players, active_username):
                       : dyn.text;
 
         return `
-          <div class="podium-col">
+          <div class="podium-col" onclick="window.showProfileModal('${{p.username}}')" style="cursor: pointer;">
             <div class="trophy-icon-wrap">${{trophySvg}}</div>
             <div class="podium-card rank-${{rank}}">
               <div class="podium-card-stripe"></div>
@@ -947,7 +1065,7 @@ def build_leaderboard_html(players, active_username):
         const dyn = getDynamic(p);
 
         return `
-          <div class="row-card ${{isSelf ? 'is-self' : ''}}">
+          <div class="row-card ${{isSelf ? 'is-self' : ''}}" onclick="window.showProfileModal('${{p.username}}')" style="cursor: pointer;">
             <div class="row-inner">
               <span class="row-rank ${{topClass}}">${{rank}}</span>
               <div class="row-player">
@@ -982,7 +1100,7 @@ def build_leaderboard_html(players, active_username):
           <span>◆ YOUR STANDING ◆</span>
           <div style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(0,201,177,0.35), transparent);"></div>
         </div>
-        <div class="your-standing-card">
+        <div class="your-standing-card" onclick="window.showProfileModal('${{selfPlayer.username}}')" style="cursor: pointer;">
           <div class="row-inner">
             <span class="row-rank" style="color: var(--cyan); font-size: 14px; font-weight: 800; text-shadow: 0 0 10px rgba(0,201,177,0.6);">#${{selfRank}}</span>
             <div class="row-player">
@@ -1047,9 +1165,25 @@ def build_leaderboard_html(players, active_username):
 </html>
 """
 
-def render(user_info):
+@st.cache_data(ttl=60, show_spinner=False)
+def _get_cached_leaderboard_payload():
+    import quest_app.settings as settings
+    import firebase_db
     players = get_leaderboard_players()
+    profile_cards = {}
+    for p in players:
+        uname = p.get("username")
+        if uname:
+            try:
+                prof = firebase_db.get_user_profile(uname) or {}
+                profile_cards[uname] = settings.build_discord_profile_card_html(uname, prof)
+            except Exception:
+                profile_cards[uname] = settings.build_discord_profile_card_html(uname, {})
+    return players, profile_cards
+
+def render(user_info):
     active_username = user_info.get("username", "krish_surne")
+    players, profile_cards = _get_cached_leaderboard_payload()
 
     st.markdown(
         """
@@ -1077,6 +1211,7 @@ def render(user_info):
     data_script = f"""<script>
       window.__QUEST_PLAYERS__ = {json.dumps(players)};
       window.__QUEST_CURRENT_USER__ = {json.dumps(active_username)};
+      window.__QUEST_PROFILE_CARDS__ = {json.dumps(profile_cards)};
     </script>"""
     html_content = html_content.replace("<head>", "<head>" + data_script, 1)
 

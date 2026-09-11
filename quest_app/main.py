@@ -208,50 +208,85 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
     _g_color = "#34d399" if _g_val >= 0 else "#f87171"
     _g_sign = "+" if _g_val >= 0 else ""
     _disp_name = user_info.get("display_name", username) or username
-    placeholder.markdown(f"""
-    <div class="quest-profile-card">
-        <div class="quest-profile-header" title="Click avatar or name to view Profile Card">
-            <div class="quest-profile-avatar">{avatar_markup}</div>
-            <div class="quest-profile-copy">
-                <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
-                <div class="quest-profile-user" title="@{username}">@{username}</div>
-            </div>
-        </div>
-        <div class="quest-profile-growth">
-            <span class="quest-profile-growth-label">Portfolio Growth</span>
-            <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
+    import quest_app.settings as settings
+    try:
+        _user_profile_data = firebase_db.get_user_profile(username)
+    except Exception:
+        _user_profile_data = {}
+    _card_modal_html = settings.build_discord_profile_card_html(username, _user_profile_data)
+    
+    placeholder.html(f"""
+<div class="quest-profile-card">
+    <div class="quest-profile-header" id="quest-profile-header-click" title="Click to view Profile Card">
+        <div class="quest-profile-avatar">{avatar_markup}</div>
+        <div class="quest-profile-copy">
+            <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
+            <div class="quest-profile-user" title="@{username}">@{username}</div>
         </div>
     </div>
-    <script>
-    (() => {{
-        function bindProfileClick() {{
-            const header = document.querySelector('.quest-profile-header');
-            const btn = document.querySelector('button[aria-label="hidden_profile_card_trigger"]');
-            if (header && btn && !header.dataset.profileBound) {{
-                header.dataset.profileBound = 'true';
-                header.style.cursor = 'pointer';
-                header.addEventListener('click', (e) => {{
-                    e.preventDefault();
-                    e.stopPropagation();
-                    btn.click();
-                }});
+    <div class="quest-profile-growth">
+        <span class="quest-profile-growth-label">Portfolio Growth</span>
+        <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
+    </div>
+</div>
+
+<!-- Profile Card Modal Popup -->
+<div id="quest-profile-modal-backdrop" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.78); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:9999999; justify-content:center; align-items:center; box-sizing:border-box; padding:20px;">
+    <div style="position:relative; max-width:440px; width:100%; max-height:92vh; overflow-y:auto; border-radius:16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); animation: modalPop 0.18s cubic-bezier(0.16, 1, 0.3, 1);">
+        <button id="quest-profile-modal-close-btn" style="position:absolute; top:12px; right:12px; z-index:99999; background:rgba(10,12,18,0.75); border:1.5px solid rgba(255,255,255,0.25); color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; line-height:1; transition:all 0.15s ease;">✕</button>
+        {_card_modal_html}
+    </div>
+</div>
+
+<script>
+(() => {{
+    function openProfileModal() {{
+        const m = document.getElementById('quest-profile-modal-backdrop');
+        if (m) m.style.display = 'flex';
+    }}
+    function closeProfileModal() {{
+        const m = document.getElementById('quest-profile-modal-backdrop');
+        if (m) m.style.display = 'none';
+    }}
+    const closeBtn = document.getElementById('quest-profile-modal-close-btn');
+    if (closeBtn && !closeBtn.dataset.bound) {{
+        closeBtn.dataset.bound = 'true';
+        closeBtn.addEventListener('click', (e) => {{
+            e.preventDefault();
+            e.stopPropagation();
+            closeProfileModal();
+        }});
+    }}
+    const backdrop = document.getElementById('quest-profile-modal-backdrop');
+    if (backdrop && !backdrop.dataset.bound) {{
+        backdrop.dataset.bound = 'true';
+        backdrop.addEventListener('click', (e) => {{
+            if (e.target === backdrop) {{
+                closeProfileModal();
             }}
+        }});
+    }}
+    document.addEventListener('click', (e) => {{
+        const h = e.target.closest('#quest-profile-header-click, .quest-profile-header');
+        if (h) {{
+            e.preventDefault();
+            e.stopPropagation();
+            openProfileModal();
         }}
-        bindProfileClick();
-        if (!window._qProfileObs) {{
-            window._qProfileObs = new MutationObserver(bindProfileClick);
-            window._qProfileObs.observe(document.body, {{ childList: true, subtree: true }});
+        if (e.target && e.target.id === 'quest-profile-modal-close-btn') {{
+            e.preventDefault();
+            e.stopPropagation();
+            closeProfileModal();
         }}
-    }})();
-    </script>
-    """, unsafe_allow_html=True)
+    }}, true);
+    window.addEventListener('keydown', (e) => {{
+        if (e.key === 'Escape') closeProfileModal();
+    }});
+}})();
+</script>
+""")
 
 _profile_placeholder = st.sidebar.empty()
-
-# Hidden trigger button for clicking sidebar profile card (off-screen, zero visual footprint)
-if st.sidebar.button("hidden_profile_card_trigger", key="hidden_profile_card_trigger", help=""):
-    _show_sidebar_profile_dialog(_username)
-
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
@@ -498,6 +533,8 @@ if section == "Library":
 
 if section == "Leaderboard":
     import quest_app.tabs.leaderboard as tb
+    import importlib
+    importlib.reload(tb)
     tb.render(_user_info)
     st.stop()
 
@@ -838,8 +875,10 @@ elif section == "Global Markets":
     import quest_app.tabs.global_markets as global_markets
     global_markets.render(_user_info, _user_data_dir)
 elif section == "Leaderboard":
-    st.markdown(f"## {section} (Under Construction)")
-    st.markdown("This tab is assigned to a team member and is currently being built.")
+    import quest_app.tabs.leaderboard as tb
+    import importlib
+    importlib.reload(tb)
+    tb.render(_user_info)
 elif section in ("Shop", "Wallet"):
     import quest_app.tabs.shop as tb
     tb.render(_user_info)

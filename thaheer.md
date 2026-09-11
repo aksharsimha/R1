@@ -3,6 +3,12 @@
 ## 2026-09-11
 
 ### 🎨 Discord Nitro-Style Cyberpunk Profile System & Chat Modal Architecture
+- **Leaderboard Instant Player Profile Card Popups (`quest_app/tabs/leaderboard.py`, `leaderboard_ui/index.html`)**:
+  - Implemented client-side animated modal popups for all leaderboard players triggered directly upon clicking their avatar, username, podium card, or standings row.
+  - Pre-renders full Discord Nitro-style cyberpunk profile cards into `window.__QUEST_PROFILE_CARDS__` and renders them in-place with 0ms latency.
+  - Includes frosted glass backdrop blur, smooth scale-in animation, `✕` dismiss button, backdrop click dismissal, and `Escape` key close listener.
+  - Causes 100% zero page reload, zero URL query flashes, and zero navigation redirects.
+  - Cleaned `get_leaderboard_players()` to filter out non-user directory entries (e.g. `global_video_likes.json`).
 - **In-Place Profile Card Modal Fix (Zero New Tabs / Windows)**:
   - Eliminated raw anchor `<a href="?page=Chat&view_profile=...">` links in `quest_app/tabs/chat.py` which previously triggered browser new-tab navigations.
   - Added native Streamlit `👤 Profile Card` header action button and `👥 Members` popover profile launchers that trigger `@st.dialog("Profile Card")` directly within the active view.
@@ -33,10 +39,10 @@
 - **Direct Wallet Top-Up Navigation on Low Balance (`quest_app/settings.py`)**:
   - Added a primary **`💳 Top Up in Wallet`** action button inside the confirmation dialogs when coin balance is below 1,000 coins.
   - Automatically navigates users directly to the **Wallet & Shop** tab (`?page=Wallet`) to top up Quest Coins with Razorpay.
-- **Sidebar Profile Card Direct Click Modal Popup (`quest_app/main.py`, `ui_theme.py`)**:
-  - Removed all separate "View Profile Card" buttons and "View" badges for a sleek, zero-clutter sidebar design.
-  - Made the avatar and name directly clickable with smooth hover accent transitions and automatic DOM mutation-observed click handling.
-  - Clicking directly on the avatar, display name, or `@username` triggers the in-place `@st.dialog("Profile Card")` modal popup seamlessly.
+- **Sidebar Profile Card Instant Direct Click Modal Popup (`quest_app/main.py`, `ui_theme.py`)**:
+  - Completely removed all separate buttons, placeholder triggers, and text badges for a 100% clean, native sidebar layout.
+  - Implemented an instantaneous client-side animated modal popup with backdrop blur and close controls attached directly to the avatar circle and display name.
+  - Clicking directly on the avatar or name opens the Discord-style cyberpunk profile card instantly in-place with zero website reloading, zero latency, and zero dismiss flashes.
 
 ---
 
