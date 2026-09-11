@@ -260,14 +260,30 @@ def load_account(username: str, base_dir: Optional[str] = None) -> dict:
 
 def save_account(account: dict, username: str, base_dir: Optional[str] = None) -> dict:
     path = _account_path(username, base_dir)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     fd, temp_path = tempfile.mkstemp(prefix="virtual_trading_", suffix=".json", dir=os.path.dirname(path))
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as account_file:
             json.dump(account, account_file, indent=2)
-        os.replace(temp_path, path)
+        # Try atomic replace first; on Windows+OneDrive, fall back to direct write
+        try:
+            os.replace(temp_path, path)
+        except PermissionError:
+            # OneDrive may hold a lock — write directly as fallback
+            import time as _time
+            for _attempt in range(3):
+                try:
+                    with open(path, "w", encoding="utf-8") as f:
+                        json.dump(account, f, indent=2)
+                    break
+                except PermissionError:
+                    _time.sleep(0.3)
     finally:
         if os.path.exists(temp_path):
-            os.remove(temp_path)
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
     return account
 
 
@@ -279,6 +295,16 @@ def ensure_account(username: str, base_dir: Optional[str] = None) -> dict:
 def _ticker(symbol: str) -> str:
     clean = _clean_symbol(symbol)
     clean = clean.replace(".BO", ".NS")
+    
+    # Check if this is a known US stock to avoid appending .NS
+    import stock_search
+    # _load_stocks is cached in memory
+    for item in stock_search._load_stocks():
+        if item.get("symbol") == clean:
+            if item.get("region") == "US":
+                return clean
+            break
+            
     return clean if clean.endswith(".NS") else f"{clean}.NS"
 
 
@@ -306,12 +332,35 @@ def _normalize_quote(ticker: str, quote: dict, source: str) -> Optional[dict]:
     }
 
 
+@lru_cache(maxsize=1)
+def get_usd_inr() -> float:
+    try:
+        quote = yf.Ticker("USDINR=X")
+        # Get the latest regular market price
+        return float(quote.fast_info.last_price)
+    except:
+        return 83.50  # Fallback exchange rate
+
 @lru_cache(maxsize=512)
 def _get_quote_cached(ticker: str, cache_bucket: int) -> Optional[dict]:
     price, previous_close, source = get_live_quote(ticker)
     if price is None:
         return None
-    return _normalize_quote(ticker, {"price": price, "previous_close": previous_close}, source)
+        
+    quote = _normalize_quote(ticker, {"price": price, "previous_close": previous_close}, source)
+    
+    if not ticker.endswith(".NS") and not ticker.endswith(".BO"):
+        # This is a US stock, convert USD to INR
+        rate = get_usd_inr()
+        quote["price"] *= rate
+        if quote.get("previous_close"):
+            quote["previous_close"] *= rate
+        quote["change"] *= rate
+        quote["currency"] = "INR"
+        quote["_original_usd_price"] = price
+        quote["_exchange_rate"] = rate
+        
+    return quote
 
 
 def get_quote(symbol: str, company: str = "") -> Optional[dict]:
@@ -407,23 +456,25 @@ def get_events(symbol: str) -> list[dict]:
     return list(_get_events_cached(_ticker(symbol), int(time.time() // 900)))
 
 
-def search_stocks(query: str, limit: int = 50) -> list[dict]:
+def search_stocks(query: str, limit: int = 50, region: str = None) -> list[dict]:
     query = str(query or "").strip()
     if not query:
         return []
     import stock_search
-    matches = stock_search.search_stocks(query, limit=limit)
+    matches = stock_search.search_stocks(query, limit=limit, region=region)
     results = []
     for item in matches:
         sym = item["symbol"]
         ticker = item["ticker"]
         company = item["company"]
         exchange = item.get("exchange", "NSE")
+        item_region = item.get("region", "IN")
         results.append({
             "symbol": sym,
             "ticker": ticker,
             "company": str(company),
             "exchange": exchange,
+            "region": item_region,
             "price": 0.0,
             "previous_close": 0.0,
             "change": 0.0,
