@@ -30,6 +30,9 @@
   - Added persistent 5-minute (300-second) trial management via `get_premium_trial_status()` and `start_premium_trial()` stored in Firestore.
   - Displays a live countdown timer (`⏳ 5-Minute Free Trial Active: MM:SS remaining`) while active.
   - Automatically and permanently locks the trial (`disabled=True`) once 5 minutes expire, preventing re-activation and prompting the user to upgrade to QUEST Premium.
+- **Direct Wallet Top-Up Navigation on Low Balance (`quest_app/settings.py`)**:
+  - Added a primary **`💳 Top Up in Wallet`** action button inside the confirmation dialogs when coin balance is below 1,000 coins.
+  - Automatically navigates users directly to the **Wallet & Shop** tab (`?page=Wallet`) to top up Quest Coins with Razorpay.
 
 ---
 
