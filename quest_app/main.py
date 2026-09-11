@@ -175,6 +175,40 @@ if not _avatar:
 _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
                   f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
 
+@st.dialog("Profile Card", width="small")
+def _show_sidebar_profile_dialog(username: str):
+    st.markdown("""
+    <style>
+    div[data-testid="stDialog"] div[data-testid="stDialogHeader"] {
+        padding-bottom: 4px !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stVerticalBlock"] {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    import importlib
+    import quest_app.settings as settings
+    importlib.reload(settings)
+    import firebase_db
+    try:
+        profile = firebase_db.get_user_profile(username)
+    except Exception:
+        profile = {}
+    card_html = settings.build_discord_profile_card_html(username, profile)
+    st.html(card_html)
+
+
+# Hidden trigger button for clicking sidebar profile card header
+st.sidebar.markdown('<div class="quest-hidden-profile-btn">', unsafe_allow_html=True)
+if st.sidebar.button("Open Profile Card", key="sidebar_profile_card_trigger", help="View your public profile card"):
+    _show_sidebar_profile_dialog(_username)
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
@@ -192,7 +226,7 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
     _disp_name = user_info.get("display_name", username) or username
     placeholder.markdown(f"""
     <div class="quest-profile-card">
-        <div class="quest-profile-header">
+        <div class="quest-profile-header" onclick="const b = document.querySelector('.quest-hidden-profile-btn button'); if(b) b.click();" title="Click to view Profile Card">
             <div class="quest-profile-avatar">{avatar_markup}</div>
             <div class="quest-profile-copy">
                 <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
@@ -319,27 +353,30 @@ with _ws_col2:
             st.rerun()
 
 if _workspace == "professional":
-    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings", "Wallet"]
+    _valid_pages = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Settings", "Shop"]
     _page_labels = {
         "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
         "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
-        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
-        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Global Markets": "🌐  Global Markets", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
+        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Shop": "🛒  Shop", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Workspace"
     _default_page = edu_db.get_last_portfolio_section()
 else:
-    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Global Markets", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Wallet", "Settings"]
+    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Global Markets", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Shop", "Settings"]
     _page_labels = {
         "Learning Path": "🚀  Learning Path", "Library": "📚  Knowledge Library",
         "Virtual Trading": "📈  Virtual Trading", "Global Markets": "🌎  Global Markets", "Leaderboard": "🏆  Leaderboard",
         "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective",
-        "MICHAEL": "🧠  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
+        "MICHAEL": "⚡  MICHAEL", "Shop": "🛒  Shop", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
     _default_page = edu_db.get_last_education_section()
 
 _query_page = st.query_params.get("page", _default_page)
+if _query_page == "Wallet":
+    _query_page = "Shop"
+    st.query_params["page"] = "Shop"
+
 if _query_page not in _valid_pages:
     _query_page = _default_page
 
@@ -783,7 +820,7 @@ elif section == "Global Markets":
 elif section == "Leaderboard":
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")
-elif section == "Wallet":
-    import quest_app.tabs.wallet as tb
+elif section in ("Shop", "Wallet"):
+    import quest_app.tabs.shop as tb
     tb.render(_user_info)
 

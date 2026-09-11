@@ -33,6 +33,9 @@
 - **Direct Wallet Top-Up Navigation on Low Balance (`quest_app/settings.py`)**:
   - Added a primary **`💳 Top Up in Wallet`** action button inside the confirmation dialogs when coin balance is below 1,000 coins.
   - Automatically navigates users directly to the **Wallet & Shop** tab (`?page=Wallet`) to top up Quest Coins with Razorpay.
+- **Sidebar Profile Card Clickable Modal Popup (`quest_app/main.py`, `ui_theme.py`)**:
+  - Made the top sidebar profile card header (avatar, display name, and `@username`) fully interactive with hover micro-animations and pointer cursor.
+  - Clicking the avatar or name triggers the in-place `@st.dialog("Profile Card")` modal, displaying the full Discord Nitro-style animated profile card, custom theme, banner, animation effects, and badges directly from anywhere in the app.
 
 ---
 

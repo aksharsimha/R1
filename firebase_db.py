@@ -1145,3 +1145,206 @@ def save_banner_customization(username: str, data: dict) -> bool:
         print(f"[firebase_db] Failed to save banner customization: {e}")
         return False
 
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Entitlements Management
+# ──────────────────────────────────────────────────────────────────────────────
+
+STANDARD_ENTITLEMENT_KEYS = ["premium", "ad_free", "news_access", "intl_stocks"]
+
+
+def get_user_entitlements(username: str) -> dict:
+    """
+    Get user's entitlements mapping {key: expiry_iso or None}.
+    Keys: 'premium', 'ad_free', 'news_access', 'intl_stocks'.
+    Checks Firestore and mirrors/falls back to local edu_db.
+    """
+    res = {k: None for k in STANDARD_ENTITLEMENT_KEYS}
+    if not username:
+        return res
+
+    # 1. Local edu_db baseline / offline check
+    try:
+        import edu_db
+        local_prog = edu_db.load_progress()
+        if isinstance(local_prog, dict):
+            local_ent = local_prog.get("entitlements", {})
+            if isinstance(local_ent, dict):
+                for k, v in local_ent.items():
+                    res[k] = v
+    except Exception:
+        pass
+
+    # 2. Firestore profile check
+    try:
+        profile = get_user_profile(username)
+        if isinstance(profile, dict):
+            stored_ent = profile.get("entitlements", {})
+            if isinstance(stored_ent, dict):
+                for k, v in stored_ent.items():
+                    res[k] = v
+            # If premium is stored directly in profile or banner_customization
+            if not res.get("premium"):
+                prem_status = get_premium_status(username)
+                if prem_status.get("is_active"):
+                    exp = prem_status.get("expires_at")
+                    res["premium"] = exp.isoformat() if hasattr(exp, "isoformat") else "active"
+    except Exception as e:
+        print(f"[firebase_db] Error reading entitlements for {username}: {e}")
+
+    return res
+
+
+def has_entitlement(username: str, key: str) -> bool:
+    """Check if a user has an active entitlement for the given key, verifying expiration."""
+    if not username or not key:
+        return False
+    try:
+        if key == "premium":
+            prem = get_premium_status(username)
+            if prem.get("is_active"):
+                return True
+
+        entitlements = get_user_entitlements(username)
+        exp_raw = entitlements.get(key)
+        if not exp_raw:
+            return False
+
+        if isinstance(exp_raw, bool):
+            return exp_raw
+        if str(exp_raw).lower() in ["true", "active", "lifetime", "permanent"]:
+            return True
+
+        exp_dt = None
+        if hasattr(exp_raw, "date"):
+            exp_dt = exp_raw
+        elif isinstance(exp_raw, (int, float)):
+            ts = exp_raw / 1000.0 if exp_raw > 1e11 else exp_raw
+            exp_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+        elif isinstance(exp_raw, str):
+            exp_dt = datetime.fromisoformat(exp_raw.replace("Z", "+00:00"))
+
+        if exp_dt:
+            if getattr(exp_dt, "tzinfo", None) is None:
+                exp_dt = exp_dt.replace(tzinfo=timezone.utc)
+            now = datetime.now(timezone.utc)
+            return now <= exp_dt
+
+        return False
+    except Exception as e:
+        print(f"[firebase_db] Error checking entitlement {key} for {username}: {e}")
+        return False
+
+
+def grant_entitlement(username: str, key: str, duration_days: int = 30, cost_coins: int = 0) -> tuple[bool, str, dict]:
+    """
+    Grant or extend an entitlement for duration_days by deducting cost_coins via deduct_user_quest_coins().
+    Atomically writes to Firestore and mirrors to local edu_db.
+    Returns (ok, msg, data).
+    """
+    if not username or not key:
+        return False, "Invalid username or entitlement key.", {}
+
+    # 1. Deduct coins if cost_coins > 0
+    if cost_coins > 0:
+        ok, new_bal, msg = deduct_user_quest_coins(username, cost_coins)
+        if not ok:
+            return False, msg, {}
+    else:
+        new_bal = get_user_quest_coins(username)
+
+    try:
+        now = datetime.now(timezone.utc)
+        
+        # Check current expiry to extend if active
+        entitlements = get_user_entitlements(username)
+        cur_exp_raw = entitlements.get(key)
+        exp_dt = None
+        if cur_exp_raw:
+            try:
+                if hasattr(cur_exp_raw, "date"):
+                    exp_dt = cur_exp_raw
+                elif isinstance(cur_exp_raw, (int, float)):
+                    ts = cur_exp_raw / 1000.0 if cur_exp_raw > 1e11 else cur_exp_raw
+                    exp_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+                elif isinstance(cur_exp_raw, str) and cur_exp_raw not in ["active", "lifetime"]:
+                    exp_dt = datetime.fromisoformat(cur_exp_raw.replace("Z", "+00:00"))
+            except Exception:
+                exp_dt = None
+
+        if exp_dt:
+            if getattr(exp_dt, "tzinfo", None) is None:
+                exp_dt = exp_dt.replace(tzinfo=timezone.utc)
+            if exp_dt > now:
+                new_expiry = exp_dt + timedelta(days=duration_days)
+            else:
+                new_expiry = now + timedelta(days=duration_days)
+        else:
+            new_expiry = now + timedelta(days=duration_days)
+
+        expiry_iso = new_expiry.isoformat()
+        entitlements[key] = expiry_iso
+
+        # 2. Persist to Firestore user document
+        try:
+            db = get_db()
+            if db:
+                user_doc_update = {
+                    "entitlements": entitlements,
+                }
+                if key == "premium":
+                    user_doc_update.update({
+                        "is_premium": True,
+                        "is_pro": True,
+                        "premium_expires_at": expiry_iso,
+                        "banner_customization": {
+                            "isPremium": True,
+                            "premiumExpiresAt": expiry_iso,
+                        },
+                        "profile_customization": {
+                            "is_pro": True,
+                            "show_pro_badge": True,
+                        }
+                    })
+                db.collection("users").document(username).set(user_doc_update, merge=True)
+        except Exception as e:
+            print(f"[firebase_db] Warning: Could not update Firestore user doc: {e}")
+
+        # 3. Update Firestore edu_progress
+        try:
+            edu_prog = get_edu_progress(username) or {}
+            edu_prog_ent = edu_prog.get("entitlements", {})
+            if not isinstance(edu_prog_ent, dict):
+                edu_prog_ent = {}
+            edu_prog_ent[key] = expiry_iso
+            edu_prog["entitlements"] = edu_prog_ent
+            save_edu_progress(username, edu_prog)
+        except Exception:
+            pass
+
+        # 4. Mirror to local edu_db progress
+        try:
+            import edu_db
+            local_prog = edu_db.load_progress()
+            if isinstance(local_prog, dict):
+                local_ent = local_prog.get("entitlements", {})
+                if not isinstance(local_ent, dict):
+                    local_ent = {}
+                local_ent[key] = expiry_iso
+                local_prog["entitlements"] = local_ent
+                edu_db.save_progress(local_prog)
+        except Exception:
+            pass
+
+        res_data = {
+            "key": key,
+            "is_active": True,
+            "expires_at": expiry_iso,
+            "duration_days": duration_days,
+            "new_coins_balance": new_bal,
+        }
+        return True, f"Successfully granted '{key}' for {duration_days} days.", res_data
+
+    except Exception as e:
+        return False, f"Failed to grant entitlement: {e}", {}
+

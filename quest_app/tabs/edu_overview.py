@@ -163,6 +163,30 @@ def _render_ad_banner(slot_id: str):
     Supports expanding to natural aspect ratio (uncropped) and collapsing back.
     """
     try:
+        # Check ad_free entitlement — skip completely if active
+        uname = None
+        if "user_info" in st.session_state and isinstance(st.session_state.user_info, dict):
+            uname = st.session_state.user_info.get("username")
+        if not uname and hasattr(edu_db, "_username") and edu_db._username:
+            uname = edu_db._username
+        if not uname:
+            uname = st.session_state.get("username")
+
+        if uname:
+            try:
+                import firebase_db
+                if firebase_db.has_entitlement(uname, "ad_free"):
+                    return
+            except Exception:
+                pass
+        else:
+            try:
+                local_prog = edu_db.load_progress()
+                if local_prog.get("entitlements", {}).get("ad_free"):
+                    return
+            except Exception:
+                pass
+
         if not os.path.exists(_AD_BANNERS_PATH):
             return
         with open(_AD_BANNERS_PATH, "r", encoding="utf-8-sig") as _f:

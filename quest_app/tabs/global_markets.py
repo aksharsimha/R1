@@ -280,6 +280,37 @@ def _render_activity(account):
 
 def render(user_info, user_data_dir=None):
     username = user_info.get("username", "demo_guest")
+
+    has_intl = False
+    if username and username != "demo_guest":
+        try:
+            import firebase_db
+            has_intl = firebase_db.has_entitlement(username, "intl_stocks")
+        except Exception:
+            has_intl = False
+    else:
+        try:
+            has_intl = bool(edu_db.load_progress().get("entitlements", {}).get("intl_stocks"))
+        except Exception:
+            has_intl = False
+
+    if not has_intl:
+        st.markdown("""
+        <div style="background:var(--q-surface-2, #18191c); border:1px solid var(--q-border, #262a31); border-radius:16px; padding:3rem 1.5rem; text-align:center; max-width:620px; margin:2.5rem auto 1.5rem;">
+            <div style="font-size:3rem; margin-bottom:0.8rem;">🔒</div>
+            <h2 style="color:var(--q-text, #f1f3f5); font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">Global Markets is Locked</h2>
+            <p style="color:var(--q-text-2, #b7bcc4); font-size:0.92rem; line-height:1.5; margin-bottom:0;">
+                Unlock direct paper-trading access to NASDAQ, NYSE, and international equities with real-time currency conversion using the <strong>US & Global Stocks Pass</strong>.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        col_pad1, col_btn, col_pad2 = st.columns([1, 1.2, 1])
+        with col_btn:
+            if st.button("🛒 Unlock in Shop", type="primary", use_container_width=True, key="unlock_intl_in_shop"):
+                st.query_params["page"] = "Shop"
+                st.rerun()
+        return
+
     if user_data_dir:
         base_dir = __import__("os").path.dirname(__import__("os").path.dirname(user_data_dir))
     else:

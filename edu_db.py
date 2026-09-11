@@ -48,6 +48,8 @@ def get_level_info(xp: int) -> dict:
 DEFAULT_PROGRESS = {
     "total_xp": 0,
     "virtual_balance": 15000.0,
+    "quest_coins": 0,
+    "entitlements": {},
     "badges": [],
     "completed_levels": [],
     "completed_articles": [],
@@ -219,7 +221,9 @@ def get_last_education_section() -> str:
     try:
         prog = load_progress()
         sec = prog.get("last_education_section")
-        valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL"]
+        if sec == "Wallet":
+            return "Shop"
+        valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Shop"]
         if sec in valid_edu:
             return sec
     except Exception:
@@ -228,7 +232,9 @@ def get_last_education_section() -> str:
 
 def set_last_education_section(section: str) -> None:
     """Persists the user's last visited Education sub-page."""
-    valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL"]
+    if section == "Wallet":
+        section = "Shop"
+    valid_edu = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Shop"]
     if section in valid_edu:
         try:
             prog = load_progress()
@@ -243,7 +249,9 @@ def get_last_portfolio_section() -> str:
     try:
         prog = load_progress()
         sec = prog.get("last_portfolio_section")
-        valid_prof = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"]
+        if sec == "Wallet":
+            return "Shop"
+        valid_prof = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Shop"]
         if sec in valid_prof:
             return sec
     except Exception:
@@ -252,7 +260,9 @@ def get_last_portfolio_section() -> str:
 
 def set_last_portfolio_section(section: str) -> None:
     """Persists the user's last visited Portfolio sub-page."""
-    valid_prof = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL"]
+    if section == "Wallet":
+        section = "Shop"
+    valid_prof = ["Overview", "Planner", "Analytics", "Projections", "Insights", "News", "Activity", "Chat", "MICHAEL", "Shop"]
     if section in valid_prof:
         try:
             prog = load_progress()
