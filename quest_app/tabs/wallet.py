@@ -78,6 +78,19 @@ def render(user_info):
             if st.button("Pay ₹ 5,000", key="buy_5000", use_container_width=True):
                 _create_payment_link(5000, user_info)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### 🎛️ Custom Amount")
+    st.markdown("<p style='font-size: 0.9rem; color:#94a3b8;'>Need a specific amount? Enter it below. (Min: ₹500 | Max: ₹1,00,000)</p>", unsafe_allow_html=True)
+    
+    custom_col1, custom_col2 = st.columns([2, 1])
+    with custom_col1:
+        custom_amt = st.number_input("Amount (INR)", min_value=500, max_value=100000, value=1500, step=100)
+        st.markdown(f"<p style='color:#34d399;'>You will receive: <b>{int(custom_amt * 10):,} Quest Coins</b></p>", unsafe_allow_html=True)
+    with custom_col2:
+        st.markdown("<br>", unsafe_allow_html=True) # padding for alignment
+        if st.button(f"Pay ₹ {custom_amt:,}", key="buy_custom", type="primary", use_container_width=True):
+            _create_payment_link(custom_amt, user_info)
+
 
 def _create_payment_link(amount_inr, user_info):
     if razorpay is None:
