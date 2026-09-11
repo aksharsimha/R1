@@ -10,6 +10,8 @@
 - **Real "Member Since" Join Date & Elapsed Days Computation (`quest_app/settings.py`)**:
   - Replaced the static `"QUEST Surveillance Network"` placeholder with dynamic calculation of the user's actual registration/join timestamp (`created_at`) from Firestore.
   - Dynamically calculates the exact calendar date and days elapsed (e.g. `Aug 26, 2026 • 16 days ago` or `Joined today` / `1 day ago`), syncing automatically across Settings preview, Chat, and News profile card modals.
+- **Badge Label Refinement (`quest_app/settings.py`)**:
+  - Updated pro tier pill badge and UI selectors to display clean `"👑 PREMIUM"` instead of `"PREMIUM PRO"`.
 
 ---
 
