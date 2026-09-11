@@ -526,16 +526,10 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
     if selected == "Profile":
         _card_start("Profile", "Your public identity inside QUEST.")
 
-        # ── 1. Determine Pro / Premium Tier ──
-        is_user_pro = bool(
-            firebase_db.is_user_pro(username)
-            or profile.get("is_pro")
-            or profile.get("is_premium")
-            or profile.get("profile_customization", {}).get("is_pro")
-            or profile.get("banner_customization", {}).get("isPremium")
-            or user_info.get("is_pro")
-            or user_info.get("profile_customization", {}).get("is_pro")
-        )
+        # ── 1. Determine Pro / Premium Tier & Subscription Status ──
+        prem_status = firebase_db.get_premium_status(username)
+        is_user_pro = bool(prem_status.get("is_active", False))
+        user_coins = firebase_db.get_user_quest_coins(username)
 
         # ── 2. Read Stored Banner Customization Schema ──
         stored = profile.get("banner_customization")
@@ -580,7 +574,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 <div style="font-size:2rem;margin-bottom:6px;">👑</div>
                 <h3 style="margin:0 0 8px;color:#D4A843;font-weight:700;">Unlock Custom Profile Banners & Themes</h3>
                 <p style="font-size:0.88rem;color:var(--q-text-2);line-height:1.5;">
-                    Upgrade to <strong>QUEST Pro</strong> to upload custom image/GIF banners, personalize your profile card background, enable futuristic neon glowing borders, and display the exclusive PRO badge.
+                    Upgrade to <strong>QUEST Premium</strong> with Quest Coins to upload custom image/GIF banners, personalize your profile card background, enable futuristic neon glowing borders, and display the exclusive PRO badge.
                 </p>
                 <div style="background:var(--q-surface-2);border-radius:12px;padding:14px;margin:16px 0;text-align:left;">
                     <div style="font-size:0.85rem;color:var(--q-text);font-weight:600;margin-bottom:6px;">Pro Membership Features:</div>
@@ -603,33 +597,104 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
         col_form, col_preview = st.columns([1.1, 0.9], gap="large")
 
         with col_form:
-            # ── 1. MEMBERSHIP TIER SELECTOR (Basic vs Premium) ──
-            is_premium = bool(prev.get("isPremium", False))
-            st.markdown(
-                '<div style="font-size:0.95rem;font-weight:700;color:var(--q-text);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">'
-                '<span>Membership Tier</span>'
-                f'<span style="font-size:0.75rem;font-weight:700;color:{"#D4A843" if is_premium else "#9ca3af"};background:{"rgba(212,168,67,0.15)" if is_premium else "rgba(255,255,255,0.06)"};padding:3px 10px;border-radius:12px;border:1px solid {"#D4A84355" if is_premium else "rgba(255,255,255,0.1)"};">{"👑 PREMIUM" if is_premium else "BASIC"}</span>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-            st.caption("Switch between Basic and Premium to preview and customize tier-specific features.")
+            # ── 1. MEMBERSHIP TIER (Basic vs Premium + Quest Coins Upgrade) ──
+            if is_user_pro:
+                prev["isPremium"] = True
+                is_premium = True
+                rem_days = prem_status.get("remaining_days", 30)
+                exp_date = prem_status.get("formatted_expiry", "Active")
 
-            tier_options = ["Basic Member", "👑 Premium Member"]
-            current_tier_idx = 1 if is_premium else 0
-            chosen_tier_str = st.radio(
-                "Membership Tier",
-                options=tier_options,
-                index=current_tier_idx,
-                horizontal=True,
-                key="tier_selector_radio_choice",
-                label_visibility="collapsed",
-            )
-            new_is_premium = (chosen_tier_str == "👑 Premium Member")
-            if new_is_premium != is_premium:
-                prev["isPremium"] = new_is_premium
-                prev["_manual_tier_toggle"] = True
-                is_premium = new_is_premium
-                st.rerun()
+                st.markdown(
+                    '<div style="font-size:0.95rem;font-weight:700;color:var(--q-text);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">'
+                    '<span>Membership Tier</span>'
+                    f'<span style="font-size:0.75rem;font-weight:700;color:#D4A843;background:rgba(212,168,67,0.15);padding:3px 10px;border-radius:12px;border:1px solid #D4A84355;">👑 PREMIUM • ACTIVE</span>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+
+                st.markdown(
+                    f"""
+                    <div style="background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-size:0.9rem;font-weight:700;color:#D4A843;">👑 Active Premium Membership</div>
+                                <div style="font-size:0.78rem;color:#cbd5e1;margin-top:2px;">
+                                    ⏳ <strong>{rem_days} days remaining</strong> (Expires {exp_date})
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:0.72rem;color:var(--q-text-3);">Wallet Balance</div>
+                                <div style="font-size:0.85rem;font-weight:700;color:#fbbf24;">🪙 {user_coins:,}</div>
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                if st.button("➕ Extend Premium (+30 Days / 1,000 Coins)", key="btn_extend_prem", use_container_width=True):
+                    if user_coins < 1000:
+                        st.error("Insufficient Quest Coins. Top up your wallet to continue")
+                    else:
+                        ok, msg, res = firebase_db.upgrade_user_to_premium(username, duration_days=30, cost_coins=1000)
+                        if ok:
+                            st.session_state.pop("_cached_profile", None)
+                            st.session_state.pop("_user_profiles_cache", None)
+                            st.toast("Premium extended by 30 days!", icon="🎉")
+                            st.balloons()
+                            st.rerun()
+                        else:
+                            st.error(msg)
+            else:
+                is_premium = bool(prev.get("isPremium", False))
+                st.markdown(
+                    '<div style="font-size:0.95rem;font-weight:700;color:var(--q-text);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">'
+                    '<span>Membership Tier</span>'
+                    '<span style="font-size:0.75rem;font-weight:700;color:#9ca3af;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">BASIC MEMBER</span>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+
+                st.markdown(
+                    f"""
+                    <div style="background:var(--q-surface-2);border:1px solid var(--q-border);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div style="font-size:0.88rem;font-weight:700;color:var(--q-text);">✨ Upgrade to QUEST Premium</div>
+                                <div style="font-size:0.75rem;color:var(--q-text-3);margin-top:2px;">Unlock custom GIF banners, themes, animations & PRO badge</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:0.72rem;color:var(--q-text-3);">Your Coins</div>
+                                <div style="font-size:0.85rem;font-weight:700;color:#fbbf24;">🪙 {user_coins:,}</div>
+                            </div>
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                if st.button("✨ Upgrade to Premium (1,000 Coins / 30 Days)", key="btn_upgrade_prem_coins", type="primary", use_container_width=True):
+                    if user_coins < 1000:
+                        st.error("Insufficient Quest Coins. Top up your wallet to continue")
+                    else:
+                        ok, msg, res = firebase_db.upgrade_user_to_premium(username, duration_days=30, cost_coins=1000)
+                        if ok:
+                            prev["isPremium"] = True
+                            st.session_state.user_info["is_pro"] = True
+                            st.session_state.user_info["is_premium"] = True
+                            st.session_state.pop("_cached_profile", None)
+                            st.session_state.pop("_user_profiles_cache", None)
+                            st.success("🎉 Successfully upgraded to Premium for 30 days!")
+                            st.balloons()
+                            st.rerun()
+                        else:
+                            st.error(msg)
+
+                # Test-drive toggle for live preview while Basic
+                test_drive = st.toggle("🧪 Test-Drive Premium in Preview Card", value=is_premium, key="test_drive_prem_toggle")
+                if test_drive != is_premium:
+                    prev["isPremium"] = test_drive
+                    st.rerun()
 
             st.markdown("<hr style='border:none;border-top:1px solid var(--q-border);margin:16px 0;'>", unsafe_allow_html=True)
 
