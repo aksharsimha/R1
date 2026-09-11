@@ -324,16 +324,17 @@ if _workspace == "professional":
         "Overview": "⌂  Overview", "Planner": "◇  Planner", "Analytics": "◌  Analytics",
         "Projections": "↗  Projections", "Insights": "✦  Insights", "News": "◈  News",
         "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
+        "Activity": "≡  Activity", "Chat": "◍  Chat", "MICHAEL": "◎  MICHAEL", "Global Markets": "🌐  Global Markets", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Workspace"
     _default_page = edu_db.get_last_portfolio_section()
 else:
-    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Wallet", "Settings"]
+    _valid_pages = ["Learning Path", "Library", "Virtual Trading", "Global Markets", "Leaderboard", "Badges", "Tax Detective", "MICHAEL", "Wallet", "Settings"]
     _page_labels = {
-        "Learning Path": "🎓  Learning Path", "Library": "📚  Knowledge Library",
-        "Virtual Trading": "📈  Virtual Trading", "Leaderboard": "🏆  Leaderboard",
+        "Learning Path": "🚀  Learning Path", "Library": "📚  Knowledge Library",
+        "Virtual Trading": "📈  Virtual Trading", "Global Markets": "🌎  Global Markets", "Leaderboard": "🏆  Leaderboard",
         "Badges": "🎖️  Badges", "Tax Detective": "🕵️  Tax Detective",
-        "MICHAEL": "⚡  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
+        "MICHAEL": "🧠  MICHAEL", "Wallet": "💳  Wallet", "Settings": "⚙  Settings",
     }
     _sidebar_title = "Games & Education"
     _default_page = edu_db.get_last_education_section()
@@ -456,6 +457,11 @@ if section == "Tax Detective":
 if section == "Virtual Trading":
     import quest_app.tabs.virtual_trading as virtual_trading
     virtual_trading.render(_user_info, _user_data_dir)
+    st.stop()
+
+if section == "Global Markets":
+    import quest_app.tabs.global_markets as global_markets
+    global_markets.render(_user_info, _user_data_dir)
     st.stop()
 
 # --- Sidebar: Interactive Controls ---
@@ -771,6 +777,9 @@ elif section == "Tax Detective":
 elif section == "Virtual Trading":
     import quest_app.tabs.virtual_trading as virtual_trading
     virtual_trading.render(_user_info, _user_data_dir)
+elif section == "Global Markets":
+    import quest_app.tabs.global_markets as global_markets
+    global_markets.render(_user_info, _user_data_dir)
 elif section == "Leaderboard":
     st.markdown(f"## {section} (Under Construction)")
     st.markdown("This tab is assigned to a team member and is currently being built.")

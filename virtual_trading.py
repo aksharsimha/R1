@@ -279,6 +279,16 @@ def ensure_account(username: str, base_dir: Optional[str] = None) -> dict:
 def _ticker(symbol: str) -> str:
     clean = _clean_symbol(symbol)
     clean = clean.replace(".BO", ".NS")
+    
+    # Check if this is a known US stock to avoid appending .NS
+    import stock_search
+    # _load_stocks is cached in memory
+    for item in stock_search._load_stocks():
+        if item.get("symbol") == clean:
+            if item.get("region") == "US":
+                return clean
+            break
+            
     return clean if clean.endswith(".NS") else f"{clean}.NS"
 
 
@@ -306,12 +316,35 @@ def _normalize_quote(ticker: str, quote: dict, source: str) -> Optional[dict]:
     }
 
 
+@lru_cache(maxsize=1)
+def get_usd_inr() -> float:
+    try:
+        quote = yf.Ticker("USDINR=X")
+        # Get the latest regular market price
+        return float(quote.fast_info.last_price)
+    except:
+        return 83.50  # Fallback exchange rate
+
 @lru_cache(maxsize=512)
 def _get_quote_cached(ticker: str, cache_bucket: int) -> Optional[dict]:
     price, previous_close, source = get_live_quote(ticker)
     if price is None:
         return None
-    return _normalize_quote(ticker, {"price": price, "previous_close": previous_close}, source)
+        
+    quote = _normalize_quote(ticker, {"price": price, "previous_close": previous_close}, source)
+    
+    if not ticker.endswith(".NS") and not ticker.endswith(".BO"):
+        # This is a US stock, convert USD to INR
+        rate = get_usd_inr()
+        quote["price"] *= rate
+        if quote.get("previous_close"):
+            quote["previous_close"] *= rate
+        quote["change"] *= rate
+        quote["currency"] = "INR"
+        quote["_original_usd_price"] = price
+        quote["_exchange_rate"] = rate
+        
+    return quote
 
 
 def get_quote(symbol: str, company: str = "") -> Optional[dict]:
