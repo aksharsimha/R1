@@ -133,7 +133,7 @@ def _render_buy_search():
     if not query:
         st.caption("Search when you are ready to buy. Your portfolio is already above. 💡")
         return
-    matches = engine.search_stocks(query)
+    matches = engine.search_stocks(query, region="IN")
     if not matches:
         st.info("No Indian stock or fund matched that company name yet.")
         return

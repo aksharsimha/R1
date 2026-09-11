@@ -440,23 +440,25 @@ def get_events(symbol: str) -> list[dict]:
     return list(_get_events_cached(_ticker(symbol), int(time.time() // 900)))
 
 
-def search_stocks(query: str, limit: int = 50) -> list[dict]:
+def search_stocks(query: str, limit: int = 50, region: str = None) -> list[dict]:
     query = str(query or "").strip()
     if not query:
         return []
     import stock_search
-    matches = stock_search.search_stocks(query, limit=limit)
+    matches = stock_search.search_stocks(query, limit=limit, region=region)
     results = []
     for item in matches:
         sym = item["symbol"]
         ticker = item["ticker"]
         company = item["company"]
         exchange = item.get("exchange", "NSE")
+        item_region = item.get("region", "IN")
         results.append({
             "symbol": sym,
             "ticker": ticker,
             "company": str(company),
             "exchange": exchange,
+            "region": item_region,
             "price": 0.0,
             "previous_close": 0.0,
             "change": 0.0,
