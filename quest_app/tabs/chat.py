@@ -384,58 +384,64 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 chat_system.mark_as_read(active_id, _chat_user)
 
                 # ── Chat header ──────────────────────────────────────────────
-                hdr0, hdr1, hdr2 = st.columns([0.8, 6.4, 0.8])
+                hdr0, hdr_main, hdr_action, hdr_refresh = st.columns([0.6, 4.8, 2.0, 0.6])
                 with hdr0:
                     if st.button("←", key="chat_back", help="Back to conversations"):
                         st.session_state.active_chat_id = None
                         st.rerun(scope="fragment")
-                with hdr1:
+                with hdr_main:
                     if chat_info["type"] == "direct":
                         other = [p for p in chat_info["participants"] if p != _chat_user]
                         other_user = other[0] if other else ""
                         other_prof = _get_profile_cached(other_user) if other_user else {}
                         title = other_prof.get("display_name") or other_user or "Chat"
                         _is_online = firebase_db.is_user_online(other_user) if other_user else False
-                        _avatar_markup = _render_avatar_html(other_user, title, size=54, css_class="chat-avatar")
+                        _avatar_markup = _render_avatar_html(other_user, title, size=46, css_class="chat-avatar")
                         _profile_target = other_user
                     else:
                         title = chat_info["name"]
                         members_str = ", ".join(chat_info["participants"])
                         _is_online = False
-                        _avatar_markup = "<div class='chat-avatar' style='font-size:1.5rem;'>👥</div>"
+                        _avatar_markup = "<div class='chat-avatar' style='font-size:1.3rem;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;'>👥</div>"
                         _profile_target = ""
 
                     _presence_label = "Online" if _is_online else "Offline"
                     _presence_color = "var(--q-pos)" if _is_online else "var(--q-text-3)"
                     _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
-
-                    # Visually hidden button inside a keyed container to trigger profile modal without page reload
-                    with st.container(key="chat_hdr_prof_slot"):
-                        if st.button("OpenProfModal", key=f"chat_hdr_prof_btn_{active_id}"):
-                            if chat_info["type"] == "direct" and _profile_target:
-                                _show_public_profile(_profile_target)
-                            elif chat_info["type"] == "group":
-                                st.info(f"Members: {', '.join(chat_info['participants'])}")
-
-                    _click_js = "var b = document.querySelector('.st-key-chat_hdr_prof_slot button'); if (b) { b.click(); } return false;"
-                    _fallback_href = f"?page=Chat&chat_id={active_id}&view_profile={_profile_target}" if _profile_target else "#"
+                    _target_tag = f"<span style='color:var(--q-text-3);margin-right:6px;'>@{html.escape(_profile_target)}</span>" if _profile_target else ""
 
                     st.markdown(f"""
-                    <div class='chat-header'>
-                        <a href='{_fallback_href}' onclick="{_click_js}" class='chat-avatar-link' title='View {html.escape(title)} profile' style='cursor:pointer;text-decoration:none;'>
-                            <div class='chat-avatar-wrap'>{_avatar_markup}{_presence_dot}</div>
-                        </a>
-                        <div>
-                            <a href='{_fallback_href}' onclick="{_click_js}" class='chat-name-link' title='View {html.escape(title)} profile' style='cursor:pointer;text-decoration:none;'>
-                                <div class='chat-header-name'>{html.escape(title)}</div>
-                            </a>
-                            <div class='chat-header-status'>Status: <span style='color:{_presence_color}'>{_presence_label}</span></div>
+                    <div style='display:flex;align-items:center;gap:12px;'>
+                        <div class='chat-avatar-wrap' style='position:relative;flex-shrink:0;'>{_avatar_markup}{_presence_dot}</div>
+                        <div style='overflow:hidden;'>
+                            <div class='chat-header-name' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{html.escape(title)}</div>
+                            <div class='chat-header-status' style='font-size:0.78rem;'>
+                                {_target_tag}
+                                Status: <span style='color:{_presence_color};font-weight:600;'>{_presence_label}</span>
+                            </div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
-                    if chat_info["type"] == "group":
-                        st.caption(f"Members: {members_str}")
-                with hdr2:
+
+                with hdr_action:
+                    if chat_info["type"] == "direct" and _profile_target:
+                        if st.button("👤 Profile Card", key=f"chat_view_prof_btn_{active_id}", help=f"View {_profile_target}'s Profile Card", use_container_width=True):
+                            _show_public_profile(_profile_target)
+                    elif chat_info["type"] == "group":
+                        with st.popover("👥 Members", use_container_width=True):
+                            st.markdown(f"**{chat_info['name']}**")
+                            st.caption(f"{len(chat_info['participants'])} members in this group")
+                            for p in chat_info["participants"]:
+                                p_prof = _get_profile_cached(p)
+                                p_disp = p_prof.get("display_name", p)
+                                c_p1, c_p2 = st.columns([3, 2])
+                                with c_p1:
+                                    st.markdown(f"**{p_disp}**<br><span style='font-size:0.75rem;color:var(--q-text-3);'>@{p}</span>", unsafe_allow_html=True)
+                                with c_p2:
+                                    if st.button("Profile", key=f"grp_prof_btn_{p}_{active_id}", use_container_width=True):
+                                        _show_public_profile(p)
+
+                with hdr_refresh:
                     if st.button("🔄", key="chat_refresh", help="Refresh messages & avatars"):
                         st.session_state.pop("_user_profiles_cache", None)
                         st.rerun(scope="fragment")
@@ -480,8 +486,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         elif msg["from"] == _chat_user:
                             # ── Sent message ─────────────────────────────────
                             my_av_markup = _render_avatar_html(_chat_user, _chat_display, size=32, css_class="chat-msg-avatar")
-                            my_prof_href = f"?page=Chat&chat_id={active_id}&view_profile={_chat_user}"
-                            my_av_link = f'<a href="{my_prof_href}" target="_self" style="text-decoration:none;cursor:pointer;display:inline-block;" title="View your profile">{my_av_markup}</a>'
                             bubble = f'<div class="chat-bubble sent">{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
@@ -497,19 +501,16 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
-                            msgs_html += f'<div class="chat-msg-row sent">{bubble}<div style="margin-left:8px;flex-shrink:0;">{my_av_link}</div></div>'
+                            msgs_html += f'<div class="chat-msg-row sent">{bubble}<div style="margin-left:8px;flex-shrink:0;">{my_av_markup}</div></div>'
                         else:
                             # ── Received message ─────────────────────────────
                             sender = msg["from"]
                             sender_prof = _get_profile_cached(sender)
                             sender_disp = sender_prof.get("display_name", sender)
                             sender_av_markup = _render_avatar_html(sender, sender_disp, size=32, css_class="chat-msg-avatar")
-                            _msg_click = f'onclick="{_click_js}"' if (chat_info["type"] == "direct" and sender == _profile_target) else ""
-                            _msg_prof_href = f"?page=Chat&chat_id={active_id}&view_profile={sender}"
-                            _sender_link = f'<a href="{_msg_prof_href}" {_msg_click} target="_self" style="text-decoration:none;color:inherit;cursor:pointer;" title="View {html.escape(sender_disp)} profile">{html.escape(sender_disp)} (@{html.escape(sender)})</a>'
-                            _av_link = f'<a href="{_msg_prof_href}" {_msg_click} target="_self" style="text-decoration:none;cursor:pointer;display:inline-block;" title="View {html.escape(sender_disp)} profile">{sender_av_markup}</a>'
+                            _sender_header = f'<div class="chat-sender">{html.escape(sender_disp)} <span style="font-size:0.75rem;color:var(--q-text-3);font-weight:400;">(@{html.escape(sender)})</span></div>'
 
-                            bubble = f'<div class="chat-bubble received"><div class="chat-sender">{_sender_link}</div>{msg["text"]}'
+                            bubble = f'<div class="chat-bubble received">{_sender_header}{msg["text"]}'
                             if msg.get("type") == "portfolio_share" and msg.get("portfolio_data"):
                                 pd_data = msg["portfolio_data"]
                                 pnl_color = "var(--q-pos)" if pd_data.get("total_pnl", 0) >= 0 else "var(--q-neg)"
@@ -524,7 +525,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     <div class="val" style="color:{pnl_color}">{pd_data.get('growth_abs', 0):+,.0f}</div>
                                 </div>"""
                             bubble += f'<div class="chat-time">{time_str}</div></div>'
-                            msgs_html += f'<div class="chat-msg-row received"><div style="margin-right:8px;flex-shrink:0;">{_av_link}</div>{bubble}</div>'
+                            msgs_html += f'<div class="chat-msg-row received"><div style="margin-right:8px;flex-shrink:0;">{sender_av_markup}</div>{bubble}</div>'
 
                     st.html(f'''
                     <div id="quest-chat-messages" data-chat-id="{active_id}"
