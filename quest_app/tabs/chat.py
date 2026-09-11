@@ -409,30 +409,29 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         _is_online = firebase_db.is_user_online(other_user) if other_user else False
                         _avatar_markup = _render_avatar_html(other_user, title, size=46, css_class="chat-avatar")
                         _profile_target = other_user
+                        _presence_label = "Online" if _is_online else "Offline"
+                        _presence_color = "var(--q-pos)" if _is_online else "var(--q-text-3)"
+                        _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
+                        _status_html = f"<span style='color:var(--q-text-3);margin-right:6px;'>@{html.escape(_profile_target)}</span> Status: <span style='color:{_presence_color};font-weight:600;'>{_presence_label}</span>"
                     else:
                         title = chat_info["name"]
-                        members_str = ", ".join(chat_info["participants"])
-                        _is_online = False
-                        _avatar_markup = "<div class='chat-avatar' style='font-size:1.3rem;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;'>👥</div>"
+                        participants = chat_info.get("participants", [])
+                        _avatar_markup = "<div class='chat-avatar' style='font-size:1.3rem;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--q-surface-2);border:1.5px solid var(--q-border);'>👥</div>"
+                        _presence_dot = ""
                         _profile_target = ""
+                        member_preview = ", ".join(participants[:3]) + ("..." if len(participants) > 3 else "")
+                        _status_html = f"<span style='color:var(--q-text-3);'>👥 {len(participants)} members: {html.escape(member_preview)}</span>"
 
-                    _presence_label = "Online" if _is_online else "Offline"
-                    _presence_color = "var(--q-pos)" if _is_online else "var(--q-text-3)"
-                    _presence_dot = "<div class='chat-online'></div>" if _is_online else ""
-                    _target_tag = f"<span style='color:var(--q-text-3);margin-right:6px;'>@{html.escape(_profile_target)}</span>" if _profile_target else ""
-
-                    st.markdown(f"""
-                    <div style='display:flex;align-items:center;gap:12px;'>
-                        <div class='chat-avatar-wrap' style='position:relative;flex-shrink:0;'>{_avatar_markup}{_presence_dot}</div>
-                        <div style='overflow:hidden;'>
-                            <div class='chat-header-name' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{html.escape(title)}</div>
-                            <div class='chat-header-status' style='font-size:0.78rem;'>
-                                {_target_tag}
-                                Status: <span style='color:{_presence_color};font-weight:600;'>{_presence_label}</span>
-                            </div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    hdr_html = (
+                        f"<div style='display:flex;align-items:center;gap:12px;'>"
+                        f"<div class='chat-avatar-wrap' style='position:relative;flex-shrink:0;'>{_avatar_markup}{_presence_dot}</div>"
+                        f"<div style='overflow:hidden;'>"
+                        f"<div class='chat-header-name' style='white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>{html.escape(title)}</div>"
+                        f"<div class='chat-header-status' style='font-size:0.78rem;'>{_status_html}</div>"
+                        f"</div>"
+                        f"</div>"
+                    )
+                    st.html(hdr_html)
 
                 with hdr_action:
                     if chat_info["type"] == "direct" and _profile_target:
@@ -440,14 +439,76 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             _show_public_profile(_profile_target)
                     elif chat_info["type"] == "group":
                         with st.popover("👥 Members", use_container_width=True):
-                            st.markdown(f"**{chat_info['name']}**")
+                            st.markdown(f"**👥 {html.escape(chat_info['name'])}**")
                             st.caption(f"{len(chat_info['participants'])} members in this group")
+
+                            # ── Option to Add New Member ──
+                            with st.expander("➕ Add Member", expanded=False):
+                                my_friends = chat_system.get_friends(_chat_user)
+                                avail_friends = [f for f in my_friends if f not in chat_info["participants"]]
+
+                                tab_friends, tab_username = st.tabs(["From Friends", "By Username"])
+                                with tab_friends:
+                                    if avail_friends:
+                                        selected_friend = st.selectbox(
+                                            "Select a friend to add",
+                                            avail_friends,
+                                            key=f"add_friend_sel_{active_id}"
+                                        )
+                                        if st.button("➕ Add Friend", type="primary", use_container_width=True, key=f"btn_add_friend_{active_id}"):
+                                            if selected_friend:
+                                                ok, msg = chat_system.add_to_group(active_id, selected_friend, _chat_user)
+                                                if ok:
+                                                    st.session_state.chat_scroll_to_latest = True
+                                                    st.toast(f"Added @{selected_friend} to group!", icon="👥")
+                                                    st.rerun(scope="fragment")
+                                                else:
+                                                    st.error(msg)
+                                    else:
+                                        st.caption("All your friends are already members.")
+
+                                with tab_username:
+                                    new_u = st.text_input(
+                                        "Enter username",
+                                        placeholder="e.g. username",
+                                        key=f"add_user_input_{active_id}"
+                                    )
+                                    if st.button("➕ Add by Username", type="primary", use_container_width=True, key=f"btn_add_username_{active_id}"):
+                                        if new_u:
+                                            u_clean = new_u.strip().lower()
+                                            if u_clean in chat_info["participants"]:
+                                                st.warning(f"@{u_clean} is already in this group.")
+                                            elif not firebase_db.user_exists(u_clean):
+                                                st.error(f"User '@{u_clean}' not found.")
+                                            else:
+                                                ok, msg = chat_system.add_to_group(active_id, u_clean, _chat_user)
+                                                if ok:
+                                                    st.session_state.chat_scroll_to_latest = True
+                                                    st.toast(f"Added @{u_clean} to group!", icon="👥")
+                                                    st.rerun(scope="fragment")
+                                                else:
+                                                    st.error(msg)
+
+                            st.markdown("<hr style='margin:10px 0;border:none;border-top:1px solid var(--q-border);'>", unsafe_allow_html=True)
+                            st.markdown("<div style='font-size:0.8rem;font-weight:600;color:var(--q-text-2);margin-bottom:8px;'>Current Members</div>", unsafe_allow_html=True)
+
                             for p in chat_info["participants"]:
                                 p_prof = _get_profile_cached(p)
                                 p_disp = p_prof.get("display_name", p)
+                                is_creator = p == chat_info.get("created_by")
+                                is_me = p == _chat_user
+
                                 c_p1, c_p2 = st.columns([3, 2])
                                 with c_p1:
-                                    st.markdown(f"**{p_disp}**<br><span style='font-size:0.75rem;color:var(--q-text-3);'>@{p}</span>", unsafe_allow_html=True)
+                                    creator_badge = " <span style='font-size:0.68rem;color:#D4A843;background:rgba(212,168,67,0.15);padding:1px 5px;border-radius:4px;'>👑 Admin</span>" if is_creator else ""
+                                    me_badge = " <span style='font-size:0.68rem;color:var(--q-text-3);'>(You)</span>" if is_me else ""
+                                    st.markdown(
+                                        f"<div style='line-height:1.3;padding:2px 0;'>"
+                                        f"<strong style='font-size:0.86rem;'>{html.escape(p_disp)}</strong>{creator_badge}{me_badge}<br>"
+                                        f"<span style='font-size:0.75rem;color:var(--q-text-3);'>@{html.escape(p)}</span>"
+                                        f"</div>",
+                                        unsafe_allow_html=True
+                                    )
                                 with c_p2:
                                     if st.button("Profile", key=f"grp_prof_btn_{p}_{active_id}", use_container_width=True):
                                         _show_public_profile(p)
