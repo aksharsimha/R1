@@ -25,6 +25,11 @@
     1. **From Friends**: One-click selectbox containing friends not yet in the conversation.
     2. **By Username**: Direct username search with validation against Firestore database.
   - Added visual role indicators (`👑 Admin` for group creator and `(You)` for the active user) with quick access to view member profile card modals.
+- **5-Minute One-Time Timed Premium Preview Trial (`firebase_db.py`, `quest_app/settings.py`)**:
+  - Renamed toggle to `"🧪 Test Premium in Preview Card"`.
+  - Added persistent 5-minute (300-second) trial management via `get_premium_trial_status()` and `start_premium_trial()` stored in Firestore.
+  - Displays a live countdown timer (`⏳ 5-Minute Free Trial Active: MM:SS remaining`) while active.
+  - Automatically and permanently locks the trial (`disabled=True`) once 5 minutes expire, preventing re-activation and prompting the user to upgrade to QUEST Premium.
 
 ---
 
