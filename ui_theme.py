@@ -606,38 +606,31 @@ def css(theme: str = None) -> str:
         cursor: pointer; padding: 4px; margin: -4px; border-radius: 8px;
         transition: background 0.15s ease, transform 0.12s ease; }}
     .quest-profile-header:hover {{ background: rgba(255, 255, 255, 0.06); transform: translateY(-1px); }}
+    .quest-profile-header:hover .quest-profile-name {{ color: var(--q-accent) !important; }}
     .quest-profile-header:active {{ transform: translateY(0px); }}
-    .quest-profile-badge-chip {{ margin-left: auto; font-size: 0.7rem; font-weight: 600;
-        color: var(--q-accent); background: var(--q-accent-weak); border: 1px solid var(--q-border-2);
-        padding: 2px 7px; border-radius: 10px; white-space: nowrap; display: inline-flex;
-        align-items: center; gap: 3px; pointer-events: none; opacity: 0.9; }}
-    div[data-testid="stSidebar"] div.stElementContainer:has(.quest-profile-overlay-marker) {{
-        display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important;
-    }}
-    div[data-testid="stSidebar"] div.stElementContainer:has(.quest-profile-overlay-marker) + div.stElementContainer {{
-        margin-top: -88px !important;
-        margin-bottom: 38px !important;
-        height: 50px !important;
-        position: relative !important;
-        z-index: 20 !important;
-    }}
-    div[data-testid="stSidebar"] div.stElementContainer:has(.quest-profile-overlay-marker) + div.stElementContainer .stButton {{
-        width: 100% !important;
-        height: 50px !important;
-        margin: 0 !important;
+    .quest-profile-hidden-trigger,
+    [data-testid="stSidebar"] [data-testid="element-container"]:has(.quest-profile-hidden-trigger),
+    [data-testid="stSidebar"] .element-container:has(.quest-profile-hidden-trigger),
+    [data-testid="stSidebar"] div[data-testid="stElementContainer"]:has(.quest-profile-hidden-trigger) {{
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
         padding: 0 !important;
-    }}
-    div[data-testid="stSidebar"] div.stElementContainer:has(.quest-profile-overlay-marker) + div.stElementContainer .stButton > button {{
-        height: 50px !important;
-        min-height: 50px !important;
-        max-height: 50px !important;
-        width: 100% !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
         opacity: 0 !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
+        pointer-events: auto !important;
+    }}
+    .quest-profile-hidden-trigger button,
+    [data-testid="stSidebar"] div:has(> div > div > .quest-profile-hidden-trigger) button {{
+        opacity: 0 !important;
+        width: 1px !important;
+        height: 1px !important;
         padding: 0 !important;
-        margin: 0 !important;
+        border: 0 !important;
     }}
     .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
         display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}

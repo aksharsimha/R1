@@ -216,21 +216,44 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
                 <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
                 <div class="quest-profile-user" title="@{username}">@{username}</div>
             </div>
-            <div class="quest-profile-badge-chip">🪪 View</div>
         </div>
         <div class="quest-profile-growth">
             <span class="quest-profile-growth-label">Portfolio Growth</span>
             <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
         </div>
     </div>
+    <script>
+    (() => {{
+        function bindProfileCard() {{
+            const header = document.querySelector('.quest-profile-header');
+            const btn = document.querySelector('.quest-profile-hidden-trigger button') ||
+                        document.querySelector('button[key*="sidebar_profile_card_trigger"]');
+            if (header && btn && !header.dataset.bound) {{
+                header.dataset.bound = 'true';
+                header.style.cursor = 'pointer';
+                header.addEventListener('click', (e) => {{
+                    e.preventDefault();
+                    e.stopPropagation();
+                    btn.click();
+                }});
+            }}
+        }}
+        bindProfileCard();
+        if (!window._qProfileObs) {{
+            window._qProfileObs = new MutationObserver(bindProfileCard);
+            window._qProfileObs.observe(document.body, {{ childList: true, subtree: true }});
+        }}
+    }})();
+    </script>
     """, unsafe_allow_html=True)
 
 _profile_placeholder = st.sidebar.empty()
 
-# Overlay trigger button for clicking sidebar profile card
-st.sidebar.markdown('<div class="quest-profile-overlay-marker"></div>', unsafe_allow_html=True)
-if st.sidebar.button("🪪 View Profile Card", key=f"sidebar_profile_card_trigger_{_username}", help="Click avatar or name to view Profile Card", use_container_width=True):
+# Hidden trigger button for clicking sidebar profile card (triggered via JS click on avatar/name)
+st.sidebar.markdown('<div class="quest-profile-hidden-trigger">', unsafe_allow_html=True)
+if st.sidebar.button("Open Profile Card", key=f"sidebar_profile_card_trigger_{_username}", help="Click avatar or name to view Profile Card"):
     _show_sidebar_profile_dialog(_username)
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
