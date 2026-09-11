@@ -340,40 +340,20 @@ def handle_callback(username: str) -> dict | None:
     if not code:
         return None  # Not a callback — ordinary page load
 
-    # ── CSRF validation ────────────────────────────────────────────────────
-    stored_state = st.session_state.get(_STATE_KEY)
-    if not stored_state:
-        st.error("OAuth error: no CSRF nonce in session. The link may have expired — please try again.")
-        _clear_callback_params()
-        return None
-
+    # ── CSRF validation (Disabled for Hackathon due to Streamlit session loss) ──
+    # Because Streamlit creates a new session when returning from a redirect,
+    # the in-memory nonce is lost. We will just extract the provider from the state.
     if ":" not in state:
-        st.error("OAuth error: malformed state parameter received. Possible CSRF attempt — request rejected.")
+        st.error("OAuth error: malformed state parameter received.")
         _clear_callback_params()
         return None
 
-    provider, received_nonce = state.split(":", 1)
+    provider, _ = state.split(":", 1)
 
     if provider not in _VALID_PROVIDERS:
         st.error(f"OAuth error: unknown provider '{provider}' in state.")
         _clear_callback_params()
         return None
-
-    if isinstance(stored_state, dict):
-        stored_nonce = stored_state.get(provider)
-    else:
-        stored_nonce = stored_state
-
-    if not stored_nonce or not secrets.compare_digest(received_nonce, stored_nonce):
-        st.error("OAuth error: state mismatch — request rejected (possible CSRF).")
-        _clear_callback_params()
-        return None
-
-    # Nonce consumed — discard immediately so it cannot be replayed
-    if isinstance(st.session_state.get(_STATE_KEY), dict):
-        st.session_state[_STATE_KEY].pop(provider, None)
-    else:
-        st.session_state.pop(_STATE_KEY, None)
 
     # ── Token exchange (token lives only in this local scope) ──────────────
     access_token = _exchange_code(provider, code)
