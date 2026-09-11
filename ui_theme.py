@@ -379,23 +379,100 @@ def css(theme: str = None) -> str:
        parent stRadio wrapper must be explicitly 100% wide with box-sizing:border-box.
        Then each <label> child is also 100% wide — and all three together reach
        exactly the same right edge as the profile card and selectbox above them. */
-    section[data-testid="stSidebar"] [role="radiogroup"] {{
-        gap: 8px; width: 100% !important; box-sizing: border-box !important;
-        display: flex; flex-direction: column; }}
-    section[data-testid="stSidebar"] [role="radiogroup"] > label {{
-        width: 100% !important; box-sizing: border-box !important;
-        padding: 11px 12px; border: 1px solid var(--q-border);
-        border-radius: var(--q-radius-sm); cursor: pointer;
-        background: var(--q-surface-2);
-        color: var(--q-text-2); transition: background .15s var(--q-ease),
-        color .15s var(--q-ease), border-color .15s var(--q-ease); margin: 0; }}
-    section[data-testid="stSidebar"] [role="radiogroup"] > label:hover {{
-        background: var(--q-accent-weak); color: var(--q-text); border-color: var(--q-border-2); }}
-    section[data-testid="stSidebar"] [role="radiogroup"] > label > div:first-child {{
-        display: none !important; }}   /* hide the radio circle */
-    section[data-testid="stSidebar"] [role="radiogroup"] > label:has(input:checked) {{
-        background: var(--q-accent-weak); color: var(--q-accent); border-color: var(--q-accent); font-weight: 500; }}
-    section[data-testid="stSidebar"] [role="radiogroup"] label p {{ font-size: .95rem; }}
+    section[data-testid="stSidebar"] [role="radiogroup"],
+    section[data-testid="stSidebar"] [data-testid="stRadioGroup"] {{
+        gap: 8px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }}
+    section[data-testid="stSidebar"] [role="radiogroup"] > label,
+    section[data-testid="stSidebar"] [role="radiogroup"] [data-testid="stRadioOption"],
+    section[data-testid="stSidebar"] [data-testid="stRadioGroup"] [data-testid="stRadioOption"] {{
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 10px 14px !important;
+        border: 1px solid var(--q-border) !important;
+        border-radius: var(--q-radius-sm) !important;
+        cursor: pointer !important;
+        background: var(--q-surface-2) !important;
+        color: var(--q-text-2) !important;
+        transition: background .15s var(--q-ease),
+                    color .15s var(--q-ease),
+                    border-color .15s var(--q-ease) !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+    }}
+    section[data-testid="stSidebar"] [role="radiogroup"] > label:hover,
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"]:hover {{
+        background: var(--q-accent-weak) !important;
+        color: var(--q-text) !important;
+        border-color: var(--q-border-2) !important;
+    }}
+    section[data-testid="stSidebar"] [role="radiogroup"] > label:has(input:checked),
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"]:has(input:checked) {{
+        background: var(--q-accent-weak) !important;
+        color: var(--q-accent) !important;
+        border-color: var(--q-accent) !important;
+        font-weight: 500 !important;
+    }}
+    
+    /* ── Completely hide all radio button circles / bullets across sidebar ── */
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] [class*="etak9234"],
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] [class*="etak9235"],
+    section[data-testid="stSidebar"] [data-testid="stRadioGroup"] [class*="etak9234"],
+    section[data-testid="stSidebar"] [data-testid="stRadioGroup"] [class*="etak9235"],
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] div:has(+ [data-testid="stMarkdownContainer"]),
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] span:has(+ [data-testid="stMarkdownContainer"]),
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div > div:first-child:not([data-testid="stMarkdownContainer"]),
+    section[data-testid="stSidebar"] [role="radiogroup"] label div:first-child:not(:has([data-testid="stMarkdownContainer"])):not([data-testid="stMarkdownContainer"]),
+    section[data-testid="stSidebar"] [role="radiogroup"] [data-testid="stRadioOptionBullet"],
+    section[data-testid="stSidebar"] [role="radiogroup"] input[type="radio"],
+    section[data-testid="stSidebar"] [role="radiogroup"] input[type="radio"] ~ div,
+    section[data-testid="stSidebar"] [role="radiogroup"] div[data-baseweb="radio"] > div:first-child,
+    section[data-testid="stSidebar"] [role="radiogroup"] svg {{
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        max-width: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        opacity: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        left: -9999px !important;
+    }}
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] [class*="etak9233"],
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div {{
+        gap: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+    }}
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"],
+    section[data-testid="stSidebar"] [role="radiogroup"] [data-testid="stMarkdownContainer"] {{
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    section[data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p,
+    section[data-testid="stSidebar"] [role="radiogroup"] [data-testid="stMarkdownContainer"] p {{
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
 
     /* ── Buttons ── */
     .stButton > button {{ background: var(--q-surface-2); color: var(--q-text);
@@ -408,25 +485,18 @@ def css(theme: str = None) -> str:
 
     /* Streamlit widget labels can override the inherited theme colour. */
     .stApp [data-testid="stWidgetLabel"] p,
-    .stApp [data-testid="stRadio"] [role="radiogroup"] label,
-    .stApp [data-testid="stRadio"] [role="radiogroup"] label p,
-    .stApp [data-testid="stRadioOption"],
-    .stApp [data-testid="stRadioOption"] * {{
+    .stApp [data-testid="stRadio"] [role="radiogroup"] [data-testid="stMarkdownContainer"] p,
+    .stApp [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p,
+    .stApp [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] span {{
         color: var(--q-text) !important;
         -webkit-text-fill-color: var(--q-text) !important;
-        opacity: 1 !important;
     }}
-    .stApp [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked),
-    .stApp [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked) p {{
-        color: var(--q-text) !important;
-    }}
-    .stApp [data-testid="stRadioOption"]:has(input:checked),
-    .stApp [data-testid="stRadioOption"]:has(input:checked) * {{
+    .stApp [data-testid="stRadioOption"]:has(input:checked) [data-testid="stMarkdownContainer"] p,
+    .stApp [data-testid="stRadioOption"]:has(input:checked) [data-testid="stMarkdownContainer"] span {{
         color: var(--q-accent) !important;
         -webkit-text-fill-color: var(--q-accent) !important;
     }}
-    .stApp [data-testid="stSidebar"] [data-testid="stRadioOption"],
-    .stApp [data-testid="stSidebar"] [data-testid="stRadioOption"] * {{
+    .stApp [data-testid="stSidebar"] [data-testid="stRadioOption"] [data-testid="stMarkdownContainer"] p {{
         color: var(--q-text) !important;
         -webkit-text-fill-color: var(--q-text) !important;
     }}
@@ -608,29 +678,13 @@ def css(theme: str = None) -> str:
     .quest-profile-header:hover {{ background: rgba(255, 255, 255, 0.06); transform: translateY(-1px); }}
     .quest-profile-header:hover .quest-profile-name {{ color: var(--q-accent) !important; }}
     .quest-profile-header:active {{ transform: translateY(0px); }}
-    .quest-profile-hidden-trigger,
-    [data-testid="stSidebar"] [data-testid="element-container"]:has(.quest-profile-hidden-trigger),
-    [data-testid="stSidebar"] .element-container:has(.quest-profile-hidden-trigger),
-    [data-testid="stSidebar"] div[data-testid="stElementContainer"]:has(.quest-profile-hidden-trigger) {{
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-        opacity: 0 !important;
-        pointer-events: auto !important;
+    @keyframes modalPop {{
+        0% {{ transform: scale(0.92); opacity: 0; }}
+        100% {{ transform: scale(1); opacity: 1; }}
     }}
-    .quest-profile-hidden-trigger button,
-    [data-testid="stSidebar"] div:has(> div > div > .quest-profile-hidden-trigger) button {{
-        opacity: 0 !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        border: 0 !important;
+    #quest-profile-modal-close-btn:hover {{
+        background: rgba(255, 255, 255, 0.25) !important;
+        transform: scale(1.08);
     }}
     .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
         display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}

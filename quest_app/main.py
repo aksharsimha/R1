@@ -224,6 +224,7 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
     </div>
     """, unsafe_allow_html=True)
 
+
 st.sidebar.markdown("""
 <style>
 .st-key-sidebar_profile_wrap { position: relative; }
@@ -243,7 +244,6 @@ with _profile_wrap:
     _profile_placeholder = st.empty()
     if st.button("Open Profile Card", key="sidebar_profile_card_trigger", use_container_width=True):
         _show_sidebar_profile_dialog(_username)
-
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
@@ -525,6 +525,8 @@ if section == "Library":
 
 if section == "Leaderboard":
     import quest_app.tabs.leaderboard as tb
+    import importlib
+    importlib.reload(tb)
     tb.render(_user_info)
     st.stop()
 
@@ -865,8 +867,10 @@ elif section == "Global Markets":
     import quest_app.tabs.global_markets as global_markets
     global_markets.render(_user_info, _user_data_dir)
 elif section == "Leaderboard":
-    st.markdown(f"## {section} (Under Construction)")
-    st.markdown("This tab is assigned to a team member and is currently being built.")
+    import quest_app.tabs.leaderboard as tb
+    import importlib
+    importlib.reload(tb)
+    tb.render(_user_info)
 elif section in ("Shop", "Wallet"):
     import quest_app.tabs.shop as tb
     tb.render(_user_info)
