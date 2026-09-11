@@ -203,11 +203,34 @@ def _show_sidebar_profile_dialog(username: str):
     st.html(card_html)
 
 
-# Hidden trigger button for clicking sidebar profile card header
-st.sidebar.markdown('<div class="quest-hidden-profile-btn">', unsafe_allow_html=True)
-if st.sidebar.button("Open Profile Card", key="sidebar_profile_card_trigger", help="View your public profile card"):
+def _render_profile_card(placeholder, user_info, username, avatar_markup, p_growth):
+    _g_val = p_growth.get("growth_abs", 0) if isinstance(p_growth, dict) else 0
+    _g_color = "#34d399" if _g_val >= 0 else "#f87171"
+    _g_sign = "+" if _g_val >= 0 else ""
+    _disp_name = user_info.get("display_name", username) or username
+    placeholder.markdown(f"""
+    <div class="quest-profile-card">
+        <div class="quest-profile-header" title="Click to view Profile Card">
+            <div class="quest-profile-avatar">{avatar_markup}</div>
+            <div class="quest-profile-copy">
+                <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
+                <div class="quest-profile-user" title="@{username}">@{username}</div>
+            </div>
+            <div class="quest-profile-badge-chip">🪪 View</div>
+        </div>
+        <div class="quest-profile-growth">
+            <span class="quest-profile-growth-label">Portfolio Growth</span>
+            <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+_profile_placeholder = st.sidebar.empty()
+
+# Overlay trigger button for clicking sidebar profile card
+st.sidebar.markdown('<div class="quest-profile-overlay-marker"></div>', unsafe_allow_html=True)
+if st.sidebar.button("🪪 View Profile Card", key=f"sidebar_profile_card_trigger_{_username}", help="Click avatar or name to view Profile Card", use_container_width=True):
     _show_sidebar_profile_dialog(_username)
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
@@ -218,29 +241,6 @@ if st.sidebar.button("⚙  Settings", key="sidebar_settings_btn", help="Open set
     st.query_params["page"] = "Settings"
     st.rerun()
 st.sidebar.markdown('</div>', unsafe_allow_html=True)
-
-def _render_profile_card(placeholder, user_info, username, avatar_markup, p_growth):
-    _g_val = p_growth.get("growth_abs", 0) if isinstance(p_growth, dict) else 0
-    _g_color = "#34d399" if _g_val >= 0 else "#f87171"
-    _g_sign = "+" if _g_val >= 0 else ""
-    _disp_name = user_info.get("display_name", username) or username
-    placeholder.markdown(f"""
-    <div class="quest-profile-card">
-        <div class="quest-profile-header" onclick="const b = document.querySelector('.quest-hidden-profile-btn button'); if(b) b.click();" title="Click to view Profile Card">
-            <div class="quest-profile-avatar">{avatar_markup}</div>
-            <div class="quest-profile-copy">
-                <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
-                <div class="quest-profile-user" title="@{username}">@{username}</div>
-            </div>
-        </div>
-        <div class="quest-profile-growth">
-            <span class="quest-profile-growth-label">Portfolio Growth</span>
-            <span class="quest-profile-growth-val" style="color: {_g_color};">{_g_sign}₹{_g_val:,.0f}</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-_profile_placeholder = st.sidebar.empty()
 
 # FEATURE A: Update Profile Card with Growth Stat early (so it shows on all tabs)
 try:
