@@ -564,8 +564,17 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
 
             if user_coins < 1000:
                 st.error("⚠️ Insufficient Quest Coins. Top up your wallet to extend your subscription.")
-                if st.button("Close", use_container_width=True, key="dlg_close_extend"):
-                    st.rerun()
+                col_w, col_c = st.columns([1.5, 1.0])
+                with col_w:
+                    if st.button("💳 Top Up in Wallet", type="primary", use_container_width=True, key="dlg_goto_wallet_extend"):
+                        st.query_params["page"] = "Wallet"
+                        st.session_state.last_active_page = "Wallet"
+                        if "nav_section" in st.session_state:
+                            st.session_state.nav_section = "💳  Wallet"
+                        st.rerun()
+                with col_c:
+                    if st.button("Close", use_container_width=True, key="dlg_close_extend"):
+                        st.rerun()
             else:
                 col_y, col_n = st.columns(2)
                 with col_y:
@@ -620,8 +629,17 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
 
             if user_coins < 1000:
                 st.error("⚠️ Insufficient Quest Coins. Top up your wallet to continue.")
-                if st.button("Close", use_container_width=True, key="dlg_close_upgrade"):
-                    st.rerun()
+                col_w, col_c = st.columns([1.5, 1.0])
+                with col_w:
+                    if st.button("💳 Top Up in Wallet", type="primary", use_container_width=True, key="dlg_goto_wallet_upgrade"):
+                        st.query_params["page"] = "Wallet"
+                        st.session_state.last_active_page = "Wallet"
+                        if "nav_section" in st.session_state:
+                            st.session_state.nav_section = "💳  Wallet"
+                        st.rerun()
+                with col_c:
+                    if st.button("Close", use_container_width=True, key="dlg_close_upgrade"):
+                        st.rerun()
             else:
                 col_y, col_n = st.columns(2)
                 with col_y:
