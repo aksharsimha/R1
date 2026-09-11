@@ -742,7 +742,9 @@ elif _active("tab6"):
     importlib.reload(tb)
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
 elif _active("tab_chat"):
+    import importlib
     import quest_app.tabs.chat as tb
+    importlib.reload(tb)
     tb.render(df, summary, current_assets, _user_info, portfolio_sentiment_score, _sentiment_neg_count, comp_score)
 elif _active("tab_michael"):
     import importlib
