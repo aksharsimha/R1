@@ -164,12 +164,11 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
                 profile_data = firebase_db.get_user_profile(username)
             except Exception:
                 profile_data = {}
-        stored = profile_data.get("banner_customization")
-        if not isinstance(stored, dict):
-            try:
-                stored = firebase_db.get_banner_customization(username)
-            except Exception:
-                stored = {}
+
+        stored = firebase_db.get_banner_customization(username)
+        if isinstance(profile_data.get("banner_customization"), dict):
+            stored.update(profile_data["banner_customization"])
+
         is_premium = bool(
             profile_data.get("is_pro")
             or profile_data.get("is_premium")
@@ -177,18 +176,18 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
             or stored.get("isPremium")
             or firebase_db.is_user_pro(username)
         )
-        card_bg = stored.get("cardBackground", "#111214")
-        card_accent = stored.get("themeColor", card_bg)
+        card_bg = stored.get("cardBackground") or "#111214"
+        card_accent = stored.get("themeColor") or stored.get("cardBackground") or profile_data.get("profile_customization", {}).get("accent_color") or "#8b5cf6"
         b_type = stored.get("bannerType", "color")
-        b_val = stored.get("bannerValue", "#5865F2")
+        b_val = stored.get("bannerValue") or card_accent
         av_src = profile_data.get("avatar")
         disp_text = html.escape(profile_data.get("display_name") or username)
         bio_text = html.escape(profile_data.get("summary") or "Surveillance operative on QUEST network")
-        active_anim = stored.get("animationEffect", "none") if is_premium else "none"
+        active_anim = stored.get("animationEffect", "neon_border" if is_premium else "none") if is_premium else "none"
         anim_int = stored.get("animationIntensity", 2)
 
     if not (isinstance(card_accent, str) and card_accent.startswith("#")):
-        card_accent = "#5865F2"
+        card_accent = "#8b5cf6"
     if not (isinstance(card_bg, str) and card_bg.startswith("#")):
         card_bg = "#111214"
 
@@ -197,7 +196,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
     if b_type == "image" and (b_val.startswith("data:") or b_val.startswith("http")):
         banner_inner = f'<div style="height:130px;background-image:url(\'{b_val}\');background-size:cover;background-position:center;border-bottom:1px solid {card_accent}55;"></div>'
     else:
-        banner_inner = f'<div style="height:120px;position:relative;background:linear-gradient(180deg, {card_accent}25 0%, rgba(0,0,0,0.35) 100%);border-bottom:1px solid {card_accent}33;"></div>'
+        banner_inner = f'<div style="height:120px;position:relative;background:linear-gradient(180deg, {card_accent}33 0%, rgba(0,0,0,0.45) 100%);border-bottom:1px solid {card_accent}55;"></div>'
 
     if av_src:
         av_markup = f'<img src="{av_src}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">'
@@ -900,8 +899,8 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     profile["is_premium"] = is_premium
                     st.session_state.user_info["is_pro"] = is_premium
                     st.session_state.user_info["is_premium"] = is_premium
-                    if "_cached_profile" in st.session_state:
-                        st.session_state._cached_profile = profile
+                    st.session_state.pop("_cached_profile", None)
+                    st.session_state.pop("_user_profiles_cache", None)
                     st.toast("Profile settings saved successfully!", icon="✅")
                     st.rerun()
                 else:

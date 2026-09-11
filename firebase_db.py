@@ -795,7 +795,7 @@ def set_pro_status(username: str, is_pro: bool = True) -> bool:
 
 
 def get_banner_customization(username: str) -> dict:
-    """Read Discord-style banner & profile customization from Firestore."""
+    """Read Discord-style banner & profile customization from Firestore with legacy fallback."""
     if not username or not username.strip():
         return dict(_DEFAULT_BANNER_CONFIG)
     try:
@@ -803,9 +803,39 @@ def get_banner_customization(username: str) -> dict:
         stored = profile.get("banner_customization", {})
         if not isinstance(stored, dict):
             stored = {}
+        legacy = profile.get("profile_customization", {})
+        if not isinstance(legacy, dict):
+            legacy = {}
+
         res = dict(_DEFAULT_BANNER_CONFIG)
+
+        # Legacy profile_customization hydration
+        if legacy.get("accent_color"):
+            res["themeColor"] = legacy["accent_color"]
+            res["cardBackground"] = legacy.get("card_bg") or legacy["accent_color"]
+            res["bannerValue"] = legacy["accent_color"]
+        if legacy.get("banner_url"):
+            b_url = str(legacy["banner_url"])
+            if b_url.startswith("http") or b_url.startswith("data:"):
+                res["bannerType"] = "image"
+                res["bannerValue"] = b_url
+        if legacy.get("profile_effect"):
+            eff = legacy["profile_effect"]
+            if eff in ["subtle_glow", "neon_border"]:
+                res["animationEffect"] = "neon_border"
+            elif eff in ["scanline", "holo_scanline"]:
+                res["animationEffect"] = "holo_scanline"
+            elif eff in ["matrix", "circuit_surge"]:
+                res["animationEffect"] = "circuit_surge"
+            elif eff in ["chroma", "rgb_orbit"]:
+                res["animationEffect"] = "rgb_orbit"
+            elif eff in ["glitch", "glitch_aura"]:
+                res["animationEffect"] = "glitch_aura"
+
+        # Stored banner_customization takes precedence
         res.update(stored)
-        if profile.get("profile_customization", {}).get("is_pro") or profile.get("is_pro") or profile.get("is_premium"):
+
+        if profile.get("profile_customization", {}).get("is_pro") or profile.get("is_pro") or profile.get("is_premium") or stored.get("isPremium") or legacy.get("is_pro"):
             res["isPremium"] = True
         return res
     except Exception:
@@ -813,7 +843,7 @@ def get_banner_customization(username: str) -> dict:
 
 
 def save_banner_customization(username: str, data: dict) -> bool:
-    """Save banner customization dict to Firestore user document."""
+    """Save banner customization dict to Firestore user document and sync across schemas."""
     if not username or not username.strip():
         return False
     try:
@@ -822,8 +852,22 @@ def save_banner_customization(username: str, data: dict) -> bool:
         for k in _DEFAULT_BANNER_CONFIG:
             if k in data:
                 clean[k] = data[k]
+
+        theme_c = clean.get("themeColor") or clean.get("cardBackground") or "#5865F2"
+        is_p = bool(clean.get("isPremium", False))
+
         db.collection("users").document(username).set({
-            "banner_customization": clean
+            "banner_customization": clean,
+            "profile_customization": {
+                "accent_color": theme_c,
+                "is_pro": is_p,
+                "banner_url": clean.get("bannerValue") if clean.get("bannerType") == "image" else theme_c,
+                "profile_theme": "custom",
+                "profile_effect": clean.get("animationEffect", "none"),
+                "show_pro_badge": is_p,
+            },
+            "is_pro": is_p,
+            "is_premium": is_p,
         }, merge=True)
         return True
     except Exception as e:

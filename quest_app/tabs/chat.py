@@ -56,7 +56,13 @@ def _show_public_profile(username: str):
     </style>
     """, unsafe_allow_html=True)
     import quest_app.settings as settings
-    profile = _get_profile_cached(username)
+    import firebase_db
+    try:
+        profile = firebase_db.get_user_profile(username)
+        if "_user_profiles_cache" in st.session_state:
+            st.session_state._user_profiles_cache[username] = profile
+    except Exception:
+        profile = _get_profile_cached(username)
     card_html = settings.build_discord_profile_card_html(username, profile)
     st.html(card_html)
 

@@ -7,16 +7,11 @@
   - Eliminated raw anchor `<a href="?page=Chat&view_profile=...">` links in `quest_app/tabs/chat.py` which previously triggered browser new-tab navigations.
   - Added native Streamlit `👤 Profile Card` header action button and `👥 Members` popover profile launchers that trigger `@st.dialog("Profile Card")` directly within the active view.
   - Senders' message avatars and display names now render cleanly without navigation redirects, keeping the user in the active chat while modal dialogs pop up in-place.
-- **Unified Single Theme Color Wheel & Intensity System**:
-  - Added a central color picker that dynamically customizes the entire card palette at once: neon accent borders, glow effects, circuit board traces, and ambient highlights.
-  - Added selectable intensity level control to scale neon bloom and holographic radiation.
-- **Basic vs. Premium Member Tier Architecture**:
-  - Added clear tier indicators: `Basic Member` badge vs. `PREMIUM PRO` crown pill badge.
-  - Premium-exclusive animated effects: Neon Border Pulse, Holographic Scanline, Circuit Power Surge, RGB Chroma Orbit, and Glitch Aura.
-  - Cleaned up mock labels, watermarks, and redundant action icons for an authentic, high-finish UI.
-- **Two-Way Routing & Navigation State Synchronization (`quest_app/main.py`)**:
-  - Resolved sidebar radio synchronization issue where query parameter page routing (e.g. `?page=Chat`) could get overridden by cached radio state and kick users back to Overview.
-  - Added dynamic sync between `_query_page`, `st.session_state.last_active_page`, and `nav_section_{workspace}_{username}`.
+- **Multi-User Live Profile Card Synchronization Across Chat & Settings**:
+  - Re-architected `firebase_db.get_banner_customization()` to intelligently resolve and merge custom colors, themes, animated effects, and banners across modern `banner_customization` and legacy `profile_customization` schemas.
+  - Enhanced `build_discord_profile_card_html()` in `quest_app/settings.py` so each user's unique theme color, circuit trace tint, card background, banner image, and pro animation effects are rendered accurately when viewed by other users.
+  - Configured `_show_public_profile()` in `quest_app/tabs/chat.py` and `quest_app/tabs/news.py` to always pull live fresh profile data directly from Firestore on click, bypassing stale session caches.
+  - Inverted in-session cache invalidation on save in Settings so updates are instantly broadcasted and visible to other users in chat.
 
 ---
 
