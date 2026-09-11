@@ -87,8 +87,8 @@ def _logo_markup(symbol, quote=None):
 
 def _selected_symbol(account):
     default = next(iter(account.get("holdings", {})), "RELIANCE")
-    selected = st.session_state.get("vt_symbol", default)
-    st.session_state.vt_symbol = selected
+    selected = st.session_state.get("gm_symbol", default)
+    st.session_state.gm_symbol = selected
     return selected
 
 
@@ -122,31 +122,35 @@ def _render_holdings(account, prefetched=None):
         with cols[index % len(cols)]:
             st.markdown(f"<div class='vt-stock'><strong>{_logo_markup(symbol, quote)}{symbol}</strong><span>{quantity:g} shares · {_money(quote['price'])}</span><br><span class='{tone}'>{_signed_money(pnl)} · {pnl / invested * 100 if invested else 0:+.2f}%</span></div>", unsafe_allow_html=True)
             if st.button("View", key=f"vt_view_{symbol}", use_container_width=True):
-                st.session_state.vt_symbol = symbol
+                st.session_state.gm_symbol = symbol
                 st.session_state.vt_order_side = "BUY"
                 st.rerun()
 
 
 def _render_buy_search():
-    st.markdown("<div class='vt-section'>🔎 Discover stocks</div>", unsafe_allow_html=True)
-    query = st.text_input("Search company name or ticker", placeholder="Try Reliance, Tata Motors, Infosys, Zomato, SBI...", key="vt_stock_query").strip()
+    st.markdown("<div class='vt-section'>🌎 Discover US & Global Stocks</div>", unsafe_allow_html=True)
+    query = st.text_input("Search company name or ticker", placeholder="Try Apple, Tesla, NVIDIA, Microsoft...", key="gm_stock_query").strip()
     if not query:
-        st.caption("Search when you are ready to buy. Your portfolio is already above. 💡")
+        st.caption("Search when you are ready to buy. Your portfolio is already above. 🌎")
         return
-    matches = engine.search_stocks(query, region="IN")
+    matches = engine.search_stocks(query, region="US")
     if not matches:
-        st.info("No Indian stock or fund matched that company name yet.")
+        st.info("No international stock matched that company name yet.")
         return
     selected_label = st.selectbox(
-        "Choose an NSE security",
-        options=[f"{item.get('symbol', '')} · {item.get('company', '')}" for item in matches],
-        key="vt_search_selection",
+        "Choose a US security",
+        [f"{m['symbol']} - {m['company']}" for m in matches],
+        key="gm_stock_select"
     )
-    selected_index = [f"{item.get('symbol', '')} · {item.get('company', '')}" for item in matches].index(selected_label)
-    selected_item = matches[selected_index]
-    selected_symbol = str(selected_item.get("symbol", "")).upper()
-    if st.session_state.get("vt_symbol") != selected_symbol:
-        st.session_state.vt_symbol = selected_symbol
+    symbol = selected_label.split(" - ")[0]
+    
+    # We fetch the quote directly to show the USD equivalent too.
+    quote = engine.get_quote(symbol)
+    rate = quote.get("_exchange_rate", 83.5) if quote else 83.5
+    st.info(f"💱 **Live Exchange Rate Applied:** 1 USD = ₹{rate:.2f}")
+
+    if st.button("Trade this stock", type="primary", use_container_width=True, key="gm_trade_btn"):
+        st.session_state.gm_symbol = symbol
         st.session_state.vt_order_side = "BUY"
         st.rerun()
 
@@ -214,8 +218,8 @@ def _render_trade(account, username, base_dir, symbol, quote):
     holding = account.get("holdings", {}).get(symbol, {})
     owned = float(holding.get("quantity", 0))
     with st.container(border=True):
-        side = st.radio("Order type", ["BUY", "SELL"], horizontal=True, key="vt_order_side")
-        quantity = st.number_input("Quantity", min_value=0.01, value=1.0, step=1.0, key="vt_order_quantity")
+        side = st.radio("Order type", ["BUY", "SELL"], horizontal=True, key="gm_order_side")
+        quantity = st.number_input("Quantity", min_value=0.01, value=1.0, step=1.0, key="gm_order_quantity")
         price = float(quote["price"])
         value = quantity * price
         st.write(f"Price: **{_money(price)}**")
@@ -241,8 +245,8 @@ def _render_trade(account, username, base_dir, symbol, quote):
                     edu_db.award_xp(50, "portfolio_milestone")
                 # Pass fresh account across the rerun boundary so the page
                 # immediately reflects the trade without a stale disk read.
-                st.session_state["vt_fresh_account"] = account
-                st.session_state["vt_trade_msg"] = f"{'Bought' if side == 'BUY' else 'Sold'} {quantity:g} {symbol}! 🎉"
+                st.session_state["gm_fresh_account"] = account
+                st.session_state["gm_trade_msg"] = f"{'Bought' if side == 'BUY' else 'Sold'} {quantity:g} {symbol}! 🎉"
                 st.rerun()
             except ValueError as exc:
                 st.error(str(exc))
@@ -276,6 +280,37 @@ def _render_activity(account):
 
 def render(user_info, user_data_dir=None):
     username = user_info.get("username", "demo_guest")
+
+    has_intl = False
+    if username and username != "demo_guest":
+        try:
+            import firebase_db
+            has_intl = firebase_db.has_entitlement(username, "intl_stocks")
+        except Exception:
+            has_intl = False
+    else:
+        try:
+            has_intl = bool(edu_db.load_progress().get("entitlements", {}).get("intl_stocks"))
+        except Exception:
+            has_intl = False
+
+    if not has_intl:
+        st.markdown("""
+        <div style="background:var(--q-surface-2, #18191c); border:1px solid var(--q-border, #262a31); border-radius:16px; padding:3rem 1.5rem; text-align:center; max-width:620px; margin:2.5rem auto 1.5rem;">
+            <div style="font-size:3rem; margin-bottom:0.8rem;">🔒</div>
+            <h2 style="color:var(--q-text, #f1f3f5); font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">Global Markets is Locked</h2>
+            <p style="color:var(--q-text-2, #b7bcc4); font-size:0.92rem; line-height:1.5; margin-bottom:0;">
+                Unlock direct paper-trading access to NASDAQ, NYSE, and international equities with real-time currency conversion using the <strong>US & Global Stocks Pass</strong>.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        col_pad1, col_btn, col_pad2 = st.columns([1, 1.2, 1])
+        with col_btn:
+            if st.button("🛒 Unlock in Shop", type="primary", use_container_width=True, key="unlock_intl_in_shop"):
+                st.query_params["page"] = "Shop"
+                st.rerun()
+        return
+
     if user_data_dir:
         base_dir = __import__("os").path.dirname(__import__("os").path.dirname(user_data_dir))
     else:
@@ -283,8 +318,8 @@ def render(user_info, user_data_dir=None):
 
     # Use the freshly-mutated account from a just-completed trade so the page
     # reflects the change immediately without a stale disk/edu_db round-trip.
-    if "vt_fresh_account" in st.session_state:
-        account = st.session_state.pop("vt_fresh_account")
+    if "gm_fresh_account" in st.session_state:
+        account = st.session_state.pop("gm_fresh_account")
     else:
         account = _sync_shared_balance(engine.ensure_account(username, base_dir))
         engine.save_account(account, username, base_dir)
@@ -302,10 +337,16 @@ def render(user_info, user_data_dir=None):
     _render_css()
 
     # Show trade success toast from the previous interaction (set in _render_trade)
-    if trade_msg := st.session_state.pop("vt_trade_msg", None):
+    if trade_msg := st.session_state.pop("gm_trade_msg", None):
         st.success(trade_msg)
 
-    st.markdown("<div class='vt-wrap'><div class='vt-hero'><div class='vt-eyebrow'>🎮 QUEST · PAPER TRADING</div><h1>Virtual Trading</h1><p>Practice. Trade. Learn. Compete. · 🛡️ Virtual money only</p></div>", unsafe_allow_html=True)
+    st.markdown("""<div class='vt-wrap'>
+    <div class='vt-hero'>
+        <div class='vt-eyebrow'>Wall Street Access</div>
+        <h1>Global Markets Simulator</h1>
+        <p>Trade US equities with real-time currency conversion.</p>
+    </div>
+    """, unsafe_allow_html=True)
     wallet_col, level_col = st.columns([2, 1])
     with wallet_col:
         st.markdown(f"<div class='vt-card vt-wallet'><div class='vt-label'>💰 Virtual balance</div><div class='vt-big'>{_money(metrics['cash'])}</div><div class='vt-muted'>Available to trade · {_money(metrics['cash'])}</div></div>", unsafe_allow_html=True)
@@ -361,3 +402,4 @@ def render(user_info, user_data_dir=None):
         else:
             st.info("Buy your first stock to see allocation.")
     st.markdown("</div>", unsafe_allow_html=True)
+

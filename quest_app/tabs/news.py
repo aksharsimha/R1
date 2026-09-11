@@ -529,13 +529,41 @@ def _render_sparkline_svg(color: str, kind: str = "bull") -> str:
 def render(df=None, summary=None, current_assets=None, _user_info=None,
            portfolio_sentiment_score=None, _sentiment_neg_count=None, comp_score=None):
     
-    total_invested = df['Invested (\u20b9)'].sum() if df is not None and not df.empty else 0.0
-    total_pnl = df['P&L (\u20b9)'].sum() if df is not None and not df.empty else 0.0
-    total_pnl_perc = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
-    
     _user_info = _user_info or st.session_state.get("user_info", {})
     _username = _user_info.get("username", "User")
     _display_name = _user_info.get("display_name", _username)
+
+    # Check news_access entitlement
+    has_news = False
+    if _username and _username != "User":
+        has_news = firebase_db.has_entitlement(_username, "news_access")
+    else:
+        try:
+            import edu_db
+            has_news = bool(edu_db.load_progress().get("entitlements", {}).get("news_access"))
+        except Exception:
+            has_news = False
+
+    if not has_news:
+        st.markdown("""
+        <div style="background:var(--q-surface-2, #18191c); border:1px solid var(--q-border, #262a31); border-radius:16px; padding:3rem 1.5rem; text-align:center; max-width:620px; margin:2.5rem auto 1.5rem;">
+            <div style="font-size:3rem; margin-bottom:0.8rem;">🔒</div>
+            <h2 style="color:var(--q-text, #f1f3f5); font-size:1.5rem; font-weight:700; margin-bottom:0.5rem;">Market Intelligence is Locked</h2>
+            <p style="color:var(--q-text-2, #b7bcc4); font-size:0.92rem; line-height:1.5; margin-bottom:0;">
+                Unlock real-time institutional sentiment tracking, corporate filings, earnings forecasts, and 2-year historical market intelligence feeds with the <strong>News Section Pass</strong>.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        col_pad1, col_btn, col_pad2 = st.columns([1, 1.2, 1])
+        with col_btn:
+            if st.button("🛒 Unlock in Shop", type="primary", use_container_width=True, key="unlock_news_in_shop"):
+                st.query_params["page"] = "Shop"
+                st.rerun()
+        return
+
+    total_invested = df['Invested (\u20b9)'].sum() if df is not None and not df.empty else 0.0
+    total_pnl = df['P&L (\u20b9)'].sum() if df is not None and not df.empty else 0.0
+    total_pnl_perc = (total_pnl / total_invested * 100) if total_invested > 0 else 0.0
     
     # Calculate time of day greeting
     ist = pytz.timezone("Asia/Kolkata")

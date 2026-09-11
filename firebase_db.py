@@ -902,6 +902,89 @@ def get_premium_status(username: str) -> dict:
         return {"is_active": False, "expires_at": None, "remaining_days": 0, "is_expired": False, "formatted_expiry": ""}
 
 
+def get_premium_trial_status(username: str, trial_seconds: int = 300) -> dict:
+    """
+    Check if the user has started a 5-minute (300-second) one-time free Premium preview trial,
+    and return whether it is currently active, expired, or unused.
+    """
+    if not username:
+        return {"started": False, "is_active": False, "is_expired": False, "seconds_remaining": 0, "started_at": None}
+    try:
+        profile = get_user_profile(username)
+        trial_raw = profile.get("premium_trial_started_at") or profile.get("preview_trial_started_at")
+        if not trial_raw:
+            return {"started": False, "is_active": False, "is_expired": False, "seconds_remaining": trial_seconds, "started_at": None}
+
+        trial_dt = None
+        if hasattr(trial_raw, "date"):
+            trial_dt = trial_raw
+        elif isinstance(trial_raw, (int, float)):
+            ts = trial_raw / 1000.0 if trial_raw > 1e11 else trial_raw
+            trial_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+        elif isinstance(trial_raw, str):
+            trial_dt = datetime.fromisoformat(trial_raw.replace("Z", "+00:00"))
+
+        if trial_dt:
+            if getattr(trial_dt, "tzinfo", None) is None:
+                trial_dt = trial_dt.replace(tzinfo=timezone.utc)
+            now = datetime.now(timezone.utc)
+            elapsed = (now - trial_dt).total_seconds()
+            if elapsed < trial_seconds:
+                remaining = int(trial_seconds - elapsed)
+                return {
+                    "started": True,
+                    "is_active": True,
+                    "is_expired": False,
+                    "seconds_remaining": remaining,
+                    "started_at": trial_dt,
+                }
+            else:
+                return {
+                    "started": True,
+                    "is_active": False,
+                    "is_expired": True,
+                    "seconds_remaining": 0,
+                    "started_at": trial_dt,
+                }
+        return {"started": False, "is_active": False, "is_expired": False, "seconds_remaining": trial_seconds, "started_at": None}
+    except Exception as e:
+        print(f"[firebase_db] Error checking trial status: {e}")
+        return {"started": False, "is_active": False, "is_expired": False, "seconds_remaining": 0, "started_at": None}
+
+
+def start_premium_trial(username: str) -> tuple[bool, str, dict]:
+    """
+    Start the 5-minute one-time free Premium preview trial for a user.
+    If already used or started, it cannot be restarted.
+    """
+    if not username:
+        return False, "Invalid username.", {}
+    status = get_premium_trial_status(username)
+    if status["started"]:
+        if status["is_active"]:
+            return True, f"Trial already active ({status['seconds_remaining']}s remaining).", status
+        else:
+            return False, "5-Minute Free Trial has already been used and is locked.", status
+
+    now = datetime.now(timezone.utc)
+    now_iso = now.isoformat()
+    try:
+        db = get_db()
+        db.collection("users").document(username).set({
+            "premium_trial_started_at": now_iso,
+        }, merge=True)
+        new_status = {
+            "started": True,
+            "is_active": True,
+            "is_expired": False,
+            "seconds_remaining": 300,
+            "started_at": now,
+        }
+        return True, "5-Minute Free Premium Trial started!", new_status
+    except Exception as e:
+        return False, f"Failed to start trial: {e}", {}
+
+
 def upgrade_user_to_premium(username: str, duration_days: int = 30, cost_coins: int = 1000) -> tuple[bool, str, dict]:
     """
     Upgrade or extend user to Premium for duration_days by deducting cost_coins.

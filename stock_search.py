@@ -169,6 +169,47 @@ def _load_stocks() -> List[Dict[str, str]]:
         sym = extra["symbol"].upper()
         stock_map[sym] = extra
 
+    US_STOCKS = [
+        {"symbol": "AAPL", "company": "Apple Inc.", "ticker": "AAPL", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "MSFT", "company": "Microsoft Corporation", "ticker": "MSFT", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "NVDA", "company": "NVIDIA Corporation", "ticker": "NVDA", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "GOOGL", "company": "Alphabet Inc. (Google)", "ticker": "GOOGL", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "AMZN", "company": "Amazon.com Inc.", "ticker": "AMZN", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "META", "company": "Meta Platforms Inc.", "ticker": "META", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "TSLA", "company": "Tesla Inc.", "ticker": "TSLA", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "BRK-B", "company": "Berkshire Hathaway Inc.", "ticker": "BRK-B", "exchange": "NYSE", "region": "US"},
+        {"symbol": "LLY", "company": "Eli Lilly and Company", "ticker": "LLY", "exchange": "NYSE", "region": "US"},
+        {"symbol": "TSM", "company": "Taiwan Semiconductor", "ticker": "TSM", "exchange": "NYSE", "region": "US"},
+        {"symbol": "V", "company": "Visa Inc.", "ticker": "V", "exchange": "NYSE", "region": "US"},
+        {"symbol": "JPM", "company": "JPMorgan Chase & Co.", "ticker": "JPM", "exchange": "NYSE", "region": "US"},
+        {"symbol": "UNH", "company": "UnitedHealth Group", "ticker": "UNH", "exchange": "NYSE", "region": "US"},
+        {"symbol": "WMT", "company": "Walmart Inc.", "ticker": "WMT", "exchange": "NYSE", "region": "US"},
+        {"symbol": "MA", "company": "Mastercard Inc.", "ticker": "MA", "exchange": "NYSE", "region": "US"},
+        {"symbol": "JNJ", "company": "Johnson & Johnson", "ticker": "JNJ", "exchange": "NYSE", "region": "US"},
+        {"symbol": "PG", "company": "Procter & Gamble", "ticker": "PG", "exchange": "NYSE", "region": "US"},
+        {"symbol": "AVGO", "company": "Broadcom Inc.", "ticker": "AVGO", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "HD", "company": "Home Depot Inc.", "ticker": "HD", "exchange": "NYSE", "region": "US"},
+        {"symbol": "ORCL", "company": "Oracle Corporation", "ticker": "ORCL", "exchange": "NYSE", "region": "US"},
+        {"symbol": "COST", "company": "Costco Wholesale", "ticker": "COST", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "MRK", "company": "Merck & Co.", "ticker": "MRK", "exchange": "NYSE", "region": "US"},
+        {"symbol": "ABBV", "company": "AbbVie Inc.", "ticker": "ABBV", "exchange": "NYSE", "region": "US"},
+        {"symbol": "CRM", "company": "Salesforce Inc.", "ticker": "CRM", "exchange": "NYSE", "region": "US"},
+        {"symbol": "AMD", "company": "Advanced Micro Devices", "ticker": "AMD", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "NFLX", "company": "Netflix Inc.", "ticker": "NFLX", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "PEP", "company": "PepsiCo Inc.", "ticker": "PEP", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "KO", "company": "Coca-Cola Company", "ticker": "KO", "exchange": "NYSE", "region": "US"},
+        {"symbol": "ADBE", "company": "Adobe Inc.", "ticker": "ADBE", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "MCD", "company": "McDonald's Corporation", "ticker": "MCD", "exchange": "NYSE", "region": "US"},
+        {"symbol": "CSCO", "company": "Cisco Systems Inc.", "ticker": "CSCO", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "INTC", "company": "Intel Corporation", "ticker": "INTC", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "QCOM", "company": "Qualcomm Inc.", "ticker": "QCOM", "exchange": "NASDAQ", "region": "US"},
+        {"symbol": "BA", "company": "Boeing Company", "ticker": "BA", "exchange": "NYSE", "region": "US"},
+        {"symbol": "DIS", "company": "Walt Disney Company", "ticker": "DIS", "exchange": "NYSE", "region": "US"},
+    ]
+
+    for us_stock in US_STOCKS:
+        stock_map[us_stock["symbol"]] = us_stock
+
     _STOCKS_CACHE = list(stock_map.values())
     return _STOCKS_CACHE
 
@@ -320,9 +361,9 @@ def _query_yahoo_search(query: str) -> List[Dict[str, str]]:
 
 
 @lru_cache(maxsize=512)
-def search_stocks(query: str, limit: int = 30) -> List[Dict[str, str]]:
+def search_stocks(query: str, limit: int = 30, region: str = None) -> List[Dict[str, str]]:
     """
-    Searches across Indian equities, REITs, ETFs and mutual funds.
+    Searches across equities.
     Fuzzy-matches misspellings, brand aliases, and ticker codes.
     Returns sorted list of matches:
     [{'symbol': 'RELIANCE', 'company': 'Reliance Industries Limited', 'ticker': 'RELIANCE.NS', 'exchange': 'NSE'}, ...]
@@ -336,7 +377,11 @@ def search_stocks(query: str, limit: int = 30) -> List[Dict[str, str]]:
     seen_symbols = set()
 
     for item in stocks:
-        sym = item["symbol"]
+        sym = item.get("symbol", "")
+        # Filter by region if specified (assume IN if not present)
+        item_region = item.get("region", "IN")
+        if region and item_region != region:
+            continue
         score = _score_candidate(query, sym, item["company"])
         if score >= 350:
             scored_items.append((score, item))
