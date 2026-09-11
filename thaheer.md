@@ -7,11 +7,10 @@
   - Eliminated raw anchor `<a href="?page=Chat&view_profile=...">` links in `quest_app/tabs/chat.py` which previously triggered browser new-tab navigations.
   - Added native Streamlit `👤 Profile Card` header action button and `👥 Members` popover profile launchers that trigger `@st.dialog("Profile Card")` directly within the active view.
   - Senders' message avatars and display names now render cleanly without navigation redirects, keeping the user in the active chat while modal dialogs pop up in-place.
-- **Multi-User Live Profile Card Synchronization Across Chat & Settings**:
-  - Re-architected `firebase_db.get_banner_customization()` to intelligently resolve and merge custom colors, themes, animated effects, and banners across modern `banner_customization` and legacy `profile_customization` schemas.
-  - Enhanced `build_discord_profile_card_html()` in `quest_app/settings.py` so each user's unique theme color, circuit trace tint, card background, banner image, and pro animation effects are rendered accurately when viewed by other users.
-  - Configured `_show_public_profile()` in `quest_app/tabs/chat.py` and `quest_app/tabs/news.py` to always pull live fresh profile data directly from Firestore on click, bypassing stale session caches.
-  - Inverted in-session cache invalidation on save in Settings so updates are instantly broadcasted and visible to other users in chat.
+- **Profile Card Word-Wrap & Clean Badge Refinements (`quest_app/settings.py`)**:
+  - Removed the redundant "Basic" badge tag next to the username/handle in the identity header.
+  - Applied robust text wrapping (`word-break: break-word;`, `overflow-wrap: anywhere;`, `white-space: pre-wrap;`) to the "About Me" bio container to prevent long unbroken strings or multi-line text from overflowing card boundaries.
+  - Enabled dynamic vertical expansion (`height: auto; min-height: 460px; box-sizing: border-box;`) so the card smoothly grows with bio content without clipping.
 
 ---
 
