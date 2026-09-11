@@ -3,11 +3,10 @@
 ## 2026-09-11
 
 ### 🎨 Discord Nitro-Style Cyberpunk Profile System & Chat Modal Architecture
-- **Discord-Style Cyberpunk Profile Card Modal in Chat (`quest_app/tabs/chat.py` & `quest_app/settings.py`)**:
-  - Implemented modular `build_discord_profile_card_html()` in `quest_app/settings.py` for shared rendering between Settings and Chat dialogs.
-  - Clicking on a user's avatar or display name in the Chat Header or on any message bubble seamlessly launches their full Cyberpunk Profile Card modal (`@st.dialog`) directly within the chat view.
-  - Eliminated the visible `__chat_profile_trigger__` button, switching to a completely off-screen, zero-layout headless trigger slot (`.st-key-chat_hdr_prof_slot`).
-  - Added direct click event interception (`onclick`) with safe fallback navigation to keep users in the conversation while opening the profile modal.
+- **In-Place Profile Card Modal Fix (Zero New Tabs / Windows)**:
+  - Eliminated raw anchor `<a href="?page=Chat&view_profile=...">` links in `quest_app/tabs/chat.py` which previously triggered browser new-tab navigations.
+  - Added native Streamlit `👤 Profile Card` header action button and `👥 Members` popover profile launchers that trigger `@st.dialog("Profile Card")` directly within the active view.
+  - Senders' message avatars and display names now render cleanly without navigation redirects, keeping the user in the active chat while modal dialogs pop up in-place.
 - **Unified Single Theme Color Wheel & Intensity System**:
   - Added a central color picker that dynamically customizes the entire card palette at once: neon accent borders, glow effects, circuit board traces, and ambient highlights.
   - Added selectable intensity level control to scale neon bloom and holographic radiation.
