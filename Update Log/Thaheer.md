@@ -15,6 +15,10 @@
   - Implemented Premium active lock-in: once upgraded, active users cannot manually downgrade to Basic while their subscription is active.
   - Added remaining days and formatted expiration date display next to the Premium badge, along with an optional extension button (+30 Days for 1,000 Coins).
   - Built automatic subscription expiration handler checking `now > premiumExpiresAt` and downgrading expired accounts back to Basic.
+- **Interactive In-Place Confirmation Dialogs (`quest_app/settings.py`)**:
+  - Integrated `@st.dialog("Confirm Premium Extension")` and `@st.dialog("Confirm Premium Upgrade")` modals to prevent accidental coin deduction.
+  - Presents a detailed breakdown of subscription duration (+30 Days), cost (🪙 1,000 Quest Coins), current expiration, current wallet balance, and balance after payment before proceeding.
+  - Includes explicit `"✅ Yes, Extend (+30 Days)"` / `"✅ Yes, Upgrade (1,000 Coins)"` confirmation action buttons and `"❌ Cancel"` buttons with real-time balance safety checks.
 
 ---
 
