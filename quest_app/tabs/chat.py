@@ -69,7 +69,7 @@ def _show_public_profile(username: str):
     except Exception:
         profile = _get_profile_cached(username)
     card_html = settings.build_discord_profile_card_html(username, profile)
-    st.markdown(card_html, unsafe_allow_html=True)
+    st.html(card_html)
 
 
 

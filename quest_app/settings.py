@@ -363,92 +363,38 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
 
     tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Pro Member">👑</span>' if is_premium else ''
 
-    return f"""
-<style>
+    html_out = f"""<style>
 {anim_css}
 </style>
 <div style="position:sticky;top:1rem;width:100%;max-width:440px;margin:0 auto;box-sizing:border-box;">
-    <!-- Cyberpunk Circuit Profile Card -->
-    <div style="
-        position: relative;
-        width: 100%;
-        height: auto;
-        min-height: 460px;
-        background-color: {card_bg};
-        background-image: 
-            linear-gradient(180deg, rgba(8,10,16,0.72) 0%, rgba(5,6,12,0.92) 100%),
-            url('{circuit_svg}');
-        background-size: cover, 100% 600px;
-        background-repeat: no-repeat, repeat-y;
-        border-radius: 20px;
-        border: 1.5px solid {card_accent}66;
-        box-shadow: 0 16px 45px rgba(0,0,0,0.65), 0 0 25px {card_accent}33, inset 0 0 25px {card_accent}15;
-        overflow: hidden;
-        color: #fff;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        transition: border 0.3s ease, box-shadow 0.3s ease;
-        box-sizing: border-box;
-        {card_animation_style}
-    ">
-        {extra_card_elements}
-        <!-- Top Right: Tier Pill Badge -->
-        {tier_badge_markup}
-
-        <!-- Top Banner Area -->
-        {banner_inner}
-
-        <!-- Overlapping Avatar (Discord Popout) -->
-        <div style="padding:0 22px;margin-top:-44px;position:relative;z-index:5;box-sizing:border-box;">
-            <div style="position:relative;width:84px;height:84px;">
-                <div style="width:84px;height:84px;border-radius:50%;border:4px solid #080a10;box-shadow:0 0 16px {card_accent}55, 0 6px 16px rgba(0,0,0,0.5);overflow:hidden;background:#151720;box-sizing:border-box;">
-                    {av_markup}
-                </div>
-                <!-- Discord Online Dot -->
-                <div style="width:22px;height:22px;border-radius:50%;background:{dot_color};border:3.5px solid #080a10;position:absolute;bottom:2px;right:2px;box-sizing:border-box;{dot_glow}"></div>
-            </div>
-
-            <!-- Identity Header -->
-            <div style="margin-top:12px;box-sizing:border-box;">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
-                    <span style="font-size:1.25rem;font-weight:700;color:#f3f4f6;letter-spacing:-0.2px;word-break:break-word;overflow-wrap:anywhere;">{disp_text}</span>
-                    {tier_crown_markup}
-                </div>
-                <div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;word-break:break-word;overflow-wrap:anywhere;">@{username}</div>
-
-                <!-- Profile Summary / About Me Container -->
-                <div style="
-                    margin-top:14px;
-                    margin-bottom:20px;
-                    background:rgba(6,8,14,0.72);
-                    border-radius:10px;
-                    border:1px solid {card_accent}33;
-                    box-shadow:inset 0 0 15px rgba(0,0,0,0.4);
-                    padding:14px 16px;
-                    border-left:3px solid {card_accent};
-                    box-sizing:border-box;
-                    width:100%;
-                    max-width:100%;
-                    overflow:hidden;
-                ">
-                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:{card_accent};letter-spacing:1px;margin-bottom:6px;">About Me</div>
-                    <div style="
-                        font-size:0.84rem;
-                        color:#e5e7eb;
-                        line-height:1.5;
-                        word-break:break-word;
-                        overflow-wrap:anywhere;
-                        white-space:pre-wrap;
-                        max-width:100%;
-                        box-sizing:border-box;
-                    ">{bio_text}</div>
-                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;letter-spacing:1px;margin:12px 0 4px;">Member Since</div>
-                    <div style="font-size:0.8rem;color:#cbd5e1;word-break:break-word;overflow-wrap:anywhere;">QUEST Surveillance Network</div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="position:relative;width:100%;height:auto;min-height:460px;background-color:{card_bg};background-image:linear-gradient(180deg, rgba(8,10,16,0.72) 0%, rgba(5,6,12,0.92) 100%),url('{circuit_svg}');background-size:cover, 100% 600px;background-repeat:no-repeat, repeat-y;border-radius:20px;border:1.5px solid {card_accent}66;box-shadow:0 16px 45px rgba(0,0,0,0.65), 0 0 25px {card_accent}33, inset 0 0 25px {card_accent}15;overflow:hidden;color:#fff;font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;transition:border 0.3s ease, box-shadow 0.3s ease;box-sizing:border-box;{card_animation_style}">
+{extra_card_elements}
+{tier_badge_markup}
+{banner_inner}
+<div style="padding:0 22px;margin-top:-44px;position:relative;z-index:5;box-sizing:border-box;">
+<div style="position:relative;width:84px;height:84px;">
+<div style="width:84px;height:84px;border-radius:50%;border:4px solid #080a10;box-shadow:0 0 16px {card_accent}55, 0 6px 16px rgba(0,0,0,0.5);overflow:hidden;background:#151720;box-sizing:border-box;">
+{av_markup}
 </div>
-"""
+<div style="width:22px;height:22px;border-radius:50%;background:{dot_color};border:3.5px solid #080a10;position:absolute;bottom:2px;right:2px;box-sizing:border-box;{dot_glow}"></div>
+</div>
+<div style="margin-top:12px;box-sizing:border-box;">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+<span style="font-size:1.25rem;font-weight:700;color:#f3f4f6;letter-spacing:-0.2px;word-break:break-word;overflow-wrap:anywhere;">{disp_text}</span>
+{tier_crown_markup}
+</div>
+<div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;word-break:break-word;overflow-wrap:anywhere;">@{username}</div>
+<div style="margin-top:14px;margin-bottom:20px;background:rgba(6,8,14,0.72);border-radius:10px;border:1px solid {card_accent}33;box-shadow:inset 0 0 15px rgba(0,0,0,0.4);padding:14px 16px;border-left:3px solid {card_accent};box-sizing:border-box;width:100%;max-width:100%;overflow:hidden;">
+<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:{card_accent};letter-spacing:1px;margin-bottom:6px;">About Me</div>
+<div style="font-size:0.84rem;color:#e5e7eb;line-height:1.5;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;max-width:100%;box-sizing:border-box;">{bio_text}</div>
+<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;letter-spacing:1px;margin:12px 0 4px;">Member Since</div>
+<div style="font-size:0.8rem;color:#cbd5e1;word-break:break-word;overflow-wrap:anywhere;">QUEST Surveillance Network</div>
+</div>
+</div>
+</div>
+</div>
+</div>"""
+    return html_out
 
 
 
@@ -936,7 +882,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 is_preview=True,
                 preview_dict=prev,
             )
-            st.markdown(discord_card_html, unsafe_allow_html=True)
+            st.html(discord_card_html)
 
 
     elif selected == "Connections":
