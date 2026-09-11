@@ -3,6 +3,10 @@
 ## 2026-09-11
 
 ### 🎨 Discord Nitro-Style Cyberpunk Profile System & Chat Modal Architecture
+- **Clean Sidebar Navigation & Radio Bullet Elimination (`ui_theme.py`)**:
+  - Completely eliminated all circular radio button bullets, dots, indicators, and selectors (`( )` / `(•)`) from the sidebar navigation items.
+  - Targeted Emotion/BaseWeb DOM structures (`etak9234`, `etak9235`, `:has(+ [data-testid="stMarkdownContainer"])`) and scoped text inheritance rules to ensure clean text and emoji presentation.
+  - Full-width modern tab items with smooth active state indicators and zero residual gaps.
 - **Leaderboard Instant Player Profile Card Popups (`quest_app/tabs/leaderboard.py`, `leaderboard_ui/index.html`)**:
   - Implemented client-side animated modal popups for all leaderboard players triggered directly upon clicking their avatar, username, podium card, or standings row.
   - Pre-renders full Discord Nitro-style cyberpunk profile cards into `window.__QUEST_PROFILE_CARDS__` and renders them in-place with 0ms latency.
