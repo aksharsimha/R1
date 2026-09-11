@@ -728,11 +728,17 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 if st.button("➕ Extend Premium (+30 Days / 1,000 Coins)", key="btn_extend_prem", use_container_width=True):
                     _show_confirm_extend_dialog()
             else:
-                is_premium = bool(prev.get("isPremium", False))
+                trial_status = firebase_db.get_premium_trial_status(username, trial_seconds=300)
+                is_trial_active = bool(trial_status.get("is_active", False))
+                is_trial_expired = bool(trial_status.get("is_expired", False))
+
+                is_premium = is_trial_active
+                prev["isPremium"] = is_premium
+
                 st.markdown(
                     '<div style="font-size:0.95rem;font-weight:700;color:var(--q-text);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">'
                     '<span>Membership Tier</span>'
-                    '<span style="font-size:0.75rem;font-weight:700;color:#9ca3af;background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">BASIC MEMBER</span>'
+                    f'<span style="font-size:0.75rem;font-weight:700;color:{"#D4A843" if is_trial_active else "#9ca3af"};background:{"rgba(212,168,67,0.15)" if is_trial_active else "rgba(255,255,255,0.06)"};padding:3px 10px;border-radius:12px;border:1px solid {"#D4A84355" if is_trial_active else "rgba(255,255,255,0.1)"};">{"⏳ 5-MIN TRIAL ACTIVE" if is_trial_active else "BASIC MEMBER"}</span>'
                     '</div>',
                     unsafe_allow_html=True,
                 )
@@ -758,11 +764,35 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 if st.button("✨ Upgrade to Premium (1,000 Coins / 30 Days)", key="btn_upgrade_prem_coins", type="primary", use_container_width=True):
                     _show_confirm_upgrade_dialog()
 
-                # Test-drive toggle for live preview while Basic
-                test_drive = st.toggle("🧪 Test-Drive Premium in Preview Card", value=is_premium, key="test_drive_prem_toggle")
-                if test_drive != is_premium:
-                    prev["isPremium"] = test_drive
-                    st.rerun()
+                # ── 5-Minute One-Time Free Premium Preview Trial ──
+                if is_trial_expired:
+                    st.toggle("🧪 Test Premium in Preview Card", value=False, disabled=True, key="test_prem_toggle_expired", help="Your 5-minute free trial has ended.")
+                    st.caption("🔒 **5-Minute Free Trial Expired** • You have used your one-time 5-minute preview. Upgrade to Premium to unlock full access.")
+                elif is_trial_active:
+                    rem_s = trial_status.get("seconds_remaining", 0)
+                    mins = rem_s // 60
+                    secs = rem_s % 60
+                    st.toggle("🧪 Test Premium in Preview Card", value=True, disabled=True, key="test_prem_toggle_running", help=f"5-Minute Trial Active: {mins}m {secs}s remaining")
+                    st.markdown(
+                        f"""
+                        <div style="background:rgba(212,168,67,0.12);border:1px solid rgba(212,168,67,0.35);border-radius:8px;padding:6px 12px;margin:6px 0 8px;display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:0.8rem;color:#D4A843;font-weight:600;">⏳ 5-Minute Free Trial Active</span>
+                            <span style="font-size:0.8rem;font-weight:700;color:#fbbf24;font-family:monospace;">{mins:02d}:{secs:02d} remaining</span>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    test_turn_on = st.toggle("🧪 Test Premium in Preview Card", value=False, key="test_prem_toggle_start", help="Activate a one-time 5-minute free preview of Premium features.")
+                    st.caption("💡 Turn on to test Premium features in the preview card for **5 minutes** (one-time trial).")
+                    if test_turn_on:
+                        ok, msg, new_st = firebase_db.start_premium_trial(username)
+                        if ok:
+                            prev["isPremium"] = True
+                            st.session_state.pop("_cached_profile", None)
+                            st.session_state.pop("_user_profiles_cache", None)
+                            st.toast("🎉 5-Minute Free Premium Trial activated!", icon="⏳")
+                            st.rerun()
 
             st.markdown("<hr style='border:none;border-top:1px solid var(--q-border);margin:16px 0;'>", unsafe_allow_html=True)
 
