@@ -260,14 +260,30 @@ def load_account(username: str, base_dir: Optional[str] = None) -> dict:
 
 def save_account(account: dict, username: str, base_dir: Optional[str] = None) -> dict:
     path = _account_path(username, base_dir)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     fd, temp_path = tempfile.mkstemp(prefix="virtual_trading_", suffix=".json", dir=os.path.dirname(path))
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as account_file:
             json.dump(account, account_file, indent=2)
-        os.replace(temp_path, path)
+        # Try atomic replace first; on Windows+OneDrive, fall back to direct write
+        try:
+            os.replace(temp_path, path)
+        except PermissionError:
+            # OneDrive may hold a lock — write directly as fallback
+            import time as _time
+            for _attempt in range(3):
+                try:
+                    with open(path, "w", encoding="utf-8") as f:
+                        json.dump(account, f, indent=2)
+                    break
+                except PermissionError:
+                    _time.sleep(0.3)
     finally:
         if os.path.exists(temp_path):
-            os.remove(temp_path)
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
     return account
 
 
