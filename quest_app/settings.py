@@ -611,10 +611,10 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 col_w, col_c = st.columns([1.5, 1.0])
                 with col_w:
                     if st.button("💳 Top Up in Wallet", type="primary", use_container_width=True, key="dlg_goto_wallet_extend"):
-                        st.query_params["page"] = "Wallet"
-                        st.session_state.last_active_page = "Wallet"
+                        st.query_params["page"] = "Shop"
+                        st.session_state.last_active_page = "Shop"
                         if "nav_section" in st.session_state:
-                            st.session_state.nav_section = "💳  Wallet"
+                            st.session_state.nav_section = "🛒  Shop"
                         st.rerun()
                 with col_c:
                     if st.button("Close", use_container_width=True, key="dlg_close_extend"):
@@ -676,10 +676,10 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 col_w, col_c = st.columns([1.5, 1.0])
                 with col_w:
                     if st.button("💳 Top Up in Wallet", type="primary", use_container_width=True, key="dlg_goto_wallet_upgrade"):
-                        st.query_params["page"] = "Wallet"
-                        st.session_state.last_active_page = "Wallet"
+                        st.query_params["page"] = "Shop"
+                        st.session_state.last_active_page = "Shop"
                         if "nav_section" in st.session_state:
-                            st.session_state.nav_section = "💳  Wallet"
+                            st.session_state.nav_section = "🛒  Shop"
                         st.rerun()
                 with col_c:
                     if st.button("Close", use_container_width=True, key="dlg_close_upgrade"):
