@@ -49,7 +49,7 @@ def _show_public_profile(username: str):
     importlib.reload(settings)
     profile = firebase_db.get_user_profile(username)
     card_html = settings.build_discord_profile_card_html(username, profile)
-    st.markdown(card_html, unsafe_allow_html=True)
+    st.html(card_html)
 
 
 @st.dialog("🔍 Search News & Holdings")

@@ -7,10 +7,11 @@
   - Eliminated raw anchor `<a href="?page=Chat&view_profile=...">` links in `quest_app/tabs/chat.py` which previously triggered browser new-tab navigations.
   - Added native Streamlit `👤 Profile Card` header action button and `👥 Members` popover profile launchers that trigger `@st.dialog("Profile Card")` directly within the active view.
   - Senders' message avatars and display names now render cleanly without navigation redirects, keeping the user in the active chat while modal dialogs pop up in-place.
-- **Profile Card Word-Wrap & Clean Badge Refinements (`quest_app/settings.py`, `chat.py`, `news.py`)**:
+- **Profile Card Word-Wrap, Clean Badge & HTML Rendering Refinements (`quest_app/settings.py`, `chat.py`, `news.py`)**:
   - Completely removed "Basic" / "BASIC MEMBER" pill badge markup for free/standard users (only displaying exclusive "PREMIUM PRO" badges for verified Pro members).
   - Applied robust text wrapping (`word-break: break-word;`, `overflow-wrap: anywhere;`, `white-space: pre-wrap;`, `max-width: 100%`) to the "About Me" bio container to prevent long unbroken strings or multi-line text from overflowing card boundaries.
-  - Replaced `st.html(card_html)` with native `st.markdown(card_html, unsafe_allow_html=True)` across Settings preview, Chat, and News dialogs with dynamic `importlib.reload(settings)` to prevent iframe clipping, ensuring height expands dynamically (`height: auto; min-height: 460px;`).
+  - Eliminated markdown indented code-block interpretation by cleaning HTML template indentation and rendering with Streamlit's native `st.html(card_html)` across Settings preview, Chat, and News dialogs.
+  - Added dynamic `importlib.reload(settings)` in Chat and News modals so updates are immediately reflected.
 
 ---
 
