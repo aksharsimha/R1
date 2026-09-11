@@ -343,9 +343,9 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
         """
         card_animation_style = "animation: glitchAuraEffect 2.2s ease-in-out infinite;"
 
-    tier_badge_markup = f'<div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid {card_accent};background:rgba(8,10,18,0.75);backdrop-filter:blur(10px);box-shadow:0 0 16px {card_accent}55;"><span style="font-size:0.75rem;">👑</span><span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:\'Inter\',sans-serif;">PREMIUM PRO</span></div>' if is_premium else ''
+    tier_badge_markup = f'<div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid {card_accent};background:rgba(8,10,18,0.75);backdrop-filter:blur(10px);box-shadow:0 0 16px {card_accent}55;"><span style="font-size:0.75rem;">👑</span><span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:\'Inter\',sans-serif;">PREMIUM</span></div>' if is_premium else ''
 
-    tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Pro Member">👑</span>' if is_premium else ''
+    tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Member">👑</span>' if is_premium else ''
 
     # Format Member Since real date & days elapsed
     created_raw = None
@@ -608,13 +608,13 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             st.markdown(
                 '<div style="font-size:0.95rem;font-weight:700;color:var(--q-text);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">'
                 '<span>Membership Tier</span>'
-                f'<span style="font-size:0.75rem;font-weight:700;color:{"#D4A843" if is_premium else "#9ca3af"};background:{"rgba(212,168,67,0.15)" if is_premium else "rgba(255,255,255,0.06)"};padding:3px 10px;border-radius:12px;border:1px solid {"#D4A84355" if is_premium else "rgba(255,255,255,0.1)"};">{"👑 PREMIUM PRO" if is_premium else "BASIC"}</span>'
+                f'<span style="font-size:0.75rem;font-weight:700;color:{"#D4A843" if is_premium else "#9ca3af"};background:{"rgba(212,168,67,0.15)" if is_premium else "rgba(255,255,255,0.06)"};padding:3px 10px;border-radius:12px;border:1px solid {"#D4A84355" if is_premium else "rgba(255,255,255,0.1)"};">{"👑 PREMIUM" if is_premium else "BASIC"}</span>'
                 '</div>',
                 unsafe_allow_html=True,
             )
             st.caption("Switch between Basic and Premium to preview and customize tier-specific features.")
 
-            tier_options = ["Basic Member", "👑 Premium Member (Pro)"]
+            tier_options = ["Basic Member", "👑 Premium Member"]
             current_tier_idx = 1 if is_premium else 0
             chosen_tier_str = st.radio(
                 "Membership Tier",
@@ -624,7 +624,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 key="tier_selector_radio_choice",
                 label_visibility="collapsed",
             )
-            new_is_premium = (chosen_tier_str == "👑 Premium Member (Pro)")
+            new_is_premium = (chosen_tier_str == "👑 Premium Member")
             if new_is_premium != is_premium:
                 prev["isPremium"] = new_is_premium
                 prev["_manual_tier_toggle"] = True
