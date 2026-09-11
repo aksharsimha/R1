@@ -1,6 +1,7 @@
 import base64
 import html
 import urllib.parse
+from datetime import datetime, timezone
 import streamlit as st
 
 import firebase_db
@@ -346,6 +347,51 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
 
     tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Pro Member">👑</span>' if is_premium else ''
 
+    # Format Member Since real date & days elapsed
+    created_raw = None
+    if is_preview and isinstance(preview_dict, dict):
+        created_raw = preview_dict.get("created_at") or (profile_data.get("created_at") if isinstance(profile_data, dict) else None)
+    elif isinstance(profile_data, dict):
+        created_raw = profile_data.get("created_at") or profile_data.get("joined_at") or profile_data.get("created")
+    
+    if not created_raw and username:
+        try:
+            _full_p = firebase_db.get_user_profile(username)
+            if isinstance(_full_p, dict):
+                created_raw = _full_p.get("created_at") or _full_p.get("joined_at") or _full_p.get("created")
+        except Exception:
+            pass
+
+    member_since_text = "QUEST Surveillance Network"
+    if created_raw is not None:
+        try:
+            created_dt = None
+            if hasattr(created_raw, "date"):
+                created_dt = created_raw
+            elif isinstance(created_raw, (int, float)):
+                ts = created_raw / 1000.0 if created_raw > 1e11 else created_raw
+                created_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+            elif isinstance(created_raw, str):
+                created_dt = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
+
+            if created_dt is not None:
+                if getattr(created_dt, "tzinfo", None) is None:
+                    created_dt = created_dt.replace(tzinfo=timezone.utc)
+                now_dt = datetime.now(timezone.utc)
+                delta_days = (now_dt.date() - created_dt.date()).days
+                
+                date_str = created_dt.strftime("%b %d, %Y")
+                if delta_days <= 0:
+                    elapsed_str = "Joined today"
+                elif delta_days == 1:
+                    elapsed_str = "1 day ago"
+                else:
+                    elapsed_str = f"{delta_days} days ago"
+                
+                member_since_text = f"{date_str} • {elapsed_str}"
+        except Exception:
+            member_since_text = "QUEST Surveillance Network"
+
     html_out = f"""<style>
 {anim_css}
 </style>
@@ -371,7 +417,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
 <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:{card_accent};letter-spacing:1px;margin-bottom:6px;">About Me</div>
 <div style="font-size:0.84rem;color:#e5e7eb;line-height:1.5;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;max-width:100%;box-sizing:border-box;">{bio_text}</div>
 <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;letter-spacing:1px;margin:12px 0 4px;">Member Since</div>
-<div style="font-size:0.8rem;color:#cbd5e1;word-break:break-word;overflow-wrap:anywhere;">QUEST Surveillance Network</div>
+<div style="font-size:0.8rem;color:#cbd5e1;word-break:break-word;overflow-wrap:anywhere;">{member_since_text}</div>
 </div>
 </div>
 </div>
@@ -518,6 +564,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 "display_name": profile.get("display_name", user_info.get("display_name", username)),
                 "summary": profile.get("summary", ""),
                 "avatar": profile.get("avatar") or user_info.get("avatar"),
+                "created_at": profile.get("created_at") or user_info.get("created_at"),
             }
             st.session_state._banner_preview_user = username
 
