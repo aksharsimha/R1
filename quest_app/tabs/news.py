@@ -28,26 +28,28 @@ import firebase_db
 # Modal Dialogs for 100% Interactivity
 # ──────────────────────────────────────────────────────────────────────────────
 
-@st.dialog("Public Profile")
+@st.dialog("Profile Card", width="small")
 def _show_public_profile(username: str):
+    st.markdown("""
+    <style>
+    div[data-testid="stDialog"] div[data-testid="stDialogHeader"] {
+        padding-bottom: 4px !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stVerticalBlock"] {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    import importlib
+    import quest_app.settings as settings
+    importlib.reload(settings)
     profile = firebase_db.get_user_profile(username)
-    if profile:
-        disp = profile.get("display_name", username)
-        av = profile.get("avatar")
-        av_html = f'<img src="{av}" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--q-accent);">' if av else f'<div style="width:76px;height:76px;border-radius:50%;background:var(--q-accent);color:var(--q-text);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:bold;">{disp[:1].upper()}</div>'
-        st.markdown(textwrap.dedent(f"""
-<div style="display:flex;align-items:center;gap:18px;margin-bottom:14px;">
-{av_html}
-<div>
-<h3 style="margin:0;font-size:1.3rem;">{disp}</h3>
-<p style="margin:2px 0 0;color:var(--q-text-3);font-size:0.85rem;">@{username}</p>
-<div style="margin-top:6px;font-size:0.75rem;color:var(--q-pos);">● Active User</div>
-</div>
-</div>
-"""), unsafe_allow_html=True)
-        st.caption("Account is active and verified on QUEST Network.")
-    else:
-        st.error("User profile not found.")
+    card_html = settings.build_discord_profile_card_html(username, profile)
+    st.html(card_html)
 
 
 @st.dialog("🔍 Search News & Holdings")

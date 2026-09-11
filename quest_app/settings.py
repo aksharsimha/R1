@@ -1,6 +1,7 @@
 import base64
 import html
 import urllib.parse
+from datetime import datetime, timezone
 import streamlit as st
 
 import firebase_db
@@ -164,12 +165,11 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
                 profile_data = firebase_db.get_user_profile(username)
             except Exception:
                 profile_data = {}
-        stored = profile_data.get("banner_customization")
-        if not isinstance(stored, dict):
-            try:
-                stored = firebase_db.get_banner_customization(username)
-            except Exception:
-                stored = {}
+
+        stored = firebase_db.get_banner_customization(username)
+        if isinstance(profile_data.get("banner_customization"), dict):
+            stored.update(profile_data["banner_customization"])
+
         is_premium = bool(
             profile_data.get("is_pro")
             or profile_data.get("is_premium")
@@ -177,18 +177,18 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
             or stored.get("isPremium")
             or firebase_db.is_user_pro(username)
         )
-        card_bg = stored.get("cardBackground", "#111214")
-        card_accent = stored.get("themeColor", card_bg)
+        card_bg = stored.get("cardBackground") or "#111214"
+        card_accent = stored.get("themeColor") or stored.get("cardBackground") or profile_data.get("profile_customization", {}).get("accent_color") or "#8b5cf6"
         b_type = stored.get("bannerType", "color")
-        b_val = stored.get("bannerValue", "#5865F2")
+        b_val = stored.get("bannerValue") or card_accent
         av_src = profile_data.get("avatar")
         disp_text = html.escape(profile_data.get("display_name") or username)
         bio_text = html.escape(profile_data.get("summary") or "Surveillance operative on QUEST network")
-        active_anim = stored.get("animationEffect", "none") if is_premium else "none"
+        active_anim = stored.get("animationEffect", "neon_border" if is_premium else "none") if is_premium else "none"
         anim_int = stored.get("animationIntensity", 2)
 
     if not (isinstance(card_accent, str) and card_accent.startswith("#")):
-        card_accent = "#5865F2"
+        card_accent = "#8b5cf6"
     if not (isinstance(card_bg, str) and card_bg.startswith("#")):
         card_bg = "#111214"
 
@@ -197,7 +197,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
     if b_type == "image" and (b_val.startswith("data:") or b_val.startswith("http")):
         banner_inner = f'<div style="height:130px;background-image:url(\'{b_val}\');background-size:cover;background-position:center;border-bottom:1px solid {card_accent}55;"></div>'
     else:
-        banner_inner = f'<div style="height:120px;position:relative;background:linear-gradient(180deg, {card_accent}25 0%, rgba(0,0,0,0.35) 100%);border-bottom:1px solid {card_accent}33;"></div>'
+        banner_inner = f'<div style="height:120px;position:relative;background:linear-gradient(180deg, {card_accent}33 0%, rgba(0,0,0,0.45) 100%);border-bottom:1px solid {card_accent}55;"></div>'
 
     if av_src:
         av_markup = f'<img src="{av_src}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">'
@@ -265,19 +265,7 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
         }}
         """
         card_animation_style = "animation: holoCardGlow 2.6s ease-in-out infinite;"
-        extra_card_elements = f"""
-        <div style="
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent 0%, {card_accent} 20%, #ffffff 50%, #38bdf8 80%, transparent 100%);
-            box-shadow: 0 0 16px {card_accent}, 0 0 28px #38bdf8, 0 0 8px #fff;
-            pointer-events: none;
-            z-index: 25;
-            animation: holoScanlineMove 2.6s linear infinite;
-        "></div>
-        """
+        extra_card_elements = f'<div style="position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg, transparent 0%, {card_accent} 20%, #ffffff 50%, #38bdf8 80%, transparent 100%);box-shadow:0 0 16px {card_accent}, 0 0 28px #38bdf8, 0 0 8px #fff;pointer-events:none;z-index:25;animation:holoScanlineMove 2.6s linear infinite;"></div>'
 
     elif active_anim == "circuit_surge":
         anim_css = f"""
@@ -355,79 +343,87 @@ def build_discord_profile_card_html(username: str, profile_data: dict | None = N
         """
         card_animation_style = "animation: glitchAuraEffect 2.2s ease-in-out infinite;"
 
-    tier_badge_markup = f"""
-    <div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid {card_accent};background:rgba(8,10,18,0.75);backdrop-filter:blur(10px);box-shadow:0 0 16px {card_accent}55;">
-        <span style="font-size:0.75rem;">👑</span>
-        <span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:'Inter',sans-serif;">PREMIUM PRO</span>
-    </div>
-    """ if is_premium else f"""
-    <div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(8,10,18,0.6);backdrop-filter:blur(8px);">
-        <span style="font-size:0.65rem;font-weight:700;letter-spacing:1px;color:#9ca3af;text-transform:uppercase;font-family:'Inter',sans-serif;">BASIC MEMBER</span>
-    </div>
-    """
+    tier_badge_markup = f'<div style="position:absolute;top:14px;right:14px;z-index:20;display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid {card_accent};background:rgba(8,10,18,0.75);backdrop-filter:blur(10px);box-shadow:0 0 16px {card_accent}55;"><span style="font-size:0.75rem;">👑</span><span style="font-size:0.68rem;font-weight:800;letter-spacing:1px;color:#D4A843;text-transform:uppercase;font-family:\'Inter\',sans-serif;">PREMIUM</span></div>' if is_premium else ''
 
-    tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Pro Member">👑</span>' if is_premium else '<span style="margin-left:auto;font-size:0.75rem;color:#9ca3af;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;">Basic</span>'
+    tier_crown_markup = '<span style="margin-left:auto;font-size:1.05rem;" title="Premium Member">👑</span>' if is_premium else ''
 
-    return f"""
-<style>
+    # Format Member Since real date & days elapsed
+    created_raw = None
+    if is_preview and isinstance(preview_dict, dict):
+        created_raw = preview_dict.get("created_at") or (profile_data.get("created_at") if isinstance(profile_data, dict) else None)
+    elif isinstance(profile_data, dict):
+        created_raw = profile_data.get("created_at") or profile_data.get("joined_at") or profile_data.get("created")
+    
+    if not created_raw and username:
+        try:
+            _full_p = firebase_db.get_user_profile(username)
+            if isinstance(_full_p, dict):
+                created_raw = _full_p.get("created_at") or _full_p.get("joined_at") or _full_p.get("created")
+        except Exception:
+            pass
+
+    member_since_text = "QUEST Surveillance Network"
+    if created_raw is not None:
+        try:
+            created_dt = None
+            if hasattr(created_raw, "date"):
+                created_dt = created_raw
+            elif isinstance(created_raw, (int, float)):
+                ts = created_raw / 1000.0 if created_raw > 1e11 else created_raw
+                created_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+            elif isinstance(created_raw, str):
+                created_dt = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
+
+            if created_dt is not None:
+                if getattr(created_dt, "tzinfo", None) is None:
+                    created_dt = created_dt.replace(tzinfo=timezone.utc)
+                now_dt = datetime.now(timezone.utc)
+                delta_days = (now_dt.date() - created_dt.date()).days
+                
+                date_str = created_dt.strftime("%b %d, %Y")
+                if delta_days <= 0:
+                    elapsed_str = "Joined today"
+                elif delta_days == 1:
+                    elapsed_str = "1 day ago"
+                else:
+                    elapsed_str = f"{delta_days} days ago"
+                
+                member_since_text = f"{date_str} • {elapsed_str}"
+        except Exception:
+            member_since_text = "QUEST Surveillance Network"
+
+    html_out = f"""<style>
 {anim_css}
 </style>
-<div style="position:sticky;top:1rem;width:100%;max-width:440px;margin:0 auto;">
-    <!-- Cyberpunk Circuit Profile Card -->
-    <div style="
-        position: relative;
-        background-color: {card_bg};
-        background-image: 
-            linear-gradient(180deg, rgba(8,10,16,0.72) 0%, rgba(5,6,12,0.92) 100%),
-            url('{circuit_svg}');
-        background-size: cover, 100% 600px;
-        background-repeat: no-repeat, repeat-y;
-        border-radius: 20px;
-        border: 1.5px solid {card_accent}66;
-        box-shadow: 0 16px 45px rgba(0,0,0,0.65), 0 0 25px {card_accent}33, inset 0 0 25px {card_accent}15;
-        overflow: hidden;
-        color: #fff;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        transition: border 0.3s ease, box-shadow 0.3s ease;
-        {card_animation_style}
-    ">
-        {extra_card_elements}
-        <!-- Top Right: Tier Pill Badge -->
-        {tier_badge_markup}
-
-        <!-- Top Banner Area -->
-        {banner_inner}
-
-        <!-- Overlapping Avatar (Discord Popout) -->
-        <div style="padding:0 22px;margin-top:-44px;position:relative;z-index:5;">
-            <div style="position:relative;width:84px;height:84px;">
-                <div style="width:84px;height:84px;border-radius:50%;border:4px solid #080a10;box-shadow:0 0 16px {card_accent}55, 0 6px 16px rgba(0,0,0,0.5);overflow:hidden;background:#151720;box-sizing:border-box;">
-                    {av_markup}
-                </div>
-                <!-- Discord Online Dot -->
-                <div style="width:22px;height:22px;border-radius:50%;background:{dot_color};border:3.5px solid #080a10;position:absolute;bottom:2px;right:2px;box-sizing:border-box;{dot_glow}"></div>
-            </div>
-
-            <!-- Identity Header -->
-            <div style="margin-top:12px;">
-                <div style="display:flex;align-items:center;gap:6px;">
-                    <span style="font-size:1.25rem;font-weight:700;color:#f3f4f6;letter-spacing:-0.2px;">{disp_text}</span>
-                    {tier_crown_markup}
-                </div>
-                <div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;">@{username}</div>
-
-                <!-- Profile Summary / About Me Container -->
-                <div style="margin-top:14px;margin-bottom:20px;background:rgba(6,8,14,0.72);border-radius:10px;border:1px solid {card_accent}33;box-shadow:inset 0 0 15px rgba(0,0,0,0.4);padding:14px 16px;border-left:3px solid {card_accent};">
-                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:{card_accent};letter-spacing:1px;margin-bottom:6px;">About Me</div>
-                    <div style="font-size:0.84rem;color:#e5e7eb;line-height:1.45;">{bio_text}</div>
-                    <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;letter-spacing:1px;margin:12px 0 4px;">Member Since</div>
-                    <div style="font-size:0.8rem;color:#cbd5e1;">QUEST Surveillance Network</div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div style="position:sticky;top:1rem;width:100%;max-width:440px;margin:0 auto;box-sizing:border-box;">
+<div style="position:relative;width:100%;height:auto;min-height:460px;background-color:{card_bg};background-image:linear-gradient(180deg, rgba(8,10,16,0.72) 0%, rgba(5,6,12,0.92) 100%),url('{circuit_svg}');background-size:cover, 100% 600px;background-repeat:no-repeat, repeat-y;border-radius:20px;border:1.5px solid {card_accent}66;box-shadow:0 16px 45px rgba(0,0,0,0.65), 0 0 25px {card_accent}33, inset 0 0 25px {card_accent}15;overflow:hidden;color:#fff;font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;transition:border 0.3s ease, box-shadow 0.3s ease;box-sizing:border-box;{card_animation_style}">
+{extra_card_elements}
+{tier_badge_markup}
+{banner_inner}
+<div style="padding:0 22px;margin-top:-44px;position:relative;z-index:5;box-sizing:border-box;">
+<div style="position:relative;width:84px;height:84px;">
+<div style="width:84px;height:84px;border-radius:50%;border:4px solid #080a10;box-shadow:0 0 16px {card_accent}55, 0 6px 16px rgba(0,0,0,0.5);overflow:hidden;background:#151720;box-sizing:border-box;">
+{av_markup}
 </div>
-"""
+<div style="width:22px;height:22px;border-radius:50%;background:{dot_color};border:3.5px solid #080a10;position:absolute;bottom:2px;right:2px;box-sizing:border-box;{dot_glow}"></div>
+</div>
+<div style="margin-top:12px;box-sizing:border-box;">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+<span style="font-size:1.25rem;font-weight:700;color:#f3f4f6;letter-spacing:-0.2px;word-break:break-word;overflow-wrap:anywhere;">{disp_text}</span>
+{tier_crown_markup}
+</div>
+<div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;word-break:break-word;overflow-wrap:anywhere;">@{username}</div>
+<div style="margin-top:14px;margin-bottom:20px;background:rgba(6,8,14,0.72);border-radius:10px;border:1px solid {card_accent}33;box-shadow:inset 0 0 15px rgba(0,0,0,0.4);padding:14px 16px;border-left:3px solid {card_accent};box-sizing:border-box;width:100%;max-width:100%;overflow:hidden;">
+<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:{card_accent};letter-spacing:1px;margin-bottom:6px;">About Me</div>
+<div style="font-size:0.84rem;color:#e5e7eb;line-height:1.5;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap;max-width:100%;box-sizing:border-box;">{bio_text}</div>
+<div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:#9ca3af;letter-spacing:1px;margin:12px 0 4px;">Member Since</div>
+<div style="font-size:0.8rem;color:#cbd5e1;word-break:break-word;overflow-wrap:anywhere;">{member_since_text}</div>
+</div>
+</div>
+</div>
+</div>
+</div>"""
+    return html_out
 
 
 
@@ -524,6 +520,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 "display_name": profile.get("display_name", user_info.get("display_name", username)),
                 "summary": profile.get("summary", ""),
                 "avatar": profile.get("avatar") or user_info.get("avatar"),
+                "created_at": profile.get("created_at") or user_info.get("created_at"),
             }
             st.session_state._banner_preview_user = username
 
@@ -567,13 +564,13 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             st.markdown(
                 '<div style="font-size:0.95rem;font-weight:700;color:var(--q-text);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">'
                 '<span>Membership Tier</span>'
-                f'<span style="font-size:0.75rem;font-weight:700;color:{"#D4A843" if is_premium else "#9ca3af"};background:{"rgba(212,168,67,0.15)" if is_premium else "rgba(255,255,255,0.06)"};padding:3px 10px;border-radius:12px;border:1px solid {"#D4A84355" if is_premium else "rgba(255,255,255,0.1)"};">{"👑 PREMIUM PRO" if is_premium else "BASIC"}</span>'
+                f'<span style="font-size:0.75rem;font-weight:700;color:{"#D4A843" if is_premium else "#9ca3af"};background:{"rgba(212,168,67,0.15)" if is_premium else "rgba(255,255,255,0.06)"};padding:3px 10px;border-radius:12px;border:1px solid {"#D4A84355" if is_premium else "rgba(255,255,255,0.1)"};">{"👑 PREMIUM" if is_premium else "BASIC"}</span>'
                 '</div>',
                 unsafe_allow_html=True,
             )
             st.caption("Switch between Basic and Premium to preview and customize tier-specific features.")
 
-            tier_options = ["Basic Member", "👑 Premium Member (Pro)"]
+            tier_options = ["Basic Member", "👑 Premium Member"]
             current_tier_idx = 1 if is_premium else 0
             chosen_tier_str = st.radio(
                 "Membership Tier",
@@ -583,7 +580,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 key="tier_selector_radio_choice",
                 label_visibility="collapsed",
             )
-            new_is_premium = (chosen_tier_str == "👑 Premium Member (Pro)")
+            new_is_premium = (chosen_tier_str == "👑 Premium Member")
             if new_is_premium != is_premium:
                 prev["isPremium"] = new_is_premium
                 prev["_manual_tier_toggle"] = True
@@ -856,8 +853,8 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     profile["is_premium"] = is_premium
                     st.session_state.user_info["is_pro"] = is_premium
                     st.session_state.user_info["is_premium"] = is_premium
-                    if "_cached_profile" in st.session_state:
-                        st.session_state._cached_profile = profile
+                    st.session_state.pop("_cached_profile", None)
+                    st.session_state.pop("_user_profiles_cache", None)
                     st.toast("Profile settings saved successfully!", icon="✅")
                     st.rerun()
                 else:
