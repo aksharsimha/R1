@@ -13,7 +13,7 @@ Setup:
 import json
 import os
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore, auth as firebase_auth
@@ -762,18 +762,205 @@ _DEFAULT_BANNER_CONFIG = {
 
 
 
+def get_user_quest_coins(username: str) -> int:
+    """Get the user's Quest Coins balance from edu_progress or profile."""
+    if not username:
+        return 0
+    try:
+        # Check edu_progress in Firestore
+        edu_prog = get_edu_progress(username)
+        if isinstance(edu_prog, dict) and "quest_coins" in edu_prog:
+            return int(edu_prog["quest_coins"])
+        # Check user profile in Firestore
+        prof = get_user_profile(username)
+        if isinstance(prof, dict) and "quest_coins" in prof:
+            return int(prof["quest_coins"])
+        # Check local edu_db
+        try:
+            import edu_db
+            local_prog = edu_db.load_progress()
+            if isinstance(local_prog, dict) and "quest_coins" in local_prog:
+                return int(local_prog["quest_coins"])
+        except Exception:
+            pass
+        return 0
+    except Exception:
+        return 0
+
+
+def deduct_user_quest_coins(username: str, amount: int) -> tuple[bool, int, str]:
+    """Deduct Quest Coins from user account. Returns (success, new_balance, message)."""
+    if not username or amount <= 0:
+        return False, 0, "Invalid parameters."
+    try:
+        current_coins = get_user_quest_coins(username)
+        if current_coins < amount:
+            return False, current_coins, f"Insufficient Quest Coins. Top up your wallet to continue"
+        new_balance = current_coins - amount
+
+        db = get_db()
+        # 1. Update Firestore edu_progress
+        edu_prog = get_edu_progress(username) or {}
+        edu_prog["quest_coins"] = new_balance
+        save_edu_progress(username, edu_prog)
+
+        # 2. Update Firestore user profile
+        db.collection("users").document(username).set({
+            "quest_coins": new_balance
+        }, merge=True)
+
+        # 3. Update local edu_db if available
+        try:
+            import edu_db
+            local_prog = edu_db.load_progress()
+            local_prog["quest_coins"] = new_balance
+            edu_db.save_progress(local_prog)
+        except Exception:
+            pass
+
+        return True, new_balance, f"Successfully deducted {amount:,} Quest Coins. New balance: {new_balance:,} coins."
+    except Exception as e:
+        return False, 0, f"Failed to deduct coins: {e}"
+
+
+def get_premium_status(username: str) -> dict:
+    """
+    Check if user's Premium subscription is active, calculate remaining days,
+    and automatically handle expiration.
+    """
+    if not username:
+        return {"is_active": False, "expires_at": None, "remaining_days": 0, "is_expired": False, "formatted_expiry": ""}
+    try:
+        profile = get_user_profile(username)
+        stored_custom = profile.get("banner_customization", {})
+        if not isinstance(stored_custom, dict):
+            stored_custom = {}
+
+        exp_raw = (
+            profile.get("premium_expires_at")
+            or profile.get("premiumExpiresAt")
+            or stored_custom.get("premiumExpiresAt")
+            or stored_custom.get("premium_expires_at")
+        )
+
+        exp_dt = None
+        if exp_raw:
+            if hasattr(exp_raw, "date"):
+                exp_dt = exp_raw
+            elif isinstance(exp_raw, (int, float)):
+                ts = exp_raw / 1000.0 if exp_raw > 1e11 else exp_raw
+                exp_dt = datetime.fromtimestamp(ts, tz=timezone.utc)
+            elif isinstance(exp_raw, str):
+                exp_dt = datetime.fromisoformat(exp_raw.replace("Z", "+00:00"))
+
+        now = datetime.now(timezone.utc)
+        if exp_dt:
+            if getattr(exp_dt, "tzinfo", None) is None:
+                exp_dt = exp_dt.replace(tzinfo=timezone.utc)
+
+            if now > exp_dt:
+                # Expired! Automatically downgrade user in Firestore
+                set_pro_status(username, False)
+                db = get_db()
+                db.collection("users").document(username).set({
+                    "is_premium": False,
+                    "is_pro": False,
+                    "banner_customization": {"isPremium": False},
+                }, merge=True)
+                return {
+                    "is_active": False,
+                    "expires_at": exp_dt,
+                    "remaining_days": 0,
+                    "is_expired": True,
+                    "formatted_expiry": exp_dt.strftime("%b %d, %Y"),
+                }
+            else:
+                # Active!
+                remaining_days = max(1, (exp_dt.date() - now.date()).days)
+                return {
+                    "is_active": True,
+                    "expires_at": exp_dt,
+                    "remaining_days": remaining_days,
+                    "is_expired": False,
+                    "formatted_expiry": exp_dt.strftime("%b %d, %Y"),
+                }
+        else:
+            is_p = bool(
+                profile.get("is_pro")
+                or profile.get("is_premium")
+                or stored_custom.get("isPremium")
+            )
+            return {
+                "is_active": is_p,
+                "expires_at": None,
+                "remaining_days": 999 if is_p else 0,
+                "is_expired": False,
+                "formatted_expiry": "Active" if is_p else "",
+            }
+    except Exception as e:
+        print(f"[firebase_db] Error checking premium status: {e}")
+        return {"is_active": False, "expires_at": None, "remaining_days": 0, "is_expired": False, "formatted_expiry": ""}
+
+
+def upgrade_user_to_premium(username: str, duration_days: int = 30, cost_coins: int = 1000) -> tuple[bool, str, dict]:
+    """
+    Upgrade or extend user to Premium for duration_days by deducting cost_coins.
+    Returns (success, message, result_dict).
+    """
+    if not username:
+        return False, "Invalid username.", {}
+
+    # 1. Check & Deduct Coins
+    ok, new_bal, msg = deduct_user_quest_coins(username, cost_coins)
+    if not ok:
+        return False, "Insufficient Quest Coins. Top up your wallet to continue", {}
+
+    try:
+        now = datetime.now(timezone.utc)
+        status = get_premium_status(username)
+        if status["is_active"] and status["expires_at"]:
+            new_expiry = status["expires_at"] + timedelta(days=duration_days)
+        else:
+            new_expiry = now + timedelta(days=duration_days)
+
+        expiry_iso = new_expiry.isoformat()
+
+        # 2. Persist to Firestore
+        db = get_db()
+        db.collection("users").document(username).set({
+            "is_premium": True,
+            "is_pro": True,
+            "premium_expires_at": expiry_iso,
+            "banner_customization": {
+                "isPremium": True,
+                "premiumExpiresAt": expiry_iso,
+            },
+            "profile_customization": {
+                "is_pro": True,
+                "show_pro_badge": True,
+            }
+        }, merge=True)
+
+        remaining_days = max(1, (new_expiry.date() - now.date()).days)
+        res = {
+            "is_active": True,
+            "expires_at": new_expiry,
+            "remaining_days": remaining_days,
+            "formatted_expiry": new_expiry.strftime("%b %d, %Y"),
+            "new_coins_balance": new_bal,
+        }
+        return True, f"🎉 Successfully upgraded to Premium for {duration_days} days! (Expires {new_expiry.strftime('%b %d, %Y')})", res
+    except Exception as e:
+        return False, f"Upgrade failed: {e}", {}
+
+
 def is_user_pro(username: str) -> bool:
-    """Check if a user has an active Pro subscription."""
+    """Check if a user has an active Pro subscription with auto-expiration check."""
     if not username:
         return False
     try:
-        profile = get_user_profile(username)
-        return bool(
-            profile.get("is_pro")
-            or profile.get("is_premium")
-            or profile.get("profile_customization", {}).get("is_pro")
-            or profile.get("banner_customization", {}).get("isPremium")
-        )
+        status = get_premium_status(username)
+        return bool(status.get("is_active", False))
     except Exception:
         return False
 
@@ -786,6 +973,7 @@ def set_pro_status(username: str, is_pro: bool = True) -> bool:
         db = get_db()
         db.collection("users").document(username).set({
             "is_pro": is_pro,
+            "is_premium": is_pro,
             "profile_customization": {"is_pro": is_pro}
         }, merge=True)
         return True
