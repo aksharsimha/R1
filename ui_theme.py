@@ -428,7 +428,9 @@ def css(theme: str = None) -> str:
     section[data-testid="stSidebar"] [data-testid="stRadioOption"] span:has(+ [data-testid="stMarkdownContainer"]),
     section[data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div > div:first-child:not([data-testid="stMarkdownContainer"]),
     section[data-testid="stSidebar"] [role="radiogroup"] label > div:first-child:not(:has(p)):empty,
+    section[data-testid="stSidebar"] [role="radiogroup"] > label > div:first-child:not(:has([data-testid="stMarkdownContainer"])):not([data-testid="stMarkdownContainer"]),
     section[data-testid="stSidebar"] [role="radiogroup"] [data-testid="stRadioOptionBullet"],
+    section[data-testid="stSidebar"] [data-testid="stRadioOptionBullet"],
     section[data-testid="stSidebar"] [role="radiogroup"] input[type="radio"],
     section[data-testid="stSidebar"] [role="radiogroup"] div[data-baseweb="radio"] > div:first-child,
     section[data-testid="stSidebar"] [role="radiogroup"] svg {{

@@ -19,6 +19,7 @@ _MODULE_ICONS = {
 
 # ─── Helpers ──────────────────────────────────────────────────────────
 
+@st.cache_data(show_spinner=False)
 def _load_all_quizzes():
     if os.path.exists(_QUIZZES_PATH):
         try:
@@ -99,15 +100,25 @@ def _get_quiz_statuses(quiz_keys, all_quizzes, completed_levels):
     return statuses
 
 
+@st.cache_data(show_spinner=False)
+def _load_catalog():
+    if os.path.exists(_CATALOG_PATH):
+        try:
+            with open(_CATALOG_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+
 def _get_active_video_info(current_level_id="level_1", completed_levels=None, watched_ids=None):
     """Returns the hero 'Up Next' info (best-effort from catalog)."""
     completed_levels = completed_levels or []
     watched_ids = set(watched_ids or [])
 
-    if os.path.exists(_CATALOG_PATH):
+    catalog = _load_catalog()
+    if catalog:
         try:
-            with open(_CATALOG_PATH, "r", encoding="utf-8") as f:
-                catalog = json.load(f)
             target_level = None
             target_video = None
             for lvl in catalog:

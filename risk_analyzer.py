@@ -470,57 +470,74 @@ def analyze_asset(asset: Asset,
                   market_df: Optional[pd.DataFrame] = None,
                   prefetched_prices: Optional[Dict[str, tuple]] = None) -> StockReport:
     """Run full analysis on one asset."""
-    df = fetch_history(asset, period=period)
-    prices = df["Close"].squeeze() if hasattr(df["Close"], "squeeze") else df["Close"]
-    returns = prices.pct_change().dropna()
+    _history_ok = True
+    try:
+        df = fetch_history(asset, period=period)
+        prices = df["Close"].squeeze() if hasattr(df["Close"], "squeeze") else df["Close"]
+        returns = prices.pct_change().dropna()
+    except Exception:
+        _history_ok = False
+        prices = pd.Series(dtype=float)
+        returns = pd.Series(dtype=float)
 
-    # Beta only meaningful for equity-like vs Nifty
-    if (market_df is None
-        or asset.asset_type in (AssetType.MUTUAL_FUND, AssetType.DIGITAL_GOLD)):
-        beta_val = float("nan")
+    nan = float("nan")
+
+    if _history_ok and len(prices) >= 2:
+        # Beta only meaningful for equity-like vs Nifty
+        if (market_df is None
+                or asset.asset_type in (AssetType.MUTUAL_FUND, AssetType.DIGITAL_GOLD)):
+            beta_val = nan
+        else:
+            market_returns = market_df["Close"].pct_change().dropna()
+            beta_val = beta(returns, market_returns)
+
+        vol  = annualized_volatility(returns)
+        dd   = max_drawdown(prices)
+        sr   = sharpe_ratio(returns)
+        var  = historical_var(returns)
+        cvar = conditional_var(returns)
+
+        tr   = total_return(prices)
+        ar   = annualized_return(prices)
+
+        def get_ret(p, days):
+            if len(p) > days:
+                return float((p.iloc[-1] / p.iloc[-days-1] - 1) * 100)
+            return nan
+
+        r_1m = get_ret(prices, 21)
+        r_6m = get_ret(prices, 126)
+        r_1y = get_ret(prices, 252)
+
+        pf   = profit_factor(returns)
+        wr   = win_rate(returns)
+
+        rsi_v  = rsi(prices)
+        pos52  = position_in_52w(prices)
+        d50    = distance_from_ma(prices, 50)
+        d200   = distance_from_ma(prices, 200)
+
+        components = {
+            "volatility": score_volatility(vol),
+            "beta":       score_beta(beta_val) if not np.isnan(beta_val) else 50,
+            "drawdown":   score_drawdown(dd),
+            "sharpe":     score_sharpe(sr),
+            "var":        score_var(var),
+            "rsi":        score_rsi(rsi_v),
+            "distance":   score_distance(d50, d200),
+        }
+        risk_score = sum(components[k] * WEIGHTS[k] for k in WEIGHTS)
+        hist_close = float(prices.iloc[-1])
     else:
-        market_returns = market_df["Close"].pct_change().dropna()
-        beta_val = beta(returns, market_returns)
-
-    vol  = annualized_volatility(returns)
-    dd   = max_drawdown(prices)
-    sr   = sharpe_ratio(returns)
-    var  = historical_var(returns)
-    cvar = conditional_var(returns)
-
-    tr   = total_return(prices)
-    ar   = annualized_return(prices)
-    
-    def get_ret(p, days):
-        if len(p) > days:
-            return float((p.iloc[-1] / p.iloc[-days-1] - 1) * 100)
-        return float('nan')
-        
-    r_1m = get_ret(prices, 21)
-    r_6m = get_ret(prices, 126)
-    r_1y = get_ret(prices, 252)
-    
-    pf   = profit_factor(returns)
-    wr   = win_rate(returns)
-
-    rsi_v  = rsi(prices)
-    pos52  = position_in_52w(prices)
-    d50    = distance_from_ma(prices, 50)
-    d200   = distance_from_ma(prices, 200)
-
-    components = {
-        "volatility": score_volatility(vol),
-        "beta":       score_beta(beta_val) if not np.isnan(beta_val) else 50,
-        "drawdown":   score_drawdown(dd),
-        "sharpe":     score_sharpe(sr),
-        "var":        score_var(var),
-        "rsi":        score_rsi(rsi_v),
-        "distance":   score_distance(d50, d200),
-    }
-    risk_score = sum(components[k] * WEIGHTS[k] for k in WEIGHTS)
+        # History unavailable — still show the holding with cached/live price
+        beta_val = vol = dd = sr = var = cvar = nan
+        tr = ar = r_1m = r_6m = r_1y = pf = wr = nan
+        rsi_v = pos52 = d50 = d200 = nan
+        components = {k: 50.0 for k in WEIGHTS}
+        risk_score = 50.0
+        hist_close = None
 
     # Use real-time NSE price for current valuation (falls back gracefully)
-    hist_close = float(prices.iloc[-1])
     live_price, price_source = get_current_price(asset, hist_close=hist_close,
                                                   prefetched=prefetched_prices)
     curr_val = asset.quantity * live_price
@@ -603,8 +620,11 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
                 print(f"  Analyzing {a.name}...")
             r = analyze_asset(a, period=period, market_df=market_df,
                               prefetched_prices=prefetched)
-            df_h = fetch_history(a, period=period)
-            close_s = df_h["Close"].squeeze() if hasattr(df_h["Close"], "squeeze") else df_h["Close"]
+            try:
+                df_h = fetch_history(a, period=period)
+                close_s = df_h["Close"].squeeze() if hasattr(df_h["Close"], "squeeze") else df_h["Close"]
+            except Exception:
+                close_s = None  # history unavailable; asset still included for P&L
             return a.name, r, close_s
         except Exception as e:
             if verbose:
@@ -617,9 +637,10 @@ def analyze_portfolio(assets: List[Asset], period: str = "2y",
             futures = [pool.submit(_analyze_single_asset, a) for a in assets]
             for fut in as_completed(futures):
                 name, r, close_s = fut.result()
-                if r is not None and close_s is not None:
+                if r is not None:
                     reports.append(r)
-                    price_history[name] = close_s
+                    if close_s is not None and len(close_s) > 0:
+                        price_history[name] = close_s
 
     rows = []
     for r in reports:
