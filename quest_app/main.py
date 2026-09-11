@@ -210,7 +210,7 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
     _disp_name = user_info.get("display_name", username) or username
     placeholder.markdown(f"""
     <div class="quest-profile-card">
-        <div class="quest-profile-header" title="Click to view Profile Card">
+        <div class="quest-profile-header" title="Click avatar or name to view Profile Card">
             <div class="quest-profile-avatar">{avatar_markup}</div>
             <div class="quest-profile-copy">
                 <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
@@ -224,12 +224,11 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
     </div>
     <script>
     (() => {{
-        function bindProfileCard() {{
+        function bindProfileClick() {{
             const header = document.querySelector('.quest-profile-header');
-            const btn = document.querySelector('.quest-profile-hidden-trigger button') ||
-                        document.querySelector('button[key*="sidebar_profile_card_trigger"]');
-            if (header && btn && !header.dataset.bound) {{
-                header.dataset.bound = 'true';
+            const btn = document.querySelector('button[aria-label="hidden_profile_card_trigger"]');
+            if (header && btn && !header.dataset.profileBound) {{
+                header.dataset.profileBound = 'true';
                 header.style.cursor = 'pointer';
                 header.addEventListener('click', (e) => {{
                     e.preventDefault();
@@ -238,9 +237,9 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
                 }});
             }}
         }}
-        bindProfileCard();
+        bindProfileClick();
         if (!window._qProfileObs) {{
-            window._qProfileObs = new MutationObserver(bindProfileCard);
+            window._qProfileObs = new MutationObserver(bindProfileClick);
             window._qProfileObs.observe(document.body, {{ childList: true, subtree: true }});
         }}
     }})();
@@ -249,11 +248,9 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
 
 _profile_placeholder = st.sidebar.empty()
 
-# Hidden trigger button for clicking sidebar profile card (triggered via JS click on avatar/name)
-st.sidebar.markdown('<div class="quest-profile-hidden-trigger">', unsafe_allow_html=True)
-if st.sidebar.button("Open Profile Card", key=f"sidebar_profile_card_trigger_{_username}", help="Click avatar or name to view Profile Card"):
+# Hidden trigger button for clicking sidebar profile card (off-screen, zero visual footprint)
+if st.sidebar.button("hidden_profile_card_trigger", key="hidden_profile_card_trigger", help=""):
     _show_sidebar_profile_dialog(_username)
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
 
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
