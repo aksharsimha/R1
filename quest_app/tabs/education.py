@@ -29,11 +29,13 @@ import edu_db
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _CATALOG_PATH = os.path.join(os.path.dirname(_HERE), "education_catalog.json")
 
-@st.cache_data
 def _load_catalog():
     if os.path.exists(_CATALOG_PATH):
-        with open(_CATALOG_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(_CATALOG_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
     return []
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -538,7 +540,7 @@ def render(user_info):
     # ──────────────────────────────────────────────────────────────────────────
     # Top Bar: Language Switcher & Active Status
     # ──────────────────────────────────────────────────────────────────────────
-    bar_col1, bar_col2 = st.columns([2.5, 1.5])
+    bar_col1, bar_col2 = st.columns([2.2, 1.8])
     
     with bar_col1:
         l_btn1, l_btn2 = st.columns(2)
@@ -558,7 +560,24 @@ def render(user_info):
                     st.rerun()
 
     with bar_col2:
-        search_kw = st.text_input("🔍 Search 100 Topics", placeholder="Search topics, creators...", label_visibility="collapsed", key="search_topics_input")
+        search_kw = st.text_input("🔍 Search 100 Topics", placeholder="Search topics, creators, tags...", label_visibility="collapsed", key="search_topics_input")
+
+    # ── Interactive Filter Toolbar (Level, Duration, Tag) ──
+    _all_tags = set()
+    for _m in catalog:
+        for _t in _m.get("topics", []):
+            _v = _t.get(current_lang) or _t.get("en", {})
+            _all_tags.update(_v.get("tags", []))
+    _sorted_tags = ["All Tags"] + sorted(list(_all_tags))
+
+    st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
+    f_c1, f_c2, f_c3 = st.columns([1.1, 1.2, 1.7])
+    with f_c1:
+        selected_level = st.selectbox("Level", ["All Levels", "Beginner", "Intermediate", "Advanced"], key="edu_filter_level", label_visibility="collapsed")
+    with f_c2:
+        selected_dur = st.selectbox("Duration", ["All Durations", "Short (<10m)", "Standard (10-20m)", "Deep Dive (>20m)"], key="edu_filter_duration", label_visibility="collapsed")
+    with f_c3:
+        selected_tag = st.selectbox("Topic Tag", _sorted_tags, key="edu_filter_tag", label_visibility="collapsed")
 
     st.markdown("<div style='margin-bottom: 0.8rem;'></div>", unsafe_allow_html=True)
 
@@ -589,14 +608,17 @@ def render(user_info):
 
         # 2. Title & In-Player Language Cross-Switch
         st.markdown(f"""
-        <div class="yt-title-row">
+        <div class="yt-title-row" style="flex-direction:column;gap:3px;align-items:flex-start;">
             <div class="yt-main-title">{active_video.get('title', '')}</div>
+            <div style="font-size:0.88rem;font-weight:600;color:var(--q-accent);margin-top:2px;">📦 {active_video.get('module_title', '')}</div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Quick Switch to alternate language for same topic
+        # Quick Switch to alternate language for same topic using equivalent_video_id
         if matching_other_video:
-            switch_lbl = f"🔄 Switch to {other_lang_name} version for this exact topic"
+            eq_title = matching_other_video.get("title", "")
+            eq_id = active_video.get("equivalent_video_id", matching_other_video.get("id", ""))
+            switch_lbl = f"🔄 Switch to {other_lang_name} counterpart (ID: {eq_id})"
             if st.button(switch_lbl, key=f"btn_cross_lang_{v_id}_{current_lang}", use_container_width=True):
                 st.session_state.edu_video_lang = other_lang
                 st.rerun()
@@ -653,16 +675,35 @@ def render(user_info):
                         st.balloons()
                         st.rerun()
 
-        # 4. Description Box with Real-World Takeaways
+        # 4. Description Box with Real-World Takeaways & Metadata Attributes
         views_txt = active_video.get("views", "320K")
         pub_txt = active_video.get("published", "Recently")
+        v_level = active_video.get("level", "Beginner")
+        v_dur_cat = active_video.get("duration_category", "Standard")
+        v_dur = active_video.get("duration", "10:00")
+        v_tags = active_video.get("tags", [])
+        
+        level_clr = "#34d399" if v_level == "Beginner" else ("#fbbf24" if v_level == "Intermediate" else "#a78bfa")
+        tag_pills_html = "".join([f'<span style="display:inline-block;padding:2px 8px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid var(--q-border);font-size:0.72rem;color:var(--q-text-2);margin:2px 4px 2px 0;">#{t}</span>' for t in v_tags])
+        
         takeaway_header = "Key Learning Takeaways:" if current_lang == "en" else "मुख्य निष्कर्ष (Key Takeaways):"
         
         desc_items_html = "".join([f'<div class="yt-takeaway-item"><span style="color:var(--q-pos);">•</span> {tkw}</div>' for tkw in active_video.get("key_takeaways", [])])
         st.markdown(f"""
         <div class="yt-desc-box">
-            <div class="yt-desc-meta">{views_txt} views &bull; {pub_txt} &bull; {active_video['module_title']} &bull; {lang_badge}</div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px;">
+                <span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid {level_clr};font-size:0.75rem;font-weight:700;color:{level_clr};">
+                    ● {v_level}
+                </span>
+                <span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid var(--q-border);font-size:0.75rem;font-weight:600;color:var(--q-text-2);">
+                    ⏱️ {v_dur_cat} ({v_dur})
+                </span>
+                <span style="font-size:0.78rem;color:var(--q-text-3);">
+                    {views_txt} views &bull; {pub_txt} &bull; {active_video['module_title']} &bull; {lang_badge}
+                </span>
+            </div>
             <div class="yt-desc-text">{active_video['summary']}</div>
+            <div style="margin-top:8px;margin-bottom:6px;">{tag_pills_html}</div>
             <div style="font-weight:700;font-size:0.85rem;color:var(--q-text);margin:10px 0 6px;">{takeaway_header}</div>
             {desc_items_html}
         </div>
@@ -798,23 +839,53 @@ def render(user_info):
             label_visibility="collapsed"
         )
 
-        # Search filter if user typed keywords
-        if search_kw and search_kw.strip():
-            skw = search_kw.strip().lower()
+        # Check if any filter is active
+        has_active_filter = (
+            (search_kw and search_kw.strip()) or
+            (selected_level != "All Levels") or
+            (selected_dur != "All Durations") or
+            (selected_tag != "All Tags")
+        )
+
+        def _video_matches_filters(v, mod):
+            if search_kw and search_kw.strip():
+                skw = search_kw.strip().lower()
+                title_match = skw in v.get("title", "").lower()
+                creator_match = skw in v.get("creator", "").lower()
+                cat_match = skw in mod.get("category", "").lower()
+                mod_match = skw in mod.get("module_title", "").lower()
+                tag_match = any(skw in t.lower() for t in v.get("tags", []))
+                if not (title_match or creator_match or cat_match or mod_match or tag_match):
+                    return False
+
+            if selected_level != "All Levels":
+                if v.get("level") != selected_level:
+                    return False
+
+            if selected_dur != "All Durations":
+                dur_prefix = selected_dur.split()[0]
+                if v.get("duration_category") != dur_prefix:
+                    return False
+
+            if selected_tag != "All Tags":
+                if selected_tag not in v.get("tags", []):
+                    return False
+
+            return True
+
+        if has_active_filter:
             search_results = []
             for m_i, mod in enumerate(catalog):
                 for t_i, top in enumerate(mod.get("topics", [])):
                     v = top.get(current_lang) or top.get("en", {})
-                    if (skw in v.get("title", "").lower() 
-                        or skw in v.get("creator", "").lower() 
-                        or skw in mod.get("category", "").lower() 
-                        or skw in mod.get("module_title", "").lower()):
+                    if _video_matches_filters(v, mod):
                         search_results.append((m_i, t_i, v, mod))
 
             if not search_results:
-                st.info("No matching topics found.")
+                st.info("No matching topics found for selected filters.")
             else:
-                for s_idx, (m_i, t_i, vid, mod) in enumerate(search_results[:10]):
+                st.caption(f"Showing {len(search_results)} filtered video(s)")
+                for s_idx, (m_i, t_i, vid, mod) in enumerate(search_results[:15]):
                     is_active = (m_i == st.session_state.edu_active_module_idx and t_i == st.session_state.edu_active_video_idx)
                     cat_clr = mod.get("cat_color", "#3b82f6")
                     with st.container():
@@ -827,19 +898,23 @@ def render(user_info):
                             </div>
                             """, unsafe_allow_html=True)
                         with c2:
+                            v_p_dur_cat = vid.get('duration_category', 'Standard')
+                            v_p_lvl = vid.get('level', 'Beginner')
+                            v_p_mod_title = mod.get('module_title', 'Module 1')
                             st.markdown(f"""
                             <div class="yt-card-details">
                                 <div class="yt-card-title" style="{'color:var(--q-accent);' if is_active else ''}">{vid.get('title', '')}</div>
+                                <div style="font-size:0.72rem;font-weight:600;color:var(--q-accent);margin:1px 0 2px;">📦 {v_p_mod_title}</div>
                                 <div class="yt-card-creator">
                                     <span>{vid.get('creator', '')}</span>
                                     <span style="color:var(--q-accent);font-size:0.65rem;">✔</span>
                                 </div>
-                                <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {mod.get('category', 'Basics')}</div>
+                                <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {v_p_dur_cat} &bull; {v_p_lvl}</div>
                             </div>
                             """, unsafe_allow_html=True)
                         
                         btn_txt = "▶ Playing Now" if is_active else "Play Video"
-                        if st.button(btn_txt, key=f"search_play_btn_{m_i}_{t_i}_{s_idx}", disabled=is_active, use_container_width=True):
+                        if st.button(btn_txt, key=f"filtered_play_btn_{m_i}_{t_i}_{s_idx}", disabled=is_active, use_container_width=True):
                             st.session_state.edu_active_module_idx = m_i
                             st.session_state.edu_active_video_idx = t_i
                             st.rerun()
@@ -861,14 +936,18 @@ def render(user_info):
                         </div>
                         """, unsafe_allow_html=True)
                     with c2:
+                        v_p_dur_cat = vid.get('duration_category', 'Standard')
+                        v_p_lvl = vid.get('level', 'Beginner')
+                        v_p_mod_title = cur_module.get('module_title', 'Module 1')
                         st.markdown(f"""
                         <div class="yt-card-details">
                             <div class="yt-card-title" style="{'color:var(--q-accent);' if is_active else ''}">{vid.get('title', '')}</div>
+                            <div style="font-size:0.72rem;font-weight:600;color:var(--q-accent);margin:1px 0 2px;">📦 {v_p_mod_title}</div>
                             <div class="yt-card-creator">
                                 <span>{vid.get('creator', '')}</span>
                                 <span style="color:var(--q-accent);font-size:0.65rem;">✔</span>
                             </div>
-                            <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {cur_module.get('category', 'Basics')}</div>
+                            <div style="font-size:0.68rem;color:var(--q-text-3);margin-top:2px;">{vid.get('views', '300K')} views &bull; {v_p_dur_cat} &bull; {v_p_lvl}</div>
                         </div>
                         """, unsafe_allow_html=True)
                     

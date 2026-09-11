@@ -3,6 +3,10 @@
 ## 2026-09-11
 
 ### 🎨 Discord Nitro-Style Cyberpunk Profile System & Chat Modal Architecture
+- **Video Database Schema Model & Metadata Migration (`video_models.py`, `migrate_video_catalog.py`, `education_catalog.json`)**:
+  - Implemented structured `VideoEntity` model with taxonomy enums: `language` (`'en'` | `'hi'`), `level` (`'Beginner'` | `'Intermediate'` | `'Advanced'`), and `duration_category` (`'Short'` | `'Standard'` | `'Deep Dive'`).
+  - Executed migration script backfilling all 200 video entities across 10 modules and 100 topics with `duration_seconds`, contextual domain `tags`, and 100% bi-directional `equivalent_video_id` cross-language linking.
+  - Updated Knowledge Library UI (`education.py`) to display level badges, duration category chips, tag pills, and cross-language switching.
 - **Clean Sidebar Navigation & Radio Bullet Elimination (`ui_theme.py`)**:
   - Completely eliminated all circular radio button bullets, dots, indicators, and selectors (`( )` / `(•)`) from the sidebar navigation items.
   - Targeted Emotion/BaseWeb DOM structures (`etak9234`, `etak9235`, `:has(+ [data-testid="stMarkdownContainer"])`) and scoped text inheritance rules to ensure clean text and emoji presentation.
