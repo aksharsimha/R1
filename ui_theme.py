@@ -602,7 +602,17 @@ def css(theme: str = None) -> str:
         border: 1px solid var(--q-border); border-radius: var(--q-radius);
         padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;
         position: relative; box-sizing: border-box; overflow: hidden; }}
-    .quest-profile-header {{ display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; }}
+    .quest-profile-header {{ display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0;
+        cursor: pointer; padding: 4px; margin: -4px; border-radius: 8px;
+        transition: background 0.15s ease, transform 0.12s ease; }}
+    .quest-profile-header:hover {{ background: rgba(255, 255, 255, 0.06); transform: translateY(-1px); }}
+    .quest-profile-header:active {{ transform: translateY(0px); }}
+    .quest-hidden-profile-btn {{
+        position: absolute !important; width: 1px !important; height: 1px !important;
+        padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important;
+        border: 0 !important; opacity: 0 !important; pointer-events: auto !important;
+    }}
     .quest-profile-actions {{ position: absolute; top: 8px; left: 12px; right: 12px;
         display: flex; justify-content: space-between; color: var(--q-text-3); font-size: .9rem; }}
     .quest-profile-avatar {{ width: 38px; height: 38px; flex: 0 0 38px;

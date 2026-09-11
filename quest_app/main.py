@@ -175,6 +175,40 @@ if not _avatar:
 _avatar_markup = (f'<img src="{_avatar}" alt="Profile avatar">' if _avatar else
                   f'<span>{_user_info.get("display_name", _username)[:1].upper()}</span>')
 
+@st.dialog("Profile Card", width="small")
+def _show_sidebar_profile_dialog(username: str):
+    st.markdown("""
+    <style>
+    div[data-testid="stDialog"] div[data-testid="stDialogHeader"] {
+        padding-bottom: 4px !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stVerticalBlock"] {
+        padding: 0 !important;
+        gap: 0 !important;
+    }
+    div[data-testid="stDialog"] div[data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    import importlib
+    import quest_app.settings as settings
+    importlib.reload(settings)
+    import firebase_db
+    try:
+        profile = firebase_db.get_user_profile(username)
+    except Exception:
+        profile = {}
+    card_html = settings.build_discord_profile_card_html(username, profile)
+    st.html(card_html)
+
+
+# Hidden trigger button for clicking sidebar profile card header
+st.sidebar.markdown('<div class="quest-hidden-profile-btn">', unsafe_allow_html=True)
+if st.sidebar.button("Open Profile Card", key="sidebar_profile_card_trigger", help="View your public profile card"):
+    _show_sidebar_profile_dialog(_username)
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
@@ -192,7 +226,7 @@ def _render_profile_card(placeholder, user_info, username, avatar_markup, p_grow
     _disp_name = user_info.get("display_name", username) or username
     placeholder.markdown(f"""
     <div class="quest-profile-card">
-        <div class="quest-profile-header">
+        <div class="quest-profile-header" onclick="const b = document.querySelector('.quest-hidden-profile-btn button'); if(b) b.click();" title="Click to view Profile Card">
             <div class="quest-profile-avatar">{avatar_markup}</div>
             <div class="quest-profile-copy">
                 <div class="quest-profile-name" title="{_disp_name}">{_disp_name}</div>
