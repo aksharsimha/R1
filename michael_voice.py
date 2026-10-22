@@ -4,7 +4,8 @@ QUEST — MICHAEL voice layer
 Speech-to-text : Groq Whisper (multilingual — English, Hindi, Hinglish).
 Voice notes    : Kokoro (open-source, runs locally on CPU) renders MICHAEL's replies
                  as audio files in his own voice — see michael_persona.VOICE. It runs
-                 in a separate worker process so torch never loads into Streamlit.
+                 in a separate worker process (michael_tts_worker.py), preferring the
+                 light kokoro-onnx engine, so no voice library loads into Streamlit.
 Fallback voice : the browser's built-in Web Speech API, used for Hindi replies and
                  wherever Kokoro isn't installed.
 
@@ -165,8 +166,8 @@ _WORKER_SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "micha
 
 
 def kokoro_installed() -> bool:
-    """True if Kokoro can be used — checked without importing it (that's the expensive part)."""
-    return importlib.util.find_spec("kokoro") is not None
+    """True if either Kokoro engine is installed — checked without importing it."""
+    return any(importlib.util.find_spec(m) is not None for m in ("kokoro_onnx", "kokoro"))
 
 
 class _VoiceWorker:
@@ -233,7 +234,7 @@ def voice_ready() -> bool:
     return kokoro_installed() and _live_worker().ready
 
 
-def voice_note(text: str, folder: str, voice: str, timeout: float = 120) -> str | None:
+def voice_note(text: str, folder: str, voice: str, timeout: float = 240) -> str | None:
     """Create (or reuse) a saved voice note for a reply. Returns the file path, or None."""
     spoken = speech_text(text, limit=2500)
     if not spoken or re.search(r"[\u0900-\u097F]", spoken):  # Hindi stays with the browser voice

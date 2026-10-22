@@ -14,3 +14,6 @@ firebase-admin>=6.0,<7.0
 google-cloud-firestore>=2.11,<2.20
 pytz>=2024.1
 razorpay>=2.0
+# MICHAEL's voice (George). ONNX engine, no torch needed. The model downloads on first use (~350MB)
+kokoro-onnx>=0.4.9
+soundfile>=0.12
