@@ -873,7 +873,7 @@ def render_add_account_page(return_to: str = "Overview") -> None:
     with st.form("add_account_form", clear_on_submit=False, border=False):
         email = st.text_input("Email", placeholder="Enter your email", key="add_account_email")
         password = st.text_input("Password", type="password", placeholder="Enter your password", key="add_account_password")
-        submitted = st.form_submit_button("Sign In", use_container_width=True, key="add_account_submit")
+        submitted = st.form_submit_button("Sign In", width="stretch", key="add_account_submit")
 
     if submitted:
         success, message, user_info = login_user(email, password)
@@ -947,7 +947,7 @@ def _render_login(login_user, save_remember_me):
         remember = st.checkbox("Remember me on this device", value=True, key="lr")
 
         # Submit
-        submitted = st.form_submit_button("Sign In", use_container_width=True, key="login_submit")
+        submitted = st.form_submit_button("Sign In", width="stretch", key="login_submit")
 
         if submitted:
             success, message, user_info = login_user(email, password)
@@ -971,7 +971,7 @@ def _render_login(login_user, save_remember_me):
                 st.error(message)
 
     # Forgot password (styled with comfortable width)
-    if st.button("Forgot password?", key="forgot_pw", use_container_width=False):
+    if st.button("Forgot password?", key="forgot_pw", width="content"):
         st.session_state.show_reset = True
         st.rerun()
 
@@ -987,12 +987,12 @@ def _render_login(login_user, save_remember_me):
     # Side-by-side action buttons: Create free account on left, Try live demo on right
     c1, c2 = st.columns(2, gap="small")
     with c1:
-        if st.button("Create free account", key="to_signup", use_container_width=True):
+        if st.button("Create free account", key="to_signup", width="stretch"):
             st.session_state.auth_mode = "signup"
             st.rerun()
 
     with c2:
-        if st.button("🛰️ Try a live demo", key="try_demo", use_container_width=True):
+        if st.button("🛰️ Try a live demo", key="try_demo", width="stretch"):
             st.session_state.authenticated = True
             st.session_state.user_info = {
                 "username": "demo_guest",
@@ -1049,7 +1049,7 @@ def _render_signup(register_user, login_user, save_remember_me):
         confirm = st.text_input("c", type="password", placeholder="Re-enter your password", key="sc", label_visibility="collapsed")
 
         remember = st.checkbox("Remember me on this device", value=True, key="sr")
-        submitted = st.form_submit_button("Create Account", use_container_width=True)
+        submitted = st.form_submit_button("Create Account", width="stretch")
 
         if submitted:
             if password != confirm:
@@ -1080,7 +1080,7 @@ def _render_signup(register_user, login_user, save_remember_me):
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Sign in instead", key="to_login", use_container_width=True):
+    if st.button("Sign in instead", key="to_login", width="stretch"):
         st.session_state.auth_mode = "login"
         st.rerun()
 
@@ -1112,7 +1112,7 @@ def _render_reset(reset_password):
         st.markdown('<p style="font-size:0.72rem;font-weight:600;color:#64748b;margin:0 0 2px 0;letter-spacing:0.5px;text-transform:uppercase;">Email</p>', unsafe_allow_html=True)
         email = st.text_input("e", placeholder="Enter your email", key="re", label_visibility="collapsed")
 
-        submitted = st.form_submit_button("Send Reset Link", use_container_width=True)
+        submitted = st.form_submit_button("Send Reset Link", width="stretch")
 
         if submitted and email:
             ok, msg = reset_password(email)
@@ -1122,7 +1122,7 @@ def _render_reset(reset_password):
                 st.error(msg)
 
     st.markdown('<div style="margin-top:10px;">', unsafe_allow_html=True)
-    if st.button("← Back to sign in", key="back_to_login", use_container_width=True):
+    if st.button("← Back to sign in", key="back_to_login", width="stretch"):
         st.session_state.show_reset = False
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)

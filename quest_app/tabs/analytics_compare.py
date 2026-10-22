@@ -39,7 +39,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 legend=dict(orientation='v', y=0.5, font=dict(size=11)),
             )
             ui_theme.style_fig(fig)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
         with c2:
             st.markdown("**Asset Correlation Matrix**")
@@ -50,7 +50,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 fig2.update_yaxes(tickfont=dict(size=12))
                 fig2.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=max(400, len(corr.columns) * 48), autosize=True)
                 ui_theme.style_fig(fig2)
-                st.plotly_chart(fig2, use_container_width=True)
+                st.plotly_chart(fig2, width="stretch")
 
                 with st.expander("∑ Show Math"):
                     st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #38bdf8;'>Formula: ρ(X,Y) = Cov(X,Y) / (σₓ · σᵧ)</p>", unsafe_allow_html=True)
@@ -94,7 +94,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 fig_pca.update_xaxes(showgrid=False)
                 fig_pca.update_yaxes(showgrid=True, gridcolor="rgba(255,255,255,0.05)")
                 ui_theme.style_fig(fig_pca)
-                st.plotly_chart(fig_pca, use_container_width=True)
+                st.plotly_chart(fig_pca, width="stretch")
 
                 with st.expander("∑ Show Math"):
                     st.markdown("<p style='font-family: \"JetBrains Mono\", monospace; color: #38bdf8;'>Formula: Σ = VΛVᵀ (eigendecomposition)</p>", unsafe_allow_html=True)

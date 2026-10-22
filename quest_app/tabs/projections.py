@@ -127,7 +127,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     "Daily vol": f"{s['dvol_pct']:.1f}%",
                     "Risk": ("🔴 " if s['flag'] == 'high vol' else "🟠 " if s['flag'] == 'elevated' else "🟢 ") + s['flag'],
                 } for s in _fc['per_stock']]
-                st.dataframe(pd.DataFrame(_vrows), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(_vrows), width="stretch", hide_index=True)
 
             st.markdown("---")
             # ── Prediction tracker (v2): log each forecast, grade it next trading day ──
@@ -184,7 +184,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                            "Error": f"{e['error']:+,.2f}",
                            "Direction": ("hit ✅" if e.get("hit") else "miss ❌" if e.get("hit") is not None else "-")}
                           for e in sorted(_graded, key=lambda x: x["target_date"], reverse=True)[:15]]
-                st.dataframe(pd.DataFrame(_trows), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(_trows), width="stretch", hide_index=True)
             else:
                 _pending = [e for e in _tlog if e.get("actual") is None]
                 if _pending:

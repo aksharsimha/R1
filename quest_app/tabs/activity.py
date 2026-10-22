@@ -28,7 +28,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         tx_df = tx_df[["timestamp", "action", "asset", "amount", "details"]]
         tx_df["amount"] = tx_df["amount"].apply(lambda x: f"₹ {x:,.2f}" if isinstance(x, (int, float)) else x)
         tx_df.columns = ["Timestamp", "Action", "Asset", "Amount", "Details"]
-        st.dataframe(tx_df, use_container_width=True, hide_index=True)
+        st.dataframe(tx_df, width="stretch", hide_index=True)
     else:
         st.info("No transactions logged yet.")
 
@@ -71,7 +71,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         fig.update_traces(line_color='#00ff87', fill='tozeroy', fillcolor='rgba(0, 255, 135, 0.1)')
 
                         ui_theme.style_fig(fig)
-                        st.plotly_chart(fig, use_container_width=True)
+                        st.plotly_chart(fig, width="stretch")
                     else:
                         st.warning("No historical data found for this asset.")
                 except Exception as e:

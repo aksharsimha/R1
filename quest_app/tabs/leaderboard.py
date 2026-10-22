@@ -8,7 +8,6 @@ personal standing card for the active user.
 """
 
 import streamlit as st
-import streamlit.components.v1 as components
 import json
 import os
 import firebase_db
@@ -1215,4 +1214,4 @@ def render(user_info):
     </script>"""
     html_content = html_content.replace("<head>", "<head>" + data_script, 1)
 
-    components.html(html_content, height=1500, scrolling=True)
+    st.iframe(html_content, height=1500)

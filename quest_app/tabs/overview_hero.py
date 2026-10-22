@@ -188,11 +188,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     _cprev, _ctitle, _cnext = st.columns([1, 4, 1])
     with _cprev:
-        if st.button('‹', key='cal_prev', use_container_width=True):
+        if st.button('‹', key='cal_prev', width="stretch"):
             st.session_state.cal_offset -= 1
             st.rerun()
     with _cnext:
-        if st.button('›', key='cal_next', use_container_width=True):
+        if st.button('›', key='cal_next', width="stretch"):
             st.session_state.cal_offset += 1
             st.rerun()
     with _ctitle:

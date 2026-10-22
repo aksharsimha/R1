@@ -134,7 +134,7 @@ if _early_page == "AddAccount":
 if _early_page == "Settings":
     import quest_app.settings as settings
     st.sidebar.markdown("<div class='quest-settings-sidebar-title'>Settings</div>", unsafe_allow_html=True)
-    if st.sidebar.button("← Dashboard", key="settings_dashboard_sidebar", use_container_width=True):
+    if st.sidebar.button("← Dashboard", key="settings_dashboard_sidebar", width="stretch"):
         _ws = st.query_params.get("workspace", "professional")
         st.query_params["page"] = edu_db.get_last_education_section() if _ws == "education" else edu_db.get_last_portfolio_section()
         st.rerun()
@@ -144,7 +144,7 @@ if _early_page == "Settings":
         label_visibility="collapsed"
     )
     
-    if st.sidebar.button("Sign out", key="settings_signout_trigger", use_container_width=True):
+    if st.sidebar.button("Sign out", key="settings_signout_trigger", width="stretch"):
         st.session_state.show_signout_dialog = True
         st.rerun()
         
@@ -242,13 +242,13 @@ st.sidebar.markdown("""
 _profile_wrap = st.sidebar.container(key="sidebar_profile_wrap")
 with _profile_wrap:
     _profile_placeholder = st.empty()
-    if st.button("Open Profile Card", key="sidebar_profile_card_trigger", use_container_width=True):
+    if st.button("Open Profile Card", key="sidebar_profile_card_trigger", width="stretch"):
         _show_sidebar_profile_dialog(_username)
 # BUG 2 FIX: Use real st.button() calls, NOT <a href> anchors.
 # Raw anchors cause a full page navigation → session is lost → user lands on login.
 # st.button() triggers a server-side rerun so the session is preserved.
 st.sidebar.markdown('<div class="quest-icon-btn-row">', unsafe_allow_html=True)
-if st.sidebar.button("⚙  Settings", key="sidebar_settings_btn", help="Open settings", use_container_width=True):
+if st.sidebar.button("⚙  Settings", key="sidebar_settings_btn", help="Open settings", width="stretch"):
     _ws = st.query_params.get("workspace", "professional")
     st.session_state[f"nav_section_{_ws}_{_username}"] = None
     st.session_state.nav_section = "⚙  Settings"
@@ -351,7 +351,7 @@ st.sidebar.markdown("<div class='quest-nav-label'>Environment</div>", unsafe_all
 _ws_col1, _ws_col2 = st.sidebar.columns(2, gap="small")
 with _ws_col1:
     _is_prof = (_workspace == "professional")
-    if st.button("💼 Portfolio", key="sidebar_switch_prof", type="primary" if _is_prof else "secondary", use_container_width=True):
+    if st.button("💼 Portfolio", key="sidebar_switch_prof", type="primary" if _is_prof else "secondary", width="stretch"):
         if not _is_prof:
             _last_prof = edu_db.get_last_portfolio_section()
             st.query_params["workspace"] = "professional"
@@ -359,7 +359,7 @@ with _ws_col1:
             st.rerun()
 with _ws_col2:
     _is_edu = (_workspace == "education")
-    if st.button("🎓 Education", key="sidebar_switch_edu", type="primary" if _is_edu else "secondary", use_container_width=True):
+    if st.button("🎓 Education", key="sidebar_switch_edu", type="primary" if _is_edu else "secondary", width="stretch"):
         if not _is_edu:
             _last_edu = edu_db.get_last_education_section()
             st.query_params["workspace"] = "education"
@@ -436,7 +436,8 @@ st.sidebar.markdown(f"<div class='quest-nav-label'>{_sidebar_title}</div>", unsa
 _selected_label = st.sidebar.radio(
     "Navigate",
     _nav_labels,
-    index=_page_idx,
+    # Once the key is in session state, Streamlit uses that value and warns about a second default
+    index=0 if _nav_radio_key in st.session_state else _page_idx,
     key=_nav_radio_key,
     on_change=_on_nav_change,
     label_visibility="collapsed",
@@ -475,11 +476,11 @@ st.sidebar.markdown("""
 """, unsafe_allow_html=True)
 st.sidebar.markdown("---")
 is_shop_active = (_query_page == "Shop")
-if st.sidebar.button("🛒  Shop", key="sidebar_goto_shop", type="primary" if is_shop_active else "secondary", use_container_width=True):
+if st.sidebar.button("🛒  Shop", key="sidebar_goto_shop", type="primary" if is_shop_active else "secondary", width="stretch"):
     if not is_shop_active:
         st.query_params["page"] = "Shop"
         st.rerun()
-if st.sidebar.button("🏠  Main Hub", key="sidebar_goto_hub", use_container_width=True):
+if st.sidebar.button("🏠  Main Hub", key="sidebar_goto_hub", width="stretch"):
     st.query_params["page"] = "Hub"
     st.rerun()
 st.sidebar.markdown("---")

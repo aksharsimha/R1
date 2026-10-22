@@ -49,19 +49,19 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             q_display = pd.DataFrame(Q[:5, :5])
             if Q.shape[0] > 5 or Q.shape[1] > 5:
                 st.caption(f"showing first {min(5, Q.shape[0])} periods × {min(5, Q.shape[1])} assets")
-            st.dataframe(q_display.style.format("{:.4f}"), use_container_width=True)
+            st.dataframe(q_display.style.format("{:.4f}"), width="stretch")
 
         with c2:
             st.markdown("**R Matrix (Upper Triangular)**")
             r_display = pd.DataFrame(R[:5, :5])
             if R.shape[0] > 5 or R.shape[1] > 5:
                 st.caption(f"showing first {min(5, R.shape[0])} periods × {min(5, R.shape[1])} assets")
-            st.dataframe(r_display.style.format("{:.4f}"), use_container_width=True)
+            st.dataframe(r_display.style.format("{:.4f}"), width="stretch")
 
         st.markdown("**Verification: QᵀQ ≈ I**")
         qtq = np.dot(Q.T, Q)
         qtq_display = pd.DataFrame(qtq[:5, :5])
-        st.dataframe(qtq_display.style.format("{:.4f}"), use_container_width=True)
+        st.dataframe(qtq_display.style.format("{:.4f}"), width="stretch")
 
         # --- SECTION 2 ---
         st.markdown("---")
@@ -73,7 +73,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         cov_matrix = returns_df.cov().values
 
         st.markdown("**Step 1 — Covariance Matrix Σ**")
-        st.dataframe(pd.DataFrame(cov_matrix, index=asset_names, columns=asset_names).style.format("{:.6f}"), use_container_width=True)
+        st.dataframe(pd.DataFrame(cov_matrix, index=asset_names, columns=asset_names).style.format("{:.6f}"), width="stretch")
 
         st.markdown("**Step 2 — QR Algorithm Iterations**")
         st.caption("Converging to diagonal form — diagonal entries become the eigenvalues.")
@@ -83,7 +83,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             Q_k, R_k = np.linalg.qr(A_k)
             A_k = np.dot(R_k, Q_k)
             with st.expander(f"Iteration {k+1}: A_{k} = Q_{k}R_{k} → A_{k+1} = R_{k}Q_{k}"):
-                st.dataframe(pd.DataFrame(A_k).style.format("{:.6f}"), use_container_width=True)
+                st.dataframe(pd.DataFrame(A_k).style.format("{:.6f}"), width="stretch")
 
         st.markdown("**Step 3 — Extracted Eigenvalues**")
         eigenvalues = summary.get("pca_eigenvalues", [])
@@ -97,7 +97,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         if len(eigenvectors) > 0:
             top_k = min(3, len(eigenvectors[0]))
             eigen_df = pd.DataFrame(eigenvectors[:, :top_k], index=asset_names, columns=[f"Factor {i+1}" for i in range(top_k)])
-            st.dataframe(eigen_df.style.format("{:.4f}"), use_container_width=True)
+            st.dataframe(eigen_df.style.format("{:.4f}"), width="stretch")
 
         # --- SECTION 3 ---
         st.markdown("---")
@@ -160,7 +160,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             yaxis=dict(showgrid=False)
         )
         ui_theme.style_fig(fig_beta)
-        st.plotly_chart(fig_beta, use_container_width=True)
+        st.plotly_chart(fig_beta, width="stretch")
 
         for _, row in beta_df.iterrows():
             st.markdown(f"**{row['Asset']}**: β = {row['Beta']:.2f} — {row['Systematic %']:.1f}% of its movement is explained by the overall market. Only {row['Idiosyncratic %']:.1f}% is unique to this asset.")

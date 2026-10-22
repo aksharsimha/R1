@@ -1157,7 +1157,7 @@ def render_interactive_details(selected_badge: dict):
 
     c_close, _ = st.columns([1, 4])
     with c_close:
-        if st.button("✕ Close Inspector", key=f"btn_close_badge_{bid}", use_container_width=True):
+        if st.button("✕ Close Inspector", key=f"btn_close_badge_{bid}", width="stretch"):
             st.session_state.badges_selected_id = None
             st.rerun()
 
@@ -1263,7 +1263,7 @@ def render_badge_grid(badges: list[dict], newly_unlocked_ids: set[str] | None = 
                 _render_html(card_html)
                 
                 btn_label = f"Inspect {b['name']}"
-                if st.button(btn_label, key=f"btn_inspect_{b['id']}", use_container_width=True):
+                if st.button(btn_label, key=f"btn_inspect_{b['id']}", width="stretch"):
                     st.session_state.badges_selected_id = b["id"]
                     st.rerun()
 

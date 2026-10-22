@@ -16,6 +16,8 @@ import ui_theme
 from risk_analyzer import AssetType
 from portfolio_ledger import add_asset, remove_asset, update_asset_holdings, get_predictions
 import nse_live as _nse
+import michael_voice as _mv
+import michael_persona as _mp
 
 
 def _render_html_table(rows):
@@ -592,6 +594,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         st.session_state.michael_api_key = ""
     if "michael_pending" not in st.session_state:
         st.session_state.michael_pending = None
+    # Voice: replies are spoken when the toggle is on, or when the question itself was spoken
+    st.session_state.setdefault("michael_voice_on", False)
+    st.session_state.setdefault("michael_speak_next", False)
+    st.session_state.setdefault("michael_last_via_voice", False)
+    st.session_state.setdefault("michael_mic_n", 0)
 
     if _shared_key:
         api_key = _shared_key
@@ -599,6 +606,14 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     else:
         api_key = st.session_state.michael_api_key.strip()
         provider = _provider_of(api_key) if api_key else "gemini"
+
+    # Speech-to-text always runs on Groq Whisper, even when chat uses Gemini
+    try:
+        _stt_key = str(st.secrets.get("GROQ_API_KEY", "")).strip()
+    except Exception:
+        _stt_key = ""
+    if not _stt_key and provider == "groq":
+        _stt_key = api_key
 
     # ── Context builder (Compact target < 1000 tokens) ────────────────────────
     def _m_context():
@@ -733,23 +748,18 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     ]
     _GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
+    _user_name = (_user_info or {}).get("display_name") or (_user_info or {}).get("username", "")
+    _ROLE = (
+        "You are the user's daily assistant inside QUEST. You can see their live portfolio, risk metrics, "
+        "predictions, news sentiment, and their planner (upcoming calendar events and open to-do tasks). "
+        "Be proactive: connect their schedule to their money — flag upcoming results and holidays, remind "
+        "them of open tasks, relate market events to their holdings, and suggest what to focus on today. "
+        "You know Indian markets, NSE/BSE stocks, ETFs and quantitative finance."
+    )
+
     def _m_gemini(key, q, ctx):
         import urllib.request, json as _j
-        SYS = (
-            "You are MICHAEL, the daily intelligence assistant inside QUEST — a personal "
-            "investing + planning app for an Indian retail investor. "
-            "You can see the user's live portfolio, risk metrics, predictions, news sentiment, "
-            "AND their planner: upcoming calendar events and open to-do tasks. "
-            "Behave like a proactive personal assistant: connect their schedule to their money — "
-            "flag upcoming results/holidays, remind them of open tasks, relate market events to their holdings, "
-            "and suggest what to focus on today. "
-            "You are knowledgeable about Indian markets, NSE/BSE stocks, ETFs, and quantitative finance. "
-            "PERSONALITY: you are a sharp, seasoned Mumbai trading-desk veteran — quick-witted, a little blunt, "
-            "with dry humour, but genuinely in the user's corner. Open with one short line that fits the time of "
-            "day and the market mood, then get to the point. Direct and honest — never sugarcoat bad news, but never preachy. "
-            "Ground every answer in the data provided. Never invent numbers. "
-            "Keep responses concise, short paragraphs, Rs. for rupees, plain text (no markdown headers)."
-        )
+        SYS = _mp.build_system_prompt(_ROLE, _user_name, datetime.now().hour)
         _convo = ""
         for _hm in messages[-7:-1]:
             _convo += f"{'User' if _hm.get('role') == 'user' else 'MICHAEL'}: {_hm.get('text','')}\n"
@@ -849,17 +859,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     def _m_groq(key, q, ctx):
         import urllib.request, json as _j
-        SYS = (
-            "You are MICHAEL, the daily intelligence assistant inside QUEST — a personal "
-            "investing + planning app for an Indian retail investor. "
-            "You can see the user's live portfolio, risk metrics, predictions, news sentiment, and planner "
-            "(events + to-dos). You ALSO have live tools: get_quote and get_index. ALWAYS call get_quote or get_index when asked about a "
-            "specific stock, index, or recommendations. "
-            "PERSONALITY: a sharp, seasoned Mumbai trading-desk veteran — quick-witted, a little blunt, dry humour, "
-            "genuinely in the user's corner. Open with one short line fitting the time of day and market mood, then "
-            "get straight to the point. Direct and honest. Ground every answer in the data/tools. "
-            "Concise, short paragraphs, Rs. for rupees, plain text (no markdown headers)."
-        )
+        SYS = _mp.build_system_prompt(
+            _ROLE + " You also have live tools: get_quote and get_index. Always call one of them when "
+            "asked about a specific stock or index, rather than relying on memory.",
+            _user_name, datetime.now().hour)
         msgs = [{"role": "system", "content": SYS + "\n\n--- CONTEXT ---\n" + ctx + "\n--- END ---"}]
         for _hm in messages[-7:-1]:
             msgs.append({"role": "user" if _hm.get("role") == "user" else "assistant", "content": _hm.get("text", "")})
@@ -925,9 +928,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         return _m_groq(api_key, q, ctx) if provider == "groq" else _m_gemini(api_key, q, ctx)
 
     # ── Send and Process Message ──────────────────────────────────────────────
-    def _m_send(q_text):
+    def _m_send(q_text, via_voice=False):
         if not q_text.strip():
             return
+        st.session_state.michael_last_via_voice = via_voice
         ts = datetime.now().strftime("%H:%M")
         
         # If this is the first message in a default 'New Chat', auto-rename session
@@ -936,10 +940,18 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             _rename_session(user_data_dir, active_session_id, new_title)
             active_session["title"] = new_title
 
-        active_session.setdefault("messages", []).append({"role": "user", "text": q_text.strip(), "ts": ts})
+        user_entry = {"role": "user", "text": q_text.strip(), "ts": ts}
+        if via_voice:
+            user_entry["voice"] = True
+        active_session.setdefault("messages", []).append(user_entry)
         active_session["updated_at"] = datetime.now().isoformat()
         _save_all_sessions(user_data_dir, all_sessions_data)
         st.session_state.michael_pending = q_text.strip()
+
+    _voice_dir = os.path.join(user_data_dir, "michael_voice")
+    _has_kokoro = _mv.kokoro_installed()
+    _mv.warm_up()  # starts the voice worker in the background; returns immediately
+    _pending_note = None  # (message, placeholder) — voice note rendered after the page is drawn
 
     def _m_process():
         q = st.session_state.michael_pending
@@ -957,9 +969,15 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         else:
             txt = raw
 
-        active_session.setdefault("messages", []).append({"role": "michael", "text": txt, "ts": ts})
+        reply = {"role": "michael", "text": txt, "ts": ts}
+        speak = st.session_state.michael_voice_on or st.session_state.michael_last_via_voice
+        # Show the text straight away; the voice note is recorded on the next run
+        if speak and txt is raw and _has_kokoro and not re.search(r"[ऀ-ॿ]", txt):
+            reply["audio_pending"] = True
+        active_session.setdefault("messages", []).append(reply)
         active_session["updated_at"] = datetime.now().isoformat()
         _save_all_sessions(user_data_dir, all_sessions_data)
+        st.session_state.michael_speak_next = speak
 
     # ──────────────────────────────────────────────────────────────────────────
     # ChatGPT Split Layout (Left Sidebar + Right Main Chat)
@@ -971,7 +989,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     # ══════════════════════════════════════════════════════════════════════════
     with col_sidebar:
         # + New Chat Button (Fixed at top of sidebar)
-        if st.button("➕  New Chat", key="btn_new_chat", type="primary", use_container_width=True):
+        if st.button("➕  New Chat", key="btn_new_chat", type="primary", width="stretch"):
             new_sid = _create_new_session(user_data_dir)
             st.rerun()
 
@@ -1001,30 +1019,30 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             btn_label = f"{'📌 ' if is_pin and grp_name != 'Pinned' else ''}{s_title}"
                             if st.button(btn_label, key=f"sel_chat_{s_id}",
                                          type="primary" if is_active else "secondary",
-                                         use_container_width=True):
+                                         width="stretch"):
                                 all_sessions_data["active_session_id"] = s_id
                                 _save_all_sessions(user_data_dir, all_sessions_data)
                                 st.rerun()
 
                         with c_opt:
-                            with st.popover("⚙", use_container_width=True):
+                            with st.popover("⚙", width="stretch"):
                                 st.markdown(f"**{s_title}**")
                                 # Pin / Unpin
                                 pin_txt = "📌 Unpin chat" if is_pin else "📌 Pin chat to top"
-                                if st.button(pin_txt, key=f"pin_btn_{s_id}", use_container_width=True):
+                                if st.button(pin_txt, key=f"pin_btn_{s_id}", width="stretch"):
                                     _toggle_pin_session(user_data_dir, s_id)
                                     st.rerun()
 
                                 # Rename Form
                                 with st.form(key=f"rename_form_{s_id}"):
                                     new_t = st.text_input("Rename title", value=s_title, key=f"rename_input_{s_id}")
-                                    if st.form_submit_button("Save Title", use_container_width=True):
+                                    if st.form_submit_button("Save Title", width="stretch"):
                                         if new_t.strip():
                                             _rename_session(user_data_dir, s_id, new_t)
                                             st.rerun()
 
                                 # Delete Chat
-                                if st.button("🗑️ Delete Chat", key=f"del_btn_{s_id}", type="secondary", use_container_width=True):
+                                if st.button("🗑️ Delete Chat", key=f"del_btn_{s_id}", type="secondary", width="stretch"):
                                     _delete_session(user_data_dir, s_id)
                                     st.rerun()
 
@@ -1051,11 +1069,14 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         with msg_container:
             if not messages:
                 # Polished Empty State Hero & 4 Financial Starter Cards
-                st.markdown("""
+                _hr = datetime.now().hour
+                _salute = "Good morning" if _hr < 12 else "Good afternoon" if _hr < 17 else "Good evening"
+                _first = html.escape(_user_name.split()[0]) if _user_name else ""
+                st.markdown(f"""
                 <div class="gpt-hero">
                     <div class="gpt-hero-icon">⚡</div>
-                    <div class="gpt-hero-title">How can I help with your portfolio today?</div>
-                    <div class="gpt-hero-subtitle">I have real-time access to your holdings, risk analytics, news sentiment, EWMA predictions, and planner.</div>
+                    <div class="gpt-hero-title">{_salute}{', ' + _first if _first else ''}. How may I be of assistance?</div>
+                    <div class="gpt-hero-subtitle">Your holdings, risk, the day's news and your diary are all in hand. Ask away — or simply speak.</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -1067,7 +1088,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         <div class="gpt-card-desc">Comprehensive morning market summary and portfolio P&L review.</div>
                     </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Ask: Give me my daily briefing", key="chip_briefing", use_container_width=True):
+                    if st.button("Ask: Give me my daily briefing", key="chip_briefing", width="stretch"):
                         _m_send("Give me my daily briefing")
                         st.rerun()
 
@@ -1079,7 +1100,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         <div class="gpt-card-desc">Check upcoming corporate results, holidays, and open to-do items.</div>
                     </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Ask: What's on my plate today?", key="chip_planner", use_container_width=True):
+                    if st.button("Ask: What's on my plate today?", key="chip_planner", width="stretch"):
                         _m_send("What's on my plate today?")
                         st.rerun()
 
@@ -1090,7 +1111,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         <div class="gpt-card-desc">Analyze portfolio concentration, volatility, and downside risk score.</div>
                     </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Ask: Analyze my portfolio risk", key="chip_risk", use_container_width=True):
+                    if st.button("Ask: Analyze my portfolio risk", key="chip_risk", width="stretch"):
                         _m_send("Analyze my portfolio risk & asset allocation")
                         st.rerun()
 
@@ -1102,15 +1123,18 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         <div class="gpt-card-desc">Identify which assets are dragging down returns and check news catalysts.</div>
                     </div>
                     """, unsafe_allow_html=True)
-                    if st.button("Ask: Which stock is dragging returns?", key="chip_draggers", use_container_width=True):
+                    if st.button("Ask: Which stock is dragging returns?", key="chip_draggers", width="stretch"):
                         _m_send("Which stock is dragging down my returns?")
                         st.rerun()
 
             else:
                 # Render message stream
-                for msg in messages:
+                last_m_idx = max((i for i, m in enumerate(messages) if m["role"] != "user"), default=-1)
+                for idx, msg in enumerate(messages):
                     if msg["role"] == "user":
                         clean_u_text = html.escape(msg["text"]).replace('\n', '<br>')
+                        if msg.get("voice"):
+                            clean_u_text = '<span title="Spoken" style="opacity:.7;">🎙</span> ' + clean_u_text
                         st.markdown(
                             f'<div class="gpt-msg-user-row">'
                             f'<div class="gpt-msg-user-bubble">{clean_u_text}</div>'
@@ -1130,6 +1154,28 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                             f'</div>',
                             unsafe_allow_html=True
                         )
+                        # Voice: saved voice notes replay on any reply; the newest reply can
+                        # make one on request, or falls back to the browser voice (e.g. Hindi)
+                        is_latest = idx == last_m_idx and not st.session_state.michael_pending
+                        note_path = os.path.join(_voice_dir, msg["audio"]) if msg.get("audio") else ""
+                        if note_path and os.path.exists(note_path):
+                            st.audio(note_path, autoplay=is_latest and st.session_state.michael_speak_next)
+                        elif msg.get("audio_pending"):
+                            _pending_note = (msg, st.empty())  # filled in once the page is drawn
+                        elif is_latest:
+                            can_record = (_has_kokoro and not msg.get("audio_failed")
+                                          and not re.search(r"[ऀ-ॿ]", msg["text"]))
+                            if can_record:
+                                if st.button("🎙 Voice note", key=f"vn_{active_session_id}_{idx}"):
+                                    msg["audio_pending"] = True
+                                    _save_all_sessions(user_data_dir, all_sessions_data)
+                                    st.session_state.michael_speak_next = True
+                                    st.rerun()
+                            else:
+                                _mv.speak(msg["text"], autoplay=st.session_state.michael_speak_next,
+                                          key=f"{active_session_id}-{idx}")
+                        if is_latest and not msg.get("audio_pending"):
+                            st.session_state.michael_speak_next = False
 
                 # Typing / Generating indicator
                 if st.session_state.michael_pending:
@@ -1151,6 +1197,27 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
         # ── ChatGPT Fixed Bottom Input Bar ────────────────────────────────────
         st.markdown("<div style='margin-top: 0.8rem;'></div>", unsafe_allow_html=True)
+
+        # ── Voice input (Groq Whisper) + spoken-replies toggle ────────────────
+        mic_c1, mic_c2 = st.columns([5.2, 1], vertical_alignment="center")
+        with mic_c1:
+            voice_clip = st.audio_input("Speak to MICHAEL", key=f"michael_mic_{st.session_state.michael_mic_n}",
+                                        label_visibility="collapsed", disabled=not _stt_key,
+                                        help=None if _stt_key else "Voice input needs a Groq API key.")
+        with mic_c2:
+            st.toggle("🔊 Voice", key="michael_voice_on",
+                      help="Read every reply aloud. Spoken questions always get a spoken reply.")
+
+        if voice_clip is not None:
+            with st.spinner("🎙 Listening…"):
+                heard, stt_err = _mv.transcribe(voice_clip.getvalue(), _stt_key)
+            st.session_state.michael_mic_n += 1  # fresh recorder for the next question
+            if heard:
+                _m_send(heard, via_voice=True)
+                st.rerun()
+            else:
+                st.toast(stt_err, icon="🎙")
+
         with st.form("gpt_input_form", clear_on_submit=True):
             input_c1, input_c2 = st.columns([5.2, 1])
             with input_c1:
@@ -1158,7 +1225,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                          placeholder="Message MICHAEL (e.g., 'What is my portfolio risk today?')...",
                                          label_visibility="collapsed")
             with input_c2:
-                btn_send = st.form_submit_button("Send ⚡", use_container_width=True)
+                btn_send = st.form_submit_button("Send ⚡", width="stretch")
 
         if btn_send and user_msg.strip():
             _m_send(user_msg)
@@ -1166,9 +1233,25 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
         st.markdown("""
         <div class="gpt-disclaimer">
-            MICHAEL is an AI portfolio intelligence assistant. Verify financial calculations and decisions with qualified advisors.
+            MICHAEL is an AI assistant for learning, not a registered investment adviser. He explains — the decisions remain yours.
         </div>
         """, unsafe_allow_html=True)
+
+        # Record a pending voice note last, so the reply text and input bar are already on screen
+        if _pending_note:
+            p_msg, p_slot = _pending_note
+            wait_msg = ("MICHAEL is recording a voice note…" if _mv.voice_ready()
+                        else "Warming up MICHAEL's voice — the first note takes up to a minute…")
+            with p_slot.container():
+                with st.spinner(wait_msg):
+                    note = _mv.voice_note(p_msg["text"], _voice_dir, _mp.VOICE)
+            p_msg.pop("audio_pending", None)
+            if note:
+                p_msg["audio"] = os.path.basename(note)
+            else:
+                p_msg["audio_failed"] = True  # newest reply falls back to the browser voice
+            _save_all_sessions(user_data_dir, all_sessions_data)
+            st.rerun()
 
 
     # ══════════════════════════════════════════════════════════════════════════════

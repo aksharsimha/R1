@@ -264,7 +264,7 @@ def _render_ad_banner(slot_id: str):
         _, col_btn = st.columns([0.80, 0.20])
         with col_btn:
             toggle_label = "▲ Collapse" if is_expanded else "▼ View full ad"
-            if st.button(toggle_label, key=f"ad_toggle_{slot_id}", use_container_width=True):
+            if st.button(toggle_label, key=f"ad_toggle_{slot_id}", width="stretch"):
                 st.session_state[expanded_key] = not is_expanded
                 st.rerun()
 
@@ -471,10 +471,10 @@ def render_dashboard(user_info):
 
     with hero_col_btn:
         st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-        if st.button("▶ Resume Video in Library", key="btn_resume_hero", type="secondary", use_container_width=True):
+        if st.button("▶ Resume Video in Library", key="btn_resume_hero", type="secondary", width="stretch"):
             st.query_params["page"] = "Library"
             st.rerun()
-        if st.button(f"📋 View {hero_mod_title.split('—')[0].strip()} Quizzes", key="btn_hero_mod_hub", type="primary", use_container_width=True):
+        if st.button(f"📋 View {hero_mod_title.split('—')[0].strip()} Quizzes", key="btn_hero_mod_hub", type="primary", width="stretch"):
             st.session_state.active_module_id = hero_prefix
             st.session_state.edu_test_state = "module_hub"
             st.rerun()
@@ -544,7 +544,7 @@ def render_dashboard(user_info):
 </div>
 </div>
 """), unsafe_allow_html=True)
-            if st.button(f"View Quizzes →", key=f"mod_btn_{grp['prefix']}", use_container_width=True):
+            if st.button(f"View Quizzes →", key=f"mod_btn_{grp['prefix']}", width="stretch"):
                 st.session_state.active_module_id = grp["prefix"]
                 st.session_state.edu_test_state = "module_hub"
                 st.rerun()
@@ -783,7 +783,7 @@ def render_module_hub(user_info):
 """), unsafe_allow_html=True)
 
         if status == "available":
-            if st.button(f"🚀 Start Quiz — {title}", key=f"start_{key}", type="primary", use_container_width=True):
+            if st.button(f"🚀 Start Quiz — {title}", key=f"start_{key}", type="primary", width="stretch"):
                 st.session_state.active_quiz_module_id = key
                 st.session_state.edu_test_state = "taking_test"
                 st.rerun()
@@ -833,9 +833,9 @@ def render_taking_test(user_info):
         st.markdown("<hr style='border-color: var(--q-border); margin: 20px 0;'>", unsafe_allow_html=True)
         col_sub, col_cancel = st.columns([1.5, 1])
         with col_sub:
-            submitted = st.form_submit_button("Submit Assessment & Grade", type="primary", use_container_width=True)
+            submitted = st.form_submit_button("Submit Assessment & Grade", type="primary", width="stretch")
         with col_cancel:
-            cancel = st.form_submit_button("Cancel & Return", use_container_width=True)
+            cancel = st.form_submit_button("Cancel & Return", width="stretch")
 
     if cancel:
         st.session_state.edu_test_state = "module_hub"
@@ -974,15 +974,15 @@ def render_test_passed(user_info):
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
-        if st.button("📖 View Detailed Results", type="primary", use_container_width=True):
+        if st.button("📖 View Detailed Results", type="primary", width="stretch"):
             st.session_state.edu_test_state = "review"
             st.rerun()
     with col2:
-        if st.button("← Back to Module", use_container_width=True):
+        if st.button("← Back to Module", width="stretch"):
             st.session_state.edu_test_state = "module_hub"
             st.rerun()
     with col3:
-        if st.button("🏠 Dashboard", use_container_width=True):
+        if st.button("🏠 Dashboard", width="stretch"):
             st.session_state.edu_test_state = "dashboard"
             st.rerun()
 
@@ -1025,15 +1025,15 @@ def render_test_failed(user_info):
     st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
-        if st.button("🔍 View Your Mistakes", type="primary", use_container_width=True):
+        if st.button("🔍 View Your Mistakes", type="primary", width="stretch"):
             st.session_state.edu_test_state = "review"
             st.rerun()
     with col2:
-        if st.button("🔄 Re-attempt Now", use_container_width=True):
+        if st.button("🔄 Re-attempt Now", width="stretch"):
             st.session_state.edu_test_state = "taking_test"
             st.rerun()
     with col3:
-        if st.button("📚 Study in Library", use_container_width=True):
+        if st.button("📚 Study in Library", width="stretch"):
             st.session_state.edu_test_state = "dashboard"
             st.query_params["page"] = "Library"
             st.rerun()
@@ -1094,14 +1094,14 @@ def render_review(user_info):
 
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
-        if st.button("← Back to Module", type="primary", use_container_width=True):
+        if st.button("← Back to Module", type="primary", width="stretch"):
             st.session_state.edu_test_state = "module_hub"
             st.rerun()
     with col2:
-        if st.button("🔄 Re-attempt Assessment", use_container_width=True):
+        if st.button("🔄 Re-attempt Assessment", width="stretch"):
             st.session_state.edu_test_state = "taking_test"
             st.rerun()
     with col3:
-        if st.button("🏠 Dashboard", use_container_width=True):
+        if st.button("🏠 Dashboard", width="stretch"):
             st.session_state.edu_test_state = "dashboard"
             st.rerun()

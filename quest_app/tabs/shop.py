@@ -48,7 +48,7 @@ def _gift_dialog(sender: str, sender_coins: int, key: str, title: str, cost: int
 
     if sender_coins < cost:
         st.error("⚠️ Insufficient Quest Coins. Top up your coins to continue.")
-        if st.button("Close", use_container_width=True, key=f"dlg_gift_close_insufficient_{key}"):
+        if st.button("Close", width="stretch", key=f"dlg_gift_close_insufficient_{key}"):
             st.rerun()
         return
 
@@ -86,7 +86,7 @@ def _gift_dialog(sender: str, sender_coins: int, key: str, title: str, cost: int
 
     col_y, col_n = st.columns(2)
     with col_y:
-        if st.button("🎁 Send Gift", type="primary", use_container_width=True, key=f"dlg_gift_confirm_{key}"):
+        if st.button("🎁 Send Gift", type="primary", width="stretch", key=f"dlg_gift_confirm_{key}"):
             if not recipient:
                 st.error("Please select a valid recipient first.")
             else:
@@ -111,7 +111,7 @@ def _gift_dialog(sender: str, sender_coins: int, key: str, title: str, cost: int
                             st.balloons()
                             st.rerun()
     with col_n:
-        if st.button("❌ Cancel", use_container_width=True, key=f"dlg_gift_cancel_{key}"):
+        if st.button("❌ Cancel", width="stretch", key=f"dlg_gift_cancel_{key}"):
             st.rerun()
 
 
@@ -151,13 +151,13 @@ def _confirm_nitro_dialog(username: str, user_coins: int, is_extend: bool):
 
     if user_coins < cost:
         st.error("⚠️ Insufficient Quest Coins. Top up your coins to continue.")
-        if st.button("Close", use_container_width=True, key="dlg_close_nitro"):
+        if st.button("Close", width="stretch", key="dlg_close_nitro"):
             st.rerun()
     else:
         col_y, col_n = st.columns(2)
         with col_y:
             btn_txt = "✅ Yes, Extend (+30 Days)" if is_extend else "✅ Yes, Upgrade (2,500 Coins)"
-            if st.button(btn_txt, type="primary", use_container_width=True, key="dlg_confirm_nitro"):
+            if st.button(btn_txt, type="primary", width="stretch", key="dlg_confirm_nitro"):
                 import firebase_db
                 ok, msg, res = firebase_db.upgrade_user_to_premium(username, duration_days=30, cost_coins=cost)
                 if ok:
@@ -172,7 +172,7 @@ def _confirm_nitro_dialog(username: str, user_coins: int, is_extend: bool):
                 else:
                     st.error(msg)
         with col_n:
-            if st.button("❌ Cancel", use_container_width=True, key="dlg_cancel_nitro"):
+            if st.button("❌ Cancel", width="stretch", key="dlg_cancel_nitro"):
                 st.rerun()
 
 
@@ -211,13 +211,13 @@ def _confirm_entitlement_dialog(username: str, user_coins: int, key: str, title:
 
     if user_coins < cost:
         st.error("⚠️ Insufficient Quest Coins. Top up your coins to continue.")
-        if st.button("Close", use_container_width=True, key=f"dlg_close_{key}"):
+        if st.button("Close", width="stretch", key=f"dlg_close_{key}"):
             st.rerun()
     else:
         col_y, col_n = st.columns(2)
         with col_y:
             btn_txt = f"✅ Yes, Extend (+{duration_days} Days)" if is_extend else f"✅ Yes, Unlock ({cost:,} Coins)"
-            if st.button(btn_txt, type="primary", use_container_width=True, key=f"dlg_confirm_{key}"):
+            if st.button(btn_txt, type="primary", width="stretch", key=f"dlg_confirm_{key}"):
                 import firebase_db
                 ok, msg, res = firebase_db.grant_entitlement(username, key, duration_days=duration_days, cost_coins=cost)
                 if ok:
@@ -227,7 +227,7 @@ def _confirm_entitlement_dialog(username: str, user_coins: int, key: str, title:
                 else:
                     st.error(msg)
         with col_n:
-            if st.button("❌ Cancel", use_container_width=True, key=f"dlg_cancel_{key}"):
+            if st.button("❌ Cancel", width="stretch", key=f"dlg_cancel_{key}"):
                 st.rerun()
 
 
@@ -400,19 +400,19 @@ def render(user_info):
             nitro_act_col, nitro_gift_col = st.columns([4, 1])
             if nitro_active:
                 with nitro_act_col:
-                    if st.button("➕ Extend (+30d)", key="btn_store_nitro_ext", use_container_width=True):
+                    if st.button("➕ Extend (+30d)", key="btn_store_nitro_ext", width="stretch"):
                         _confirm_nitro_dialog(username, quest_coins, is_extend=True)
             else:
                 if quest_coins >= 2500:
                     with nitro_act_col:
-                        if st.button("Upgrade (2,500 🪙)", type="primary", key="btn_store_nitro_buy", use_container_width=True):
+                        if st.button("Upgrade (2,500 🪙)", type="primary", key="btn_store_nitro_buy", width="stretch"):
                             _confirm_nitro_dialog(username, quest_coins, is_extend=False)
                 else:
                     with nitro_act_col:
-                        st.button(f"Need {2500 - quest_coins:,} more coins", disabled=True, key="btn_store_nitro_dis", use_container_width=True)
+                        st.button(f"Need {2500 - quest_coins:,} more coins", disabled=True, key="btn_store_nitro_dis", width="stretch")
                     st.markdown('<div style="text-align:center;margin-top:4px;"><a href="#top-up-coins" style="color:var(--q-accent, #5DCAA5);font-size:0.78rem;text-decoration:none;font-weight:600;">🪙 Buy Coins ↓</a></div>', unsafe_allow_html=True)
             with nitro_gift_col:
-                if st.button("🎁", key="btn_gift_nitro", help="Gift to another user", use_container_width=True):
+                if st.button("🎁", key="btn_gift_nitro", help="Gift to another user", width="stretch"):
                     _gift_dialog(username, quest_coins, "premium", "QUEST Nitro", 2500, 30, "👑")
 
     # 2. Ad Free Tier Card
@@ -431,19 +431,19 @@ def render(user_info):
             adfree_act_col, adfree_gift_col = st.columns([4, 1])
             if adfree_active:
                 with adfree_act_col:
-                    if st.button("➕ Extend (+30d)", key="btn_store_adfree_ext", use_container_width=True):
+                    if st.button("➕ Extend (+30d)", key="btn_store_adfree_ext", width="stretch"):
                         _confirm_entitlement_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️", "Removes all sponsored ad banners and promotions across modules.", is_extend=True)
             else:
                 if quest_coins >= 1000:
                     with adfree_act_col:
-                        if st.button("Get Ad-Free (1,000 🪙)", type="primary", key="btn_store_adfree_buy", use_container_width=True):
+                        if st.button("Get Ad-Free (1,000 🪙)", type="primary", key="btn_store_adfree_buy", width="stretch"):
                             _confirm_entitlement_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️", "Removes all sponsored ad banners and promotions across modules.", is_extend=False)
                 else:
                     with adfree_act_col:
-                        st.button(f"Need {1000 - quest_coins:,} more coins", disabled=True, key="btn_store_adfree_dis", use_container_width=True)
+                        st.button(f"Need {1000 - quest_coins:,} more coins", disabled=True, key="btn_store_adfree_dis", width="stretch")
                     st.markdown('<div style="text-align:center;margin-top:4px;"><a href="#top-up-coins" style="color:var(--q-accent, #5DCAA5);font-size:0.78rem;text-decoration:none;font-weight:600;">🪙 Buy Coins ↓</a></div>', unsafe_allow_html=True)
             with adfree_gift_col:
-                if st.button("🎁", key="btn_gift_adfree", help="Gift to another user", use_container_width=True):
+                if st.button("🎁", key="btn_gift_adfree", help="Gift to another user", width="stretch"):
                     _gift_dialog(username, quest_coins, "ad_free", "Ad-Free Tier", 1000, 30, "🛡️")
 
     # 3. News Section Card (Professional Workspace only)
@@ -461,14 +461,14 @@ def render(user_info):
                 st.markdown("<div style='font-weight:700;font-size:0.95rem;color:#fbbf24;margin-bottom:12px;'>🪙 1,500 Coins <span style='font-size:0.75rem;color:var(--q-text-3);font-weight:400;'>/ 30 Days</span></div>", unsafe_allow_html=True)
 
                 if news_active:
-                    if st.button("➕ Extend (+30d)", key="btn_store_news_ext", use_container_width=True):
+                    if st.button("➕ Extend (+30d)", key="btn_store_news_ext", width="stretch"):
                         _confirm_entitlement_dialog(username, quest_coins, "news_access", "News Intelligence", 1500, 30, "📰", "Unlocks real-time institutional sentiment tracking, corporate filings, and market intelligence feeds.", is_extend=True)
                 else:
                     if quest_coins >= 1500:
-                        if st.button("Unlock News (1,500 🪙)", type="primary", key="btn_store_news_buy", use_container_width=True):
+                        if st.button("Unlock News (1,500 🪙)", type="primary", key="btn_store_news_buy", width="stretch"):
                             _confirm_entitlement_dialog(username, quest_coins, "news_access", "News Intelligence", 1500, 30, "📰", "Unlocks real-time institutional sentiment tracking, corporate filings, and market intelligence feeds.", is_extend=False)
                     else:
-                        st.button(f"Need {1500 - quest_coins:,} more coins", disabled=True, key="btn_store_news_dis", use_container_width=True)
+                        st.button(f"Need {1500 - quest_coins:,} more coins", disabled=True, key="btn_store_news_dis", width="stretch")
                         st.markdown('<div style="text-align:center;margin-top:4px;"><a href="#top-up-coins" style="color:var(--q-accent, #5DCAA5);font-size:0.78rem;text-decoration:none;font-weight:600;">🪙 Buy Coins ↓</a></div>', unsafe_allow_html=True)
 
     # 4. International Stock Access Card (Global Markets)
@@ -489,17 +489,17 @@ def render(user_info):
             st.markdown("<div style='font-weight:700;font-size:0.95rem;color:#fbbf24;margin-bottom:12px;'>🪙 3,500 Coins <span style='font-size:0.75rem;color:var(--q-text-3);font-weight:400;'>/ 30 Days</span></div>", unsafe_allow_html=True)
 
             if intl_active:
-                if st.button("➕ Extend (+30d)", key="btn_store_intl_ext", use_container_width=True):
+                if st.button("➕ Extend (+30d)", key="btn_store_intl_ext", width="stretch"):
                     _confirm_entitlement_dialog(username, quest_coins, "intl_stocks", "US & Global Stocks", 3500, 30, "🌐", "Unlocks direct paper-trading access to NASDAQ, NYSE, and international equities in the Global Markets Simulator.", is_extend=True)
             elif not intl_unlocked:
-                st.button("🔒 Complete Module 5 to unlock", disabled=True, key="btn_store_intl_locked", use_container_width=True)
+                st.button("🔒 Complete Module 5 to unlock", disabled=True, key="btn_store_intl_locked", width="stretch")
                 st.markdown("<p style='font-size:0.75rem;color:var(--q-text-3);text-align:center;margin-top:6px;line-height:1.35;'>Finish Module 5 — Build Your Portfolio in the Learning Path first.</p>", unsafe_allow_html=True)
             else:
                 if quest_coins >= 3500:
-                    if st.button("Unlock (3,500 🪙)", type="primary", key="btn_store_intl_buy", use_container_width=True):
+                    if st.button("Unlock (3,500 🪙)", type="primary", key="btn_store_intl_buy", width="stretch"):
                         _confirm_entitlement_dialog(username, quest_coins, "intl_stocks", "US & Global Stocks", 3500, 30, "🌐", "Unlocks direct paper-trading access to NASDAQ, NYSE, and international equities in the Global Markets Simulator.", is_extend=False)
                 else:
-                    st.button(f"Need {3500 - quest_coins:,} more coins", disabled=True, key="btn_store_intl_dis", use_container_width=True)
+                    st.button(f"Need {3500 - quest_coins:,} more coins", disabled=True, key="btn_store_intl_dis", width="stretch")
                     st.markdown('<div style="text-align:center;margin-top:4px;"><a href="#top-up-coins" style="color:var(--q-accent, #5DCAA5);font-size:0.78rem;text-decoration:none;font-weight:600;">🪙 Buy Coins ↓</a></div>', unsafe_allow_html=True)
 
     st.markdown("<div id='top-up-coins' style='height:16px;'></div>", unsafe_allow_html=True)
@@ -518,7 +518,7 @@ def render(user_info):
             st.markdown("<h3 style='text-align:center; margin-top:0.25rem;'>Starter</h3>", unsafe_allow_html=True)
             st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0.3rem 0;'>5,000 Coins</h2>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center; color:var(--q-text-3, #94a3b8); font-size:0.9rem;'>for ₹ 500</p>", unsafe_allow_html=True)
-            if st.button("Pay ₹ 500", key="buy_500", use_container_width=True):
+            if st.button("Pay ₹ 500", key="buy_500", width="stretch"):
                 _create_payment_link(500, user_info)
 
     with col2:
@@ -526,7 +526,7 @@ def render(user_info):
             st.markdown("<h3 style='text-align:center; margin-top:0.25rem;'>Pro</h3>", unsafe_allow_html=True)
             st.markdown("<h2 style='text-align:center; color:#a855f7; margin:0.3rem 0;'>10,000 Coins</h2>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center; color:var(--q-text-3, #94a3b8); font-size:0.9rem;'>for ₹ 1,000</p>", unsafe_allow_html=True)
-            if st.button("Pay ₹ 1,000", key="buy_1000", type="primary", use_container_width=True):
+            if st.button("Pay ₹ 1,000", key="buy_1000", type="primary", width="stretch"):
                 _create_payment_link(1000, user_info)
 
     with col3:
@@ -534,7 +534,7 @@ def render(user_info):
             st.markdown("<h3 style='text-align:center; margin-top:0.25rem;'>Whale</h3>", unsafe_allow_html=True)
             st.markdown("<h2 style='text-align:center; color:#fbbf24; margin:0.3rem 0;'>50,000 Coins</h2>", unsafe_allow_html=True)
             st.markdown("<p style='text-align:center; color:var(--q-text-3, #94a3b8); font-size:0.9rem;'>for ₹ 5,000</p>", unsafe_allow_html=True)
-            if st.button("Pay ₹ 5,000", key="buy_5000", use_container_width=True):
+            if st.button("Pay ₹ 5,000", key="buy_5000", width="stretch"):
                 _create_payment_link(5000, user_info)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -547,7 +547,7 @@ def render(user_info):
         st.markdown(f"<p style='color:#34d399;'>You will receive: <b>{int(custom_amt * 10):,} Quest Coins</b></p>", unsafe_allow_html=True)
     with custom_col2:
         st.markdown("<br>", unsafe_allow_html=True)  # padding for alignment
-        if st.button(f"Pay ₹ {custom_amt:,}", key="buy_custom", type="primary", use_container_width=True):
+        if st.button(f"Pay ₹ {custom_amt:,}", key="buy_custom", type="primary", width="stretch"):
             _create_payment_link(custom_amt, user_info)
 
 

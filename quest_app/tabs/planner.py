@@ -187,10 +187,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         _pmo += 1
 
         _pc1, _pc2, _pc3 = st.columns([1, 4, 1])
-        if _pc1.button("‹", key="plan_prev", use_container_width=True):
+        if _pc1.button("‹", key="plan_prev", width="stretch"):
             st.session_state.plan_offset -= 1
             st.rerun()
-        if _pc3.button("›", key="plan_next", use_container_width=True):
+        if _pc3.button("›", key="plan_next", width="stretch"):
             st.session_state.plan_offset += 1
             st.rerun()
         _pc2.markdown(

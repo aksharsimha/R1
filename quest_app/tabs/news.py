@@ -556,7 +556,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         """, unsafe_allow_html=True)
         col_pad1, col_btn, col_pad2 = st.columns([1, 1.2, 1])
         with col_btn:
-            if st.button("🛒 Unlock in Shop", type="primary", use_container_width=True, key="unlock_news_in_shop"):
+            if st.button("🛒 Unlock in Shop", type="primary", width="stretch", key="unlock_news_in_shop"):
                 st.query_params["page"] = "Shop"
                 st.rerun()
         return
@@ -925,10 +925,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
     with hdr_c2:
         btn_c1, btn_c2 = st.columns([1, 1])
         with btn_c1:
-            if st.button("🔍", key="btn_top_search", help="Search News & Holdings", use_container_width=True):
+            if st.button("🔍", key="btn_top_search", help="Search News & Holdings", width="stretch"):
                 _search_dialog(all_articles, current_assets)
         with btn_c2:
-            if st.button("👤", key="btn_top_profile", help="View Profile", use_container_width=True):
+            if st.button("👤", key="btn_top_profile", help="View Profile", width="stretch"):
                 _show_public_profile(_username)
 
     st.markdown("<div style='height:6px;'></div>", unsafe_allow_html=True)
@@ -942,7 +942,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         with news_h1:
             st.markdown("<div style='font-size:1.15rem;font-weight:600;color:var(--q-text);padding:6px 0;'>📰 Latest News</div>", unsafe_allow_html=True)
         with news_h2:
-            if st.button("View All News →", key="btn_view_all_news", use_container_width=True):
+            if st.button("View All News →", key="btn_view_all_news", width="stretch"):
                 _view_all_news_dialog(all_articles)
 
         # Build items HTML cleanly
@@ -1052,22 +1052,22 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         # Clickable interactive topic buttons
         tr_c1, tr_c2 = st.columns(2)
         with tr_c1:
-            if st.button("#NIFTY25K 🔥", key="btn_tr_nifty25k", help="Click to explore #NIFTY25K trend", use_container_width=True):
+            if st.button("#NIFTY25K 🔥", key="btn_tr_nifty25k", help="Click to explore #NIFTY25K trend", width="stretch"):
                 _trending_topic_dialog("#NIFTY25K")
-            if st.button("#RBIPolicy 🏛️", key="btn_tr_rbipolicy", help="Click to explore #RBIPolicy trend", use_container_width=True):
+            if st.button("#RBIPolicy 🏛️", key="btn_tr_rbipolicy", help="Click to explore #RBIPolicy trend", width="stretch"):
                 _trending_topic_dialog("#RBIPolicy")
-            if st.button("#GreenHydrogen 🌿", key="btn_tr_greenh2", help="Click to explore #GreenHydrogen trend", use_container_width=True):
+            if st.button("#GreenHydrogen 🌿", key="btn_tr_greenh2", help="Click to explore #GreenHydrogen trend", width="stretch"):
                 _trending_topic_dialog("#GreenHydrogen")
-            if st.button("#AutoDemand 🚗", key="btn_tr_auto", help="Click to explore #AutoDemand trend", use_container_width=True):
+            if st.button("#AutoDemand 🚗", key="btn_tr_auto", help="Click to explore #AutoDemand trend", width="stretch"):
                 _trending_topic_dialog("#AutoDemand")
         with tr_c2:
-            if st.button("#Q2Results 📊", key="btn_tr_q2results", help="Click to explore #Q2Results season", use_container_width=True):
+            if st.button("#Q2Results 📊", key="btn_tr_q2results", help="Click to explore #Q2Results season", width="stretch"):
                 _trending_topic_dialog("#Q2Results")
-            if st.button("#AITechRally ⚡", key="btn_tr_aitech", help="Click to explore #AITechRally trend", use_container_width=True):
+            if st.button("#AITechRally ⚡", key="btn_tr_aitech", help="Click to explore #AITechRally trend", width="stretch"):
                 _trending_topic_dialog("#AITechRally")
-            if st.button("#DefencePSU 🛡️", key="btn_tr_defence", help="Click to explore #DefencePSU trend", use_container_width=True):
+            if st.button("#DefencePSU 🛡️", key="btn_tr_defence", help="Click to explore #DefencePSU trend", width="stretch"):
                 _trending_topic_dialog("#DefencePSU")
-            if st.button("#BankMergers 🏦", key="btn_tr_bankmerg", help="Click to explore #BankMergers trend", use_container_width=True):
+            if st.button("#BankMergers 🏦", key="btn_tr_bankmerg", help="Click to explore #BankMergers trend", width="stretch"):
                 _trending_topic_dialog("#BankMergers")
 
         st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)
@@ -1127,6 +1127,6 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
     arch_c1, arch_c2 = st.columns([4, 1])
     with arch_c2:
-        if st.button("Browse Archive →", key="btn_bottom_archive", use_container_width=True):
+        if st.button("Browse Archive →", key="btn_bottom_archive", width="stretch"):
             _archive_dialog()
 

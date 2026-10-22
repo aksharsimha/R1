@@ -22,6 +22,7 @@ import urllib.parse
 import urllib.request
 import datetime
 import edu_db
+import michael_persona as _mp
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Load 200-Video Bilingual Catalog
@@ -63,8 +64,7 @@ def _ask_michael_video_ai(query, active_video, history):
     v_summary = active_video.get("summary", "")
     v_takeaways = "\n- " + "\n- ".join(active_video.get("key_takeaways", []))
 
-    sys_prompt = f"""You are MICHAEL, an expert Indian stock market mentor, financial analyst, and interactive AI tutor inside the QUEST Education Platform.
-You are actively helping a learner studying the following video lesson:
+    sys_prompt = _mp.build_system_prompt(f"""You are tutoring inside the QUEST Education Platform, helping a learner studying the following video lesson:
 - Title: "{v_title}"
 - Creator/Channel: {v_creator}
 - Module: {v_module}
@@ -79,7 +79,7 @@ YOUR INSTRUCTIONS:
 4. If asked to quiz, ask 3 short, relevant multiple-choice questions with answers explained.
 5. If asked how to apply this, explain how they can practice it using the Virtual Trading simulator in QUEST (with their starting ₹15,000 balance).
 6. Keep formatting neat with clean bullet points and bold key terms. Never invent fake stock prices.
-"""
+""", hour=datetime.datetime.now().hour)
 
     if api_key and provider == "groq":
         try:
@@ -546,14 +546,14 @@ def render(user_info):
         l_btn1, l_btn2 = st.columns(2)
         with l_btn1:
             is_en = current_lang == "en"
-            if st.button("🇬🇧  English (100 Videos)", key="btn_lang_en", type="primary" if is_en else "secondary", use_container_width=True):
+            if st.button("🇬🇧  English (100 Videos)", key="btn_lang_en", type="primary" if is_en else "secondary", width="stretch"):
                 if current_lang != "en":
                     st.session_state.edu_video_lang = "en"
                     st.session_state["edu_module_selector_en"] = module_titles[st.session_state.edu_active_module_idx]
                     st.rerun()
         with l_btn2:
             is_hi = current_lang == "hi"
-            if st.button("🇮🇳  हिन्दी / Hindi (100 Videos)", key="btn_lang_hi", type="primary" if is_hi else "secondary", use_container_width=True):
+            if st.button("🇮🇳  हिन्दी / Hindi (100 Videos)", key="btn_lang_hi", type="primary" if is_hi else "secondary", width="stretch"):
                 if current_lang != "hi":
                     st.session_state.edu_video_lang = "hi"
                     st.session_state["edu_module_selector_hi"] = module_titles[st.session_state.edu_active_module_idx]
@@ -619,7 +619,7 @@ def render(user_info):
             eq_title = matching_other_video.get("title", "")
             eq_id = active_video.get("equivalent_video_id", matching_other_video.get("id", ""))
             switch_lbl = f"🔄 Switch to {other_lang_name} counterpart (ID: {eq_id})"
-            if st.button(switch_lbl, key=f"btn_cross_lang_{v_id}_{current_lang}", use_container_width=True):
+            if st.button(switch_lbl, key=f"btn_cross_lang_{v_id}_{current_lang}", width="stretch"):
                 st.session_state.edu_video_lang = other_lang
                 st.rerun()
 
@@ -649,7 +649,7 @@ def render(user_info):
             # Like Button
             with act_c1:
                 like_btn_txt = f"👍 {live_likes_count}" if not user_liked else f"👍 {live_likes_count} (Liked)"
-                if st.button(like_btn_txt, key=f"btn_like_{v_id}", type="primary" if user_liked else "secondary", use_container_width=True):
+                if st.button(like_btn_txt, key=f"btn_like_{v_id}", type="primary" if user_liked else "secondary", width="stretch"):
                     now_liked, new_total = edu_db.toggle_like(v_id)
                     if now_liked:
                         st.toast(f"Liked this video! 👍 Total live likes: {new_total}")
@@ -660,7 +660,7 @@ def render(user_info):
             # Save / Bookmark Button
             with act_c2:
                 bm_txt = "★ Saved" if is_bm else "☆ Save"
-                if st.button(bm_txt, key=f"btn_save_{v_id}", use_container_width=True):
+                if st.button(bm_txt, key=f"btn_save_{v_id}", width="stretch"):
                     new_bm = edu_db.toggle_bookmark(v_id)
                     st.toast("Saved to your Library bookmarks! 🔖" if new_bm else "Removed from bookmarks.")
                     st.rerun()
@@ -668,7 +668,7 @@ def render(user_info):
             # Mark as Watched & Claim +50 XP
             with act_c3:
                 comp_txt = "✅ Watched (+50 XP)" if is_watched else "🎓 +50 XP"
-                if st.button(comp_txt, key=f"btn_comp_{v_id}", type="primary" if not is_watched else "secondary", disabled=is_watched, use_container_width=True):
+                if st.button(comp_txt, key=f"btn_comp_{v_id}", type="primary" if not is_watched else "secondary", disabled=is_watched, width="stretch"):
                     if not is_watched:
                         new_xp = edu_db.complete_article(v_id, 50)
                         st.toast(f"🎉 Awesome! Lesson completed. +50 XP awarded! Total: {new_xp} XP", icon="⭐")
@@ -745,10 +745,10 @@ def render(user_info):
         sq1, sq2 = st.columns(2)
         starter_query = None
         with sq1:
-            if st.button("💡 Simple Summary", key=f"chip_sum_{v_id}", use_container_width=True):
+            if st.button("💡 Simple Summary", key=f"chip_sum_{v_id}", width="stretch"):
                 starter_query = f"Explain the main concepts of '{active_video['title']}' in very simple terms."
         with sq2:
-            if st.button("📊 Indian Examples", key=f"chip_ex_{v_id}", use_container_width=True):
+            if st.button("📊 Indian Examples", key=f"chip_ex_{v_id}", width="stretch"):
                 starter_query = f"Give me real-world Indian stock market examples for '{active_video['title']}'."
 
         # If user clicked starter chip
@@ -794,7 +794,7 @@ def render(user_info):
             with in_col:
                 user_doubt = st.text_input("Ask Doubt", placeholder=f"Ask MICHAEL any doubt about '{active_video['title'][:35]}...' ", label_visibility="collapsed")
             with btn_col:
-                send_clicked = st.form_submit_button("Ask ⚡", type="primary", use_container_width=True)
+                send_clicked = st.form_submit_button("Ask ⚡", type="primary", width="stretch")
 
             if send_clicked and user_doubt and user_doubt.strip():
                 ts = datetime.datetime.now().strftime("%H:%M")
@@ -914,7 +914,7 @@ def render(user_info):
                             """, unsafe_allow_html=True)
                         
                         btn_txt = "▶ Playing Now" if is_active else "Play Video"
-                        if st.button(btn_txt, key=f"filtered_play_btn_{m_i}_{t_i}_{s_idx}", disabled=is_active, use_container_width=True):
+                        if st.button(btn_txt, key=f"filtered_play_btn_{m_i}_{t_i}_{s_idx}", disabled=is_active, width="stretch"):
                             st.session_state.edu_active_module_idx = m_i
                             st.session_state.edu_active_video_idx = t_i
                             st.rerun()
@@ -953,7 +953,7 @@ def render(user_info):
                     
                     # Click to play button
                     btn_txt = "▶ Playing Now" if is_active else "Play Video"
-                    if st.button(btn_txt, key=f"yt_play_btn_{cur_module.get('module_id')}_{p_idx}_{current_lang}", disabled=is_active, use_container_width=True):
+                    if st.button(btn_txt, key=f"yt_play_btn_{cur_module.get('module_id')}_{p_idx}_{current_lang}", disabled=is_active, width="stretch"):
                         st.session_state.edu_active_video_idx = p_idx
                         st.rerun()
                     st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)

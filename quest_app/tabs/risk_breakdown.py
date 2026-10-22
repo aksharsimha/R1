@@ -145,7 +145,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                     ))
                     fig_gauge.update_layout(height=300, margin=dict(l=10, r=10, t=40, b=10), font=dict(family="Inter", color=_pal['text_2']), plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
                     ui_theme.style_fig(fig_gauge)
-                    st.plotly_chart(fig_gauge, use_container_width=True)
+                    st.plotly_chart(fig_gauge, width="stretch")
         
                     # Verdict
                     bucket_color = _pal['pos'] if comp_score <= 40 else _pal['warn'] if comp_score <= 70 else _pal['neg']
@@ -269,7 +269,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                         _figc.update_traces(marker_color=[_pal['accent'], _pal['text_3'], _pal['text_3']])
                         _figc.update_layout(height=300, margin=dict(t=10, b=0, l=0, r=0))
                         ui_theme.style_fig(_figc)
-                        st.plotly_chart(_figc, use_container_width=True)
+                        st.plotly_chart(_figc, width="stretch")
                         if _nret is not None and not pd.isna(_pw):
                             _delta = _pw - _nret
                             if _delta >= 0:
@@ -360,7 +360,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                     _figk.update_layout(height=400, margin=dict(t=30, b=0, l=0, r=0),
                                                         title=f"{_first_sym} · {_plbl}", xaxis_rangeslider_visible=False)
                                     ui_theme.style_fig(_figk)
-                                    st.plotly_chart(_figk, use_container_width=True)
+                                    st.plotly_chart(_figk, width="stretch")
                                     if len(_resolved) > 1:
                                         st.caption("Candlestick shows the first stock only — use Line/Area/Bar to compare several.")
                                 elif not _norm.empty:
@@ -373,10 +373,10 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                         _fign = px.line(_norm, labels=_lbls)
                                     _fign.update_layout(height=360, margin=dict(t=10, b=0, l=0, r=0))
                                     ui_theme.style_fig(_fign)
-                                    st.plotly_chart(_fign, use_container_width=True)
+                                    st.plotly_chart(_fign, width="stretch")
 
                                 if _rows:
-                                    st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
+                                    st.dataframe(pd.DataFrame(_rows), width="stretch", hide_index=True)
                                     st.caption(f"{_plbl} window · 50/200, MACD, RSI, 52w computed on 1-year data · heuristic, not advice.")
 
                                 if _first_sym:

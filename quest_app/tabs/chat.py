@@ -324,7 +324,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 if st.button(
                     label,
                     key=f"chat_sel_{cid}",
-                    use_container_width=True,
+                    width="stretch",
                     type="primary" if is_active else "secondary"
                 ):
                     st.session_state.active_chat_id = cid
@@ -341,7 +341,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
         with st.expander("➕ Add Friend"):
             with st.form("add_friend_form", clear_on_submit=True, border=False):
                 friend_username = st.text_input("Username", placeholder="Enter username", label_visibility="collapsed")
-                if st.form_submit_button("Send Request", use_container_width=True):
+                if st.form_submit_button("Send Request", width="stretch"):
                     if friend_username:
                         ok, msg = chat_system.send_friend_request(_chat_user, friend_username.strip().lower())
                         if ok:
@@ -357,7 +357,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                 with st.form("create_group_form", clear_on_submit=True, border=False):
                     group_name = st.text_input("Group Name", placeholder="e.g. Portfolio Crew", label_visibility="collapsed")
                     members = st.multiselect("Add friends", friends, key="grp_members")
-                    if st.form_submit_button("Create Group", use_container_width=True):
+                    if st.form_submit_button("Create Group", width="stretch"):
                         if group_name and members:
                             ok, msg, gid = chat_system.create_group_chat(_chat_user, group_name, members)
                             if ok:
@@ -449,7 +449,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
 
                 with hdr_action:
                     if chat_info["type"] == "group":
-                        with st.popover("👥 Members", use_container_width=True):
+                        with st.popover("👥 Members", width="stretch"):
                             st.markdown(f"**👥 {html.escape(chat_info['name'])}**")
                             st.caption(f"{len(chat_info['participants'])} members in this group")
 
@@ -466,7 +466,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                             avail_friends,
                                             key=f"add_friend_sel_{active_id}"
                                         )
-                                        if st.button("➕ Add Friend", type="primary", use_container_width=True, key=f"btn_add_friend_{active_id}"):
+                                        if st.button("➕ Add Friend", type="primary", width="stretch", key=f"btn_add_friend_{active_id}"):
                                             if selected_friend:
                                                 ok, msg = chat_system.add_to_group(active_id, selected_friend, _chat_user)
                                                 if ok:
@@ -484,7 +484,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                         placeholder="e.g. username",
                                         key=f"add_user_input_{active_id}"
                                     )
-                                    if st.button("➕ Add by Username", type="primary", use_container_width=True, key=f"btn_add_username_{active_id}"):
+                                    if st.button("➕ Add by Username", type="primary", width="stretch", key=f"btn_add_username_{active_id}"):
                                         if new_u:
                                             u_clean = new_u.strip().lower()
                                             if u_clean in chat_info["participants"]:
@@ -521,7 +521,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                         unsafe_allow_html=True
                                     )
                                 with c_p2:
-                                    if st.button("Profile", key=f"grp_prof_btn_{p}_{active_id}", use_container_width=True):
+                                    if st.button("Profile", key=f"grp_prof_btn_{p}_{active_id}", width="stretch"):
                                         _show_public_profile(p)
 
                             st.divider()
@@ -530,7 +530,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                 st.warning("Are you sure you want to leave this group?")
                                 c_leave_yes, c_leave_no = st.columns(2)
                                 with c_leave_yes:
-                                    if st.button("✅ Yes, Leave", key=f"btn_leave_grp_confirm_{active_id}", use_container_width=True):
+                                    if st.button("✅ Yes, Leave", key=f"btn_leave_grp_confirm_{active_id}", width="stretch"):
                                         ok, msg = chat_system.leave_group(active_id, _chat_user)
                                         if ok:
                                             st.session_state.pop(_confirm_leave_key, None)
@@ -540,11 +540,11 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
                                         else:
                                             st.error(msg)
                                 with c_leave_no:
-                                    if st.button("Cancel", key=f"btn_leave_grp_cancel_{active_id}", use_container_width=True):
+                                    if st.button("Cancel", key=f"btn_leave_grp_cancel_{active_id}", width="stretch"):
                                         st.session_state.pop(_confirm_leave_key, None)
                                         st.rerun(scope="fragment")
                             else:
-                                if st.button("🚪 Leave Group", key=f"btn_leave_grp_{active_id}", use_container_width=True):
+                                if st.button("🚪 Leave Group", key=f"btn_leave_grp_{active_id}", width="stretch"):
                                     st.session_state[_confirm_leave_key] = True
                                     st.rerun(scope="fragment")
 

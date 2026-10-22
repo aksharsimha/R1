@@ -169,22 +169,22 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
     # 2. Pill Navigation Bar (Interactive Quick Actions)
     p_spacer_l, p1, p2, p3, p4, p_spacer_r = st.columns([1.2, 1, 1, 1.1, 1, 1.2])
     with p1:
-        if st.button("📊  Analytics", key="hub_pill_analytics", use_container_width=True):
+        if st.button("📊  Analytics", key="hub_pill_analytics", width="stretch"):
             st.query_params["workspace"] = "professional"
             st.query_params["page"] = "Analytics"
             st.rerun()
     with p2:
-        if st.button("📈  Progress", key="hub_pill_progress", use_container_width=True):
+        if st.button("📈  Progress", key="hub_pill_progress", width="stretch"):
             st.query_params["workspace"] = "education"
             st.query_params["page"] = "Learning Path"
             st.rerun()
     with p3:
-        if st.button("🏆  Achievements", key="hub_pill_achievements", use_container_width=True):
+        if st.button("🏆  Achievements", key="hub_pill_achievements", width="stretch"):
             st.query_params["workspace"] = "education"
             st.query_params["page"] = "Badges"
             st.rerun()
     with p4:
-        if st.button("🎯  Goals", key="hub_pill_goals", use_container_width=True):
+        if st.button("🎯  Goals", key="hub_pill_goals", width="stretch"):
             st.query_params["workspace"] = "professional"
             st.query_params["page"] = "Planner"
             st.rerun()
@@ -255,7 +255,7 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 </div>"""
         st.markdown(html_prof_card, unsafe_allow_html=True)
         
-        if st.button("Go to Portfolio →", key="hub_btn_go_portfolio", type="primary", use_container_width=True):
+        if st.button("Go to Portfolio →", key="hub_btn_go_portfolio", type="primary", width="stretch"):
             st.query_params["workspace"] = "professional"
             st.query_params["page"] = edu_db.get_last_portfolio_section()
             st.rerun()
@@ -320,7 +320,7 @@ div[data-testid="stColumn"]:nth-of-type(2) div.stButton > button[kind="primary"]
 </div>"""
         st.markdown(html_edu_card, unsafe_allow_html=True)
 
-        if st.button("Resume Learning →", key="hub_btn_go_education", type="primary", use_container_width=True):
+        if st.button("Resume Learning →", key="hub_btn_go_education", type="primary", width="stretch"):
             st.query_params["workspace"] = "education"
             st.query_params["page"] = edu_db.get_last_education_section()
             st.rerun()

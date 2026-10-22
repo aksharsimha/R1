@@ -172,7 +172,7 @@ def render(df=None, summary=None, current_assets=None, _user_info=None,
             
             _editor_key = "portfolio_editor_" + "_".join(display_cols)
             edited_df = st.data_editor(
-                df[display_cols].copy(), use_container_width=True,
+                df[display_cols].copy(), width="stretch",
                 column_config={
                     "Invested (₹)": st.column_config.NumberColumn("Invested (₹)", min_value=0.0, format="₹ %.2f", step=0.01),
                     "Quantity": st.column_config.NumberColumn("Quantity", min_value=0.0, format="%.4f", step=0.0001),

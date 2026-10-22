@@ -188,11 +188,11 @@ def _render_practice(prog: dict):
         st.write("")
         col_a, col_b, col_c = st.columns([1, 1, 1])
         with col_a:
-            if st.button("← Back to Case Board", key="practice_back_summary", use_container_width=True):
+            if st.button("← Back to Case Board", key="practice_back_summary", width="stretch"):
                 _exit_practice()
                 st.rerun()
         with col_c:
-            if st.button("🔄 Practice Again", key="practice_again", type="secondary", use_container_width=True):
+            if st.button("🔄 Practice Again", key="practice_again", type="secondary", width="stretch"):
                 _practice_init()
                 st.rerun()
         return
@@ -210,7 +210,7 @@ def _render_practice(prog: dict):
     # Exit button — always visible during practice
     col_exit, _ = st.columns([1, 4])
     with col_exit:
-        if st.button("← Exit Practice", key="practice_exit_top", use_container_width=True):
+        if st.button("← Exit Practice", key="practice_exit_top", width="stretch"):
             _exit_practice()
             st.rerun()
 
@@ -248,7 +248,7 @@ def _render_practice(prog: dict):
                     f"<span style='font-size:11px; color:var(--q-text-2);'>{choice['d']}</span>",
                     unsafe_allow_html=True
                 )
-                if st.button("Select Option " + chr(65+i), key=f"pbtn_{case_idx}_{i}", use_container_width=True):
+                if st.button("Select Option " + chr(65+i), key=f"pbtn_{case_idx}_{i}", width="stretch"):
                     full_choices = case_full["choices"]
                     chosen = full_choices[i]
                     is_correct = chosen.get("c", False)
@@ -272,13 +272,13 @@ def _render_practice(prog: dict):
         st.write("")
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
-            if st.button("← Exit Practice", key="practice_exit_result", use_container_width=True):
+            if st.button("← Exit Practice", key="practice_exit_result", width="stretch"):
                 _exit_practice()
                 st.rerun()
         with col3:
             is_last = (case_idx >= total - 1)
             next_label = "See Practice Summary" if is_last else "Next Case →"
-            if st.button(next_label, key="practice_next", type="secondary", use_container_width=True):
+            if st.button(next_label, key="practice_next", type="secondary", width="stretch"):
                 if is_last:
                     st.session_state.td_practice_done = True
                 else:
@@ -324,7 +324,7 @@ def _render_closed_board(prog: dict):
             "Want to review the cases?</div>",
             unsafe_allow_html=True
         )
-        if st.button("🕵️ Enter Practice Mode", key="enter_practice", use_container_width=True):
+        if st.button("🕵️ Enter Practice Mode", key="enter_practice", width="stretch"):
             st.session_state.td_practice_mode = True
             _practice_init()
             st.rerun()
@@ -424,7 +424,7 @@ def render(user_info: dict):
         current_case_idx = len(answered_ids)
 
     if current_case_idx >= len(cases):
-        if st.button("Submit Final Report & Claim Reward", type="primary", use_container_width=True):
+        if st.button("Submit Final Report & Claim Reward", type="primary", width="stretch"):
             try:
                 res = tax_detective_db.finish_attempt()
                 if not _practice_active():
@@ -461,7 +461,7 @@ def render(user_info: dict):
                     f"<span style='font-size:11px; color:var(--q-text-2);'>{choice['d']}</span>",
                     unsafe_allow_html=True
                 )
-                if st.button("Select Option " + chr(65+i), key=f"pbtn_{case_idx}_{i}", use_container_width=True):
+                if st.button("Select Option " + chr(65+i), key=f"pbtn_{case_idx}_{i}", width="stretch"):
                     full_choices = case_full["choices"]
                     chosen = full_choices[i]
                     is_correct = chosen.get("c", False)
@@ -485,13 +485,13 @@ def render(user_info: dict):
         st.write("")
         col1, col2, col3 = st.columns([1, 1, 1])
         with col1:
-            if st.button("← Exit Practice", key="practice_exit_result", use_container_width=True):
+            if st.button("← Exit Practice", key="practice_exit_result", width="stretch"):
                 _exit_practice()
                 st.rerun()
         with col3:
             is_last = (case_idx >= total - 1)
             next_label = "See Practice Summary" if is_last else "Next Case →"
-            if st.button(next_label, key="practice_next", type="secondary", use_container_width=True):
+            if st.button(next_label, key="practice_next", type="secondary", width="stretch"):
                 if is_last:
                     st.session_state.td_practice_done = True
                 else:
@@ -537,7 +537,7 @@ def _render_closed_board(prog: dict):
             "Want to review the cases?</div>",
             unsafe_allow_html=True
         )
-        if st.button("🕵️ Enter Practice Mode", key="enter_practice", use_container_width=True):
+        if st.button("🕵️ Enter Practice Mode", key="enter_practice", width="stretch"):
             st.session_state.td_practice_mode = True
             _practice_init()
             st.rerun()
@@ -637,7 +637,7 @@ def render(user_info: dict):
         current_case_idx = len(answered_ids)
 
     if current_case_idx >= len(cases):
-        if st.button("Submit Final Report & Claim Reward", type="primary", use_container_width=True):
+        if st.button("Submit Final Report & Claim Reward", type="primary", width="stretch"):
             try:
                 res = tax_detective_db.finish_attempt()
                 if not _practice_active():
@@ -674,7 +674,7 @@ def render(user_info: dict):
                     f"<span style='font-size:11px; color:#8d98a7;'>{choice['d']}</span>",
                     unsafe_allow_html=True
                 )
-                if st.button("Select Option " + chr(65+i), key=f"btn_{current_case_idx}_{i}", use_container_width=True):
+                if st.button("Select Option " + chr(65+i), key=f"btn_{current_case_idx}_{i}", width="stretch"):
                     res = tax_detective_db.answer_case(current_case_idx, i)
                     st.session_state.td_attempt = tax_detective_db.get_current_attempt()
                     st.session_state.td_result = res
@@ -685,7 +685,7 @@ def render(user_info: dict):
         col1, col2, col3 = st.columns([1, 1, 1])
         with col3:
             label = "Next Case →" if current_case_idx < total - 1 else "Finish & See Final Result"
-            if st.button(label, type="primary", use_container_width=True):
+            if st.button(label, type="primary", width="stretch"):
                 if current_case_idx == total - 1:
                     finished = tax_detective_db.finish_attempt()
                     if not _practice_active():

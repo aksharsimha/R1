@@ -121,7 +121,7 @@ def _render_holdings(account, prefetched=None):
         tone = "vt-positive" if pnl >= 0 else "vt-negative"
         with cols[index % len(cols)]:
             st.markdown(f"<div class='vt-stock'><strong>{_logo_markup(symbol, quote)}{symbol}</strong><span>{quantity:g} shares · {_money(quote['price'])}</span><br><span class='{tone}'>{_signed_money(pnl)} · {pnl / invested * 100 if invested else 0:+.2f}%</span></div>", unsafe_allow_html=True)
-            if st.button("View", key=f"vt_view_{symbol}", use_container_width=True):
+            if st.button("View", key=f"vt_view_{symbol}", width="stretch"):
                 st.session_state.vt_symbol = symbol
                 st.session_state.vt_order_side = "BUY"
                 st.rerun()
@@ -163,7 +163,7 @@ def _render_chart(symbol, quote):
     else:
         fig = go.Figure(go.Scatter(x=[point["time"] for point in points], y=[point["price"] for point in points], mode="lines", line={"color": "#a78bfa", "width": 2.5}, fill="tozeroy", fillcolor="rgba(167,139,250,.08)", hovertemplate="%{x}<br>₹%{y:,.2f}<extra></extra>"))
         fig.update_layout(height=310, margin={"l": 0, "r": 0, "t": 12, "b": 0}, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", xaxis={"showgrid": False, "nticks": 5}, yaxis={"showgrid": True, "gridcolor": "rgba(148,163,184,.1)", "tickprefix": "₹"}, hovermode="x unified")
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
         _render_sentiment(points)
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -224,7 +224,7 @@ def _render_trade(account, username, base_dir, symbol, quote):
         if side == "SELL":
             average = float(holding.get("average_cost", 0))
             st.write(f"Estimated P&L: **{_signed_money(quantity * (price - average))}**")
-        if st.button(f"{'🟢 BUY' if side == 'BUY' else '🔴 SELL'} {symbol}", type="primary", use_container_width=True):
+        if st.button(f"{'🟢 BUY' if side == 'BUY' else '🔴 SELL'} {symbol}", type="primary", width="stretch"):
             try:
                 previous_cash = float(account["cash"])
                 (engine.buy if side == "BUY" else engine.sell)(account, symbol, quantity, price)
@@ -271,7 +271,7 @@ def _render_activity(account):
             "Price": _money(price),
             "Value": _money(value),
         })
-    st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
 
 
 def render(user_info, user_data_dir=None):
@@ -357,7 +357,7 @@ def render(user_info, user_data_dir=None):
             ]
             fig = go.Figure(go.Pie(labels=legend_labels, values=values, hole=.62, textinfo="none", marker={"colors": ["#a78bfa", "#60a5fa", "#34d399", "#fbbf24", "#fb7185"]}))
             fig.update_layout(height=290, margin={"l": 0, "r": 0, "t": 0, "b": 20}, paper_bgcolor="rgba(0,0,0,0)", showlegend=True, legend={"font": {"color": "#cbd5e1"}})
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
         else:
             st.info("Buy your first stock to see allocation.")
     st.markdown("</div>", unsafe_allow_html=True)

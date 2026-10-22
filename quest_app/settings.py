@@ -28,11 +28,11 @@ def _signout_dialog() -> None:
     st.write("Are you sure you want to log out?")
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width="stretch"):
             st.session_state.show_signout_dialog = False
             st.rerun()
     with c2:
-        if st.button("Log Out", type="primary", use_container_width=True):
+        if st.button("Log Out", type="primary", width="stretch"):
             # We purposely do NOT call remove_remembered_account here.
             # This allows the account to stay in the multi-account cookie (so it appears in the Switcher).
             _preserve_keys = {"auth_cookie_override", "cookie_controller"}
@@ -488,7 +488,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
         upload = st.file_uploader("Avatar", type=["png", "jpg", "jpeg", "webp"], key="avatar_upload")
         a1, a2 = st.columns(2)
         with a1:
-            if upload and st.button("Replace avatar", key="replace_avatar", use_container_width=True):
+            if upload and st.button("Replace avatar", key="replace_avatar", width="stretch"):
                 encoded = base64.b64encode(upload.getvalue()).decode("ascii")
                 mime = upload.type or "image/png"
                 avatar_data = f"data:{mime};base64,{encoded}"
@@ -497,7 +497,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 st.success("Avatar updated.")
                 st.rerun()
         with a2:
-            if avatar and st.button("Delete avatar", key="delete_avatar", use_container_width=True):
+            if avatar and st.button("Delete avatar", key="delete_avatar", width="stretch"):
                 firebase_db.save_avatar(username, None)
                 st.session_state.user_info.pop("avatar", None)
                 st.success("Avatar removed.")
@@ -507,7 +507,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             display_name = st.text_input("Display name", value=profile.get("display_name", user_info.get("display_name", username)))
             summary = st.text_area("Profile summary", value=profile.get("summary", ""), max_chars=240,
                                    placeholder="A short line about your investing style")
-            if st.form_submit_button("Save profile", use_container_width=True):
+            if st.form_submit_button("Save profile", width="stretch"):
                 try:
                     ok, message = firebase_db.update_profile(username, display_name, summary)
                     if ok:
@@ -610,19 +610,19 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 st.error("⚠️ Insufficient Quest Coins. Top up your wallet to extend your subscription.")
                 col_w, col_c = st.columns([1.5, 1.0])
                 with col_w:
-                    if st.button("💳 Top Up in Wallet", type="primary", use_container_width=True, key="dlg_goto_wallet_extend"):
+                    if st.button("💳 Top Up in Wallet", type="primary", width="stretch", key="dlg_goto_wallet_extend"):
                         st.query_params["page"] = "Shop"
                         st.session_state.last_active_page = "Shop"
                         if "nav_section" in st.session_state:
                             st.session_state.nav_section = "🛒  Shop"
                         st.rerun()
                 with col_c:
-                    if st.button("Close", use_container_width=True, key="dlg_close_extend"):
+                    if st.button("Close", width="stretch", key="dlg_close_extend"):
                         st.rerun()
             else:
                 col_y, col_n = st.columns(2)
                 with col_y:
-                    if st.button("✅ Yes, Extend (+30 Days)", type="primary", use_container_width=True, key="dlg_confirm_extend"):
+                    if st.button("✅ Yes, Extend (+30 Days)", type="primary", width="stretch", key="dlg_confirm_extend"):
                         ok, msg, res = firebase_db.upgrade_user_to_premium(username, duration_days=30, cost_coins=1000)
                         if ok:
                             st.session_state.pop("_cached_profile", None)
@@ -635,7 +635,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                         else:
                             st.error(msg)
                 with col_n:
-                    if st.button("❌ Cancel", use_container_width=True, key="dlg_cancel_extend"):
+                    if st.button("❌ Cancel", width="stretch", key="dlg_cancel_extend"):
                         st.rerun()
 
         @st.dialog("Confirm Premium Upgrade")
@@ -675,19 +675,19 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 st.error("⚠️ Insufficient Quest Coins. Top up your wallet to continue.")
                 col_w, col_c = st.columns([1.5, 1.0])
                 with col_w:
-                    if st.button("💳 Top Up in Wallet", type="primary", use_container_width=True, key="dlg_goto_wallet_upgrade"):
+                    if st.button("💳 Top Up in Wallet", type="primary", width="stretch", key="dlg_goto_wallet_upgrade"):
                         st.query_params["page"] = "Shop"
                         st.session_state.last_active_page = "Shop"
                         if "nav_section" in st.session_state:
                             st.session_state.nav_section = "🛒  Shop"
                         st.rerun()
                 with col_c:
-                    if st.button("Close", use_container_width=True, key="dlg_close_upgrade"):
+                    if st.button("Close", width="stretch", key="dlg_close_upgrade"):
                         st.rerun()
             else:
                 col_y, col_n = st.columns(2)
                 with col_y:
-                    if st.button("✅ Yes, Upgrade (1,000 Coins)", type="primary", use_container_width=True, key="dlg_confirm_upgrade"):
+                    if st.button("✅ Yes, Upgrade (1,000 Coins)", type="primary", width="stretch", key="dlg_confirm_upgrade"):
                         ok, msg, res = firebase_db.upgrade_user_to_premium(username, duration_days=30, cost_coins=1000)
                         if ok:
                             prev["isPremium"] = True
@@ -701,7 +701,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                         else:
                             st.error(msg)
                 with col_n:
-                    if st.button("❌ Cancel", use_container_width=True, key="dlg_cancel_upgrade"):
+                    if st.button("❌ Cancel", width="stretch", key="dlg_cancel_upgrade"):
                         st.rerun()
 
         # Two-column layout: Left = Controls, Right = Discord-Style Live Preview
@@ -743,7 +743,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     unsafe_allow_html=True,
                 )
 
-                if st.button("➕ Extend Premium (+30 Days / 1,000 Coins)", key="btn_extend_prem", use_container_width=True):
+                if st.button("➕ Extend Premium (+30 Days / 1,000 Coins)", key="btn_extend_prem", width="stretch"):
                     _show_confirm_extend_dialog()
             else:
                 trial_status = firebase_db.get_premium_trial_status(username, trial_seconds=300)
@@ -779,7 +779,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     unsafe_allow_html=True,
                 )
 
-                if st.button("✨ Upgrade to Premium (1,000 Coins / 30 Days)", key="btn_upgrade_prem_coins", type="primary", use_container_width=True):
+                if st.button("✨ Upgrade to Premium (1,000 Coins / 30 Days)", key="btn_upgrade_prem_coins", type="primary", width="stretch"):
                     _show_confirm_upgrade_dialog()
 
                 # ── 5-Minute One-Time Free Premium Preview Trial ──
@@ -957,7 +957,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     if prev.get("bannerType") == "image":
                         st.markdown('<div style="font-size:0.8rem;color:#34d399;font-weight:600;padding-top:8px;">✓ Custom banner image loaded</div>', unsafe_allow_html=True)
                 with b_col2:
-                    if prev.get("bannerType") == "image" and st.button("🔄 Remove Banner Image", key="btn_reset_banner_img", use_container_width=True):
+                    if prev.get("bannerType") == "image" and st.button("🔄 Remove Banner Image", key="btn_reset_banner_img", width="stretch"):
                         prev["bannerType"] = "color"
                         prev["bannerValue"] = "#5865F2"
                         st.session_state._last_banner_upload_sig = None
@@ -1002,7 +1002,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                 if prev.get("avatar"):
                     st.markdown('<div style="font-size:0.8rem;color:#34d399;font-weight:600;padding-top:8px;">✓ Avatar selected</div>', unsafe_allow_html=True)
             with av2:
-                if prev.get("avatar") and st.button("🗑️ Delete Avatar", key="btn_delete_avatar", use_container_width=True):
+                if prev.get("avatar") and st.button("🗑️ Delete Avatar", key="btn_delete_avatar", width="stretch"):
                     prev["avatar"] = None
                     st.session_state._last_avatar_upload_sig = None
                     st.rerun()
@@ -1029,7 +1029,7 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
             st.markdown("<hr style='border:none;border-top:1px solid var(--q-border);margin:20px 0;'>", unsafe_allow_html=True)
 
             # ── 7. SAVE PROFILE BUTTON ──
-            if st.button("Save profile", type="primary", use_container_width=True, key="btn_save_profile_main"):
+            if st.button("Save profile", type="primary", width="stretch", key="btn_save_profile_main"):
                 disp_val = prev.get("display_name", username).strip() or username
                 summ_val = prev.get("summary", "")
                 try:
@@ -1155,16 +1155,16 @@ def _render_section(selected: str, username: str, user_info: dict, profile: dict
                     )
             with c2:
                 if is_connected:
-                    if st.button("Disconnect", key=f"disconnect_{pid}", use_container_width=True):
+                    if st.button("Disconnect", key=f"disconnect_{pid}", width="stretch"):
                         oauth_connections.remove_connection(username, pid)
                         st.success(f"Disconnected {pname}.")
                         st.rerun()
                 else:
                     try:
                         auth_url = oauth_connections.build_auth_url(pid, username)
-                        st.link_button("Connect", auth_url, use_container_width=True)
+                        st.link_button("Connect", auth_url, width="stretch")
                     except Exception as err:
-                        st.button("Connect", key=f"disabled_conn_{pid}", disabled=True, use_container_width=True, help=str(err))
+                        st.button("Connect", key=f"disabled_conn_{pid}", disabled=True, width="stretch", help=str(err))
 
         st.markdown(
             """
